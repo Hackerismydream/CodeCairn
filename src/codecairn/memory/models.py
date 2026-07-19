@@ -44,6 +44,7 @@ GateDecisionReason = Literal[
     "debug_episode_requires_observed_outcome",
     "debug_episode_facts_are_disconnected",
 ]
+IndexOperation = Literal["upsert", "delete"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -216,3 +217,50 @@ class ImportResult:
     created_memory_count: int
     skipped_memory_count: int
     repaired_memory_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class IndexJob:
+    job_id: int
+    repo_key: str
+    memory_id: str
+    content_sha256: str
+    operation: IndexOperation
+    lease_owner: str
+
+
+@dataclass(frozen=True, slots=True)
+class IndexHealth:
+    pending: int
+    leased: int
+    indexed: int
+    failed: int
+    stale: int
+
+
+@dataclass(frozen=True, slots=True)
+class TruthIssue:
+    markdown_path: str
+    observed_sha256: str | None
+    error_type: str
+
+
+@dataclass(frozen=True, slots=True)
+class TruthScan:
+    memories: tuple[CodingMemory, ...]
+    issues: tuple[TruthIssue, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ReconcileReport:
+    created: int
+    modified: int
+    deleted: int
+    corrupt: int
+
+
+@dataclass(frozen=True, slots=True)
+class RebuildReport:
+    truth_count: int
+    index_count: int
+    parity: bool

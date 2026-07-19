@@ -15,6 +15,8 @@ from codecairn.memory.models import (
     MemoryRepairPlan,
     MemoryRepairReason,
     MemoryType,
+    TruthIssue,
+    TruthScan,
 )
 
 _MEMORY_TYPES = frozenset(get_args(MemoryType))
@@ -163,6 +165,49 @@ class MarkdownMemoryStore:
             fact_ids=_optional_string_tuple(attributes, "fact_ids"),
             markdown_path=str(resolved),
             content_sha256=hashlib.sha256(content.encode()).hexdigest(),
+        )
+
+    def read_markdown(self, memory: CodingMemory) -> str:
+        path = self._committed_path(memory)
+        source = _read_markdown_bytes(path)
+        if source is None:
+            raise FileNotFoundError(path)
+        observed_sha256 = hashlib.sha256(source).hexdigest()
+        if observed_sha256 != _required_content_sha256(memory):
+            raise ValueError(f"Markdown changed after reconciliation: {memory.memory_id}")
+        return source.decode("utf-8")
+
+    def scan(self) -> TruthScan:
+        memories: dict[tuple[str, str], CodingMemory] = {}
+        issues: list[TruthIssue] = []
+        memory_root = self._root / "repos"
+        if not memory_root.exists():
+            return TruthScan(memories=(), issues=())
+        for path in sorted(memory_root.glob("*/memories/*/*.md")):
+            observed_sha256: str | None = None
+            try:
+                source = _read_markdown_bytes(path)
+                if source is None:
+                    continue
+                observed_sha256 = hashlib.sha256(source).hexdigest()
+                memory = self.read(path)
+                if path.resolve(strict=True) != self._path_for(memory):
+                    raise ValueError("Memory Markdown is not at its canonical path")
+                key = (memory.repo_key, memory.memory_id)
+                if key in memories:
+                    raise ValueError("Duplicate memory identity in Markdown truth")
+                memories[key] = memory
+            except (OSError, UnicodeError, ValueError) as exc:
+                issues.append(
+                    TruthIssue(
+                        markdown_path=str(path.resolve(strict=False)),
+                        observed_sha256=observed_sha256,
+                        error_type=type(exc).__name__,
+                    )
+                )
+        return TruthScan(
+            memories=tuple(memories[key] for key in sorted(memories)),
+            issues=tuple(issues),
         )
 
     def _path_for(self, memory: CodingMemory) -> Path:
