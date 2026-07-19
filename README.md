@@ -30,7 +30,9 @@ make check
 ```
 
 The first implemented vertical slice imports an auditable Failed Command from a
-Codex JSONL session:
+Codex JSONL session. Repeated imports validate the committed prefix, resume from
+the active Task Episode, and repair committed Markdown through an audited
+recovery path:
 
 ```bash
 uv run codecairn import /path/to/session.jsonl \

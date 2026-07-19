@@ -73,6 +73,9 @@ adapter over the evaluation interface.
   source location; recovery may resolve or repair live locators without
   rewriting memory identity.
 - SQLite owns transactions, cursors, audit, leases, and the index outbox.
+- Import checkpoints hash the stable event prefix and replay only the final
+  active Task Episode. Markdown recovery is atomic, hash-verified, and recorded
+  through resumable SQLite audit rows.
 - LanceDB owns vector and lexical search material only. It is disposable.
 
 ## Reference policy

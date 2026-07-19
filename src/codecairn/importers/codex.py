@@ -18,9 +18,14 @@ from codecairn.memory.models import (
     EvidenceReference,
     FileChangeFact,
     FileChangeOperation,
+    ImportCheckpoint,
     TraceEvent,
 )
-from codecairn.memory.trace import stable_id
+from codecairn.memory.trace import (
+    EMPTY_RAW_PREFIX_SHA256,
+    extend_raw_prefix_sha256,
+    stable_id,
+)
 
 
 class TraceParseError(TraceImportError):
@@ -54,10 +59,23 @@ class _NormalizeState:
     file_change_fact_count: int = 0
 
 
+@dataclass(frozen=True, slots=True)
+class _RawScan:
+    records: tuple[RawRecord, ...]
+    raw_event_count: int
+    prefix_sha256: str
+
+
 class CodexImporter:
     provider = "codex"
 
-    def read(self, source_path: Path, *, source_root: Path | None = None) -> AgentTrace:
+    def read(
+        self,
+        source_path: Path,
+        *,
+        source_root: Path | None = None,
+        checkpoint: ImportCheckpoint | None = None,
+    ) -> AgentTrace:
         observed_path = Path(os.path.abspath(source_path))
         if source_root is None:
             source_bytes = _read_session_bytes(observed_path)
@@ -67,9 +85,38 @@ class CodexImporter:
                 source_root=source_root,
             )
         source_sha256 = hashlib.sha256(source_bytes).hexdigest()
-        records = _parse_jsonl(source_bytes, source_path=observed_path)
-        session_id = _session_id(records, fallback=observed_path.stem)
-        state = _NormalizeState()
+        if checkpoint is not None:
+            _validate_checkpoint(checkpoint)
+        resumed_from = checkpoint.resume_raw_event_index if checkpoint is not None else 0
+        scan = _scan_jsonl(
+            source_bytes,
+            source_path=observed_path,
+            start_raw_event_index=resumed_from,
+        )
+        if checkpoint is not None and scan.prefix_sha256 != checkpoint.resume_prefix_sha256:
+            raise TraceParseError(
+                f"Codex source changed before committed checkpoint: {observed_path}"
+            )
+        if (
+            checkpoint is not None
+            and scan.raw_event_count - 1 < checkpoint.committed_raw_event_index
+        ):
+            raise TraceParseError(
+                f"Codex source is truncated before committed cursor: {observed_path}"
+            )
+        session_id = (
+            _validated_session_id(checkpoint.session_id)
+            if checkpoint is not None
+            else _session_id(scan.records, fallback=observed_path.stem)
+        )
+        raw_prefix_call_ids = checkpoint.resume_call_ids if checkpoint is not None else ()
+        raw_prefix_file_change_fact_count = (
+            checkpoint.resume_file_change_fact_count if checkpoint is not None else 0
+        )
+        state = _NormalizeState(
+            seen_call_ids=set(raw_prefix_call_ids),
+            file_change_fact_count=raw_prefix_file_change_fact_count,
+        )
         events = tuple(
             _normalize(
                 raw_event=record,
@@ -79,7 +126,10 @@ class CodexImporter:
                 session_id=session_id,
                 state=state,
             )
-            for index, (record, raw_event_sha256) in enumerate(records)
+            for index, (record, raw_event_sha256) in enumerate(
+                scan.records,
+                start=resumed_from,
+            )
         )
         return AgentTrace(
             trace_id=stable_id("trace", self.provider, session_id),
@@ -87,7 +137,11 @@ class CodexImporter:
             session_id=session_id,
             source_path=str(observed_path),
             source_sha256=source_sha256,
-            raw_event_count=len(records),
+            raw_event_count=scan.raw_event_count,
+            resumed_from_raw_event_index=resumed_from,
+            raw_prefix_sha256=scan.prefix_sha256,
+            raw_prefix_call_ids=raw_prefix_call_ids,
+            raw_prefix_file_change_fact_count=raw_prefix_file_change_fact_count,
             events=events,
         )
 
@@ -169,27 +223,50 @@ def _safe_open_error(source_path: Path, error: OSError) -> Exception:
     return error
 
 
-def _parse_jsonl(source: bytes, *, source_path: Path) -> list[RawRecord]:
+def _scan_jsonl(
+    source: bytes,
+    *,
+    source_path: Path,
+    start_raw_event_index: int,
+) -> _RawScan:
+    if start_raw_event_index < 0:
+        raise TraceParseError("Codex checkpoint raw-event index must not be negative")
     records: list[RawRecord] = []
+    raw_event_count = 0
+    prefix_sha256 = EMPTY_RAW_PREFIX_SHA256
     for line_number, line in enumerate(io.BytesIO(source), start=1):
         line = line.removesuffix(b"\n").removesuffix(b"\r")
         if not line.strip():
             continue
-        if len(records) >= _MAX_RAW_EVENTS:
+        if raw_event_count >= _MAX_RAW_EVENTS:
             raise TraceParseError(
                 f"Codex source exceeds the {_MAX_RAW_EVENTS}-event import limit: {source_path}"
             )
+        raw_event_sha256 = hashlib.sha256(line).hexdigest()
+        if raw_event_count < start_raw_event_index:
+            prefix_sha256 = extend_raw_prefix_sha256(prefix_sha256, raw_event_sha256)
+            raw_event_count += 1
+            continue
         try:
             value = json.loads(line)
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise TraceParseError(f"Invalid Codex JSONL at {source_path}:{line_number}") from exc
         if not isinstance(value, dict):
             raise TraceParseError(f"Codex record at {source_path}:{line_number} is not an object")
-        records.append((value, hashlib.sha256(line).hexdigest()))
-    return records
+        records.append((value, raw_event_sha256))
+        raw_event_count += 1
+    if raw_event_count < start_raw_event_index:
+        raise TraceParseError(
+            f"Codex source is truncated before committed checkpoint: {source_path}"
+        )
+    return _RawScan(
+        records=tuple(records),
+        raw_event_count=raw_event_count,
+        prefix_sha256=prefix_sha256,
+    )
 
 
-def _session_id(records: list[RawRecord], *, fallback: str) -> str:
+def _session_id(records: tuple[RawRecord, ...], *, fallback: str) -> str:
     if records:
         record, _raw_event_sha256 = records[0]
         if record.get("type") != "session_meta":
@@ -210,6 +287,17 @@ def _validated_session_id(value: str) -> str:
     if _contains_unsafe_text_character(value):
         raise TraceParseError("Codex session id contains an unsafe control or line separator")
     return value
+
+
+def _validate_checkpoint(checkpoint: ImportCheckpoint) -> None:
+    if checkpoint.committed_raw_event_index < -1:
+        raise TraceParseError("Codex committed raw-event index is invalid")
+    if not 0 <= checkpoint.resume_raw_event_index <= checkpoint.committed_raw_event_index + 1:
+        raise TraceParseError("Codex resume checkpoint is outside the committed cursor")
+    if not 0 <= checkpoint.resume_file_change_fact_count <= _MAX_SESSION_FILE_CHANGE_FACTS:
+        raise TraceParseError("Codex checkpoint file-change count is outside the import limit")
+    if len(checkpoint.resume_call_ids) != len(set(checkpoint.resume_call_ids)):
+        raise TraceParseError("Codex checkpoint contains duplicate call IDs")
 
 
 def _normalize(
