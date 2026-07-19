@@ -1,15 +1,18 @@
 import json
 import shutil
 import sqlite3
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Barrier
 
 import pytest
 
+import codecairn.importers.codex as codex_module
+import codecairn.storage.markdown as markdown_module
 from codecairn.bootstrap import create_runtime
 from codecairn.importers import TraceParseError
-from codecairn.memory.models import ImportResult
+from codecairn.memory.models import CodingMemory, ImportResult, MemoryRepairPlan
 from codecairn.service.runtime import MemoryRuntime
 from codecairn.storage.markdown import MarkdownMemoryStore
 
@@ -163,6 +166,416 @@ def test_repeating_an_import_is_idempotent(tmp_path: Path) -> None:
     assert repeated.skipped_memory_count == 1
     assert len(runtime.list_memories(repo_key="acme/widgets")) == 1
     assert markdown_path.stat().st_ino == original_inode
+
+
+def test_repeat_import_resumes_from_last_active_task_checkpoint(tmp_path: Path) -> None:
+    runtime = create_runtime(tmp_path / "runtime")
+
+    initial = runtime.import_session(
+        FIXTURES / "apply_patch_session.jsonl",
+        repo_key="acme/widgets",
+    )
+    repeated = runtime.import_session(
+        FIXTURES / "apply_patch_session.jsonl",
+        repo_key="acme/widgets",
+    )
+
+    assert initial.resumed_from_raw_event_index == 0
+    assert initial.processed_raw_event_count == 11
+    assert repeated.resumed_from_raw_event_index == 8
+    assert repeated.processed_raw_event_count == 3
+    assert repeated.created_memory_count == 0
+    assert repeated.skipped_memory_count == 1
+
+
+def test_missing_markdown_is_repaired_once_and_audited(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    markdown_path = Path(memory.markdown_path)
+    expected_content = markdown_path.read_text(encoding="utf-8")
+    markdown_path.unlink()
+
+    repaired = runtime.import_session(
+        FIXTURES / "failed_command.jsonl",
+        repo_key="acme/widgets",
+    )
+    repeated = runtime.import_session(
+        FIXTURES / "failed_command.jsonl",
+        repo_key="acme/widgets",
+    )
+
+    assert repaired.repaired_memory_count == 1
+    assert repeated.repaired_memory_count == 0
+    assert markdown_path.read_text(encoding="utf-8") == expected_content
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        audit = connection.execute(
+            """
+            SELECT reason, status, COUNT(*)
+            FROM recovery_audit
+            GROUP BY reason, status
+            """
+        ).fetchone()
+    assert audit == ("missing", "completed", 1)
+
+
+def test_concurrent_markdown_recovery_coalesces_one_completed_audit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "runtime"
+    initial = create_runtime(root)
+    initial.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    memory = initial.list_memories(repo_key="acme/widgets")[0]
+    Path(memory.markdown_path).unlink()
+    runtimes = [create_runtime(root) for _ in range(2)]
+    start_repair = Barrier(len(runtimes))
+    for runtime in runtimes:
+        original_repair = runtime._markdown.repair
+
+        def repair_after_barrier(
+            memory: CodingMemory,
+            plan: MemoryRepairPlan,
+            *,
+            _repair: Callable[[CodingMemory, MemoryRepairPlan], CodingMemory] = original_repair,
+        ) -> CodingMemory:
+            start_repair.wait()
+            return _repair(memory, plan)
+
+        monkeypatch.setattr(runtime._markdown, "repair", repair_after_barrier)
+
+    with ThreadPoolExecutor(max_workers=len(runtimes)) as pool:
+        results = list(
+            pool.map(
+                lambda runtime: runtime.import_session(
+                    FIXTURES / "failed_command.jsonl",
+                    repo_key="acme/widgets",
+                ),
+                runtimes,
+            )
+        )
+
+    assert len(results) == 2
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        audits = connection.execute(
+            "SELECT status, COUNT(*) FROM recovery_audit GROUP BY status"
+        ).fetchall()
+    assert audits == [("completed", 1)]
+
+
+def test_truncated_markdown_is_repaired_from_committed_state(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    markdown_path = Path(memory.markdown_path)
+    expected_content = markdown_path.read_text(encoding="utf-8")
+    markdown_path.write_text(expected_content[:32], encoding="utf-8")
+
+    result = runtime.import_session(
+        FIXTURES / "failed_command.jsonl",
+        repo_key="acme/widgets",
+    )
+
+    assert result.repaired_memory_count == 1
+    assert markdown_path.read_text(encoding="utf-8") == expected_content
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        audit = connection.execute("SELECT reason, status FROM recovery_audit").fetchone()
+    assert audit == ("truncated", "completed")
+
+
+def test_unparsable_markdown_is_repaired_from_committed_state(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    markdown_path = Path(memory.markdown_path)
+    expected_content = markdown_path.read_text(encoding="utf-8")
+    lines = expected_content.splitlines()
+    lines[1] = "memory_id: not-json"
+    markdown_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    result = runtime.import_session(
+        FIXTURES / "failed_command.jsonl",
+        repo_key="acme/widgets",
+    )
+
+    assert result.repaired_memory_count == 1
+    assert markdown_path.read_text(encoding="utf-8") == expected_content
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        reason = connection.execute("SELECT reason FROM recovery_audit").fetchone()[0]
+    assert reason == "unparsable"
+
+
+def test_parseable_hash_mismatch_is_repaired_from_committed_state(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    markdown_path = Path(memory.markdown_path)
+    expected_content = markdown_path.read_text(encoding="utf-8")
+    markdown_path.write_text(expected_content + "\n", encoding="utf-8")
+
+    result = runtime.import_session(
+        FIXTURES / "failed_command.jsonl",
+        repo_key="acme/widgets",
+    )
+
+    assert result.repaired_memory_count == 1
+    assert markdown_path.read_text(encoding="utf-8") == expected_content
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        reason = connection.execute("SELECT reason FROM recovery_audit").fetchone()[0]
+    assert reason == "hash_mismatch"
+
+
+def test_oversized_markdown_is_repaired_without_loading_it(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    markdown_path = Path(memory.markdown_path)
+    expected_content = markdown_path.read_text(encoding="utf-8")
+    expected_size = len(expected_content.encode())
+    monkeypatch.setattr(markdown_module, "_MAX_MARKDOWN_BYTES", expected_size)
+    markdown_path.write_bytes(b"x" * (expected_size + 1))
+
+    result = runtime.import_session(
+        FIXTURES / "failed_command.jsonl",
+        repo_key="acme/widgets",
+    )
+
+    assert result.repaired_memory_count == 1
+    assert markdown_path.read_text(encoding="utf-8") == expected_content
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        audit = connection.execute(
+            "SELECT reason, observed_sha256, status FROM recovery_audit"
+        ).fetchone()
+    assert audit == ("unparsable", None, "completed")
+
+
+def test_interrupted_append_retries_from_the_committed_checkpoint(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "session.jsonl"
+    source.write_text(
+        (FIXTURES / "apply_patch_session.jsonl").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    runtime = create_runtime(tmp_path / "runtime")
+    runtime.import_session(source, repo_key="acme/widgets")
+    appended = (FIXTURES / "failed_command.jsonl").read_text(encoding="utf-8").splitlines()[1:]
+    with source.open("a", encoding="utf-8") as handle:
+        handle.write("\n".join(appended) + "\n")
+    original_commit = runtime._state.commit_import
+
+    def fail_commit(**_kwargs: object) -> int:
+        raise sqlite3.OperationalError("injected checkpoint failure")
+
+    monkeypatch.setattr(runtime._state, "commit_import", fail_commit)
+    with pytest.raises(sqlite3.OperationalError, match="checkpoint failure"):
+        runtime.import_session(source, repo_key="acme/widgets")
+    monkeypatch.setattr(runtime._state, "commit_import", original_commit)
+
+    retried = runtime.import_session(source, repo_key="acme/widgets")
+    repeated = runtime.import_session(source, repo_key="acme/widgets")
+
+    assert retried.resumed_from_raw_event_index == 8
+    assert retried.processed_raw_event_count == 6
+    assert repeated.resumed_from_raw_event_index == 11
+    assert repeated.processed_raw_event_count == 3
+
+
+def test_changed_committed_prefix_is_rejected_without_advancing_cursor(tmp_path: Path) -> None:
+    source = tmp_path / "session.jsonl"
+    source.write_text(
+        (FIXTURES / "apply_patch_session.jsonl").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(source, repo_key="acme/widgets")
+    original = source.read_text(encoding="utf-8")
+    source.write_text(
+        original.replace("Refactor the example", "Rewrite the example"),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(TraceParseError, match="changed before committed checkpoint"):
+        runtime.import_session(source, repo_key="acme/widgets")
+
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        cursor = connection.execute("SELECT committed_raw_event_index FROM imports").fetchone()[0]
+    assert cursor == 10
+
+
+def test_source_truncated_before_checkpoint_is_rejected(tmp_path: Path) -> None:
+    source = tmp_path / "session.jsonl"
+    lines = (FIXTURES / "apply_patch_session.jsonl").read_text(encoding="utf-8").splitlines()
+    source.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    runtime = create_runtime(tmp_path / "runtime")
+    runtime.import_session(source, repo_key="acme/widgets")
+    source.write_text("\n".join(lines[:9]) + "\n", encoding="utf-8")
+
+    with pytest.raises(TraceParseError, match="truncated before committed cursor"):
+        runtime.import_session(source, repo_key="acme/widgets")
+
+
+def test_resumed_suffix_cannot_reuse_call_id_from_committed_prefix(tmp_path: Path) -> None:
+    source = tmp_path / "session.jsonl"
+    source.write_text(
+        (FIXTURES / "apply_patch_session.jsonl").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    runtime = create_runtime(tmp_path / "runtime")
+    runtime.import_session(source, repo_key="acme/widgets")
+    duplicate_call = {
+        "type": "response_item",
+        "payload": {
+            "type": "function_call",
+            "name": "exec_command",
+            "arguments": json.dumps({"cmd": "uv run pytest -x"}),
+            "call_id": "verify-call-001",
+        },
+    }
+    with source.open("a", encoding="utf-8") as handle:
+        handle.write(f"{json.dumps(duplicate_call)}\n")
+
+    with pytest.raises(TraceParseError, match="Duplicate Codex call_id"):
+        runtime.import_session(source, repo_key="acme/widgets")
+
+
+def test_resumed_suffix_keeps_the_committed_file_change_budget(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "session.jsonl"
+    source.write_text(
+        (FIXTURES / "apply_patch_session.jsonl").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    runtime = create_runtime(tmp_path / "runtime")
+    runtime.import_session(source, repo_key="acme/widgets")
+    monkeypatch.setattr(codex_module, "_MAX_SESSION_FILE_CHANGE_FACTS", 4)
+    appended_patch = {
+        "type": "response_item",
+        "payload": {
+            "type": "custom_tool_call",
+            "status": "completed",
+            "call_id": "patch-call-003",
+            "name": "apply_patch",
+            "input": "*** Begin Patch\n*** Add File: over-budget.txt\n+x\n*** End Patch",
+        },
+    }
+    with source.open("a", encoding="utf-8") as handle:
+        handle.write(f"{json.dumps(appended_patch)}\n")
+
+    with pytest.raises(TraceParseError, match="session exceeds the 4-fact import limit"):
+        runtime.import_session(source, repo_key="acme/widgets")
+
+
+def test_started_recovery_audit_is_resumed_after_interruption(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    Path(memory.markdown_path).unlink()
+    plan = runtime._markdown.plan_repair(memory)
+    assert plan is not None
+    audit_id = runtime._state.start_recovery(plan)
+
+    resumed = create_runtime(root).import_session(
+        FIXTURES / "failed_command.jsonl",
+        repo_key="acme/widgets",
+    )
+
+    assert resumed.repaired_memory_count == 1
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        audit = connection.execute("SELECT audit_id, status FROM recovery_audit").fetchone()
+    assert audit == (audit_id, "completed")
+
+
+def test_repaired_file_completes_audit_after_interruption(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    Path(memory.markdown_path).unlink()
+    plan = runtime._markdown.plan_repair(memory)
+    assert plan is not None
+    audit_id = runtime._state.start_recovery(plan)
+    runtime._markdown.repair(memory, plan)
+
+    resumed = create_runtime(root).import_session(
+        FIXTURES / "failed_command.jsonl",
+        repo_key="acme/widgets",
+    )
+
+    assert resumed.repaired_memory_count == 0
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        audit = connection.execute("SELECT audit_id, status FROM recovery_audit").fetchone()
+    assert audit == (audit_id, "completed")
+
+
+def test_failed_recovery_is_audited_without_advancing_cursor(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    Path(memory.markdown_path).unlink()
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        connection.execute(
+            "UPDATE memories SET content_sha256 = ? WHERE memory_id = ?",
+            ("0" * 64, memory.memory_id),
+        )
+
+    with pytest.raises(ValueError, match="Committed recovery state conflicts"):
+        runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        cursor = connection.execute("SELECT committed_raw_event_index FROM imports").fetchone()[0]
+        audit = connection.execute("SELECT status, error_type FROM recovery_audit").fetchone()
+    assert cursor == 3
+    assert audit == ("failed", "ValueError")
+
+
+def test_existing_import_ledger_is_migrated_to_resume_checkpoint_shape(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    root.mkdir()
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        connection.execute(
+            """
+            CREATE TABLE imports (
+                repo_key TEXT NOT NULL,
+                provider TEXT NOT NULL,
+                session_id TEXT NOT NULL,
+                source_path TEXT NOT NULL,
+                source_sha256 TEXT NOT NULL,
+                raw_event_count INTEGER NOT NULL,
+                committed_raw_event_index INTEGER NOT NULL,
+                PRIMARY KEY (repo_key, provider, source_path)
+            )
+            """
+        )
+
+    result = create_runtime(root).import_session(
+        FIXTURES / "failed_command.jsonl",
+        repo_key="acme/widgets",
+    )
+
+    assert result.created_memory_count == 1
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(imports)").fetchall()}
+    assert {
+        "resume_raw_event_index",
+        "resume_prefix_sha256",
+        "resume_call_ids_json",
+        "resume_file_change_fact_count",
+    } <= columns
 
 
 def test_same_trace_is_isolated_between_repositories(tmp_path: Path) -> None:

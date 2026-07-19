@@ -3,14 +3,22 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import stat
 import tempfile
 from dataclasses import replace
 from pathlib import Path
 from typing import cast, get_args
 
-from codecairn.memory.models import CodingMemory, EvidenceReference, MemoryType
+from codecairn.memory.models import (
+    CodingMemory,
+    EvidenceReference,
+    MemoryRepairPlan,
+    MemoryRepairReason,
+    MemoryType,
+)
 
 _MEMORY_TYPES = frozenset(get_args(MemoryType))
+_MAX_MARKDOWN_BYTES = 64 * 1024 * 1024
 _SAFE_BODY: dict[MemoryType, tuple[str, str]] = {
     "debug_episode": ("Debug Episode", "A debugging episode backed by cited raw events."),
     "repository_convention": (
@@ -34,17 +42,7 @@ class MarkdownMemoryStore:
         self._root = root.resolve()
 
     def write(self, memory: CodingMemory) -> CodingMemory:
-        repo_namespace = hashlib.sha256(memory.repo_key.encode()).hexdigest()[:16]
-        path = (
-            self._root
-            / "repos"
-            / repo_namespace
-            / "memories"
-            / memory.memory_type
-            / f"{memory.memory_id}.md"
-        ).resolve()
-        if not path.is_relative_to(self._root):
-            raise ValueError("Markdown target escapes the runtime root")
+        path = self._path_for(memory)
         content = _render(memory)
         content_sha256 = hashlib.sha256(content.encode()).hexdigest()
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -63,11 +61,90 @@ class MarkdownMemoryStore:
             content_sha256=content_sha256,
         )
 
+    def plan_repair(self, memory: CodingMemory) -> MemoryRepairPlan | None:
+        path = self._committed_path(memory)
+        expected_sha256 = _required_content_sha256(memory)
+        try:
+            observed_bytes = _read_markdown_bytes(path, missing_ok=True)
+        except _UnsafeMarkdownFile:
+            return _repair_plan(
+                memory,
+                reason="unparsable",
+                observed_sha256=None,
+            )
+        if observed_bytes is None:
+            return MemoryRepairPlan(
+                repo_key=memory.repo_key,
+                memory_id=memory.memory_id,
+                reason="missing",
+                observed_sha256=None,
+                expected_sha256=expected_sha256,
+            )
+        observed_sha256 = hashlib.sha256(observed_bytes).hexdigest()
+        try:
+            content = observed_bytes.decode("utf-8")
+        except UnicodeDecodeError:
+            return _repair_plan(
+                memory,
+                reason="unparsable",
+                observed_sha256=observed_sha256,
+            )
+        if (
+            not content.startswith("---\n")
+            or "\n---\n" not in content[4:]
+            or not content.endswith("\n")
+        ):
+            return _repair_plan(
+                memory,
+                reason="truncated",
+                observed_sha256=observed_sha256,
+            )
+        try:
+            restored = self.read(path)
+        except (OSError, ValueError):
+            return _repair_plan(
+                memory,
+                reason="unparsable",
+                observed_sha256=observed_sha256,
+            )
+        if observed_sha256 != expected_sha256 or _semantic_identity(restored) != _semantic_identity(
+            memory
+        ):
+            return _repair_plan(
+                memory,
+                reason="hash_mismatch",
+                observed_sha256=observed_sha256,
+            )
+        return None
+
+    def repair(self, memory: CodingMemory, plan: MemoryRepairPlan) -> CodingMemory:
+        current_plan = self.plan_repair(memory)
+        if current_plan is None:
+            return self.read(self._committed_path(memory))
+        if current_plan != plan:
+            raise ValueError(f"Markdown changed during recovery: {memory.memory_id}")
+        content = _render(memory)
+        content_sha256 = hashlib.sha256(content.encode()).hexdigest()
+        if content_sha256 != plan.expected_sha256:
+            raise ValueError(
+                f"Committed recovery state conflicts with Markdown: {memory.memory_id}"
+            )
+        path = self._committed_path(memory)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        _atomic_replace(path, content)
+        restored = self.read(path)
+        if restored.content_sha256 != plan.expected_sha256:
+            raise ValueError(f"Markdown recovery verification failed: {memory.memory_id}")
+        return restored
+
     def read(self, path: Path) -> CodingMemory:
         resolved = path.resolve(strict=True)
         if not resolved.is_relative_to(self._root):
             raise ValueError("Markdown source escapes the runtime root")
-        content = resolved.read_text(encoding="utf-8")
+        source = _read_markdown_bytes(resolved)
+        if source is None:
+            raise FileNotFoundError(resolved)
+        content = source.decode("utf-8")
         attributes = _parse_frontmatter(content)
         evidence = _parse_evidence(attributes["evidence"])
         memory_type = _required_str(attributes, "memory_type")
@@ -86,6 +163,28 @@ class MarkdownMemoryStore:
             markdown_path=str(resolved),
             content_sha256=hashlib.sha256(content.encode()).hexdigest(),
         )
+
+    def _path_for(self, memory: CodingMemory) -> Path:
+        repo_namespace = hashlib.sha256(memory.repo_key.encode()).hexdigest()[:16]
+        path = (
+            self._root
+            / "repos"
+            / repo_namespace
+            / "memories"
+            / memory.memory_type
+            / f"{memory.memory_id}.md"
+        ).resolve()
+        if not path.is_relative_to(self._root):
+            raise ValueError("Markdown target escapes the runtime root")
+        return path
+
+    def _committed_path(self, memory: CodingMemory) -> Path:
+        if memory.markdown_path is None:
+            raise ValueError("Committed memory is missing its Markdown path")
+        path = self._path_for(memory)
+        if Path(memory.markdown_path) != path:
+            raise ValueError(f"Committed Markdown path conflicts with memory: {memory.memory_id}")
+        return path
 
 
 def _render(memory: CodingMemory) -> str:
@@ -229,6 +328,24 @@ def _atomic_create(path: Path, content: str) -> None:
         temporary.unlink(missing_ok=True)
 
 
+def _atomic_replace(path: Path, content: str) -> None:
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        _fsync_directory(path.parent)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 def _fsync_directory(path: Path) -> None:
     directory_descriptor = os.open(path, os.O_RDONLY)
     try:
@@ -263,7 +380,61 @@ def _semantic_identity(memory: CodingMemory) -> tuple[object, ...]:
 
 
 def _file_sha256(path: Path) -> str | None:
+    source = _read_markdown_bytes(path, missing_ok=True)
+    return hashlib.sha256(source).hexdigest() if source is not None else None
+
+
+class _UnsafeMarkdownFile(ValueError):
+    pass
+
+
+def _read_markdown_bytes(path: Path, *, missing_ok: bool = False) -> bytes | None:
+    flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0)
+    flags |= getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
     try:
-        return hashlib.sha256(path.read_bytes()).hexdigest()
+        descriptor = os.open(path, flags)
     except FileNotFoundError:
-        return None
+        if missing_ok:
+            return None
+        raise
+    except OSError as exc:
+        raise _UnsafeMarkdownFile(f"Unsafe Markdown source: {path}") from exc
+    try:
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode):
+            raise _UnsafeMarkdownFile(f"Markdown source is not a regular file: {path}")
+        if metadata.st_size > _MAX_MARKDOWN_BYTES:
+            raise _UnsafeMarkdownFile(
+                f"Markdown source exceeds the {_MAX_MARKDOWN_BYTES}-byte limit: {path}"
+            )
+        with os.fdopen(descriptor, "rb", closefd=False) as handle:
+            source = handle.read(_MAX_MARKDOWN_BYTES + 1)
+    finally:
+        os.close(descriptor)
+    if len(source) > _MAX_MARKDOWN_BYTES:
+        raise _UnsafeMarkdownFile(
+            f"Markdown source exceeds the {_MAX_MARKDOWN_BYTES}-byte limit: {path}"
+        )
+    return source
+
+
+def _required_content_sha256(memory: CodingMemory) -> str:
+    if memory.content_sha256 is None:
+        raise ValueError("Committed memory is missing its content hash")
+    return memory.content_sha256
+
+
+def _repair_plan(
+    memory: CodingMemory,
+    *,
+    reason: MemoryRepairReason,
+    observed_sha256: str | None,
+) -> MemoryRepairPlan:
+    return MemoryRepairPlan(
+        repo_key=memory.repo_key,
+        memory_id=memory.memory_id,
+        reason=reason,
+        observed_sha256=observed_sha256,
+        expected_sha256=_required_content_sha256(memory),
+    )

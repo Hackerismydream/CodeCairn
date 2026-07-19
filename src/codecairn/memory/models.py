@@ -13,6 +13,7 @@ MemoryType = Literal[
     "user_preference",
 ]
 EpisodeOutcome = Literal["success", "failed", "unknown"]
+MemoryRepairReason = Literal["missing", "truncated", "hash_mismatch", "unparsable"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,6 +60,10 @@ class AgentTrace:
     source_path: str
     source_sha256: str
     raw_event_count: int
+    resumed_from_raw_event_index: int
+    raw_prefix_sha256: str
+    raw_prefix_call_ids: tuple[str, ...]
+    raw_prefix_file_change_fact_count: int
     events: tuple[TraceEvent, ...]
 
 
@@ -87,11 +92,39 @@ class CodingMemory:
 
 
 @dataclass(frozen=True, slots=True)
+class ImportCheckpoint:
+    session_id: str
+    committed_raw_event_index: int
+    resume_raw_event_index: int
+    resume_prefix_sha256: str
+    resume_call_ids: tuple[str, ...]
+    resume_file_change_fact_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class MemoryRepairPlan:
+    repo_key: str
+    memory_id: str
+    reason: MemoryRepairReason
+    observed_sha256: str | None
+    expected_sha256: str
+
+
+@dataclass(frozen=True, slots=True)
+class PendingRecoveryAudit:
+    audit_id: int
+    plan: MemoryRepairPlan
+
+
+@dataclass(frozen=True, slots=True)
 class ImportResult:
     provider: str
     session_id: str
     source_sha256: str
     raw_event_count: int
     committed_raw_event_index: int
+    resumed_from_raw_event_index: int
+    processed_raw_event_count: int
     created_memory_count: int
     skipped_memory_count: int
+    repaired_memory_count: int
