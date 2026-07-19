@@ -1,0 +1,12 @@
+{
+  "categories_scored_by_default": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "license": "CC BY-NC 4.0",
+  "name": "LoCoMo 10-conversation ACL 2024 release",
+  "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "url": "https://raw.githubusercontent.com/snap-research/locomo/main/data/locomo10.json"
+}

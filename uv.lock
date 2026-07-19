@@ -60,6 +60,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "lancedb" },
     { name = "pyarrow" },
     { name = "pydantic" },
@@ -69,7 +70,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "httpx" },
     { name = "import-linter" },
     { name = "mypy" },
     { name = "pytest" },
@@ -80,6 +80,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115,<1.0" },
+    { name = "httpx", specifier = ">=0.28,<1.0" },
     { name = "lancedb", specifier = ">=0.34,<0.35" },
     { name = "pyarrow", specifier = ">=25,<26" },
     { name = "pydantic", specifier = ">=2.9,<3.0" },
@@ -89,7 +90,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "httpx", specifier = ">=0.28,<1.0" },
     { name = "import-linter", specifier = ">=2.2,<3.0" },
     { name = "mypy", specifier = ">=1.13,<2.0" },
     { name = "pytest", specifier = ">=8.3,<9.0" },

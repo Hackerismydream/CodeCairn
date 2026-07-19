@@ -1,0 +1,86 @@
+[
+  {
+    "sample_id": "conv-test-1",
+    "conversation": {
+      "speaker_a": "Caroline",
+      "speaker_b": "Melanie",
+      "session_1_date_time": "1:56 pm on 8 May, 2023",
+      "session_1": [
+        {
+          "dia_id": "D1:1",
+          "speaker": "Caroline",
+          "text": "I adopted a beagle named Poppy."
+        },
+        {
+          "dia_id": "D1:2",
+          "speaker": "Melanie",
+          "text": "Poppy sounds wonderful."
+        }
+      ],
+      "session_2_date_time": "9:15 am on 10 June, 2023",
+      "session_2": [
+        {
+          "dia_id": "D2:1",
+          "speaker": "Caroline",
+          "text": "We finished the charity race.",
+          "blip_caption": "Caroline crossing a finish line"
+        }
+      ],
+      "session_3_date_time": "10:00 am on 11 June, 2023"
+    },
+    "qa": [
+      {
+        "question": "What breed is Caroline's dog?",
+        "answer": "A beagle",
+        "evidence": ["D1:1"],
+        "category": 1
+      },
+      {
+        "question": "When did Caroline first mention Poppy?",
+        "answer": "8 May 2023",
+        "evidence": ["D1:1"],
+        "category": 4
+      },
+      {
+        "question": "What medal did Caroline win?",
+        "adversarial_answer": "No medal was mentioned",
+        "evidence": [],
+        "category": 5
+      }
+    ]
+  },
+  {
+    "sample_id": "conv-test-2",
+    "conversation": {
+      "speaker_a": "Maya",
+      "speaker_b": "Noah",
+      "session_1_date_time": "7:30 pm on 1 July, 2023",
+      "session_1": [
+        {
+          "dia_id": "D1:1",
+          "speaker": "Maya",
+          "text": "I start pottery class every Tuesday."
+        },
+        {
+          "dia_id": "D1:2",
+          "speaker": "Noah",
+          "text": "I hope the class goes well."
+        }
+      ]
+    },
+    "qa": [
+      {
+        "question": "How often does Maya attend pottery class?",
+        "answer": "Every Tuesday",
+        "evidence": ["D1:1"],
+        "category": 2
+      },
+      {
+        "question": "What year did Maya mention pottery class?",
+        "answer": 2023,
+        "evidence": ["D1:1"],
+        "category": 3
+      }
+    ]
+  }
+]
