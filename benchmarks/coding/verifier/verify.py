@@ -132,7 +132,7 @@ def task_18() -> None:
 
 
 def task_19() -> None:
-    assert kata.common_prefix(["agent", "agency", "agenda"]) == "age"
+    assert kata.common_prefix(["agent", "agency", "agenda"]) == "agen"
     assert kata.common_prefix(["x"]) == "x"
     assert kata.common_prefix([]) == ""
 
