@@ -3,13 +3,18 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 from codecairn.memory.models import (
     CodingMemory,
     EvidenceReference,
+    GateAudit,
+    GateDecision,
+    GateDecisionReason,
     ImportCheckpoint,
+    MemoryProposal,
     MemoryRepairPlan,
+    MemoryType,
     PendingRecoveryAudit,
 )
 from codecairn.memory.trace import EMPTY_RAW_PREFIX_SHA256, stable_id
@@ -75,6 +80,113 @@ class SQLiteState:
                     observed_sha256=row["observed_sha256"],
                     expected_sha256=row["expected_sha256"],
                 ),
+            )
+            for row in rows
+        )
+
+    def commit_gate_decision(
+        self,
+        decision: GateDecision,
+        *,
+        proposal: MemoryProposal,
+    ) -> None:
+        if proposal.proposal_id != decision.proposal_id or proposal.repo_key != decision.repo_key:
+            raise ValueError("Gate decision does not match its audited proposal")
+        memory = decision.memory
+        if decision.accepted != (memory is not None):
+            raise ValueError("Accepted gate decisions must carry exactly one memory")
+        if memory is not None and memory.repo_key != decision.repo_key:
+            raise ValueError("Gate decision memory crosses repository namespace")
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            if memory is not None:
+                _insert_memory(connection, memory)
+            memory_id = memory.memory_id if memory is not None else None
+            connection.execute(
+                """
+                INSERT INTO gate_audit (
+                    proposal_id, repo_key, memory_type, accepted, reason,
+                    proposal_title, proposal_summary, proposed_quote,
+                    proposed_quote_role,
+                    proposed_fact_ids_json, resolved_fact_ids_json, memory_id
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(repo_key, proposal_id) DO NOTHING
+                """,
+                (
+                    decision.proposal_id,
+                    decision.repo_key,
+                    decision.memory_type,
+                    int(decision.accepted),
+                    decision.reason,
+                    proposal.title,
+                    proposal.summary,
+                    proposal.quote,
+                    proposal.quote_role,
+                    json.dumps(decision.proposed_fact_ids),
+                    json.dumps(decision.resolved_fact_ids),
+                    memory_id,
+                ),
+            )
+            row = connection.execute(
+                """
+                SELECT memory_type, accepted, reason, proposal_title,
+                       proposal_summary, proposed_quote, proposed_quote_role,
+                       proposed_fact_ids_json, resolved_fact_ids_json, memory_id
+                FROM gate_audit
+                WHERE repo_key = ? AND proposal_id = ?
+                """,
+                (decision.repo_key, decision.proposal_id),
+            ).fetchone()
+            expected = (
+                decision.memory_type,
+                int(decision.accepted),
+                decision.reason,
+                proposal.title,
+                proposal.summary,
+                proposal.quote,
+                proposal.quote_role,
+                json.dumps(decision.proposed_fact_ids),
+                json.dumps(decision.resolved_fact_ids),
+                memory_id,
+            )
+            if row is None or tuple(row) != expected:
+                raise ValueError(f"Gate audit conflicts with proposal: {decision.proposal_id}")
+
+    def list_gate_audits(self, *, repo_key: str) -> tuple[GateAudit, ...]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT audit_id, proposal_id, repo_key, memory_type, accepted,
+                       reason, proposal_title, proposal_summary, proposed_quote,
+                       proposed_quote_role, proposed_fact_ids_json,
+                       resolved_fact_ids_json, memory_id
+                FROM gate_audit
+                WHERE repo_key = ?
+                ORDER BY audit_id
+                """,
+                (repo_key,),
+            ).fetchall()
+        return tuple(
+            GateAudit(
+                audit_id=row["audit_id"],
+                proposal_id=row["proposal_id"],
+                repo_key=row["repo_key"],
+                memory_type=cast(MemoryType, row["memory_type"]),
+                accepted=bool(row["accepted"]),
+                reason=cast(GateDecisionReason, row["reason"]),
+                proposal_title=row["proposal_title"],
+                proposal_summary=row["proposal_summary"],
+                proposed_quote=row["proposed_quote"],
+                proposed_quote_role=row["proposed_quote_role"],
+                proposed_fact_ids=_parse_string_tuple(
+                    row["proposed_fact_ids_json"],
+                    field="proposed fact IDs",
+                ),
+                resolved_fact_ids=_parse_string_tuple(
+                    row["resolved_fact_ids_json"],
+                    field="resolved fact IDs",
+                ),
+                memory_id=row["memory_id"],
             )
             for row in rows
         )
@@ -194,45 +306,7 @@ class SQLiteState:
             if prior is not None and committed_raw_event_index < prior["committed_raw_event_index"]:
                 raise ValueError("Committed import cursor must not move backwards")
             for memory in memories:
-                if memory.markdown_path is None or memory.content_sha256 is None:
-                    raise ValueError("Cannot commit a memory before Markdown persistence")
-                cursor = connection.execute(
-                    """
-                    INSERT INTO memories (
-                        repo_key, memory_id, memory_type, title, summary,
-                        episode_id, command, exit_code, evidence_json,
-                        markdown_path, content_sha256
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ON CONFLICT(repo_key, memory_id) DO NOTHING
-                    """,
-                    (
-                        memory.repo_key,
-                        memory.memory_id,
-                        memory.memory_type,
-                        memory.title,
-                        memory.summary,
-                        memory.episode_id,
-                        memory.command,
-                        memory.exit_code,
-                        json.dumps([_evidence_dict(item) for item in memory.evidence]),
-                        memory.markdown_path,
-                        memory.content_sha256,
-                    ),
-                )
-                created_count += cursor.rowcount
-                if cursor.rowcount == 0:
-                    stored = connection.execute(
-                        """
-                        SELECT content_sha256
-                        FROM memories
-                        WHERE repo_key = ? AND memory_id = ?
-                        """,
-                        (memory.repo_key, memory.memory_id),
-                    ).fetchone()
-                    if stored is None or stored["content_sha256"] != memory.content_sha256:
-                        raise ValueError(
-                            f"Committed memory conflicts with candidate: {memory.memory_id}"
-                        )
+                created_count += _insert_memory(connection, memory)
             connection.execute(
                 """
                 INSERT INTO imports (
@@ -272,7 +346,7 @@ class SQLiteState:
             rows = connection.execute(
                 """
                 SELECT memory_id, memory_type, title, summary, episode_id,
-                       command, exit_code, evidence_json, markdown_path,
+                       command, exit_code, evidence_json, fact_ids_json, markdown_path,
                        content_sha256
                 FROM memories
                 WHERE repo_key = ?
@@ -298,6 +372,7 @@ class SQLiteState:
                     command TEXT,
                     exit_code INTEGER,
                     evidence_json TEXT NOT NULL,
+                    fact_ids_json TEXT NOT NULL DEFAULT '[]',
                     markdown_path TEXT NOT NULL,
                     content_sha256 TEXT NOT NULL,
                     PRIMARY KEY (repo_key, memory_id)
@@ -327,6 +402,22 @@ class SQLiteState:
                     status TEXT NOT NULL CHECK (status IN ('started', 'completed', 'failed')),
                     error_type TEXT
                 );
+                CREATE TABLE IF NOT EXISTS gate_audit (
+                    audit_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    proposal_id TEXT NOT NULL,
+                    repo_key TEXT NOT NULL,
+                    memory_type TEXT NOT NULL,
+                    accepted INTEGER NOT NULL CHECK (accepted IN (0, 1)),
+                    reason TEXT NOT NULL,
+                    proposal_title TEXT NOT NULL,
+                    proposal_summary TEXT NOT NULL,
+                    proposed_quote TEXT,
+                    proposed_quote_role TEXT,
+                    proposed_fact_ids_json TEXT NOT NULL,
+                    resolved_fact_ids_json TEXT NOT NULL,
+                    memory_id TEXT,
+                    UNIQUE (repo_key, proposal_id)
+                );
                 CREATE UNIQUE INDEX IF NOT EXISTS recovery_audit_active_operation
                 ON recovery_audit(operation_key)
                 WHERE status = 'started';
@@ -354,6 +445,13 @@ class SQLiteState:
                     "ALTER TABLE imports "
                     "ADD COLUMN resume_file_change_fact_count INTEGER NOT NULL DEFAULT 0"
                 )
+            memory_columns = {
+                row["name"] for row in connection.execute("PRAGMA table_info(memories)").fetchall()
+            }
+            if "fact_ids_json" not in memory_columns:
+                connection.execute(
+                    "ALTER TABLE memories ADD COLUMN fact_ids_json TEXT NOT NULL DEFAULT '[]'"
+                )
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self._path)
@@ -373,10 +471,57 @@ def _evidence_dict(evidence: EvidenceReference) -> dict[str, object]:
     }
 
 
+def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
+    if memory.markdown_path is None or memory.content_sha256 is None:
+        raise ValueError("Cannot commit a memory before Markdown persistence")
+    cursor = connection.execute(
+        """
+        INSERT INTO memories (
+            repo_key, memory_id, memory_type, title, summary,
+            episode_id, command, exit_code, evidence_json, fact_ids_json,
+            markdown_path, content_sha256
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(repo_key, memory_id) DO NOTHING
+        """,
+        (
+            memory.repo_key,
+            memory.memory_id,
+            memory.memory_type,
+            memory.title,
+            memory.summary,
+            memory.episode_id,
+            memory.command,
+            memory.exit_code,
+            json.dumps([_evidence_dict(item) for item in memory.evidence]),
+            json.dumps(memory.fact_ids),
+            memory.markdown_path,
+            memory.content_sha256,
+        ),
+    )
+    if cursor.rowcount == 0:
+        stored = connection.execute(
+            """
+            SELECT content_sha256
+            FROM memories
+            WHERE repo_key = ? AND memory_id = ?
+            """,
+            (memory.repo_key, memory.memory_id),
+        ).fetchone()
+        if stored is None or stored["content_sha256"] != memory.content_sha256:
+            raise ValueError(f"Committed memory conflicts with candidate: {memory.memory_id}")
+    return cursor.rowcount
+
+
 def _parse_call_ids(value: str) -> tuple[str, ...]:
+    return _parse_string_tuple(value, field="import checkpoint call IDs")
+
+
+def _parse_string_tuple(value: str, *, field: str) -> tuple[str, ...]:
     parsed = json.loads(value)
     if not isinstance(parsed, list) or not all(isinstance(item, str) for item in parsed):
-        raise ValueError("Import checkpoint call IDs are invalid")
+        raise ValueError(f"{field.capitalize()} are invalid")
+    if len(parsed) != len(set(parsed)):
+        raise ValueError(f"{field.capitalize()} must be unique")
     return tuple(parsed)
 
 
@@ -392,6 +537,7 @@ def _memory_from_row(repo_key: str, row: sqlite3.Row) -> CodingMemory:
         command=row["command"],
         exit_code=row["exit_code"],
         evidence=evidence,
+        fact_ids=_parse_string_tuple(row["fact_ids_json"], field="memory fact IDs"),
         markdown_path=row["markdown_path"],
         content_sha256=row["content_sha256"],
     )

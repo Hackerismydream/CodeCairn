@@ -160,6 +160,7 @@ class MarkdownMemoryStore:
             command=_optional_str(attributes, "command"),
             exit_code=_optional_int(attributes, "exit_code"),
             evidence=evidence,
+            fact_ids=_optional_string_tuple(attributes, "fact_ids"),
             markdown_path=str(resolved),
             content_sha256=hashlib.sha256(content.encode()).hexdigest(),
         )
@@ -195,6 +196,7 @@ def _render(memory: CodingMemory) -> str:
         if memory.exit_code is not None
         else ""
     )
+    fact_ids = f"fact_ids: {json.dumps(memory.fact_ids)}\n" if memory.fact_ids else ""
     return (
         "---\n"
         f"memory_id: {json.dumps(memory.memory_id)}\n"
@@ -206,6 +208,7 @@ def _render(memory: CodingMemory) -> str:
         f"command: {json.dumps(memory.command)}\n"
         f"exit_code: {json.dumps(memory.exit_code)}\n"
         f"evidence: {json.dumps(evidence, sort_keys=True)}\n"
+        f"{fact_ids}"
         "---\n\n"
         f"# {heading}\n\n"
         f"{description}\n\n"
@@ -305,6 +308,15 @@ def _optional_int(values: dict[str, object], key: str) -> int | None:
     return value
 
 
+def _optional_string_tuple(values: dict[str, object], key: str) -> tuple[str, ...]:
+    value = values.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        raise ValueError(f"Memory field {key!r} must be a string list")
+    if len(value) != len(set(value)):
+        raise ValueError(f"Memory field {key!r} must contain unique values")
+    return tuple(value)
+
+
 def _atomic_create(path: Path, content: str) -> None:
     descriptor, temporary_name = tempfile.mkstemp(
         dir=path.parent,
@@ -375,6 +387,7 @@ def _semantic_identity(memory: CodingMemory) -> tuple[object, ...]:
         memory.episode_id,
         memory.command,
         memory.exit_code,
+        memory.fact_ids,
         evidence,
     )
 

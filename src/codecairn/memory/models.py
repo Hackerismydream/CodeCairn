@@ -14,6 +14,18 @@ MemoryType = Literal[
 ]
 EpisodeOutcome = Literal["success", "failed", "unknown"]
 MemoryRepairReason = Literal["missing", "truncated", "hash_mismatch", "unparsable"]
+EvidenceFactKind = Literal["user_quote", "repository_rule", "repeated_trace"]
+GateDecisionReason = Literal[
+    "accepted",
+    "duplicate_fact_id",
+    "missing_fact",
+    "cross_repository_evidence",
+    "unsupported_memory_type",
+    "preference_requires_quote",
+    "preference_requires_user_role",
+    "quote_not_exact_source_substring",
+    "convention_requires_grounding",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,6 +37,17 @@ class EvidenceReference:
     raw_event_index: int
     raw_event_type: str
     call_id: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class EvidenceFact:
+    fact_id: str
+    repo_key: str
+    episode_id: str
+    kind: EvidenceFactKind
+    text: str
+    role: str | None
+    evidence: tuple[EvidenceReference, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -88,8 +111,50 @@ class CodingMemory:
     command: str | None
     exit_code: int | None
     evidence: tuple[EvidenceReference, ...]
+    fact_ids: tuple[str, ...] = ()
     markdown_path: str | None = None
     content_sha256: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class MemoryProposal:
+    proposal_id: str
+    repo_key: str
+    memory_type: MemoryType
+    title: str
+    summary: str
+    fact_ids: tuple[str, ...]
+    quote: str | None = None
+    quote_role: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class GateDecision:
+    proposal_id: str
+    repo_key: str
+    memory_type: MemoryType
+    accepted: bool
+    reason: GateDecisionReason
+    proposed_fact_ids: tuple[str, ...]
+    resolved_fact_ids: tuple[str, ...]
+    memory: CodingMemory | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class GateAudit:
+    audit_id: int
+    proposal_id: str
+    repo_key: str
+    memory_type: MemoryType
+    accepted: bool
+    reason: GateDecisionReason
+    proposal_title: str
+    proposal_summary: str
+    proposed_quote: str | None
+    proposed_quote_role: str | None
+    proposed_fact_ids: tuple[str, ...]
+    resolved_fact_ids: tuple[str, ...]
+    memory_id: str | None
 
 
 @dataclass(frozen=True, slots=True)
