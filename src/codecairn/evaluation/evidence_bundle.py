@@ -770,52 +770,32 @@ def _render_resume_zh(metrics: dict[str, object]) -> str:
     claims = _claim_map(metrics)
     counts = _required_dict(metrics.get("counts"), field="counts")
     pending = _required_list(metrics.get("pending"), field="pending")
-    architecture = (
-        "- 独立实现面向 Coding Agent 的可审计长期记忆运行时, 采用 Markdown 真相源, "
-        "SQLite 状态库与 LanceDB 混合检索, 支持证据门控和断点续传; 建立 "
-        f"{_claim_value(claims, 'test_count', 0)} 项自动化测试, 覆盖率 "
-        f"{_claim_value(claims, 'coverage_percent', 2)}%."
+    pending_lines = "\n".join(
+        f"- {_required_str(_required_dict(item, field='pending'), 'measurement')}: pending."
+        for item in pending
     )
-    retrieval = (
-        f"- 在 {counts['retrieval_query_count']} 条跨仓库隔离查询上取得 Recall@5 "
-        f"{_claim_value(claims, 'retrieval_recall_at_5', 0)}%, MRR "
-        f"{_claim_value(claims, 'retrieval_mrr', 3)}, P95 延迟 "
-        f"{_claim_value(claims, 'retrieval_p95_latency_ms', 2)} ms; 删除索引后从 Markdown "
-        f"重建一致率 {_claim_value(claims, 'rebuild_consistency', 0)}%."
-    )
-    coding = (
-        f"- 完成 {counts['coding_run_count']} 次隐藏验证器 CodingMemoryBench 隔离实验; "
-        "memory-on 将任务通过率由 "
-        f"{_claim_value(claims, 'coding_pass_rate_off', 0)}% 提升至 "
-        f"{_claim_value(claims, 'coding_pass_rate_on', 0)}% (+"
-        f"{_claim_value(claims, 'coding_pass_rate_delta_pp', 0)} 个百分点), 总 token 下降 "
-        f"{_claim_value(claims, 'coding_token_reduction', 2)}%, 首次有效动作步数下降 "
-        f"{_claim_value(claims, 'coding_first_action_reduction', 2)}%."
-    )
-    locomo = (
-        f"- 导入 LoCoMo 官方全部 {counts['locomo_conversation_count']} 个会话样本 ("
-        f"{counts['locomo_session_count']} 个 session, {counts['locomo_turn_count']} 条 turn), "
-        f"生成 {counts['accepted_memory_count']} 条证据记忆, 记录 "
-        f"{counts['rejected_memory_count']} 条门控拒绝; 完成明确不计分的 "
-        f"{counts['locomo_question_run_count']} 问端到端 smoke, 基础设施失败为 0."
-    )
-    return "\n".join(
-        [
-            "# 简历证据 — CodeCairn",
-            "",
-            architecture,
-            retrieval,
-            coding,
-            locomo,
-            "",
-            "## 待完成——不可写成已测指标",
-            "",
-            *[
-                f"- {_required_str(_required_dict(item, field='pending'), 'measurement')}: 待完成."
-                for item in pending
-            ],
-            "",
-        ]
+    template = Path(__file__).with_name("templates") / "resume.zh-CN.md"
+    return template.read_text(encoding="utf-8").format(
+        test_count=_claim_value(claims, "test_count", 0),
+        coverage_percent=_claim_value(claims, "coverage_percent", 2),
+        retrieval_query_count=counts["retrieval_query_count"],
+        retrieval_recall_at_5=_claim_value(claims, "retrieval_recall_at_5", 0),
+        retrieval_mrr=_claim_value(claims, "retrieval_mrr", 3),
+        retrieval_p95_latency_ms=_claim_value(claims, "retrieval_p95_latency_ms", 2),
+        rebuild_consistency=_claim_value(claims, "rebuild_consistency", 0),
+        coding_run_count=counts["coding_run_count"],
+        coding_pass_rate_off=_claim_value(claims, "coding_pass_rate_off", 0),
+        coding_pass_rate_on=_claim_value(claims, "coding_pass_rate_on", 0),
+        coding_pass_rate_delta_pp=_claim_value(claims, "coding_pass_rate_delta_pp", 0),
+        coding_token_reduction=_claim_value(claims, "coding_token_reduction", 2),
+        coding_first_action_reduction=_claim_value(claims, "coding_first_action_reduction", 2),
+        locomo_conversation_count=counts["locomo_conversation_count"],
+        locomo_session_count=counts["locomo_session_count"],
+        locomo_turn_count=counts["locomo_turn_count"],
+        accepted_memory_count=counts["accepted_memory_count"],
+        rejected_memory_count=counts["rejected_memory_count"],
+        locomo_question_run_count=counts["locomo_question_run_count"],
+        pending_lines=pending_lines,
     )
 
 
