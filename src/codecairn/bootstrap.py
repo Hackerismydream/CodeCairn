@@ -1,11 +1,20 @@
 """Composition root for the local CodeCairn runtime."""
 
+import os
+import shutil
+from dataclasses import asdict
 from pathlib import Path
 
 from codecairn.entrypoints.cli import build_app
 from codecairn.importers.session import SessionImporter
 from codecairn.memory.embedding import HashingEmbedder
 from codecairn.memory.evidence import EvidenceGate
+from codecairn.service.application import (
+    ApplicationOperations,
+    CodeCairnApplication,
+    EvaluationReportRequest,
+    EvaluationRunRequest,
+)
 from codecairn.service.cascade import MemoryIndex, MiniCascade
 from codecairn.service.recall import RecallEngine
 from codecairn.service.runtime import MemoryRuntime
@@ -42,7 +51,207 @@ def create_cascade(root: Path, *, index: MemoryIndex | None = None) -> MiniCasca
     )
 
 
-app = build_app(create_runtime)
+class _LocalOperations(ApplicationOperations):
+    def __init__(self, root: Path) -> None:
+        self._root = root.resolve()
+
+    def doctor(self) -> dict[str, object]:
+        truth = MarkdownMemoryStore(self._root).scan()
+        state = SQLiteState(self._root / "state.sqlite3")
+        ledger = state.operational_counts()
+        queue = create_cascade(self._root).health()
+        truth_fingerprints = {
+            (memory.repo_key, memory.memory_id, memory.content_sha256 or "")
+            for memory in truth.memories
+        }
+        index_path = self._root / "index.lancedb"
+        index_error: str | None = None
+        try:
+            index_fingerprints = (
+                LanceMemoryIndex(index_path).fingerprints() if index_path.exists() else set()
+            )
+        except Exception as error:
+            index_fingerprints = set()
+            index_error = type(error).__name__
+        markdown_ready = not truth.issues
+        index_ready = (
+            index_error is None
+            and index_fingerprints == truth_fingerprints
+            and queue.pending == 0
+            and queue.leased == 0
+            and queue.failed == 0
+            and queue.stale == 0
+        )
+        provider_status = _provider_status()
+        status = (
+            "healthy"
+            if markdown_ready and index_ready and ledger.pending_recovery_count == 0
+            else "degraded"
+        )
+        return {
+            "schema_version": 1,
+            "status": status,
+            "markdown_truth": {
+                "ready": markdown_ready,
+                "memory_count": len(truth.memories),
+                "issue_count": len(truth.issues),
+                "issues": [asdict(issue) for issue in truth.issues],
+            },
+            "import_ledger": asdict(ledger),
+            "index_queue": asdict(queue),
+            "index": {
+                "ready": index_ready,
+                "fingerprint_count": len(index_fingerprints),
+                "truth_fingerprint_count": len(truth_fingerprints),
+                "error_type": index_error,
+            },
+            "providers": provider_status,
+        }
+
+    def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]:
+        output_root = request.output_root.resolve() / request.suite
+        if request.suite == "retrieval":
+            from codecairn.evaluation.retrieval import (
+                RetrievalRunConfig,
+                run_retrieval_evaluation,
+            )
+
+            retrieval_artifact = run_retrieval_evaluation(
+                RetrievalRunConfig(
+                    corpus_path=request.input_path / "corpus.json",
+                    queries_path=request.input_path / "queries.json",
+                    output_root=output_root,
+                    run_id=request.run_id,
+                    repository_commit=request.repository_commit,
+                )
+            )
+            return retrieval_artifact.summary
+        if request.suite == "recovery":
+            from codecairn.evaluation.retrieval import RecoveryRunConfig, run_recovery_suite
+
+            recovery_artifact = run_recovery_suite(
+                RecoveryRunConfig(
+                    source_fixture=request.input_path,
+                    output_root=output_root,
+                    run_id=request.run_id,
+                    repository_commit=request.repository_commit,
+                )
+            )
+            return recovery_artifact.summary
+        if request.suite == "coding":
+            from codecairn.evaluation.coding import (
+                CodexExecAgent,
+                CodingRunConfig,
+                run_coding_evaluation,
+            )
+
+            if request.model is None:
+                raise ValueError("Coding evaluation requires an explicit model")
+            coding_artifact = run_coding_evaluation(
+                CodingRunConfig(
+                    suite_path=request.input_path,
+                    output_root=output_root,
+                    experiment_id=request.run_id,
+                    repository_commit=request.repository_commit,
+                    max_workers=request.max_workers,
+                ),
+                agent=CodexExecAgent(model=request.model),
+            )
+            return coding_artifact.summary
+        return self._run_locomo(request, output_root=output_root)
+
+    def report_evaluation(self, request: EvaluationReportRequest) -> dict[str, object]:
+        if request.suite == "locomo":
+            from codecairn.evaluation.locomo import report_locomo
+
+            return report_locomo(request.run_dir)
+        if request.suite == "coding":
+            from codecairn.evaluation.coding import report_coding_runs
+
+            return report_coding_runs(request.run_dir)
+        from codecairn.evaluation.retrieval import report_recovery, report_retrieval
+
+        if request.suite == "retrieval":
+            return report_retrieval(request.run_dir)
+        return report_recovery(request.run_dir)
+
+    def _run_locomo(
+        self,
+        request: EvaluationRunRequest,
+        *,
+        output_root: Path,
+    ) -> dict[str, object]:
+        from codecairn.evaluation.locomo import (
+            CodeCairnConversationMemory,
+            LoCoMoRunConfig,
+            run_locomo,
+        )
+        from codecairn.evaluation.providers import OpenAICompatibleTextModel
+
+        base_url = os.environ.get("CODECAIRN_OPENAI_BASE_URL", "")
+        api_key = os.environ.get("CODECAIRN_OPENAI_API_KEY", "")
+        model_id = request.model or os.environ.get("CODECAIRN_OPENAI_MODEL", "")
+        if not base_url or not api_key or not model_id:
+            raise RuntimeError("LoCoMo requires configured OpenAI-compatible provider settings")
+        model = OpenAICompatibleTextModel(
+            base_url=base_url,
+            api_key=api_key,
+            model=model_id,
+        )
+
+        def memory_factory(root: Path) -> CodeCairnConversationMemory:
+            return CodeCairnConversationMemory(
+                runtime=create_runtime(root),
+                cascade=create_cascade(root),
+                repo_key=f"locomo/{root.name}",
+            )
+
+        artifact = run_locomo(
+            LoCoMoRunConfig(
+                dataset_path=request.input_path,
+                output_root=output_root,
+                run_id=request.run_id,
+                repository_commit=request.repository_commit,
+                mode=request.mode,
+            ),
+            memory_factory=memory_factory,
+            answer_model=model,
+            judge_model=model if request.mode == "full" else None,
+        )
+        return artifact.summary
+
+
+def create_application(root: Path) -> CodeCairnApplication:
+    resolved = root.resolve()
+    return CodeCairnApplication(
+        runtime=create_runtime(resolved),
+        operations=_LocalOperations(resolved),
+    )
+
+
+def _provider_status() -> dict[str, object]:
+    codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
+    return {
+        "codex_cli": {
+            "configured": shutil.which("codex") is not None
+            and (codex_home / "auth.json").is_file(),
+            "executable_available": shutil.which("codex") is not None,
+            "authentication_available": (codex_home / "auth.json").is_file(),
+        },
+        "openai_compatible": {
+            "configured": all(
+                os.environ.get(name)
+                for name in (
+                    "CODECAIRN_OPENAI_BASE_URL",
+                    "CODECAIRN_OPENAI_API_KEY",
+                    "CODECAIRN_OPENAI_MODEL",
+                )
+            )
+        },
+    }
+
+
+app = build_app(create_application)
 
 
 def main() -> None:

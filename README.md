@@ -48,6 +48,61 @@ uv run codecairn list --repo-key owner/repository --root .codecairn
 Runtime state is ignored by Git because it can contain source paths, commands,
 and evidence text.
 
+## Local CLI and HTTP
+
+Install the package from a checkout, or run the same commands through `uv`:
+
+```bash
+uv tool install .
+codecairn --help
+codecairn recall "pytest command failed" \
+  --repo-key owner/repository \
+  --root .codecairn
+codecairn doctor --root .codecairn
+```
+
+The evaluation command dispatches all three independent evidence suites plus
+the recovery suite through the same application interface used by HTTP. Inputs
+and output roots are explicit; every run identifier is immutable.
+
+```bash
+codecairn eval run retrieval benchmarks/retrieval \
+  --run-id retrieval-<commit> \
+  --repository-commit <commit> \
+  --output-root artifacts
+codecairn eval report retrieval artifacts/retrieval/retrieval-<commit>
+```
+
+The HTTP server binds only to trusted loopback by default. It refuses a remote
+bind and accepts import or evaluation inputs only below configured source
+roots. Configure it without putting secrets on the command line:
+
+```bash
+export CODECAIRN_RUNTIME_ROOT="$PWD/.codecairn"
+export CODECAIRN_ARTIFACT_ROOT="$PWD/artifacts"
+export CODECAIRN_SOURCE_ROOTS="$PWD"
+uv run codecairn-server
+```
+
+LoCoMo runs additionally read `CODECAIRN_OPENAI_BASE_URL`,
+`CODECAIRN_OPENAI_API_KEY`, and `CODECAIRN_OPENAI_MODEL`. Health reports only
+whether all three are configured; it never emits their values.
+
+The six versioned routes cover import, memory list, recall, evaluation run,
+evaluation report, and health. Every error response has the same shape and an
+`x-request-id` response header:
+
+```json
+{
+  "error": {"code": "validation_error", "message": "Request validation failed"},
+  "request_id": "..."
+}
+```
+
+`doctor` and `/api/v1/health` report Markdown truth, Import Ledger counts,
+queue lag, index parity/readiness, and provider configuration separately. They
+never return provider credentials.
+
 Project contracts live in [CONTEXT.md](CONTEXT.md),
 [docs/architecture.md](docs/architecture.md), and [docs/adr/](docs/adr/).
 

@@ -29,6 +29,7 @@ dev = [
 
 [project.scripts]
 codecairn = "codecairn.bootstrap:main"
+codecairn-server = "codecairn.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/codecairn"]

@@ -18,6 +18,7 @@ from codecairn.memory.models import (
     MemoryProposal,
     MemoryRepairPlan,
     MemoryType,
+    OperationalCounts,
     PendingRecoveryAudit,
     ReconcileReport,
     TruthScan,
@@ -87,6 +88,24 @@ class SQLiteState:
                 ),
             )
             for row in rows
+        )
+
+    def operational_counts(self) -> OperationalCounts:
+        with self._connect() as connection:
+            imports = connection.execute(
+                "SELECT COUNT(*) AS count, COALESCE(SUM(raw_event_count), 0) AS events FROM imports"
+            ).fetchone()
+            memories = connection.execute("SELECT COUNT(*) AS count FROM memories").fetchone()
+            audits = connection.execute("SELECT COUNT(*) AS count FROM gate_audit").fetchone()
+            recoveries = connection.execute(
+                "SELECT COUNT(*) AS count FROM recovery_audit WHERE status = 'started'"
+            ).fetchone()
+        return OperationalCounts(
+            import_count=int(imports["count"]),
+            observed_event_count=int(imports["events"]),
+            memory_count=int(memories["count"]),
+            gate_audit_count=int(audits["count"]),
+            pending_recovery_count=int(recoveries["count"]),
         )
 
     def commit_gate_decision(

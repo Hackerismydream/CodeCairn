@@ -240,6 +240,15 @@ class IndexHealth:
 
 
 @dataclass(frozen=True, slots=True)
+class OperationalCounts:
+    import_count: int
+    observed_event_count: int
+    memory_count: int
+    gate_audit_count: int
+    pending_recovery_count: int
+
+
+@dataclass(frozen=True, slots=True)
 class TruthIssue:
     markdown_path: str
     observed_sha256: str | None
