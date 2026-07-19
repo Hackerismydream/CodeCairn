@@ -377,10 +377,15 @@ def _quality_metrics(quality_dir: Path) -> dict[str, object]:
     junit_root = ET.parse(quality_dir / "junit.xml").getroot()
     if junit_root.tag not in {"testsuites", "testsuite"}:
         raise ValueError("JUnit root must be testsuite or testsuites")
-    tests = _xml_int(junit_root.attrib, "tests")
-    failures = _xml_int(junit_root.attrib, "failures")
-    errors = _xml_int(junit_root.attrib, "errors")
-    skipped = _xml_int(junit_root.attrib, "skipped")
+    suites = (
+        [junit_root] if junit_root.tag == "testsuite" else list(junit_root.findall("testsuite"))
+    )
+    if not suites:
+        raise ValueError("JUnit testsuites must contain at least one testsuite")
+    tests = sum(_xml_int(suite.attrib, "tests") for suite in suites)
+    failures = sum(_xml_int(suite.attrib, "failures") for suite in suites)
+    errors = sum(_xml_int(suite.attrib, "errors") for suite in suites)
+    skipped = sum(_xml_int(suite.attrib, "skipped") for suite in suites)
     if failures or errors:
         raise ValueError("Quality artifact contains failed tests")
     return {

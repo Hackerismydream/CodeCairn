@@ -176,7 +176,8 @@ def _make_source_runs(root: Path) -> Path:
 
     write_json_exclusive(root / "coverage.json", {"totals": {"percent_covered": 83.456}})
     (root / "junit.xml").write_text(
-        '<testsuites tests="9" failures="0" errors="0" skipped="1"></testsuites>',
+        '<testsuites><testsuite tests="9" failures="0" errors="0" skipped="1">'
+        "</testsuite></testsuites>",
         encoding="utf-8",
     )
     return root
