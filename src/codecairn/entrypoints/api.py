@@ -44,7 +44,9 @@ class EvaluationRequest(BaseModel):
     repository_commit: str = Field(min_length=1, max_length=128)
     mode: Literal["full", "smoke"] = "full"
     model: str | None = Field(default=None, min_length=1, max_length=128)
+    judge_model: str | None = Field(default=None, min_length=1, max_length=128)
     max_workers: int = Field(default=1, ge=1, le=16)
+    resume: bool = False
 
 
 class _ApiError(Exception):
@@ -238,7 +240,9 @@ def create_app(
                 repository_commit=request.repository_commit,
                 mode=request.mode,
                 model=request.model,
+                judge_model=request.judge_model,
                 max_workers=request.max_workers,
+                resume=request.resume,
             )
         )
 

@@ -82,6 +82,12 @@ Each run has an isolated workspace and immutable manifest. LoCoMo is a benchmark
 adapter over the memory interface; coding-task A/B is a separate agent execution
 adapter over the evaluation interface.
 
+LoCoMo parallelizes only across conversations, whose runtime roots are already
+isolated. Within one conversation, retrieval, answer generation, and repeated
+judge calls retain deterministic order. The checkpoint contract is
+missing-only: resume validates the original manifest and fills absent ingest or
+question artifacts without rewriting completed evidence.
+
 The evidence-bundle reducer sits outside the runtime use cases. It copies only
 public aggregate inputs, recomputes the four suite reports, derives inventory
 counts, and generates recruiting copy from those values. A bundle SHA-256

@@ -98,9 +98,12 @@ export CODECAIRN_SOURCE_ROOTS="$PWD"
 uv run codecairn-server
 ```
 
-LoCoMo runs additionally read `CODECAIRN_OPENAI_BASE_URL`,
-`CODECAIRN_OPENAI_API_KEY`, and `CODECAIRN_OPENAI_MODEL`. Health reports only
-whether all three are configured; it never emits their values.
+LoCoMo runs can use the legacy shared `CODECAIRN_OPENAI_*` settings or
+independent `CODECAIRN_ANSWER_*` and `CODECAIRN_JUDGE_*` settings. For the
+official DeepSeek endpoint, exporting only `DEEPSEEK_API_KEY` defaults both
+roles to `deepseek-v4-pro` with thinking enabled; role-level model, endpoint,
+key, profile, and reasoning-effort variables remain available for controlled
+overrides. Health reports configuration state only and never emits credentials.
 
 The six versioned routes cover import, memory list, recall, evaluation run,
 evaluation report, and health. Every error response has the same shape and an

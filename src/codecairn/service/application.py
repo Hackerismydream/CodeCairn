@@ -19,7 +19,9 @@ class EvaluationRunRequest:
     repository_commit: str
     mode: Literal["full", "smoke"] = "full"
     model: str | None = None
+    judge_model: str | None = None
     max_workers: int = 1
+    resume: bool = False
 
 
 @dataclass(frozen=True, slots=True)

@@ -235,6 +235,31 @@ def test_http_logs_request_id_and_keeps_provider_secrets_out_of_health(
     )
 
 
+def test_http_health_recognizes_deepseek_role_defaults_without_exposing_key(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "deepseek-must-not-appear")
+    client = TestClient(
+        create_app(
+            create_application(tmp_path / "runtime"),
+            source_roots=(FIXTURE.parent,),
+            artifact_root=tmp_path / "artifacts",
+        )
+    )
+
+    response = client.get("/api/v1/health")
+
+    assert response.status_code == 200
+    provider = response.json()["providers"]["openai_compatible"]
+    assert provider == {
+        "configured": True,
+        "answer_configured": True,
+        "judge_configured": True,
+    }
+    assert "deepseek-must-not-appear" not in response.text
+
+
 def test_http_rejects_remote_bind_and_evaluation_symlink_escape(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="trusted loopback"):
         create_app(

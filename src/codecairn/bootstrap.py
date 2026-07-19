@@ -214,17 +214,21 @@ class _LocalOperations(ApplicationOperations):
             LoCoMoRunConfig,
             run_locomo,
         )
-        from codecairn.evaluation.providers import OpenAICompatibleTextModel
+        from codecairn.evaluation.providers import create_locomo_text_model
 
-        base_url = os.environ.get("CODECAIRN_OPENAI_BASE_URL", "")
-        api_key = os.environ.get("CODECAIRN_OPENAI_API_KEY", "")
-        model_id = request.model or os.environ.get("CODECAIRN_OPENAI_MODEL", "")
-        if not base_url or not api_key or not model_id:
-            raise RuntimeError("LoCoMo requires configured OpenAI-compatible provider settings")
-        model = OpenAICompatibleTextModel(
-            base_url=base_url,
-            api_key=api_key,
-            model=model_id,
+        answer_model = create_locomo_text_model(
+            role="answer",
+            environment=os.environ,
+            model_override=request.model,
+        )
+        judge_model = (
+            create_locomo_text_model(
+                role="judge",
+                environment=os.environ,
+                model_override=request.judge_model or request.model,
+            )
+            if request.mode == "full"
+            else None
         )
 
         def memory_factory(root: Path) -> CodeCairnConversationMemory:
@@ -241,10 +245,12 @@ class _LocalOperations(ApplicationOperations):
                 run_id=request.run_id,
                 repository_commit=request.repository_commit,
                 mode=request.mode,
+                max_workers=request.max_workers,
+                resume=request.resume,
             ),
             memory_factory=memory_factory,
-            answer_model=model,
-            judge_model=model if request.mode == "full" else None,
+            answer_model=answer_model,
+            judge_model=judge_model,
         )
         return artifact.summary
 
@@ -259,6 +265,8 @@ def create_application(root: Path) -> CodeCairnApplication:
 
 def _provider_status() -> dict[str, object]:
     codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
+    answer_configured = _provider_role_configured("ANSWER")
+    judge_configured = _provider_role_configured("JUDGE")
     return {
         "codex_cli": {
             "configured": shutil.which("codex") is not None
@@ -267,16 +275,32 @@ def _provider_status() -> dict[str, object]:
             "authentication_available": (codex_home / "auth.json").is_file(),
         },
         "openai_compatible": {
-            "configured": all(
-                os.environ.get(name)
-                for name in (
-                    "CODECAIRN_OPENAI_BASE_URL",
-                    "CODECAIRN_OPENAI_API_KEY",
-                    "CODECAIRN_OPENAI_MODEL",
-                )
-            )
+            "configured": answer_configured and judge_configured,
+            "answer_configured": answer_configured,
+            "judge_configured": judge_configured,
         },
     }
+
+
+def _provider_role_configured(role: str) -> bool:
+    prefix = f"CODECAIRN_{role}_"
+    deepseek_configured = bool(os.environ.get("DEEPSEEK_API_KEY"))
+    base_url = (
+        os.environ.get(f"{prefix}BASE_URL")
+        or os.environ.get("CODECAIRN_OPENAI_BASE_URL")
+        or ("https://api.deepseek.com" if deepseek_configured else "")
+    )
+    api_key = (
+        os.environ.get(f"{prefix}API_KEY")
+        or os.environ.get("CODECAIRN_OPENAI_API_KEY")
+        or os.environ.get("DEEPSEEK_API_KEY")
+    )
+    model = (
+        os.environ.get(f"{prefix}MODEL")
+        or os.environ.get("CODECAIRN_OPENAI_MODEL")
+        or ("deepseek-v4-pro" if deepseek_configured else "")
+    )
+    return bool(base_url and api_key and model)
 
 
 app = build_app(create_application)

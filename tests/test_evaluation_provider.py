@@ -5,7 +5,11 @@ from typing import cast
 import httpx
 import pytest
 
-from codecairn.evaluation.providers import OpenAICompatibleTextModel
+from codecairn.evaluation.providers import (
+    OpenAICompatibleTextModel,
+    TokenPricing,
+    create_locomo_text_model,
+)
 
 
 class FakeResponse:
@@ -17,6 +21,42 @@ class FakeResponse:
             "choices": [{"message": {"content": '{"label":"CORRECT"}'}}],
             "usage": {"prompt_tokens": 12, "completion_tokens": 4},
         }
+
+
+class DeepSeekResponse:
+    def raise_for_status(self) -> None:
+        return None
+
+    def json(self) -> dict[str, object]:
+        return {
+            "choices": [
+                {
+                    "finish_reason": "stop",
+                    "message": {
+                        "content": '{"label":"CORRECT"}',
+                        "reasoning_content": "The answers are equivalent.",
+                    },
+                }
+            ],
+            "usage": {
+                "prompt_tokens": 1_000,
+                "prompt_cache_hit_tokens": 600,
+                "prompt_cache_miss_tokens": 400,
+                "completion_tokens": 200,
+                "completion_tokens_details": {"reasoning_tokens": 150},
+            },
+        }
+
+
+class TruncatedResponse(DeepSeekResponse):
+    def json(self) -> dict[str, object]:
+        payload = super().json()
+        choices = payload["choices"]
+        assert isinstance(choices, list)
+        choice = choices[0]
+        assert isinstance(choice, dict)
+        choice["finish_reason"] = "length"
+        return payload
 
 
 def test_openai_compatible_adapter_keeps_secrets_out_of_public_config(
@@ -67,6 +107,101 @@ def test_openai_compatible_adapter_keeps_secrets_out_of_public_config(
     assert payload["response_format"] == {"type": "json_object"}
 
 
+def test_deepseek_profile_preserves_thinking_usage_and_cny_cost(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_post(
+        url: str,
+        *,
+        headers: dict[str, str],
+        json: dict[str, object],
+        timeout: float,
+    ) -> DeepSeekResponse:
+        captured.update(url=url, headers=headers, json=json, timeout=timeout)
+        return DeepSeekResponse()
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    model = OpenAICompatibleTextModel(
+        base_url="https://api.deepseek.com",
+        api_key="deepseek-secret",
+        model="deepseek-v4-pro",
+        send_seed=False,
+        thinking="enabled",
+        reasoning_effort="high",
+        pricing=TokenPricing(
+            currency="CNY",
+            cached_input_per_million=0.025,
+            uncached_input_per_million=3.0,
+            output_per_million=6.0,
+        ),
+    )
+
+    response = model.generate(
+        system="grade",
+        user="question",
+        seed=19,
+        response_format="json",
+    )
+
+    payload = cast(dict[str, object], captured["json"])
+    assert "seed" not in payload
+    assert payload["thinking"] == {"type": "enabled", "reasoning_effort": "high"}
+    assert response.input_tokens == 1_000
+    assert response.cached_input_tokens == 600
+    assert response.uncached_input_tokens == 400
+    assert response.output_tokens == 200
+    assert response.reasoning_tokens == 150
+    assert response.cost_cny == pytest.approx(0.002415)
+    assert response.cost_usd is None
+    assert model.public_config["thinking"] == "enabled"
+    assert model.public_config["pricing"] == {
+        "cached_input_per_million": 0.025,
+        "currency": "CNY",
+        "output_per_million": 6.0,
+        "uncached_input_per_million": 3.0,
+    }
+    assert "deepseek-secret" not in str(model.public_config)
+
+
+def test_locomo_roles_resolve_independent_deepseek_models_without_exposing_secrets() -> None:
+    environment = {
+        "DEEPSEEK_API_KEY": "shared-secret",
+        "CODECAIRN_ANSWER_MODEL": "deepseek-v4-pro",
+        "CODECAIRN_JUDGE_MODEL": "deepseek-v4-flash",
+        "CODECAIRN_JUDGE_API_KEY": "judge-secret",
+    }
+
+    answer = create_locomo_text_model(role="answer", environment=environment)
+    judge = create_locomo_text_model(role="judge", environment=environment)
+
+    assert answer.public_config["base_url"] == "https://api.deepseek.com"
+    assert answer.public_config["model"] == "deepseek-v4-pro"
+    assert judge.public_config["model"] == "deepseek-v4-flash"
+    assert answer.public_config["thinking"] == "enabled"
+    assert judge.public_config["thinking"] == "enabled"
+    assert answer.public_config["pricing"] == {
+        "cached_input_per_million": 0.025,
+        "currency": "CNY",
+        "output_per_million": 6.0,
+        "uncached_input_per_million": 3.0,
+    }
+    assert answer.public_config["pricing_source"] == {
+        "observed_at": "2026-07-19",
+        "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+    }
+    assert judge.public_config["pricing"] == {
+        "cached_input_per_million": 0.02,
+        "currency": "CNY",
+        "output_per_million": 2.0,
+        "uncached_input_per_million": 1.0,
+    }
+    public = str({"answer": answer.public_config, "judge": judge.public_config})
+    assert "shared-secret" not in public
+    assert "judge-secret" not in public
+
+
 @pytest.mark.parametrize(
     "base_url",
     [
@@ -107,3 +242,17 @@ def test_model_retries_transient_transport_errors(monkeypatch: pytest.MonkeyPatc
 
     assert attempts == 3
     assert response.text == '{"label":"CORRECT"}'
+
+
+def test_model_rejects_explicitly_incomplete_provider_responses(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(httpx, "post", lambda *args, **kwargs: TruncatedResponse())
+    model = OpenAICompatibleTextModel(
+        base_url="https://api.deepseek.com",
+        api_key="secret",
+        model="deepseek-v4-pro",
+    )
+
+    with pytest.raises(RuntimeError, match="finish_reason=length"):
+        model.generate(system="answer", user="question", seed=17)

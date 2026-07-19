@@ -83,7 +83,9 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
         mode: Annotated[str, typer.Option("--mode")] = "full",
         model: Annotated[str | None, typer.Option("--model")] = None,
+        judge_model: Annotated[str | None, typer.Option("--judge-model")] = None,
         max_workers: Annotated[int, typer.Option("--max-workers", min=1)] = 1,
+        resume: Annotated[bool, typer.Option("--resume")] = False,
     ) -> None:
         """Execute one immutable evaluation suite run."""
         if mode not in {"full", "smoke"}:
@@ -97,7 +99,9 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 repository_commit=repository_commit,
                 mode=cast(Literal["full", "smoke"], mode),
                 model=model,
+                judge_model=judge_model,
                 max_workers=max_workers,
+                resume=resume,
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))

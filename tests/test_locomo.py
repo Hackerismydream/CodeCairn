@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass
+import json
+import shutil
+import threading
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import pytest
@@ -129,6 +132,60 @@ class FailingAnswerModel(FakeAnswerModel):
         raise RuntimeError("provider unavailable")
 
 
+@dataclass
+class CnyAnswerModel(FakeAnswerModel):
+    def generate(
+        self,
+        *,
+        system: str,
+        user: str,
+        seed: int,
+        response_format: str = "text",
+    ) -> ModelResponse:
+        self.calls += 1
+        return ModelResponse(
+            text="A concise answer",
+            model=self.model_id,
+            input_tokens=10,
+            output_tokens=3,
+            cached_input_tokens=6,
+            uncached_input_tokens=4,
+            reasoning_tokens=2,
+            cost_cny=0.001,
+        )
+
+
+@dataclass
+class CapturingTextModel(FakeAnswerModel):
+    requests: list[tuple[str, str, str]] = field(default_factory=list)
+
+    def generate(
+        self,
+        *,
+        system: str,
+        user: str,
+        seed: int,
+        response_format: str = "text",
+    ) -> ModelResponse:
+        self.calls += 1
+        self.requests.append((system, user, response_format))
+        text = '{"label":"CORRECT"}' if response_format == "json" else "A concise answer"
+        return ModelResponse(text=text, model=self.model_id)
+
+
+class ConcurrentIngestMemory(FakeMemory):
+    barrier = threading.Barrier(2)
+
+    def ingest(
+        self,
+        conversation: LoCoMoConversation,
+        *,
+        dataset_sha256: str,
+    ) -> ConversationIngestResult:
+        self.barrier.wait(timeout=2)
+        return super().ingest(conversation, dataset_sha256=dataset_sha256)
+
+
 def test_loader_preserves_sessions_speakers_timestamps_and_all_categories() -> None:
     dataset = load_locomo_dataset(FIXTURE)
 
@@ -234,6 +291,34 @@ def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
         )
 
 
+def test_answer_and_judge_prompts_treat_benchmark_content_as_untrusted_data(
+    tmp_path: Path,
+) -> None:
+    model = CapturingTextModel()
+    run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-prompt-boundary",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=model,
+        judge_model=model,
+    )
+
+    assert len(model.requests) == 16
+    for system, user, response_format in model.requests:
+        assert "untrusted data" in system
+        payload = json.loads(user)
+        assert isinstance(payload, dict)
+        if response_format == "json":
+            assert set(payload) == {"generated_answer", "gold_answer", "question"}
+        else:
+            assert set(payload) == {"memory_context", "question", "speakers"}
+
+
 def test_smoke_run_is_explicitly_unscored_and_never_calls_a_judge(tmp_path: Path) -> None:
     answer = FakeAnswerModel()
     config = LoCoMoRunConfig(
@@ -258,6 +343,151 @@ def test_smoke_run_is_explicitly_unscored_and_never_calls_a_judge(tmp_path: Path
     assert artifact.summary["unscored_reason"] == "smoke mode is never scored"
     assert artifact.summary["question_artifact_count"] == 2
     assert answer.calls == 2
+
+
+def test_run_processes_isolated_conversations_with_bounded_parallelism(tmp_path: Path) -> None:
+    ConcurrentIngestMemory.barrier = threading.Barrier(2)
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-concurrent-smoke",
+            repository_commit="abc123",
+            mode="smoke",
+            max_workers=2,
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=ConcurrentIngestMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=None,
+    )
+
+    assert artifact.summary["question_artifact_count"] == 2
+    manifest = (artifact.run_dir / "manifest.json").read_text(encoding="utf-8")
+    assert '"max_workers": 2' in manifest
+
+
+def test_resume_only_fills_missing_question_checkpoints(tmp_path: Path) -> None:
+    config = LoCoMoRunConfig(
+        dataset_path=FIXTURE,
+        output_root=tmp_path / "runs",
+        run_id="locomo-resume-smoke",
+        repository_commit="abc123",
+        mode="smoke",
+        expected_dataset_sha256=None,
+    )
+    initial = run_locomo(
+        config,
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=None,
+    )
+    question_files = sorted((initial.run_dir / "checkpoints" / "questions").glob("*/*.json"))
+    preserved_path, missing_path = question_files
+    preserved_before = preserved_path.read_bytes()
+    missing_path.unlink()
+    (initial.run_dir / "summary.json").unlink()
+
+    class ResumeMemory(FakeMemory):
+        def ingest(
+            self,
+            conversation: LoCoMoConversation,
+            *,
+            dataset_sha256: str,
+        ) -> ConversationIngestResult:
+            raise AssertionError("completed ingest checkpoints must not be replayed")
+
+    answer = FakeAnswerModel()
+    resumed = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-resume-smoke",
+            repository_commit="abc123",
+            mode="smoke",
+            resume=True,
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=ResumeMemory,
+        answer_model=answer,
+        judge_model=None,
+    )
+
+    assert answer.calls == 1
+    assert preserved_path.read_bytes() == preserved_before
+    assert resumed.summary["question_artifact_count"] == 2
+    assert resumed.summary["infrastructure_failed_count"] == 0
+
+
+def test_resume_rejects_ingest_checkpoint_without_runtime_state(tmp_path: Path) -> None:
+    initial = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-missing-runtime",
+            repository_commit="abc123",
+            mode="smoke",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=None,
+    )
+    shutil.rmtree(initial.run_dir / "runtime" / "conv-test-1")
+    (initial.run_dir / "summary.json").unlink()
+
+    with pytest.raises(ValueError, match="runtime state"):
+        run_locomo(
+            LoCoMoRunConfig(
+                dataset_path=FIXTURE,
+                output_root=tmp_path / "runs",
+                run_id="locomo-missing-runtime",
+                repository_commit="abc123",
+                mode="smoke",
+                resume=True,
+                expected_dataset_sha256=None,
+            ),
+            memory_factory=FakeMemory,
+            answer_model=FakeAnswerModel(),
+            judge_model=None,
+        )
+
+
+def test_resume_rejects_configuration_drift_before_model_calls(tmp_path: Path) -> None:
+    initial = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-resume-drift",
+            repository_commit="abc123",
+            mode="smoke",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=None,
+    )
+    answer = FakeAnswerModel()
+
+    with pytest.raises(ValueError, match="does not match"):
+        run_locomo(
+            LoCoMoRunConfig(
+                dataset_path=FIXTURE,
+                output_root=tmp_path / "runs",
+                run_id="locomo-resume-drift",
+                repository_commit="abc123",
+                mode="smoke",
+                top_k=5,
+                resume=True,
+                expected_dataset_sha256=None,
+            ),
+            memory_factory=FakeMemory,
+            answer_model=answer,
+            judge_model=None,
+        )
+
+    assert initial.run_dir.is_dir()
+    assert answer.calls == 0
 
 
 def test_smoke_report_counts_infrastructure_failures_without_scoring_them(
@@ -285,6 +515,34 @@ def test_smoke_report_counts_infrastructure_failures_without_scoring_them(
     assert artifact.summary["accuracy"] is None
 
 
+def test_report_keeps_deepseek_cache_reasoning_and_cny_usage(tmp_path: Path) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-deepseek-usage",
+            repository_commit="abc123",
+            mode="smoke",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=CnyAnswerModel(),
+        judge_model=None,
+    )
+
+    assert artifact.summary["usage"] == {
+        "input_tokens": 20,
+        "cached_input_tokens": 12,
+        "uncached_input_tokens": 8,
+        "output_tokens": 6,
+        "reasoning_tokens": 4,
+        "known_cost_count": 0,
+        "cost_usd": None,
+        "known_cost_cny_count": 2,
+        "cost_cny": 0.002,
+    }
+
+
 def test_run_rejects_path_traversal_identifiers(tmp_path: Path) -> None:
     config = LoCoMoRunConfig(
         dataset_path=FIXTURE,
@@ -302,6 +560,32 @@ def test_run_rejects_path_traversal_identifiers(tmp_path: Path) -> None:
             answer_model=FakeAnswerModel(),
             judge_model=None,
         )
+
+
+def test_run_rejects_output_symlink_escape(tmp_path: Path) -> None:
+    output_root = tmp_path / "runs"
+    output_root.mkdir()
+    (output_root / "escaped-run").symlink_to(
+        tmp_path / "outside" / "escaped-run",
+        target_is_directory=True,
+    )
+
+    with pytest.raises(ValueError, match="output root"):
+        run_locomo(
+            LoCoMoRunConfig(
+                dataset_path=FIXTURE,
+                output_root=output_root,
+                run_id="escaped-run",
+                repository_commit="abc123",
+                mode="smoke",
+                expected_dataset_sha256=None,
+            ),
+            memory_factory=FakeMemory,
+            answer_model=FakeAnswerModel(),
+            judge_model=None,
+        )
+
+    assert not (tmp_path / "outside").exists()
 
 
 def _tree_fingerprints(root: Path) -> dict[str, tuple[int, str]]:

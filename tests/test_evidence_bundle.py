@@ -57,6 +57,32 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
     assert "LoCoMo accuracy: pending" in (artifact.bundle_dir / "resume.md").read_text()
     assert "由 0% 提升至 100%" in (artifact.bundle_dir / "resume.zh-CN.md").read_text()
     assert not (artifact.bundle_dir / "raw" / "locomo" / "runtime").exists()
+    public_question = read_json(
+        artifact.bundle_dir
+        / "raw"
+        / "locomo"
+        / "checkpoints"
+        / "questions"
+        / "conv-1"
+        / "question-1.json"
+    )
+    assert isinstance(public_question, dict)
+    assert (
+        not {
+            "question",
+            "golden_answer",
+            "recall_markdown",
+            "retrieval",
+        }
+        & public_question.keys()
+    )
+    assert len(public_question["source_artifact_sha256"]) == 64
+    public_ingest = read_json(
+        artifact.bundle_dir / "raw" / "locomo" / "checkpoints" / "ingest" / "conv-1.json"
+    )
+    assert isinstance(public_ingest, dict)
+    assert not {"speaker_a", "speaker_b", "memory_root"} & public_ingest.keys()
+    assert len(public_ingest["source_artifact_sha256"]) == 64
     verifier = read_json(
         artifact.bundle_dir / "raw" / "coding" / "task-1-memory-on" / "verifier.json"
     )
@@ -69,6 +95,80 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
     query.write_text("{}\n", encoding="utf-8")
     with pytest.raises(ValueError, match="hash mismatch"):
         verify_evidence_bundle(artifact.bundle_dir)
+
+
+def test_full_locomo_bundle_publishes_accuracy_cny_cost_and_resume_evidence(
+    tmp_path: Path,
+) -> None:
+    sources = _make_source_runs(tmp_path / "sources")
+    locomo = sources / "locomo"
+    manifest = read_json(locomo / "manifest.json")
+    assert isinstance(manifest, dict)
+    manifest.update(
+        {
+            "mode": "full",
+            "scored": True,
+            "judge_votes": 3,
+            "judge_model": {"adapter": "fake", "model": "judge"},
+            "selection": {
+                "categories": [1, 2, 3, 4],
+                "question_counts": {"1": 1, "2": 0, "3": 0, "4": 0},
+            },
+        }
+    )
+    _replace_json(locomo / "manifest.json", manifest)
+    question_path = locomo / "checkpoints" / "questions" / "conv-1" / "question-1.json"
+    question = read_json(question_path)
+    assert isinstance(question, dict)
+    answer = question["answer"]
+    assert isinstance(answer, dict)
+    answer.update(
+        {
+            "cached_input_tokens": 6,
+            "uncached_input_tokens": 4,
+            "reasoning_tokens": 2,
+            "cost_cny": 0.001,
+        }
+    )
+    question["judge_votes"] = [
+        {"vote_index": index, "label": "correct", "input_tokens": 2, "output_tokens": 1}
+        for index in range(3)
+    ]
+    _replace_json(question_path, question)
+    _replace_json(locomo / "summary.json", report_locomo(locomo))
+
+    artifact = build_evidence_bundle(
+        EvidenceBundleConfig(
+            bundle_id="benchmark-full-test",
+            output_root=tmp_path / "evidence",
+            locomo_run_dir=locomo,
+            retrieval_run_dir=sources / "retrieval",
+            recovery_run_dir=sources / "recovery",
+            coding_run_dir=sources / "coding",
+            quality_junit_path=sources / "junit.xml",
+            quality_coverage_path=sources / "coverage.json",
+            repository_root=Path(__file__).parents[1],
+            generator_commit="abc123",
+        )
+    )
+
+    claims = artifact.metrics["claims"]
+    assert isinstance(claims, list)
+    accuracy = next(item for item in claims if item["id"] == "locomo_accuracy")
+    assert accuracy["value"] == 100.0
+    assert all(item["measurement"] != "LoCoMo accuracy" for item in artifact.metrics["pending"])
+    bundle_manifest = read_json(artifact.bundle_dir / "bundle-manifest.json")
+    assert isinstance(bundle_manifest, dict)
+    assert bundle_manifest["costs"]["locomo"] == {"amount": 0.001, "currency": "CNY"}
+    resume = (artifact.bundle_dir / "resume.md").read_text()
+    assert "with 3 judge votes each" in resume
+    assert "LoCoMo accuracy of 100.00%" in resume
+    assert "LoCoMo 准确率 100.00%" in (artifact.bundle_dir / "resume.zh-CN.md").read_text()
+
+
+def _replace_json(path: Path, value: object) -> None:
+    path.unlink()
+    write_json_exclusive(path, value)
 
 
 def _make_source_runs(root: Path) -> Path:
@@ -97,6 +197,9 @@ def _make_source_runs(root: Path) -> Path:
         locomo / "checkpoints" / "ingest" / "conv-1.json",
         {
             "sample_id": "conv-1",
+            "speaker_a": "Private Speaker A",
+            "speaker_b": "Private Speaker B",
+            "memory_root": "runtime/conv-1",
             "session_count": 1,
             "turn_count": 2,
             "accepted_memory_count": 2,
@@ -108,6 +211,13 @@ def _make_source_runs(root: Path) -> Path:
         {
             "status": "completed",
             "category": 1,
+            "question": "What private detail was discussed?",
+            "golden_answer": "A private answer",
+            "recall_markdown": "# Recall Context\n\nPrivate source conversation.\n",
+            "retrieval": {
+                "query": "What private detail was discussed?",
+                "ranked": [{"quote": "Private source conversation."}],
+            },
             "answer": {
                 "model": "answer",
                 "text": "answer",

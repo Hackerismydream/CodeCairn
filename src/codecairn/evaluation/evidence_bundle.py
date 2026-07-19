@@ -107,11 +107,10 @@ def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> No
         target / "raw" / "locomo",
         ("manifest.json", "summary.json"),
     )
-    _copy_glob(config.locomo_run_dir, target / "raw" / "locomo", "checkpoints/ingest/*.json")
-    _copy_glob(
+    _copy_public_locomo_ingests(config.locomo_run_dir, target / "raw" / "locomo")
+    _copy_public_locomo_questions(
         config.locomo_run_dir,
         target / "raw" / "locomo",
-        "checkpoints/questions/*/*.json",
     )
     _copy_named_files(
         config.retrieval_run_dir,
@@ -180,6 +179,49 @@ def _copy_public_verifiers(source: Path, target: Path) -> None:
             "verifier_source_sha256": raw.get("verifier_source_sha256"),
             "source_artifact_sha256": file_sha256(path),
         }
+        destination = target / path.relative_to(source)
+        write_json_exclusive(destination, public)
+
+
+def _copy_public_locomo_questions(source: Path, target: Path) -> None:
+    paths = sorted(source.glob("checkpoints/questions/*/*.json"))
+    if not paths:
+        raise ValueError(f"Required LoCoMo question artifacts are missing: {source}")
+    allowed_fields = (
+        "schema_version",
+        "sample_id",
+        "question_id",
+        "category",
+        "category_name",
+        "status",
+        "phase",
+        "error_type",
+        "answer",
+        "judge_votes",
+    )
+    for path in paths:
+        raw = _required_dict(read_json(path), field="LoCoMo question artifact")
+        public = {key: raw[key] for key in allowed_fields if key in raw}
+        public["source_artifact_sha256"] = file_sha256(path)
+        destination = target / path.relative_to(source)
+        write_json_exclusive(destination, public)
+
+
+def _copy_public_locomo_ingests(source: Path, target: Path) -> None:
+    paths = sorted(source.glob("checkpoints/ingest/*.json"))
+    if not paths:
+        raise ValueError(f"Required LoCoMo ingest artifacts are missing: {source}")
+    allowed_fields = (
+        "sample_id",
+        "session_count",
+        "turn_count",
+        "accepted_memory_count",
+        "rejected_memory_count",
+    )
+    for path in paths:
+        raw = _required_dict(read_json(path), field="LoCoMo ingest checkpoint")
+        public = {key: raw[key] for key in allowed_fields if key in raw}
+        public["source_artifact_sha256"] = file_sha256(path)
         destination = target / path.relative_to(source)
         write_json_exclusive(destination, public)
 
@@ -293,21 +335,12 @@ def _aggregate_bundle(
             "coding_agent": coding_manifest.get("agent"),
         },
         "costs": {
-            "locomo": _required_dict(locomo.get("usage"), field="LoCoMo usage").get("cost_usd"),
+            "locomo": _locomo_cost(locomo),
             "coding_memory_off": _arm(coding, "memory-off").get("total_cost_usd"),
             "coding_memory_on": _arm(coding, "memory-on").get("total_cost_usd"),
         },
         "aggregation_command": command,
-        "known_limitations": [
-            "The LoCoMo run is an unscored smoke run; full benchmark accuracy is pending.",
-            "LoCoMo category 5 is adversarial and excluded from the official scored subset.",
-            "Provider cost is pending where upstream artifacts expose no cost observation.",
-            "Coding tasks and public fixtures are controlled evaluations, "
-            "not private production traces.",
-            "Latency was measured on one local machine and is not a cross-machine guarantee.",
-            "An earlier CodingMemoryBench v1 run was invalidated and excluded after "
-            "a verifier defect was found.",
-        ],
+        "known_limitations": _known_limitations(locomo),
         "licensing": {
             "locomo": "CC BY-NC 4.0; the dataset itself is not redistributed in this bundle.",
             "source": "https://github.com/snap-research/locomo",
@@ -389,6 +422,22 @@ def _validate_completed_runs(
         locomo, "completed_question_count"
     ) or _required_int(locomo, "infrastructure_failed_count"):
         raise ValueError("LoCoMo question artifacts are incomplete")
+    if locomo.get("scored") is True:
+        selection = _required_dict(locomo_manifest.get("selection"), field="LoCoMo selection")
+        if selection.get("categories") != [1, 2, 3, 4]:
+            raise ValueError("Publishable full LoCoMo must select categories 1 through 4")
+        question_counts = _required_dict(
+            selection.get("question_counts"), field="LoCoMo selected question counts"
+        )
+        if set(question_counts) != {"1", "2", "3", "4"}:
+            raise ValueError("Full LoCoMo question counts must cover categories 1 through 4")
+        expected_questions = sum(
+            _required_int(question_counts, category) for category in question_counts
+        )
+        if counts["locomo_question_run_count"] != expected_questions:
+            raise ValueError("Full LoCoMo checkpoints do not cover the selected questions")
+        if _required_int(locomo, "scored_question_count") != expected_questions:
+            raise ValueError("Full LoCoMo report did not score every selected question")
     if counts["retrieval_query_count"] != _required_int(retrieval_manifest, "query_count"):
         raise ValueError("Retrieval query artifacts are incomplete")
     if counts["retrieval_query_count"] != _required_int(retrieval, "query_count"):
@@ -545,17 +594,7 @@ def _claims(
             "raw/locomo/checkpoints/ingest/*.json",
             shared,
         ),
-        _claim(
-            "locomo_smoke_completion",
-            "LoCoMo smoke completion",
-            100
-            * _required_number(locomo, "completed_question_count")
-            / _required_number(locomo, "question_artifact_count"),
-            "%",
-            "raw/locomo/manifest.json",
-            "raw/locomo/checkpoints/questions/*/*.json",
-            shared,
-        ),
+        *_locomo_claims(locomo, shared=shared),
         _claim(
             "test_count",
             "Automated tests",
@@ -618,7 +657,7 @@ def _pending_measurements(
             }
         )
     usage = _required_dict(locomo.get("usage"), field="LoCoMo usage")
-    if usage.get("cost_usd") is None:
+    if usage.get("cost_usd") is None and usage.get("cost_cny") is None:
         pending.append(
             {
                 "measurement": "LoCoMo provider cost",
@@ -627,6 +666,63 @@ def _pending_measurements(
             }
         )
     return pending
+
+
+def _locomo_claims(locomo: dict[str, object], *, shared: dict[str, str]) -> list[dict[str, object]]:
+    completion = _claim(
+        "locomo_full_completion" if locomo.get("scored") is True else "locomo_smoke_completion",
+        "LoCoMo full completion" if locomo.get("scored") is True else "LoCoMo smoke completion",
+        100
+        * _required_number(locomo, "completed_question_count")
+        / _required_number(locomo, "question_artifact_count"),
+        "%",
+        "raw/locomo/manifest.json",
+        "raw/locomo/checkpoints/questions/*/*.json",
+        shared,
+    )
+    if locomo.get("scored") is not True:
+        return [completion]
+    return [
+        completion,
+        _claim(
+            "locomo_accuracy",
+            "LoCoMo answer accuracy",
+            100 * _required_number(locomo, "accuracy"),
+            "%",
+            "raw/locomo/manifest.json",
+            "raw/locomo/checkpoints/questions/*/*.json",
+            shared,
+        ),
+    ]
+
+
+def _locomo_cost(locomo: dict[str, object]) -> dict[str, object] | float | None:
+    usage = _required_dict(locomo.get("usage"), field="LoCoMo usage")
+    cost_cny = usage.get("cost_cny")
+    if isinstance(cost_cny, int | float) and not isinstance(cost_cny, bool):
+        return {"amount": float(cost_cny), "currency": "CNY"}
+    cost_usd = usage.get("cost_usd")
+    return float(cost_usd) if isinstance(cost_usd, int | float) else None
+
+
+def _known_limitations(locomo: dict[str, object]) -> list[str]:
+    limitations: list[str] = []
+    if locomo.get("scored") is not True:
+        limitations.append(
+            "The LoCoMo run is an unscored smoke run; full benchmark accuracy is pending."
+        )
+    limitations.extend(
+        [
+            "LoCoMo category 5 is adversarial and excluded from the official scored subset.",
+            "Provider cost is pending where upstream artifacts expose no cost observation.",
+            "Coding tasks and public fixtures are controlled evaluations, "
+            "not private production traces.",
+            "Latency was measured on one local machine and is not a cross-machine guarantee.",
+            "An earlier CodingMemoryBench v1 run was invalidated and excluded after "
+            "a verifier defect was found.",
+        ]
+    )
+    return limitations
 
 
 def _render_readme(metrics: dict[str, object], manifest: dict[str, object]) -> str:
@@ -738,14 +834,25 @@ def _render_resume(metrics: dict[str, object]) -> str:
         f"{_claim_value(claims, 'coding_token_reduction', 2)}%, and shortened steps to first "
         f"useful action by {_claim_value(claims, 'coding_first_action_reduction', 2)}%."
     )
-    locomo = (
-        f"- Ingested all {counts['locomo_conversation_count']} official LoCoMo conversations "
-        f"({counts['locomo_session_count']} sessions, {counts['locomo_turn_count']} turns) into "
-        f"{counts['accepted_memory_count']} evidence-backed memories with "
-        f"{counts['rejected_memory_count']} gate rejections; completed an explicitly unscored "
-        f"{counts['locomo_question_run_count']}-question end-to-end smoke run with zero "
-        "infrastructure failures."
-    )
+    locomo_report = _required_dict(metrics.get("locomo"), field="LoCoMo report")
+    if locomo_report.get("scored") is True:
+        locomo = (
+            f"- Evaluated {counts['locomo_question_run_count']} official LoCoMo category 1-4 "
+            f"questions with {_required_int(locomo_report, 'judge_votes')} judge votes each and "
+            "zero infrastructure failures; achieved "
+            f"LoCoMo accuracy of {_claim_value(claims, 'locomo_accuracy', 2)}% after ingesting "
+            f"{counts['locomo_session_count']} sessions and {counts['locomo_turn_count']} turns."
+        )
+    else:
+        locomo = (
+            f"- Ingested all {counts['locomo_conversation_count']} official LoCoMo conversations "
+            f"({counts['locomo_session_count']} sessions, "
+            f"{counts['locomo_turn_count']} turns) into "
+            f"{counts['accepted_memory_count']} evidence-backed memories with "
+            f"{counts['rejected_memory_count']} gate rejections; completed an explicitly unscored "
+            f"{counts['locomo_question_run_count']}-question end-to-end smoke run with zero "
+            "infrastructure failures."
+        )
     return "\n".join(
         [
             "# Resume evidence — CodeCairn",
@@ -774,6 +881,24 @@ def _render_resume_zh(metrics: dict[str, object]) -> str:
         f"- {_required_str(_required_dict(item, field='pending'), 'measurement')}: pending."
         for item in pending
     )
+    locomo_report = _required_dict(metrics.get("locomo"), field="LoCoMo report")
+    if locomo_report.get("scored") is True:
+        locomo_evidence = (
+            f"- 在 LoCoMo 官方类别 1-4 的 {counts['locomo_question_run_count']} 问全量评测中, "
+            f"每题执行 {_required_int(locomo_report, 'judge_votes')} 次独立评审且"
+            "基础设施失败为 0; LoCoMo 准确率 "
+            f"{_claim_value(claims, 'locomo_accuracy', 2)}%, 共导入 "
+            f"{counts['locomo_session_count']} 个 session 和 {counts['locomo_turn_count']} 条 turn."
+        )
+    else:
+        locomo_evidence = (
+            f"- 导入 LoCoMo 官方全部 {counts['locomo_conversation_count']} 个会话样本 "
+            f"({counts['locomo_session_count']} 个 session, "
+            f"{counts['locomo_turn_count']} 条 turn), "
+            f"生成 {counts['accepted_memory_count']} 条证据记忆, 记录 "
+            f"{counts['rejected_memory_count']} 条门控拒绝; 完成明确不计分的 "
+            f"{counts['locomo_question_run_count']} 问端到端 smoke, 基础设施失败为 0."
+        )
     template = Path(__file__).with_name("templates") / "resume.zh-CN.md"
     return template.read_text(encoding="utf-8").format(
         test_count=_claim_value(claims, "test_count", 0),
@@ -789,12 +914,7 @@ def _render_resume_zh(metrics: dict[str, object]) -> str:
         coding_pass_rate_delta_pp=_claim_value(claims, "coding_pass_rate_delta_pp", 0),
         coding_token_reduction=_claim_value(claims, "coding_token_reduction", 2),
         coding_first_action_reduction=_claim_value(claims, "coding_first_action_reduction", 2),
-        locomo_conversation_count=counts["locomo_conversation_count"],
-        locomo_session_count=counts["locomo_session_count"],
-        locomo_turn_count=counts["locomo_turn_count"],
-        accepted_memory_count=counts["accepted_memory_count"],
-        rejected_memory_count=counts["rejected_memory_count"],
-        locomo_question_run_count=counts["locomo_question_run_count"],
+        locomo_evidence=locomo_evidence,
         pending_lines=pending_lines,
     )
 

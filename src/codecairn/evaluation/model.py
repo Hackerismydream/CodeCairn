@@ -10,7 +10,11 @@ class ModelResponse:
     model: str
     input_tokens: int | None = None
     output_tokens: int | None = None
+    cached_input_tokens: int | None = None
+    uncached_input_tokens: int | None = None
+    reasoning_tokens: int | None = None
     cost_usd: float | None = None
+    cost_cny: float | None = None
 
 
 class TextModel(Protocol):
