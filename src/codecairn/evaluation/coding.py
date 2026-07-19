@@ -29,6 +29,21 @@ CodingArm = Literal["memory-on", "memory-off"]
 RunOutcome = Literal["passed", "failed", "infrastructure_failed"]
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 _MEMORY_ENV_MARKERS = ("CODECAIRN_MEMORY", "EVEROS_MEMORY", "PYTHIA_MEMORY")
+_AGENT_ENV_ALLOWLIST = {
+    "ALL_PROXY",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "LANG",
+    "LC_ALL",
+    "NO_PROXY",
+    "PATH",
+    "SSL_CERT_DIR",
+    "SSL_CERT_FILE",
+    "SYSTEMROOT",
+    "TERM",
+    "TMPDIR",
+    "WINDIR",
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -439,6 +454,7 @@ def _run_one(
             repeat=repeat,
             execution=execution,
             error=f"Agent process exited with code {execution.exit_code}",
+            error_type="AgentProcessError",
         )
         return
     try:
@@ -463,6 +479,7 @@ def _run_one(
             repeat=repeat,
             execution=execution,
             error=f"Verifier could not execute: {error}",
+            error_type="VerifierExecutionError",
         )
         return
     write_json_exclusive(item_dir / "verifier.json", verifier)
@@ -496,6 +513,7 @@ def _write_infrastructure_result(
     repeat: int,
     execution: AgentExecution,
     error: str,
+    error_type: str,
 ) -> None:
     write_json_exclusive(
         item_dir / "result.json",
@@ -506,7 +524,7 @@ def _write_infrastructure_result(
             "arm": arm,
             "repeat": repeat,
             "outcome": "infrastructure_failed",
-            "infrastructure_error_type": "AgentProcessError",
+            "infrastructure_error_type": error_type,
             "infrastructure_error": error,
             "input_tokens": execution.input_tokens,
             "cached_input_tokens": execution.cached_input_tokens,
@@ -732,9 +750,11 @@ def _agent_environment(*, codex_home: Path) -> dict[str, str]:
     environment = {
         key: value
         for key, value in os.environ.items()
-        if not any(marker in key.upper() for marker in _MEMORY_ENV_MARKERS)
+        if key.upper() in _AGENT_ENV_ALLOWLIST
+        and not any(marker in key.upper() for marker in _MEMORY_ENV_MARKERS)
     }
     environment["CODEX_HOME"] = str(codex_home)
+    environment["HOME"] = str(codex_home)
     return environment
 
 

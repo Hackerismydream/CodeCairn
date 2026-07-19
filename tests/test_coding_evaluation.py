@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -9,6 +11,7 @@ import pytest
 from codecairn.evaluation.coding import (
     AgentExecution,
     AgentRunRequest,
+    CodexExecAgent,
     CodingRunConfig,
     TraceEvent,
     load_coding_suite,
@@ -249,3 +252,53 @@ def test_codex_trace_parser_extracts_usage_changes_and_shell_wrapped_reads() -> 
     assert [event.kind for event in events] == ["command", "file_read", "file_change"]
     assert events[1].path == "kata.py"
     assert (input_tokens, cached_input_tokens, output_tokens) == (100, 60, 20)
+
+
+def test_codex_agent_uses_ephemeral_auth_home_and_does_not_forward_secrets(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source_home = tmp_path / "source-home"
+    source_home.mkdir()
+    (source_home / "auth.json").write_text("{}", encoding="utf-8")
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    captured: dict[str, object] = {}
+
+    def fake_run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        environment = kwargs["env"]
+        assert isinstance(environment, dict)
+        captured["environment"] = dict(environment)
+        captured["auth_exists_during_run"] = (
+            Path(environment["CODEX_HOME"]) / "auth.json"
+        ).is_file()
+        return subprocess.CompletedProcess(
+            args=[],
+            returncode=0,
+            stdout='{"type":"turn.completed","usage":{"input_tokens":1,"output_tokens":1}}\n',
+            stderr="",
+        )
+
+    monkeypatch.setenv("CODEX_HOME", str(source_home))
+    monkeypatch.setenv("OPENAI_API_KEY", "must-not-leak")
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    execution = CodexExecAgent(model="fixed-model").run(
+        AgentRunRequest(
+            workspace=workspace,
+            prompt="Repair the task.",
+            recall_context=None,
+            arm="memory-off",
+            task_id="task-01",
+            repeat=1,
+            seed=17,
+        )
+    )
+
+    environment = captured["environment"]
+    assert isinstance(environment, dict)
+    assert execution.exit_code == 0
+    assert captured["auth_exists_during_run"] is True
+    assert "OPENAI_API_KEY" not in environment
+    assert environment["HOME"] == environment["CODEX_HOME"]
+    assert not os.path.exists(str(environment["CODEX_HOME"]))
