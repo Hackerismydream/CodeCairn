@@ -73,6 +73,33 @@ def test_appending_unrelated_session_record_does_not_rename_committed_memory(
     assert memories[0].episode_id == first_memory.episode_id
 
 
+def test_appending_a_later_failed_task_preserves_committed_memory_identity(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "session.jsonl"
+    original_lines = (FIXTURES / "failed_command.jsonl").read_text(encoding="utf-8")
+    source.write_text(original_lines, encoding="utf-8")
+    runtime = create_runtime(tmp_path / "runtime")
+    runtime.import_session(source, repo_key="acme/widgets")
+    first = runtime.list_memories(repo_key="acme/widgets")[0]
+
+    appended_lines = (
+        (FIXTURES / "apply_patch_session.jsonl").read_text(encoding="utf-8").splitlines()[8:]
+    )
+    with source.open("a", encoding="utf-8") as handle:
+        handle.write("\n".join(appended_lines) + "\n")
+    result = runtime.import_session(source, repo_key="acme/widgets")
+
+    memories = runtime.list_memories(repo_key="acme/widgets")
+    assert result.created_memory_count == 1
+    assert result.skipped_memory_count == 1
+    assert len(memories) == 2
+    preserved = next(memory for memory in memories if memory.command == "uv run pytest")
+    assert preserved.memory_id == first.memory_id
+    assert preserved.episode_id == first.episode_id
+    assert preserved.content_sha256 == first.content_sha256
+
+
 def test_changing_call_evidence_creates_a_new_memory_without_clobbering_truth(
     tmp_path: Path,
 ) -> None:
