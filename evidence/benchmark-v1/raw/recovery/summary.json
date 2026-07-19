@@ -1,0 +1,40 @@
+{
+  "all_passed": true,
+  "checks": {
+    "append_resume": true,
+    "corruption_detection": true,
+    "cross_repository_import": true,
+    "import_idempotency": true,
+    "index_rebuild_parity": true,
+    "queue_replay": true
+  },
+  "details": {
+    "append_resume": {
+      "committed_raw_event_index": 4,
+      "created_memory_count": 0,
+      "processed_raw_event_count": 4,
+      "provider": "codex",
+      "raw_event_count": 5,
+      "repaired_memory_count": 0,
+      "resumed_from_raw_event_index": 1,
+      "session_id": "session-test-001",
+      "skipped_memory_count": 1,
+      "source_sha256": "66379d84578ed8b3b05666d5ab761bb6787a0c58f9a2737f34f7f7177a7caf9f"
+    },
+    "corruption": {
+      "corrupt": 1,
+      "created": 0,
+      "deleted": 0,
+      "modified": 0
+    },
+    "index_rebuild": {
+      "index_count": 2,
+      "parity": true,
+      "truth_count": 2
+    }
+  },
+  "index_rebuild_consistency": 1.0,
+  "run_id": "recovery-fbc7023",
+  "schema_version": 1,
+  "suite": "storage-recovery"
+}

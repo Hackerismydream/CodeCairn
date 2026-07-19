@@ -1,0 +1,34 @@
+{
+  "agent": {
+    "adapter": "codex-exec-jsonl",
+    "ephemeral": true,
+    "executable": "codex",
+    "ignore_rules": true,
+    "ignore_user_config": true,
+    "isolated_codex_home": true,
+    "model": "gpt-5.4",
+    "sandbox": "workspace-write",
+    "seed_supported": false,
+    "timeout_seconds": 900,
+    "tools": [
+      "shell",
+      "apply_patch"
+    ]
+  },
+  "arm": "memory-off",
+  "memory_snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "repeat": 3,
+  "repository_commit": "fbc7023",
+  "run_id": "task-09-memory-off-r03-37fb902de9b0",
+  "schema_version": 1,
+  "seed": 19,
+  "task_id": "task-09",
+  "verifier_argv": [
+    "{python}",
+    "{verifier}",
+    "task-09"
+  ],
+  "verifier_source_sha256": "1ff638268459bcaa76edcccf7e10cd6bd206a977ee501f46b76bd0fa3791c892",
+  "verifier_timeout_seconds": 20,
+  "workspace_snapshot_before_sha256": "1ebae7212b1d12b2dc300c5bfad7461086173243c022a33dd59457ab11ea382c"
+}

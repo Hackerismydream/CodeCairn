@@ -1,0 +1,584 @@
+{
+  "answer": {
+    "cost_usd": null,
+    "input_tokens": 2974,
+    "model": "gpt-5.4",
+    "output_tokens": 68,
+    "text": "Jon lost his job as a banker on **2023-01-20**. The key memory says: **“Lost my job as a banker yesterday”** at **2023-01-20T16:04:30+00:00**, so that implies **2023-01-19**."
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "evidence": [
+    "D1:2"
+  ],
+  "golden_answer": "19 January, 2023",
+  "judge_votes": [],
+  "question": "When Jon has lost his job as a banker?",
+  "question_id": "locomo-question_31df70067312a4148a6e",
+  "recall_markdown": "# Recall Context\n\nTask: When Jon has lost his job as a banker?\nRepository: `locomo/conv-30`\n\n## 1. Jon in session_1\n\n2023-01-20T16:04:30+00:00 — Jon: Hey Gina! Good to see you too. Lost my job as a banker yesterday, so I'm gonna take a shot at starting my own business.\n\n- Type: `user_preference`\n- Source: [memory_b0f3aa565d3a2f6f83f5](codecairn://memory/memory_b0f3aa565d3a2f6f83f5)\n- Evidence: 1 cited raw event(s)\n\n## 2. Jon in session_16\n\n2023-06-21T14:18:30+00:00 — Jon: Thanks! It's been tough going since I lost my job, but I'm sure investing my time in my business will pay off eventually. I really appreciate your help.\n\n- Type: `user_preference`\n- Source: [memory_26bd6bf8b219a88a6998](codecairn://memory/memory_26bd6bf8b219a88a6998)\n- Evidence: 1 cited raw event(s)\n\n## 3. Jon in session_9\n\n2023-04-09T10:37:00+00:00 — Jon: Nice, Gina! I'm happy that dance has such a special meaning to both of us. It's a really cool way to express ourselves. I loved taking lessons with my friends when I was younger. Those memories are so precious. So glad I can still enjoy it with my own studio. Thanks for always being there for me.\n\n- Type: `user_preference`\n- Source: [memory_98177438080d87122908](codecairn://memory/memory_98177438080d87122908)\n- Evidence: 1 cited raw event(s)\n\n## 4. Gina in session_14\n\n2023-06-16T21:44:30+00:00 — Gina: Way to go, Jon! Don't quit, remember, failures lead you closer to success. Here's a pic from when I was dancing - it was a tough road, but it was worth it! [Image caption: a photo of a group of young women posing for a picture]\n\n- Type: `user_preference`\n- Source: [memory_161aeb149232f2d3c5b1](codecairn://memory/memory_161aeb149232f2d3c5b1)\n- Evidence: 1 cited raw event(s)\n\n## 5. Jon in session_18\n\n2023-07-21T17:44:30+00:00 — Jon: Hey Gina, congrats on the clothing store! The dance studio is on tenuous grounds right now, but I'm staying positive. I got a temp job to help cover expenses while I look for investors. It's tough, but I'm sure it'll be worth it.\n\n- Type: `user_preference`\n- Source: [memory_5f7b7e8753f5a843c8ff](codecairn://memory/memory_5f7b7e8753f5a843c8ff)\n- Evidence: 1 cited raw event(s)\n\n## 6. Jon in session_5\n\n2023-02-08T09:36:30+00:00 — Jon: Yeah, I totally agree - taking risks is key for success. It's made me grow, and even got me out of my secure 9-5 as a banker. Now, I'm aiming to turn my dancing passion into a business. I'm determined to make it work, I just know it! That being said, I definitely don't underestimate the difficulties - it ain't been a walk in the park, that's for sure.\n\n- Type: `user_preference`\n- Source: [memory_5320609b37b80a9ebc72](codecairn://memory/memory_5320609b37b80a9ebc72)\n- Evidence: 1 cited raw event(s)\n\n## 7. Gina in session_1\n\n2023-01-20T16:12:00+00:00 — Gina: I used to compete in a few dance competitions and shows - my fav memory was when my team won first place at a regionals at age fifteen. It was an awesome feeling of accomplishment! [Image caption: a photography of a couple of people standing next to each other]\n\n- Type: `user_preference`\n- Source: [memory_e21432aa044a49a2ba47](codecairn://memory/memory_e21432aa044a49a2ba47)\n- Evidence: 1 cited raw event(s)\n\n## 8. Jon in session_4\n\n2023-02-04T10:47:00+00:00 — Jon: Searching for a dance studio location has been tricky, but I'm determined to find the right spot - when I do, I'm sure the rest will follow!\n\n- Type: `user_preference`\n- Source: [memory_b484de5b5e206a05de0f](codecairn://memory/memory_b484de5b5e206a05de0f)\n- Evidence: 1 cited raw event(s)\n\n## 9. Jon in session_17\n\n2023-07-09T13:28:30+00:00 — Jon: Thanks, Gina - really appreciate your words and encouragement! Dance has the power to bring us together and create sweet moments. Moments like this remind me why I'm chasing my dream and keep me pushing through any struggles.\n\n- Type: `user_preference`\n- Source: [memory_1524df133d8cd98ed458](codecairn://memory/memory_1524df133d8cd98ed458)\n- Evidence: 1 cited raw event(s)\n\n## 10. Jon in session_2\n\n2023-01-29T14:36:30+00:00 — Jon: Yeah, can't wait to see it done! Looking for the right place and getting everything ready has been a mix of exciting and nerve-wracking, but I'm determined to make it work. It'll be worth it!\n\n- Type: `user_preference`\n- Source: [memory_e541636c3d55e92c9527](codecairn://memory/memory_e541636c3d55e92c9527)\n- Evidence: 1 cited raw event(s)\n\n## 11. Jon in session_4\n\n2023-02-04T10:45:00+00:00 — Jon: Thanks Gina! Your help really means a lot. Sometimes it's hard when things don't go my way, but I'm sure if I keep pushing, I'll reach my dreams!\n\n- Type: `user_preference`\n- Source: [memory_985f6b0d84b47cf1562e](codecairn://memory/memory_985f6b0d84b47cf1562e)\n- Evidence: 1 cited raw event(s)\n\n## 12. Jon in session_17\n\n2023-07-09T13:26:30+00:00 — Jon: Thanks! Your support and encouragement means a lot. Losing my job was a bummer, but it pushed me to take the plunge and go for my biz dreams. Started to learn all these marketing and analytics tools to push the biz forward today. It's been tricky, but I'm up for the challenge and I'm gonna make this work!\n\n- Type: `user_preference`\n- Source: [memory_450893d6ca65f200404d](codecairn://memory/memory_450893d6ca65f200404d)\n- Evidence: 1 cited raw event(s)\n\n## 13. Gina in session_13\n\n2023-06-13T20:37:30+00:00 — Gina: Yeah, its a great idea! [Image caption: a photo of a person holding a paper bag with a picture of a bird and a birdie]\n\n- Type: `user_preference`\n- Source: [memory_5e852b6a6046398af684](codecairn://memory/memory_5e852b6a6046398af684)\n- Evidence: 1 cited raw event(s)\n\n## 14. Gina in session_1\n\n2023-01-20T16:05:00+00:00 — Gina: Sorry about your job Jon, but starting your own business sounds awesome! Unfortunately, I also lost my job at Door Dash this month. What business are you thinking of?\n\n- Type: `user_preference`\n- Source: [memory_7ae404f1a1d9ac43a082](codecairn://memory/memory_7ae404f1a1d9ac43a082)\n- Evidence: 1 cited raw event(s)\n\n## 15. Gina in session_6\n\n2023-03-16T14:36:30+00:00 — Gina: Thanks, Jon! Appreciate your offer. Since I lost my job at Door Dash, things have been tough. But here's some good news - I've got something to share!\n\n- Type: `user_preference`\n- Source: [memory_67bf6b72b7a0b8a42fdb](codecairn://memory/memory_67bf6b72b7a0b8a42fdb)\n- Evidence: 1 cited raw event(s)\n\n## 16. Jon in session_16\n\n2023-06-21T14:22:30+00:00 — Jon: Thanks! I'm feeling confident and won't give up. Your support means a ton to me. [Image caption: a photo of a bulletin board with pictures of people and words]\n\n- Type: `user_preference`\n- Source: [memory_97952c79fe6ee8da958e](codecairn://memory/memory_97952c79fe6ee8da958e)\n- Evidence: 1 cited raw event(s)\n\n## 17. Jon in session_1\n\n2023-01-20T16:06:30+00:00 — Jon: I've been into dancing since I was a kid and it's been my passion and escape. I wanna start a dance studio so I can teach others the joy that dancing brings me.\n\n- Type: `user_preference`\n- Source: [memory_6b02f73fabae2a49f9e4](codecairn://memory/memory_6b02f73fabae2a49f9e4)\n- Evidence: 1 cited raw event(s)\n\n## 18. Gina in session_14\n\n2023-06-16T21:41:30+00:00 — Gina: Ha, yeah, Jon. I've been one 'cause I lost my job. I opened an online clothing store and it's been great! Being my own boss and doing something I love is awesome.\n\n- Type: `user_preference`\n- Source: [memory_c2cfb25ab741268a82d3](codecairn://memory/memory_c2cfb25ab741268a82d3)\n- Evidence: 1 cited raw event(s)\n\n## 19. Gina in session_1\n\n2023-01-20T16:13:00+00:00 — Gina: Thanks! We just did a contemporary piece called \"Finding Freedom.\" It was really emotional and powerful. [Image caption: a photo of a large open porch with a fireplace and a view of the water]\n\n- Type: `user_preference`\n- Source: [memory_ef458d33d73865483ad5](codecairn://memory/memory_ef458d33d73865483ad5)\n- Evidence: 1 cited raw event(s)\n\n## 20. Jon in session_5\n\n2023-02-08T09:37:30+00:00 — Jon: Thanks, Gina. Your help means a lot. I'll keep plugging away and stay optimistic. [Image caption: a photography of a cartoon character with a quote about fear]\n\n- Type: `user_preference`\n- Source: [memory_2b58d4aba3a960b1e583](codecairn://memory/memory_2b58d4aba3a960b1e583)\n- Evidence: 1 cited raw event(s)\n",
+  "retrieval": {
+    "latency_ms": 61.124,
+    "lexical_candidate_count": 38,
+    "limit": 20,
+    "query": "When Jon has lost his job as a banker?",
+    "ranked": [
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "bc05b9b5462687680d30aeb67eb19b4df6d0689641809ad16d2d01c09c0baeed",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 1,
+            "raw_event_sha256": "8439a48ce8b8d1322b980a2e2f0a40ad7aabd20077cc78f136c377d62fce110f",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_1"
+          }
+        ],
+        "final_score": 0.032786885246,
+        "lexical_rank": 1,
+        "lexical_score": 12.109708786011,
+        "memory_id": "memory_b0f3aa565d3a2f6f83f5",
+        "memory_type": "user_preference",
+        "rank": 1,
+        "source_uri": "codecairn://memory/memory_b0f3aa565d3a2f6f83f5",
+        "summary": "2023-01-20T16:04:30+00:00 — Jon: Hey Gina! Good to see you too. Lost my job as a banker yesterday, so I'm gonna take a shot at starting my own business.",
+        "title": "Jon in session_1",
+        "vector_rank": 1,
+        "vector_score": 0.39830673977
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "bf523248e3a264d3d3697e19a89cca29ef077bd287c195507d38aa0515d1b80c",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 303,
+            "raw_event_sha256": "5010b0333a74bd2f9f5ed08149f04903e2ac672b970849f38e663f07f9baf5cd",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_16"
+          }
+        ],
+        "final_score": 0.027884615385,
+        "lexical_rank": 5,
+        "lexical_score": 7.014798164368,
+        "memory_id": "memory_26bd6bf8b219a88a6998",
+        "memory_type": "user_preference",
+        "rank": 2,
+        "source_uri": "codecairn://memory/memory_26bd6bf8b219a88a6998",
+        "summary": "2023-06-21T14:18:30+00:00 — Jon: Thanks! It's been tough going since I lost my job, but I'm sure investing my time in my business will pay off eventually. I really appreciate your help.",
+        "title": "Jon in session_16",
+        "vector_rank": 20,
+        "vector_score": 0.356268047557
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "a665523847edf9113f43d10200612402e33098c9920993c6abfc82284c964896",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 170,
+            "raw_event_sha256": "82ff75fd68b6542efae246e0b83048604692e91374fc2040523c286e5ebd957e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_9"
+          }
+        ],
+        "final_score": 0.026069518717,
+        "lexical_rank": 8,
+        "lexical_score": 5.755362510681,
+        "memory_id": "memory_98177438080d87122908",
+        "memory_type": "user_preference",
+        "rank": 3,
+        "source_uri": "codecairn://memory/memory_98177438080d87122908",
+        "summary": "2023-04-09T10:37:00+00:00 — Jon: Nice, Gina! I'm happy that dance has such a special meaning to both of us. It's a really cool way to express ourselves. I loved taking lessons with my friends when I was younger. Those memories are so precious. So glad I can still enjoy it with my own studio. Thanks for always being there for me.",
+        "title": "Jon in session_9",
+        "vector_rank": 28,
+        "vector_score": 0.353720487795
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "45e12c05f67f6cce11c100fde06ef04788def26b14e015375a205a48f1dc08f9",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 267,
+            "raw_event_sha256": "d4c6fd631db11326eb34315a448b95abed912872042e7a58e3d59f2b3ef20671",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_14"
+          }
+        ],
+        "final_score": 0.025458570525,
+        "lexical_rank": 33,
+        "lexical_score": 2.764211893082,
+        "memory_id": "memory_161aeb149232f2d3c5b1",
+        "memory_type": "user_preference",
+        "rank": 4,
+        "source_uri": "codecairn://memory/memory_161aeb149232f2d3c5b1",
+        "summary": "2023-06-16T21:44:30+00:00 — Gina: Way to go, Jon! Don't quit, remember, failures lead you closer to success. Here's a pic from when I was dancing - it was a tough road, but it was worth it! [Image caption: a photo of a group of young women posing for a picture]",
+        "title": "Gina in session_14",
+        "vector_rank": 8,
+        "vector_score": 0.362919999808
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "762be743beb5acabfc772b445d317ae680916c84e1dadfb97133d761711922da",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 334,
+            "raw_event_sha256": "324fc0d2a6214e44a000a85f5149a02e0ba5a98e15b88acb232e02a9bf44a09c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_18"
+          }
+        ],
+        "final_score": 0.023268398268,
+        "lexical_rank": 28,
+        "lexical_score": 2.837659835815,
+        "memory_id": "memory_5f7b7e8753f5a843c8ff",
+        "memory_type": "user_preference",
+        "rank": 5,
+        "source_uri": "codecairn://memory/memory_5f7b7e8753f5a843c8ff",
+        "summary": "2023-07-21T17:44:30+00:00 — Jon: Hey Gina, congrats on the clothing store! The dance studio is on tenuous grounds right now, but I'm staying positive. I got a temp job to help cover expenses while I look for investors. It's tough, but I'm sure it'll be worth it.",
+        "title": "Jon in session_18",
+        "vector_rank": 24,
+        "vector_score": 0.354981021868
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "92f97d7f3a02936fe2753ae3d1e5ecba9b3df397fdf363179bbd1b5e08992d77",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 86,
+            "raw_event_sha256": "d44a2d39ade3b13363367a394980550dda469996bc883096104d0c6ea9dbeaaf",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_5"
+          }
+        ],
+        "final_score": 0.023188405797,
+        "lexical_rank": 9,
+        "lexical_score": 4.150134563446,
+        "memory_id": "memory_5320609b37b80a9ebc72",
+        "memory_type": "user_preference",
+        "rank": 6,
+        "source_uri": "codecairn://memory/memory_5320609b37b80a9ebc72",
+        "summary": "2023-02-08T09:36:30+00:00 — Jon: Yeah, I totally agree - taking risks is key for success. It's made me grow, and even got me out of my secure 9-5 as a banker. Now, I'm aiming to turn my dancing passion into a business. I'm determined to make it work, I just know it! That being said, I definitely don't underestimate the difficulties - it ain't been a walk in the park, that's for sure.",
+        "title": "Jon in session_5",
+        "vector_rank": 55,
+        "vector_score": 0.34732459785
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "65dd16aaf088c9ddb217becc882ba1e5813d9c8e65e9037b822011682d31790c",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 16,
+            "raw_event_sha256": "d956272b7fb1cd67dcf43cf755447fb23387ba11e9190d791d1d9431b1998a3c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_1"
+          }
+        ],
+        "final_score": 0.022917757988,
+        "lexical_rank": 23,
+        "lexical_score": 2.975957155228,
+        "memory_id": "memory_e21432aa044a49a2ba47",
+        "memory_type": "user_preference",
+        "rank": 7,
+        "source_uri": "codecairn://memory/memory_e21432aa044a49a2ba47",
+        "summary": "2023-01-20T16:12:00+00:00 — Gina: I used to compete in a few dance competitions and shows - my fav memory was when my team won first place at a regionals at age fifteen. It was an awesome feeling of accomplishment! [Image caption: a photography of a couple of people standing next to each other]",
+        "title": "Gina in session_1",
+        "vector_rank": 32,
+        "vector_score": 0.352867710995
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "03c659cd9de14e3979e53c7a1c443abca1ab7c0226fae042bb3500587f03b7f5",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 66,
+            "raw_event_sha256": "606c0d34373ef4f62a944dbc5f60413b92f9deb2a5eff16cc9a2136c9c2b637a",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_4"
+          }
+        ],
+        "final_score": 0.022785102938,
+        "lexical_rank": 6,
+        "lexical_score": 6.216898918152,
+        "memory_id": "memory_b484de5b5e206a05de0f",
+        "memory_type": "user_preference",
+        "rank": 8,
+        "source_uri": "codecairn://memory/memory_b484de5b5e206a05de0f",
+        "summary": "2023-02-04T10:47:00+00:00 — Jon: Searching for a dance studio location has been tricky, but I'm determined to find the right spot - when I do, I'm sure the rest will follow!",
+        "title": "Jon in session_4",
+        "vector_rank": 71,
+        "vector_score": 0.344984716368
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b06b81473b4decb5d3578df51f304441eba042a048745475772ced270165965f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 319,
+            "raw_event_sha256": "cd75ddfb6ad5dfbc0e2f8154a4056427859f2f18a50fbe4c15cb429d48b72c8a",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_17"
+          }
+        ],
+        "final_score": 0.022549760645,
+        "lexical_rank": 21,
+        "lexical_score": 3.00110578537,
+        "memory_id": "memory_1524df133d8cd98ed458",
+        "memory_type": "user_preference",
+        "rank": 9,
+        "source_uri": "codecairn://memory/memory_1524df133d8cd98ed458",
+        "summary": "2023-07-09T13:28:30+00:00 — Jon: Thanks, Gina - really appreciate your words and encouragement! Dance has the power to bring us together and create sweet moments. Moments like this remind me why I'm chasing my dream and keep me pushing through any struggles.",
+        "title": "Jon in session_17",
+        "vector_rank": 38,
+        "vector_score": 0.351868498974
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "25ce5683e8860b48a7648a76d55037387233744b249504e025a2d88497839d31",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 37,
+            "raw_event_sha256": "9bde8cb9132bce2e5df5fc2eb60ea77da60307e994cb3187719a0a9c303e04f4",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_2"
+          }
+        ],
+        "final_score": 0.021223874165,
+        "lexical_rank": 18,
+        "lexical_score": 3.081335067749,
+        "memory_id": "memory_e541636c3d55e92c9527",
+        "memory_type": "user_preference",
+        "rank": 10,
+        "source_uri": "codecairn://memory/memory_e541636c3d55e92c9527",
+        "summary": "2023-01-29T14:36:30+00:00 — Jon: Yeah, can't wait to see it done! Looking for the right place and getting everything ready has been a mix of exciting and nerve-wracking, but I'm determined to make it work. It'll be worth it!",
+        "title": "Jon in session_2",
+        "vector_rank": 59,
+        "vector_score": 0.346813268028
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "26376f2984bbc85d3c634db07df4cdf09c28662ad84b66ad064dcefcbccb76ed",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 62,
+            "raw_event_sha256": "f2e2f9420b7471b68ba966ca94bca610e1c8c85100f448c1ea513c10194b12d1",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_4"
+          }
+        ],
+        "final_score": 0.019960278054,
+        "lexical_rank": 35,
+        "lexical_score": 2.697205066681,
+        "memory_id": "memory_985f6b0d84b47cf1562e",
+        "memory_type": "user_preference",
+        "rank": 11,
+        "source_uri": "codecairn://memory/memory_985f6b0d84b47cf1562e",
+        "summary": "2023-02-04T10:45:00+00:00 — Jon: Thanks Gina! Your help really means a lot. Sometimes it's hard when things don't go my way, but I'm sure if I keep pushing, I'll reach my dreams!",
+        "title": "Jon in session_4",
+        "vector_rank": 46,
+        "vector_score": 0.349906921411
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "364730da2e73f0dd136680de512bb4e08b8b960cd0a9650ab78b2410468d750b",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 315,
+            "raw_event_sha256": "d15291c28e2ab910c7f746fa6f6bea377dd063c3ba93cdeeb412717dd2bebc63",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_17"
+          }
+        ],
+        "final_score": 0.018222506394,
+        "lexical_rank": 32,
+        "lexical_score": 2.765756130219,
+        "memory_id": "memory_450893d6ca65f200404d",
+        "memory_type": "user_preference",
+        "rank": 12,
+        "source_uri": "codecairn://memory/memory_450893d6ca65f200404d",
+        "summary": "2023-07-09T13:26:30+00:00 — Jon: Thanks! Your support and encouragement means a lot. Losing my job was a bummer, but it pushed me to take the plunge and go for my biz dreams. Started to learn all these marketing and analytics tools to push the biz forward today. It's been tricky, but I'm up for the challenge and I'm gonna make this work!",
+        "title": "Jon in session_17",
+        "vector_rank": 76,
+        "vector_score": 0.344090425069
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "164d7a29bb93d2b56cbd818d1a51c91603907ca78b41acbce673009e3a9698be",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 248,
+            "raw_event_sha256": "1f7053343849ea95342bfe1983d12820582417a60e646a3c68c88bb15d374aee",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_13"
+          }
+        ],
+        "final_score": 0.016129032258,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_5e852b6a6046398af684",
+        "memory_type": "user_preference",
+        "rank": 13,
+        "source_uri": "codecairn://memory/memory_5e852b6a6046398af684",
+        "summary": "2023-06-13T20:37:30+00:00 — Gina: Yeah, its a great idea! [Image caption: a photo of a person holding a paper bag with a picture of a bird and a birdie]",
+        "title": "Gina in session_13",
+        "vector_rank": 2,
+        "vector_score": 0.372227289613
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "c3c5857e25cd2257b2408754c9ad4ec6a85d164c7690c8e16eb6c17d2e741471",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 2,
+            "raw_event_sha256": "968e3fc831e883c78ee1208cbafe46ac546c4972514d2682ec30e71875a28b45",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_1"
+          }
+        ],
+        "final_score": 0.016129032258,
+        "lexical_rank": 2,
+        "lexical_score": 8.399295806885,
+        "memory_id": "memory_7ae404f1a1d9ac43a082",
+        "memory_type": "user_preference",
+        "rank": 14,
+        "source_uri": "codecairn://memory/memory_7ae404f1a1d9ac43a082",
+        "summary": "2023-01-20T16:05:00+00:00 — Gina: Sorry about your job Jon, but starting your own business sounds awesome! Unfortunately, I also lost my job at Door Dash this month. What business are you thinking of?",
+        "title": "Gina in session_1",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "e7d3818c1b58708ef30f4cfe50864c288a34bd1f38b247dd726651b99a164174",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 103,
+            "raw_event_sha256": "a18f4fd9e7c12f0bd81cf896f61f4cdfd275dbc270814af7de952709a6518094",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_6"
+          }
+        ],
+        "final_score": 0.015873015873,
+        "lexical_rank": 3,
+        "lexical_score": 7.101984977722,
+        "memory_id": "memory_67bf6b72b7a0b8a42fdb",
+        "memory_type": "user_preference",
+        "rank": 15,
+        "source_uri": "codecairn://memory/memory_67bf6b72b7a0b8a42fdb",
+        "summary": "2023-03-16T14:36:30+00:00 — Gina: Thanks, Jon! Appreciate your offer. Since I lost my job at Door Dash, things have been tough. But here's some good news - I've got something to share!",
+        "title": "Gina in session_6",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "57d022f8217436e529ff67c849f1088673dc82e72a943c1cf4579f9a713daac4",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 311,
+            "raw_event_sha256": "18eeeefd438ebaeff23a8bce65a75a8035dda82548d518cce51d0f7366d5469d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_16"
+          }
+        ],
+        "final_score": 0.015873015873,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_97952c79fe6ee8da958e",
+        "memory_type": "user_preference",
+        "rank": 16,
+        "source_uri": "codecairn://memory/memory_97952c79fe6ee8da958e",
+        "summary": "2023-06-21T14:22:30+00:00 — Jon: Thanks! I'm feeling confident and won't give up. Your support means a ton to me. [Image caption: a photo of a bulletin board with pictures of people and words]",
+        "title": "Jon in session_16",
+        "vector_rank": 3,
+        "vector_score": 0.370841913699
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "fd368a4ad48b18a9a68fc359ebedd3d922f1c48d916d51a094097dd9479c227e",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 5,
+            "raw_event_sha256": "f56eaf399a54c31c94e0dbd086502f4e5c8ae52c470eb18bdc44a7e222ac3d15",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_1"
+          }
+        ],
+        "final_score": 0.015625,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_6b02f73fabae2a49f9e4",
+        "memory_type": "user_preference",
+        "rank": 17,
+        "source_uri": "codecairn://memory/memory_6b02f73fabae2a49f9e4",
+        "summary": "2023-01-20T16:06:30+00:00 — Jon: I've been into dancing since I was a kid and it's been my passion and escape. I wanna start a dance studio so I can teach others the joy that dancing brings me.",
+        "title": "Jon in session_1",
+        "vector_rank": 4,
+        "vector_score": 0.36755847176
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "38d651580dd83332036d96851d6e519cf821330d363201e47e19044af94f20f6",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 261,
+            "raw_event_sha256": "d6385c4425d27ee84a0acf0490c6493c0b04beb416d96aca24b352d9c6bb0f48",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_14"
+          }
+        ],
+        "final_score": 0.015625,
+        "lexical_rank": 4,
+        "lexical_score": 7.0499792099,
+        "memory_id": "memory_c2cfb25ab741268a82d3",
+        "memory_type": "user_preference",
+        "rank": 18,
+        "source_uri": "codecairn://memory/memory_c2cfb25ab741268a82d3",
+        "summary": "2023-06-16T21:41:30+00:00 — Gina: Ha, yeah, Jon. I've been one 'cause I lost my job. I opened an online clothing store and it's been great! Being my own boss and doing something I love is awesome.",
+        "title": "Gina in session_14",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "7c728be39631e03aa12bad19f846679b449a134b60094fcbaa934b7d7a43340c",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 18,
+            "raw_event_sha256": "0561547f47e4da7741c168ca2e7981881ec700f4962de1bbefe0770ea529d365",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_1"
+          }
+        ],
+        "final_score": 0.015384615385,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_ef458d33d73865483ad5",
+        "memory_type": "user_preference",
+        "rank": 19,
+        "source_uri": "codecairn://memory/memory_ef458d33d73865483ad5",
+        "summary": "2023-01-20T16:13:00+00:00 — Gina: Thanks! We just did a contemporary piece called \"Finding Freedom.\" It was really emotional and powerful. [Image caption: a photo of a large open porch with a fireplace and a view of the water]",
+        "title": "Gina in session_1",
+        "vector_rank": 5,
+        "vector_score": 0.366816272956
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "4a66c79d6f6163490b4c14a3966f0e175b81f3d339db3ce0557a1c67030414c4",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 88,
+            "raw_event_sha256": "76f393336106be1304f21eb2d3c38f9f236b92c41497c7a372d7a9ac67eba555",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-30/session_5"
+          }
+        ],
+        "final_score": 0.015151515152,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_2b58d4aba3a960b1e583",
+        "memory_type": "user_preference",
+        "rank": 20,
+        "source_uri": "codecairn://memory/memory_2b58d4aba3a960b1e583",
+        "summary": "2023-02-08T09:37:30+00:00 — Jon: Thanks, Gina. Your help means a lot. I'll keep plugging away and stay optimistic. [Image caption: a photography of a cartoon character with a quote about fear]",
+        "title": "Jon in session_5",
+        "vector_rank": 6,
+        "vector_score": 0.364409075405
+      }
+    ],
+    "repo_key": "locomo/conv-30",
+    "vector_candidate_count": 80
+  },
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "status": "completed"
+}

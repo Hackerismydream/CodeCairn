@@ -1,0 +1,81 @@
+{
+  "aggregation_command": "uv run codecairn evidence verify evidence/benchmark-v1",
+  "bundle_id": "benchmark-v1",
+  "costs": {
+    "coding_memory_off": null,
+    "coding_memory_on": null,
+    "locomo": null
+  },
+  "dependency_lock": "uv.lock",
+  "dependency_lock_sha256": "12a233b9c53900a771fddb329ada9480375bfdfd675257d261f826e248e4a357",
+  "environment": {
+    "machine": "arm64",
+    "python": "3.12.13",
+    "release": "25.3.0",
+    "system": "Darwin"
+  },
+  "generated_at_utc": "2026-07-19T13:44:56.691296+00:00",
+  "generator_commit": "c18f8fe",
+  "known_limitations": [
+    "The LoCoMo run is an unscored smoke run; full benchmark accuracy is pending.",
+    "LoCoMo category 5 is adversarial and excluded from the official scored subset.",
+    "Provider cost is pending where upstream artifacts expose no cost observation.",
+    "Coding tasks and public fixtures are controlled evaluations, not private production traces.",
+    "Latency was measured on one local machine and is not a cross-machine guarantee.",
+    "An earlier CodingMemoryBench v1 run was invalidated and excluded after a verifier defect was found."
+  ],
+  "licensing": {
+    "locomo": "CC BY-NC 4.0; the dataset itself is not redistributed in this bundle.",
+    "source": "https://github.com/snap-research/locomo"
+  },
+  "models": {
+    "coding_agent": {
+      "adapter": "codex-exec-jsonl",
+      "ephemeral": true,
+      "executable": "codex",
+      "ignore_rules": true,
+      "ignore_user_config": true,
+      "isolated_codex_home": true,
+      "model": "gpt-5.4",
+      "sandbox": "workspace-write",
+      "seed_supported": false,
+      "timeout_seconds": 900,
+      "tools": [
+        "shell",
+        "apply_patch"
+      ]
+    },
+    "locomo_answer": {
+      "adapter": "openai-compatible-chat-completions",
+      "base_url": "https://www.right.codes/codex/v1",
+      "max_attempts": 3,
+      "model": "gpt-5.4",
+      "retry_backoff_seconds": 1.0,
+      "timeout_seconds": 120.0
+    },
+    "locomo_judge": null
+  },
+  "schema_version": 1,
+  "source_runs": {
+    "coding": {
+      "manifest": "experiment.json",
+      "repository_commit": "fbc7023",
+      "run_id": "coding-fbc7023-gpt54"
+    },
+    "locomo": {
+      "manifest": "manifest.json",
+      "repository_commit": "e246766",
+      "run_id": "locomo-smoke-e246766-gpt54"
+    },
+    "recovery": {
+      "manifest": "manifest.json",
+      "repository_commit": "fbc7023",
+      "run_id": "recovery-fbc7023"
+    },
+    "retrieval": {
+      "manifest": "manifest.json",
+      "repository_commit": "fbc7023",
+      "run_id": "retrieval-fbc7023"
+    }
+  }
+}

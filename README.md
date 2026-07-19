@@ -10,9 +10,11 @@ runner, IDE, or cloud knowledge platform.
 
 ## Status
 
-CodeCairn is under active development. No benchmark number is published until
-the corresponding dataset, run manifest, verifier output, and aggregation code
-are checked into a reproducible report artifact.
+CodeCairn is under active development. Published benchmark numbers live in the
+[public evidence bundle](evidence/benchmark-v1/README.md), where every headline
+measurement links to its manifest, raw aggregate inputs, and verification
+command. The bundle keeps the explicitly unscored LoCoMo smoke run separate
+from the completed retrieval, recovery, and CodingMemoryBench measurements.
 
 The first release is planned in three milestones:
 
@@ -72,6 +74,18 @@ codecairn eval run retrieval benchmarks/retrieval \
   --output-root artifacts
 codecairn eval report retrieval artifacts/retrieval/retrieval-<commit>
 ```
+
+Completed evaluation artifacts can be reduced to a public, immutable evidence
+bundle without copying private runtime state. The build command generates the
+metrics, English and Chinese resume copy, and a SHA-256 inventory. Verification
+recomputes every report and generated document without provider credentials:
+
+```bash
+codecairn evidence verify evidence/benchmark-v1
+```
+
+The full artifact selection and benchmark interpretation rules are documented
+in [docs/evidence-bundle.md](docs/evidence-bundle.md).
 
 The HTTP server binds only to trusted loopback by default. It refuses a remote
 bind and accepts import or evaluation inputs only below configured source

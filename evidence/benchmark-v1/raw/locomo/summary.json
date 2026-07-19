@@ -1,0 +1,21 @@
+{
+  "accuracy": null,
+  "by_category": {},
+  "completed_question_count": 10,
+  "correct_count": null,
+  "infrastructure_failed_count": 0,
+  "mode": "smoke",
+  "question_artifact_count": 10,
+  "run_id": "locomo-smoke-e246766-gpt54",
+  "schema_version": 1,
+  "scored": false,
+  "scored_question_count": 0,
+  "suite": "locomo",
+  "unscored_reason": "smoke mode is never scored",
+  "usage": {
+    "cost_usd": null,
+    "input_tokens": 28221,
+    "known_cost_count": 0,
+    "output_tokens": 770
+  }
+}

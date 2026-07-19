@@ -14,6 +14,7 @@ from codecairn.service.application import (
     CodeCairnApplication,
     EvaluationReportRequest,
     EvaluationRunRequest,
+    EvidenceBundleBuildRequest,
 )
 from codecairn.service.cascade import MemoryIndex, MiniCascade
 from codecairn.service.recall import RecallEngine
@@ -174,6 +175,33 @@ class _LocalOperations(ApplicationOperations):
         if request.suite == "retrieval":
             return report_retrieval(request.run_dir)
         return report_recovery(request.run_dir)
+
+    def build_evidence_bundle(self, request: EvidenceBundleBuildRequest) -> dict[str, object]:
+        from codecairn.evaluation.evidence_bundle import (
+            EvidenceBundleConfig,
+            build_evidence_bundle,
+        )
+
+        artifact = build_evidence_bundle(
+            EvidenceBundleConfig(
+                bundle_id=request.bundle_id,
+                output_root=request.output_root,
+                locomo_run_dir=request.locomo_run_dir,
+                retrieval_run_dir=request.retrieval_run_dir,
+                recovery_run_dir=request.recovery_run_dir,
+                coding_run_dir=request.coding_run_dir,
+                quality_junit_path=request.quality_junit_path,
+                quality_coverage_path=request.quality_coverage_path,
+                repository_root=request.repository_root,
+                generator_commit=request.generator_commit,
+            )
+        )
+        return {"bundle_dir": str(artifact.bundle_dir), "generated": True}
+
+    def verify_evidence_bundle(self, bundle_dir: Path) -> dict[str, object]:
+        from codecairn.evaluation.evidence_bundle import verify_evidence_bundle
+
+        return verify_evidence_bundle(bundle_dir)
 
     def _run_locomo(
         self,

@@ -1,0 +1,19 @@
+{
+  "corpus_count": 20,
+  "corpus_sha256": "13a4835fb4f8f0bd60e0b5e24423df491fa6bd29c15e1fa2abb1e779f5569c58",
+  "created_at_utc": "2026-07-19T12:54:17.365385+00:00",
+  "metrics": [
+    "Recall@1",
+    "Recall@5",
+    "MRR",
+    "irrelevant@5",
+    "P95 latency"
+  ],
+  "queries_sha256": "59a11fcc19271499daacaaed66276dfa79b98f0bffc8699e3e04d0fbcd9ed521",
+  "query_count": 100,
+  "repository_commit": "fbc7023",
+  "run_id": "retrieval-fbc7023",
+  "schema_version": 1,
+  "suite": "retrieval",
+  "top_k": 10
+}

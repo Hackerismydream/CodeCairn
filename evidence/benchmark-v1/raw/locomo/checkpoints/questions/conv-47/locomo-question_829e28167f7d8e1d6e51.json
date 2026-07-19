@@ -1,0 +1,590 @@
+{
+  "answer": {
+    "cost_usd": null,
+    "input_tokens": 2505,
+    "model": "gpt-5.4",
+    "output_tokens": 24,
+    "text": "The provided context is insufficient. There are no timestamped memories mentioning any suspected health problems for John."
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "evidence": [
+    "D1:27"
+  ],
+  "golden_answer": "Obesity",
+  "judge_votes": [],
+  "question": "What are John's suspected health problems?",
+  "question_id": "locomo-question_829e28167f7d8e1d6e51",
+  "recall_markdown": "# Recall Context\n\nTask: What are John's suspected health problems?\nRepository: `locomo/conv-47`\n\n## 1. John in session_19\n\n2022-08-10T09:23:00+00:00 — John: Wow! That's cool, what's her name? Be sure to call her, everything will work out!\n\n- Type: `user_preference`\n- Source: [memory_4d2f32446a31379043b2](codecairn://memory/memory_4d2f32446a31379043b2)\n- Evidence: 1 cited raw event(s)\n\n## 2. John in session_21\n\n2022-08-26T21:22:30+00:00 — John: Wow, James, that's impressive! It's gonna be awesome. Can't wait to see what you come up with!\n\n- Type: `user_preference`\n- Source: [memory_43c9f8a1f67c09540f44](codecairn://memory/memory_43c9f8a1f67c09540f44)\n- Evidence: 1 cited raw event(s)\n\n## 3. James in session_19\n\n2022-08-10T09:18:30+00:00 — James: Sounds great! I think storytelling is what makes RPGs so fun. What game are you playing? Do you have any favorite characters?\n\n- Type: `user_preference`\n- Source: [memory_bce3833e2f45507a08b4](codecairn://memory/memory_bce3833e2f45507a08b4)\n- Evidence: 1 cited raw event(s)\n\n## 4. John in session_21\n\n2022-08-26T21:18:30+00:00 — John: Your pup is so cute, remind me what's their name? I've been helping my younger siblings out with programming since they joined the programming course. It's really cool to see them get into it.\n\n- Type: `user_preference`\n- Source: [memory_f59330b1f6ab8282d385](codecairn://memory/memory_f59330b1f6ab8282d385)\n- Evidence: 1 cited raw event(s)\n\n## 5. John in session_12\n\n2022-05-23T19:37:30+00:00 — John: Congrats on the milestone. What was it and what made it challenging? What did you learn?\n\n- Type: `user_preference`\n- Source: [memory_4080280e3ae2b34bca57](codecairn://memory/memory_4080280e3ae2b34bca57)\n- Evidence: 1 cited raw event(s)\n\n## 6. John in session_8\n\n2022-04-29T14:47:30+00:00 — John: That sounds fun! What's the game like? Does it require a lot of strategy?\n\n- Type: `user_preference`\n- Source: [memory_9f1efbbc97e746dbac11](codecairn://memory/memory_9f1efbbc97e746dbac11)\n- Evidence: 1 cited raw event(s)\n\n## 7. John in session_28\n\n2022-10-21T19:36:30+00:00 — John: Hey James! I'm excited to catch up. What's been up lately?\n\n- Type: `user_preference`\n- Source: [memory_0ccd509402151b42790d](codecairn://memory/memory_0ccd509402151b42790d)\n- Evidence: 1 cited raw event(s)\n\n## 8. John in session_4\n\n2022-04-04T14:13:00+00:00 — John: Hey James! Long time no chat. What's up? Been playing any new games lately?\n\n- Type: `user_preference`\n- Source: [memory_1cd159b32588e3b92b5f](codecairn://memory/memory_1cd159b32588e3b92b5f)\n- Evidence: 1 cited raw event(s)\n\n## 9. John in session_4\n\n2022-04-04T14:18:00+00:00 — John: How cool is this! What advice do you remember most?\n\n- Type: `user_preference`\n- Source: [memory_b5a2d5d1d8fb1f956ad8](codecairn://memory/memory_b5a2d5d1d8fb1f956ad8)\n- Evidence: 1 cited raw event(s)\n\n## 10. James in session_8\n\n2022-04-29T14:36:00+00:00 — James: Hey John! What's up? Anything fun going on?\n\n- Type: `user_preference`\n- Source: [memory_00f4978ff2c0171070b8](codecairn://memory/memory_00f4978ff2c0171070b8)\n- Evidence: 1 cited raw event(s)\n\n## 11. John in session_1\n\n2022-03-17T15:53:00+00:00 — John: Aww, they're adorable! What are the names of your pets? And what are your plans for the app?\n\n- Type: `user_preference`\n- Source: [memory_89afca56a13fb54199b3](codecairn://memory/memory_89afca56a13fb54199b3)\n- Evidence: 1 cited raw event(s)\n\n## 12. James in session_8\n\n2022-04-29T14:37:00+00:00 — James: Freelancing can definitely be a great way to sharpen skills and gain experience. What projects are you currently working on?\n\n- Type: `user_preference`\n- Source: [memory_e3ffb91da34189074fe0](codecairn://memory/memory_e3ffb91da34189074fe0)\n- Evidence: 1 cited raw event(s)\n\n## 13. James in session_30\n\n2022-11-05T17:21:00+00:00 — James: That's great news. What did you do?\n\n- Type: `user_preference`\n- Source: [memory_8762bed65f0d3538c0a4](codecairn://memory/memory_8762bed65f0d3538c0a4)\n- Evidence: 1 cited raw event(s)\n\n## 14. John in session_4\n\n2022-04-04T14:19:00+00:00 — John: Yeah, comms and teamwork are super important in gaming. When everyone works together, it's incredible what can be accomplished in a match. How do you usually communicate with your team?\n\n- Type: `user_preference`\n- Source: [memory_cc9c4fc4d3ade24a968d](codecairn://memory/memory_cc9c4fc4d3ade24a968d)\n- Evidence: 1 cited raw event(s)\n\n## 15. John in session_2\n\n2022-03-20T21:32:30+00:00 — John: Show me what you've got! What is it?\n\n- Type: `user_preference`\n- Source: [memory_48f23637b55e87ea597f](codecairn://memory/memory_48f23637b55e87ea597f)\n- Evidence: 1 cited raw event(s)\n\n## 16. John in session_22\n\n2022-09-01T18:54:30+00:00 — John: This game looks great! What inspired you to create it?\n\n- Type: `user_preference`\n- Source: [memory_299674b775c6dd72aef4](codecairn://memory/memory_299674b775c6dd72aef4)\n- Evidence: 1 cited raw event(s)\n\n## 17. James in session_28\n\n2022-10-21T19:40:00+00:00 — James: That's great, John! Sounds like the seminar went well. What did you learn from it?\n\n- Type: `user_preference`\n- Source: [memory_03b355ca209353fc59f0](codecairn://memory/memory_03b355ca209353fc59f0)\n- Evidence: 1 cited raw event(s)\n\n## 18. John in session_31\n\n2022-11-07T21:01:30+00:00 — John: What is this? Looking forward to hearing your story!\n\n- Type: `user_preference`\n- Source: [memory_8024e1ffca752d7eabd7](codecairn://memory/memory_8024e1ffca752d7eabd7)\n- Evidence: 1 cited raw event(s)\n\n## 19. John in session_25\n\n2022-09-20T20:58:00+00:00 — John: Woohoo, congrats James! That's awesome. Sounds like you're doing well. All your hard work is paying off, so keep it up! [Image caption: a photo of a card with a graduation cap on it]\n\n- Type: `user_preference`\n- Source: [memory_1d72251e2c6902a0fe0a](codecairn://memory/memory_1d72251e2c6902a0fe0a)\n- Evidence: 1 cited raw event(s)\n\n## 20. James in session_7\n\n2022-04-23T11:11:30+00:00 — James: Gotcha, what's the problem with the project? Need a hand figuring out some ideas?\n\n- Type: `user_preference`\n- Source: [memory_348e2bdb0b8c5a8c2a03](codecairn://memory/memory_348e2bdb0b8c5a8c2a03)\n- Evidence: 1 cited raw event(s)\n",
+  "retrieval": {
+    "latency_ms": 104.697,
+    "lexical_candidate_count": 80,
+    "limit": 20,
+    "query": "What are John's suspected health problems?",
+    "ranked": [
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "127b339999ca252b9d9f5a7ff4e1a4ce100e66ff0f5628f0d7f0bd568e33f275",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 435,
+            "raw_event_sha256": "2628093875ac26c17cfd940e7248f3c64a8ef43303f7fdbd8929ee42b2501c73",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_19"
+          }
+        ],
+        "final_score": 0.028850145289,
+        "lexical_rank": 13,
+        "lexical_score": 2.98560833931,
+        "memory_id": "memory_4d2f32446a31379043b2",
+        "memory_type": "user_preference",
+        "rank": 1,
+        "source_uri": "codecairn://memory/memory_4d2f32446a31379043b2",
+        "summary": "2022-08-10T09:23:00+00:00 — John: Wow! That's cool, what's her name? Be sure to call her, everything will work out!",
+        "title": "John in session_19",
+        "vector_rank": 6,
+        "vector_score": 0.400178111195
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "5e4f8ab968378b535e417686119ab7883a11a670e80f614ccd2d83405e7a1148",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 469,
+            "raw_event_sha256": "e078787c1c412baf3e79e74dba16de1e7a19a045444298c0681627fdaa33d04d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_21"
+          }
+        ],
+        "final_score": 0.02632034632,
+        "lexical_rank": 15,
+        "lexical_score": 2.965411663055,
+        "memory_id": "memory_43c9f8a1f67c09540f44",
+        "memory_type": "user_preference",
+        "rank": 2,
+        "source_uri": "codecairn://memory/memory_43c9f8a1f67c09540f44",
+        "summary": "2022-08-26T21:22:30+00:00 — John: Wow, James, that's impressive! It's gonna be awesome. Can't wait to see what you come up with!",
+        "title": "John in session_21",
+        "vector_rank": 17,
+        "vector_score": 0.393468040872
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "0afe249c2d9a1e0ffeca345dc2fcfd93f6fa5fee54b153aad66a31046850f60f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 426,
+            "raw_event_sha256": "fa829ef11c84908d931918077dde570f80469ce0f03d6e1b466a6fc38136d2fc",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_19"
+          }
+        ],
+        "final_score": 0.025303344185,
+        "lexical_rank": 49,
+        "lexical_score": 2.409786701202,
+        "memory_id": "memory_bce3833e2f45507a08b4",
+        "memory_type": "user_preference",
+        "rank": 3,
+        "source_uri": "codecairn://memory/memory_bce3833e2f45507a08b4",
+        "summary": "2022-08-10T09:18:30+00:00 — James: Sounds great! I think storytelling is what makes RPGs so fun. What game are you playing? Do you have any favorite characters?",
+        "title": "James in session_19",
+        "vector_rank": 2,
+        "vector_score": 0.410020631517
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "d7036268876b64c316cd6b3b17f890fd4f77002b05fdf61a88e67f5bd6d637c8",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 461,
+            "raw_event_sha256": "3cdc07e9f4e740bdfa8d512395cc4d0352140f3da9d76b94706eb3519d0a38be",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_21"
+          }
+        ],
+        "final_score": 0.024243314722,
+        "lexical_rank": 22,
+        "lexical_score": 2.840698719025,
+        "memory_id": "memory_f59330b1f6ab8282d385",
+        "memory_type": "user_preference",
+        "rank": 4,
+        "source_uri": "codecairn://memory/memory_f59330b1f6ab8282d385",
+        "summary": "2022-08-26T21:18:30+00:00 — John:  Your pup is so cute, remind me what's their name? I've been helping my younger siblings out with programming since they joined the programming course. It's really cool to see them get into it.",
+        "title": "John in session_21",
+        "vector_rank": 23,
+        "vector_score": 0.38952904068
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "5b2654a7423c821438f1a9529a1b4f9bd24c5874498439364e1c5741a718d25b",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 270,
+            "raw_event_sha256": "34c08373ad9e3c57de52d7dca94a4d44dc85f225f6cd030ca952f18ea5ad66b0",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_12"
+          }
+        ],
+        "final_score": 0.024185517143,
+        "lexical_rank": 39,
+        "lexical_score": 2.617293119431,
+        "memory_id": "memory_4080280e3ae2b34bca57",
+        "memory_type": "user_preference",
+        "rank": 5,
+        "source_uri": "codecairn://memory/memory_4080280e3ae2b34bca57",
+        "summary": "2022-05-23T19:37:30+00:00 — John: Congrats on the milestone. What was it and what made it challenging? What did you learn?",
+        "title": "John in session_12",
+        "vector_rank": 11,
+        "vector_score": 0.395629021766
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "a3719b375167a8bb2768dc0e12af7a3c2459b5bf63e676de68f8f5b338d4ae71",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 185,
+            "raw_event_sha256": "3cc267819e5fa8247165ddc1f8edd43094123f0f9aef49dee769243bd5269122",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_8"
+          }
+        ],
+        "final_score": 0.023859649123,
+        "lexical_rank": 35,
+        "lexical_score": 2.645893335342,
+        "memory_id": "memory_9f1efbbc97e746dbac11",
+        "memory_type": "user_preference",
+        "rank": 6,
+        "source_uri": "codecairn://memory/memory_9f1efbbc97e746dbac11",
+        "summary": "2022-04-29T14:47:30+00:00 — John: That sounds fun! What's the game like? Does it require a lot of strategy?",
+        "title": "John in session_8",
+        "vector_rank": 15,
+        "vector_score": 0.394160920744
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "1f9cabfe649b92ea420cdda07d3c89957035366aa2adc1a14391ac372d6fb8c7",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 595,
+            "raw_event_sha256": "e908a501f8a73eec0dde009a1d3f92e5e3a2cc6413a658ecc1bf42df755d9ebb",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_28"
+          }
+        ],
+        "final_score": 0.023574561404,
+        "lexical_rank": 36,
+        "lexical_score": 2.624698400497,
+        "memory_id": "memory_0ccd509402151b42790d",
+        "memory_type": "user_preference",
+        "rank": 7,
+        "source_uri": "codecairn://memory/memory_0ccd509402151b42790d",
+        "summary": "2022-10-21T19:36:30+00:00 — John: Hey James! I'm excited to catch up. What's been up lately?",
+        "title": "John in session_28",
+        "vector_rank": 16,
+        "vector_score": 0.393503165083
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b1c0cc68e86c83640543e6fee9333b885ad7942a2d7d0f115650de0d20dec147",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 81,
+            "raw_event_sha256": "98c329651e9069d2770fe2bbeef32586d9a3b34cec7680864319296abc6f9624",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_4"
+          }
+        ],
+        "final_score": 0.021805752004,
+        "lexical_rank": 41,
+        "lexical_score": 2.603838443756,
+        "memory_id": "memory_1cd159b32588e3b92b5f",
+        "memory_type": "user_preference",
+        "rank": 8,
+        "source_uri": "codecairn://memory/memory_1cd159b32588e3b92b5f",
+        "summary": "2022-04-04T14:13:00+00:00 — John: Hey James! Long time no chat. What's up? Been playing any new games lately?",
+        "title": "John in session_4",
+        "vector_rank": 24,
+        "vector_score": 0.389491638353
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "24da99fd555f843e8c53ba9037b57e0b8ce4a3cf7ba565a79740852dcc9f93c5",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 91,
+            "raw_event_sha256": "c9dbe15429dc7725469ad0d9534ff53b734610510264b00c3ff8d263ff983ec9",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_4"
+          }
+        ],
+        "final_score": 0.021686998228,
+        "lexical_rank": 79,
+        "lexical_score": 1.634462714195,
+        "memory_id": "memory_b5a2d5d1d8fb1f956ad8",
+        "memory_type": "user_preference",
+        "rank": 9,
+        "source_uri": "codecairn://memory/memory_b5a2d5d1d8fb1f956ad8",
+        "summary": "2022-04-04T14:18:00+00:00 — John: How cool is this! What advice do you remember most?",
+        "title": "John in session_4",
+        "vector_rank": 9,
+        "vector_score": 0.398587994609
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "bd6d2985fb3920365a31f1f2d2028bf35d17c438d00e6e8c30f6da23cc9571bc",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 162,
+            "raw_event_sha256": "21450b1b0d1516712698aafc5276592e69c4cec5af439f0d363bf4e1cb982ad7",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_8"
+          }
+        ],
+        "final_score": 0.021637426901,
+        "lexical_rank": 30,
+        "lexical_score": 2.719472885132,
+        "memory_id": "memory_00f4978ff2c0171070b8",
+        "memory_type": "user_preference",
+        "rank": 10,
+        "source_uri": "codecairn://memory/memory_00f4978ff2c0171070b8",
+        "summary": "2022-04-29T14:36:00+00:00 — James: Hey John! What's up? Anything fun going on?",
+        "title": "James in session_8",
+        "vector_rank": 35,
+        "vector_score": 0.388052656243
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "271bcf2f13ba665180a0f9302d2b980378b8039b2dcb4a7639b18eaab57a2800",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 12,
+            "raw_event_sha256": "9f916a217878e4b3567b4befe55779b0addbe1a36110ede87d2a92b84ab82cf2",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_1"
+          }
+        ],
+        "final_score": 0.020164526485,
+        "lexical_rank": 52,
+        "lexical_score": 2.272086381912,
+        "memory_id": "memory_89afca56a13fb54199b3",
+        "memory_type": "user_preference",
+        "rank": 11,
+        "source_uri": "codecairn://memory/memory_89afca56a13fb54199b3",
+        "summary": "2022-03-17T15:53:00+00:00 — John: Aww, they're adorable! What are the names of your pets? And what are your plans for the app?",
+        "title": "John in session_1",
+        "vector_rank": 29,
+        "vector_score": 0.388877896926
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "2acafdf6c1f6743eb6ebb3d3ae24cd9a18c1b8107cde65c8db4acf7cc5327feb",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 164,
+            "raw_event_sha256": "b8d441946ac2966fe0396946207553727fb166c2d832496743190d746a2559d9",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_8"
+          }
+        ],
+        "final_score": 0.019824628288,
+        "lexical_rank": 62,
+        "lexical_score": 1.789149880409,
+        "memory_id": "memory_e3ffb91da34189074fe0",
+        "memory_type": "user_preference",
+        "rank": 12,
+        "source_uri": "codecairn://memory/memory_e3ffb91da34189074fe0",
+        "summary": "2022-04-29T14:37:00+00:00 — James: Freelancing can definitely be a great way to sharpen skills and gain experience. What projects are you currently working on?",
+        "title": "James in session_8",
+        "vector_rank": 26,
+        "vector_score": 0.389029567722
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "6da9b00a6cf578aa85bb0c16a5051e1938163cb4a14fd5b30009d87fa476d97d",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 647,
+            "raw_event_sha256": "f0816982570fb3a5ad1d70344cc854fa61f5ce64bc94d8e8402f57a7009e2c82",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_30"
+          }
+        ],
+        "final_score": 0.019801084991,
+        "lexical_rank": 19,
+        "lexical_score": 2.876224994659,
+        "memory_id": "memory_8762bed65f0d3538c0a4",
+        "memory_type": "user_preference",
+        "rank": 13,
+        "source_uri": "codecairn://memory/memory_8762bed65f0d3538c0a4",
+        "summary": "2022-11-05T17:21:00+00:00 — James: That's great news. What did you do?",
+        "title": "James in session_30",
+        "vector_rank": 80,
+        "vector_score": 0.379176886893
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "2e429ad2d81cad744e03e334de9c79f8680203751631de7a971c5c5b55bba5fa",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 93,
+            "raw_event_sha256": "93f939816fd54e142f2d56fd3e5ef11c12d6d1bd1e82e848c65935e88a7df57e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_4"
+          }
+        ],
+        "final_score": 0.019549876025,
+        "lexical_rank": 47,
+        "lexical_score": 2.513900279999,
+        "memory_id": "memory_cc9c4fc4d3ade24a968d",
+        "memory_type": "user_preference",
+        "rank": 14,
+        "source_uri": "codecairn://memory/memory_cc9c4fc4d3ade24a968d",
+        "summary": "2022-04-04T14:19:00+00:00 — John: Yeah, comms and teamwork are super important in gaming. When everyone works together, it's incredible what can be accomplished in a match. How do you usually communicate with your team?",
+        "title": "John in session_4",
+        "vector_rank": 38,
+        "vector_score": 0.3864497005
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "e997189638aaa5dc011d84edd74efc9b2f4c21cb0458820812686ae7501197f1",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 50,
+            "raw_event_sha256": "beee850c215e013d9e1bdfa3fb4c264dbf426f8f86f9ef8afd5b1097837afcd4",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_2"
+          }
+        ],
+        "final_score": 0.018812930578,
+        "lexical_rank": 51,
+        "lexical_score": 2.296686172485,
+        "memory_id": "memory_48f23637b55e87ea597f",
+        "memory_type": "user_preference",
+        "rank": 15,
+        "source_uri": "codecairn://memory/memory_48f23637b55e87ea597f",
+        "summary": "2022-03-20T21:32:30+00:00 — John: Show me what you've got! What is it?",
+        "title": "John in session_2",
+        "vector_rank": 42,
+        "vector_score": 0.385707989085
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "7817e6d622075ade416774a17fc658d10e381a3ee7da046592453f69b91a7621",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 482,
+            "raw_event_sha256": "837501a3df2bc3e03b68b62d96e28105ab6d19f27d9c2c35a155c530e779c0e1",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_22"
+          }
+        ],
+        "final_score": 0.018793522947,
+        "lexical_rank": 77,
+        "lexical_score": 1.641239404678,
+        "memory_id": "memory_299674b775c6dd72aef4",
+        "memory_type": "user_preference",
+        "rank": 16,
+        "source_uri": "codecairn://memory/memory_299674b775c6dd72aef4",
+        "summary": "2022-09-01T18:54:30+00:00 — John: This game looks great! What inspired you to create it?",
+        "title": "John in session_22",
+        "vector_rank": 27,
+        "vector_score": 0.388901604594
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "e8d1afbfa2795bc3114f0ffd119b03b3de6c748579517ae6248d0fe462e0158c",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 602,
+            "raw_event_sha256": "53cd94132240ed12751959c22f24c1279d89a9fc606d037ff27105525ff81d98",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_28"
+          }
+        ],
+        "final_score": 0.017937567945,
+        "lexical_rank": 34,
+        "lexical_score": 2.66647362709,
+        "memory_id": "memory_03b355ca209353fc59f0",
+        "memory_type": "user_preference",
+        "rank": 17,
+        "source_uri": "codecairn://memory/memory_03b355ca209353fc59f0",
+        "summary": "2022-10-21T19:40:00+00:00 — James: That's great, John! Sounds like the seminar went well. What did you learn from it?",
+        "title": "James in session_28",
+        "vector_rank": 77,
+        "vector_score": 0.379473354673
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "da26093fb5df1c7fbe5737c383648842a9e94b7348d6fa16051531942ff4df62",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 673,
+            "raw_event_sha256": "afa82dfffa831a1450347c7e66353e9ee2fafa6b86e5ec2dcc3d106c0714f52f",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_31"
+          }
+        ],
+        "final_score": 0.01680848096,
+        "lexical_rank": 74,
+        "lexical_score": 1.6480717659,
+        "memory_id": "memory_8024e1ffca752d7eabd7",
+        "memory_type": "user_preference",
+        "rank": 18,
+        "source_uri": "codecairn://memory/memory_8024e1ffca752d7eabd7",
+        "summary": "2022-11-07T21:01:30+00:00 — John: What is this? Looking forward to hearing your story!",
+        "title": "John in session_31",
+        "vector_rank": 47,
+        "vector_score": 0.383977665362
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "edd0d2fcf7693c0b9ecf986652834ef2b8bbf261c6bf929627e189eac271eed9",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 544,
+            "raw_event_sha256": "a62bc5648c2d4836327998e70d958ec57ab3a635eaf50e2eeeb821ca741cae49",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_25"
+          }
+        ],
+        "final_score": 0.016393442623,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_1d72251e2c6902a0fe0a",
+        "memory_type": "user_preference",
+        "rank": 19,
+        "source_uri": "codecairn://memory/memory_1d72251e2c6902a0fe0a",
+        "summary": "2022-09-20T20:58:00+00:00 — John: Woohoo, congrats James! That's awesome. Sounds like you're doing well. All your hard work is paying off, so keep it up! [Image caption: a photo of a card with a graduation cap on it]",
+        "title": "John in session_25",
+        "vector_rank": 1,
+        "vector_score": 0.412224732291
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "ed51f7e145019815af92c0db50446b565165f64217433a9d74b0d080e18f96b3",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 156,
+            "raw_event_sha256": "3fe6e118df03baead3f7627818b139febb542f2c5d518db286deae3fcd5066d1",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-47/session_7"
+          }
+        ],
+        "final_score": 0.016393442623,
+        "lexical_rank": 1,
+        "lexical_score": 7.234295845032,
+        "memory_id": "memory_348e2bdb0b8c5a8c2a03",
+        "memory_type": "user_preference",
+        "rank": 20,
+        "source_uri": "codecairn://memory/memory_348e2bdb0b8c5a8c2a03",
+        "summary": "2022-04-23T11:11:30+00:00 — James: Gotcha, what's the problem with the project? Need a hand figuring out some ideas?",
+        "title": "James in session_7",
+        "vector_rank": null,
+        "vector_score": null
+      }
+    ],
+    "repo_key": "locomo/conv-47",
+    "vector_candidate_count": 80
+  },
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "status": "completed"
+}

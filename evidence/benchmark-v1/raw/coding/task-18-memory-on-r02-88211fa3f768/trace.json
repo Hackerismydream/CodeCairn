@@ -1,0 +1,124 @@
+{
+  "events": [
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 1
+    },
+    {
+      "command": "/bin/zsh -lc \"rg -n \\\"\\\\bextension\\\\b\\\" .\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 2
+    },
+    {
+      "command": "/bin/zsh -lc 'rg --files .'",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 3
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 4
+    },
+    {
+      "command": "/bin/zsh -lc \"nl -ba kata.py | sed -n '1,180p'\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 5
+    },
+    {
+      "command": "/bin/zsh -c 'python -m pytest -q'",
+      "exit_code": 5,
+      "kind": "command",
+      "path": null,
+      "step": 6
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 7
+    },
+    {
+      "command": "/bin/zsh -c \"python - <<'PY'\nfrom pathlib import PurePosixPath\nfor s in ['.env','foo','foo.txt','archive.tar.gz','dir/.env','dir/file','dir/file.','..config','a.b/c']:\n    print(s, '->', repr(PurePosixPath(s).suffix), 'name=', repr(PurePosixPath(s).name))\nPY\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 8
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 9
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "file_change",
+      "path": "/private/tmp/codecairn-evidence-fbc7023/coding/coding-fbc7023-gpt54/task-18-memory-on-r02-88211fa3f768/workspace/kata.py",
+      "step": 10
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 11
+    },
+    {
+      "command": "/bin/zsh -c \"python - <<'PY'\nfrom kata import extension\ncases = {\n    '.env': '',\n    'file': '',\n    'dir/file': '',\n    'file.txt': '.txt',\n    'archive.tar.gz': '.gz',\n    'dir/.env': '',\n    '.bashrc.local': '.local',\n    'file.': '',\n    '..config': '.config',\n}\nfor value, expected in cases.items():\n    actual = extension(value)\n    print(f'{value\"'!r}: {actual!r} expected {expected!r}'\"')\n    assert actual == expected, (value, actual, expected)\nPY\"",
+      "exit_code": 1,
+      "kind": "command",
+      "path": null,
+      "step": 12
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 13
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "file_change",
+      "path": "/private/tmp/codecairn-evidence-fbc7023/coding/coding-fbc7023-gpt54/task-18-memory-on-r02-88211fa3f768/workspace/kata.py",
+      "step": 14
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 15
+    },
+    {
+      "command": "/bin/zsh -c \"python - <<'PY'\nfrom kata import extension\ncases = {\n    '.env': '',\n    'file': '',\n    'dir/file': '',\n    'file.txt': '.txt',\n    'archive.tar.gz': '.gz',\n    'dir/.env': '',\n    '.bashrc.local': '.local',\n    'file.': '',\n    '..config': '.config',\n}\nfor value, expected in cases.items():\n    actual = extension(value)\n    print(f'{value\"'!r}: {actual!r} expected {expected!r}'\"')\n    assert actual == expected, (value, actual, expected)\nPY\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 16
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 17
+    }
+  ],
+  "schema_version": 1
+}

@@ -28,12 +28,30 @@ class EvaluationReportRequest:
     run_dir: Path
 
 
+@dataclass(frozen=True, slots=True)
+class EvidenceBundleBuildRequest:
+    bundle_id: str
+    output_root: Path
+    locomo_run_dir: Path
+    retrieval_run_dir: Path
+    recovery_run_dir: Path
+    coding_run_dir: Path
+    quality_junit_path: Path
+    quality_coverage_path: Path
+    repository_root: Path
+    generator_commit: str
+
+
 class ApplicationOperations(Protocol):
     def doctor(self) -> dict[str, object]: ...
 
     def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]: ...
 
     def report_evaluation(self, request: EvaluationReportRequest) -> dict[str, object]: ...
+
+    def build_evidence_bundle(self, request: EvidenceBundleBuildRequest) -> dict[str, object]: ...
+
+    def verify_evidence_bundle(self, bundle_dir: Path) -> dict[str, object]: ...
 
 
 class CodeCairnApplication:
@@ -70,3 +88,9 @@ class CodeCairnApplication:
 
     def report_evaluation(self, request: EvaluationReportRequest) -> dict[str, object]:
         return self._operations.report_evaluation(request)
+
+    def build_evidence_bundle(self, request: EvidenceBundleBuildRequest) -> dict[str, object]:
+        return self._operations.build_evidence_bundle(request)
+
+    def verify_evidence_bundle(self, bundle_dir: Path) -> dict[str, object]:
+        return self._operations.verify_evidence_bundle(bundle_dir)

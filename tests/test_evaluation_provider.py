@@ -55,7 +55,9 @@ def test_openai_compatible_adapter_keeps_secrets_out_of_public_config(
     assert model.public_config == {
         "adapter": "openai-compatible-chat-completions",
         "base_url": "https://models.example/v1",
+        "max_attempts": 3,
         "model": "judge-model",
+        "retry_backoff_seconds": 1.0,
         "timeout_seconds": 30,
     }
     assert "secret-value" not in str(model.public_config)
@@ -80,3 +82,28 @@ def test_model_endpoint_rejects_credential_bearing_or_non_http_urls(base_url: st
             api_key="secret",
             model="model",
         )
+
+
+def test_model_retries_transient_transport_errors(monkeypatch: pytest.MonkeyPatch) -> None:
+    attempts = 0
+
+    def flaky_post(*args: object, **kwargs: object) -> FakeResponse:
+        nonlocal attempts
+        attempts += 1
+        if attempts < 3:
+            raise httpx.RemoteProtocolError("connection closed")
+        return FakeResponse()
+
+    monkeypatch.setattr(httpx, "post", flaky_post)
+    model = OpenAICompatibleTextModel(
+        base_url="https://models.example/v1",
+        api_key="secret",
+        model="fixed-model",
+        max_attempts=3,
+        retry_backoff_seconds=0,
+    )
+
+    response = model.generate(system="answer", user="question", seed=17)
+
+    assert attempts == 3
+    assert response.text == '{"label":"CORRECT"}'

@@ -1,0 +1,584 @@
+{
+  "answer": {
+    "cost_usd": null,
+    "input_tokens": 2739,
+    "model": "gpt-5.4",
+    "output_tokens": 48,
+    "text": "Maria had dinner with her mom. The context says on 2023-05-04 she mentioned, “My mom and I made some dinner together last night,” which refers to May 3, 2023."
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "evidence": [
+    "D13:16"
+  ],
+  "golden_answer": "her mother",
+  "judge_votes": [],
+  "question": "Who did Maria have dinner with on May 3, 2023?",
+  "question_id": "locomo-question_d29c5ea8befb9b00c939",
+  "recall_markdown": "# Recall Context\n\nTask: Who did Maria have dinner with on May 3, 2023?\nRepository: `locomo/conv-41`\n\n## 1. Maria in session_13\n\n2023-05-04T15:25:30+00:00 — Maria: Wow, John! It's great when you have that kind of support. My mom and I made some dinner together last night! [Image caption: a photo of a table with a variety of food on it]\n\n- Type: `user_preference`\n- Source: [memory_5c25aeab9ba6d670ac7a](codecairn://memory/memory_5c25aeab9ba6d670ac7a)\n- Evidence: 1 cited raw event(s)\n\n## 2. Maria in session_2\n\n2022-12-22T18:20:00+00:00 — Maria: Woah, that's a nice pic, John! You all obviously had a blast at dinner. Nothing beats getting together with loved ones for a good meal - it makes some awesome memories!\n\n- Type: `user_preference`\n- Source: [memory_6c42c112b49c1a4dbc99](codecairn://memory/memory_6c42c112b49c1a4dbc99)\n- Evidence: 1 cited raw event(s)\n\n## 3. Maria in session_23\n\n2023-07-07T18:35:30+00:00 — Maria: For sure! We can keep doing great stuff and making a difference. Well, I'm off to have dinner with some friends from the gym. Talk to you later!\n\n- Type: `user_preference`\n- Source: [memory_2fbf8d30a887544f76e6](codecairn://memory/memory_2fbf8d30a887544f76e6)\n- Evidence: 1 cited raw event(s)\n\n## 4. Maria in session_32\n\n2023-08-16T11:10:30+00:00 — Maria: Wow, John! It looks like everyone was working hard. Did you raise any donations?\n\n- Type: `user_preference`\n- Source: [memory_15b96cbe0a6cf996b426](codecairn://memory/memory_15b96cbe0a6cf996b426)\n- Evidence: 1 cited raw event(s)\n\n## 5. Maria in session_24\n\n2023-07-17T15:34:30+00:00 — Maria: Wow, John! That sounds awesome. It's so important to appreciate and support those who served in the military. Did you learn anything cool during your visit?\n\n- Type: `user_preference`\n- Source: [memory_97dd35a3865ca030115b](codecairn://memory/memory_97dd35a3865ca030115b)\n- Evidence: 1 cited raw event(s)\n\n## 6. Maria in session_2\n\n2022-12-22T18:21:00+00:00 — Maria: Yeah, John! It definitely builds a strong bond. Those shared meals really make life enjoyable and meaningful. What did you make? [Image caption: a photo of a table with pizzas and salads on it]\n\n- Type: `user_preference`\n- Source: [memory_d05ca21b71a6240efd0a](codecairn://memory/memory_d05ca21b71a6240efd0a)\n- Evidence: 1 cited raw event(s)\n\n## 7. Maria in session_18\n\n2023-06-12T14:48:00+00:00 — Maria: Glad you're finding comfort, John. That mountaineering trip sounds amazing. Did you reach the summit? When I was younger, my family and I went on a road trip to Oregon. [Image caption: a photo of a person standing on a cliff overlooking a canyon]\n\n- Type: `user_preference`\n- Source: [memory_1dbf7b930f386addc51c](codecairn://memory/memory_1dbf7b930f386addc51c)\n- Evidence: 1 cited raw event(s)\n\n## 8. Maria in session_15\n\n2023-05-20T19:43:30+00:00 — Maria: Wow, John, that looks great! What did you do to make them so happy?\n\n- Type: `user_preference`\n- Source: [memory_b5b2a92548e76df1f2c2](codecairn://memory/memory_b5b2a92548e76df1f2c2)\n- Evidence: 1 cited raw event(s)\n\n## 9. Maria in session_7\n\n2023-02-25T20:57:00+00:00 — Maria: Wow John, your enthusiasm for making a better future is inspiring. Making a positive impact is so rewarding! While volunteering yesterday, I met this amazing woman, Jean, who had been through a lot, yet stayed optimistic and resilient. She showed me the importance of gratitude and connection. [Image caption: a photo of a woman with a blue shirt and a ring on her neck]\n\n- Type: `user_preference`\n- Source: [memory_ff808ac39b3729be2b32](codecairn://memory/memory_ff808ac39b3729be2b32)\n- Evidence: 1 cited raw event(s)\n\n## 10. John in session_27\n\n2023-08-03T18:23:00+00:00 — John: Maria, what's the deal with that note? Who wrote it and what does it say?\n\n- Type: `user_preference`\n- Source: [memory_4930f0eb142bd2169645](codecairn://memory/memory_4930f0eb142bd2169645)\n- Evidence: 1 cited raw event(s)\n\n## 11. Maria in session_24\n\n2023-07-17T15:38:30+00:00 — Maria: This looks like fun! Where did you see that?\n\n- Type: `user_preference`\n- Source: [memory_b9f467043526e2348036](codecairn://memory/memory_b9f467043526e2348036)\n- Evidence: 1 cited raw event(s)\n\n## 12. John in session_15\n\n2023-05-20T19:43:00+00:00 — John: Awesome, Maria! I knew you'd be on board. With your help, we can make a real impact. Thank you so much! Here's a pic from last Friday with some veterans who are really excited about this. Their support keeps me motivated. [Image caption: a photography of a man shaking hands with a soldier in uniform]\n\n- Type: `user_preference`\n- Source: [memory_0a2f345930ae2a7c6105](codecairn://memory/memory_0a2f345930ae2a7c6105)\n- Evidence: 1 cited raw event(s)\n\n## 13. Maria in session_12\n\n2023-04-18T19:38:30+00:00 — Maria: Wow, that must have been awesome! Being around people who share your passion is truly inspiring. How did it feel to be surrounded by like-minded individuals there?\n\n- Type: `user_preference`\n- Source: [memory_99c4be1aaeb64e565ae5](codecairn://memory/memory_99c4be1aaeb64e565ae5)\n- Evidence: 1 cited raw event(s)\n\n## 14. John in session_28\n\n2023-08-05T17:21:00+00:00 — John: Thanks Maria! I may have found a job at a tech company I like that needs my mechanical skills for their hardware team. It feels different, but I think it's a great opportunity to learn and contribute.\n\n- Type: `user_preference`\n- Source: [memory_a716674aae07710b0553](codecairn://memory/memory_a716674aae07710b0553)\n- Evidence: 1 cited raw event(s)\n\n## 15. John in session_3\n\n2023-01-01T20:36:00+00:00 — John: That's a chill pic! Where did you find it?\n\n- Type: `user_preference`\n- Source: [memory_cb24e3745ac11191776c](codecairn://memory/memory_cb24e3745ac11191776c)\n- Evidence: 1 cited raw event(s)\n\n## 16. John in session_15\n\n2023-05-20T19:38:00+00:00 — John: Hey Maria, how's it going? Been real busy tackling a project to support military veterans. Trying to get a petition going, it's pretty rewarding but kinda stressful. How are you?\n\n- Type: `user_preference`\n- Source: [memory_d8036a48077821dd5772](codecairn://memory/memory_d8036a48077821dd5772)\n- Evidence: 1 cited raw event(s)\n\n## 17. Maria in session_8\n\n2023-03-06T18:12:00+00:00 — Maria: Wow, that's really cool! Have you discussed it with anyone yet?\n\n- Type: `user_preference`\n- Source: [memory_adf7ce9f32d3119db057](codecairn://memory/memory_adf7ce9f32d3119db057)\n- Evidence: 1 cited raw event(s)\n\n## 18. Maria in session_25\n\n2023-07-22T18:26:30+00:00 — Maria: Cool, John! That definitely makes the workout experience more enjoyable. Do they offer a variety of classes?\n\n- Type: `user_preference`\n- Source: [memory_cd8674ab7267aa7af706](codecairn://memory/memory_cd8674ab7267aa7af706)\n- Evidence: 1 cited raw event(s)\n\n## 19. Maria in session_6\n\n2023-02-05T14:38:00+00:00 — Maria: Wow, John, that's incredible! What inspired you to get involved with something like this?\n\n- Type: `user_preference`\n- Source: [memory_afd387c9204622427aed](codecairn://memory/memory_afd387c9204622427aed)\n- Evidence: 1 cited raw event(s)\n\n## 20. John in session_6\n\n2023-02-05T14:38:30+00:00 — John: Seeing the effect unemployment has on our neighbors made me decide to act. I wanted to help out in these tough times by doing a community food drive. We can all make a difference! [Image caption: a photo of a thanksgiving potluck and food drive flyer]\n\n- Type: `user_preference`\n- Source: [memory_60de46521425fe76907f](codecairn://memory/memory_60de46521425fe76907f)\n- Evidence: 1 cited raw event(s)\n",
+  "retrieval": {
+    "latency_ms": 114.218,
+    "lexical_candidate_count": 80,
+    "limit": 20,
+    "query": "Who did Maria have dinner with on May 3, 2023?",
+    "ranked": [
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "a2b429689ad7195be26d4bac0c9863c8fd899c4cece87be952866c1f886dae1e",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 263,
+            "raw_event_sha256": "2d3b03d8d6045f83b80e744b28535ef836f7c093f5a010c6a9f0cd784e2eda2e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_13"
+          }
+        ],
+        "final_score": 0.031778058008,
+        "lexical_rank": 5,
+        "lexical_score": 6.135516166687,
+        "memory_id": "memory_5c25aeab9ba6d670ac7a",
+        "memory_type": "user_preference",
+        "rank": 1,
+        "source_uri": "codecairn://memory/memory_5c25aeab9ba6d670ac7a",
+        "summary": "2023-05-04T15:25:30+00:00 — Maria: Wow, John! It's great when you have that kind of support. My mom and I made some dinner together last night! [Image caption: a photo of a table with a variety of food on it]",
+        "title": "Maria in session_13",
+        "vector_rank": 1,
+        "vector_score": 0.391966923903
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "a7e1b2d356fea43d26eb4364445d85b662e868f3fc8aef25a936b96d06d5e40d",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 36,
+            "raw_event_sha256": "0d396f850f3031a8014cbe07c03d9e1bb03a5c8c0b0e4d87264c672ef54e1c4c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_2"
+          }
+        ],
+        "final_score": 0.030017921147,
+        "lexical_rank": 12,
+        "lexical_score": 4.585468292236,
+        "memory_id": "memory_6c42c112b49c1a4dbc99",
+        "memory_type": "user_preference",
+        "rank": 2,
+        "source_uri": "codecairn://memory/memory_6c42c112b49c1a4dbc99",
+        "summary": "2022-12-22T18:20:00+00:00 — Maria: Woah, that's a nice pic, John! You all obviously had a blast at dinner. Nothing beats getting together with loved ones for a good meal - it makes some awesome memories!",
+        "title": "Maria in session_2",
+        "vector_rank": 2,
+        "vector_score": 0.388642779686
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "8df2c74a64a302fe7838565969d0c0b3e29647f7006b2d7ad451615562dd8f49",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 492,
+            "raw_event_sha256": "0696a881c82bc6f657f6871402f53169255a6a95e85613dbc1d7d903b820bcce",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_23"
+          }
+        ],
+        "final_score": 0.027820121951,
+        "lexical_rank": 4,
+        "lexical_score": 6.181929111481,
+        "memory_id": "memory_2fbf8d30a887544f76e6",
+        "memory_type": "user_preference",
+        "rank": 3,
+        "source_uri": "codecairn://memory/memory_2fbf8d30a887544f76e6",
+        "summary": "2023-07-07T18:35:30+00:00 — Maria: For sure! We can keep doing great stuff and making a difference. Well, I'm off to have dinner with some friends from the gym. Talk to you later!",
+        "title": "Maria in session_23",
+        "vector_rank": 22,
+        "vector_score": 0.373905865279
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "3a7bdbd04f30945c55ea575ebaaf605981feb4f5f250f004a98540ce0f506692",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 651,
+            "raw_event_sha256": "a1546f40ced82e8d843b9c78d566d5c75ca464cb4f0f983fb33287032662fe09",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_32"
+          }
+        ],
+        "final_score": 0.022835963654,
+        "lexical_rank": 63,
+        "lexical_score": 2.722931623459,
+        "memory_id": "memory_15b96cbe0a6cf996b426",
+        "memory_type": "user_preference",
+        "rank": 4,
+        "source_uri": "codecairn://memory/memory_15b96cbe0a6cf996b426",
+        "summary": "2023-08-16T11:10:30+00:00 — Maria: Wow, John! It looks like everyone was working hard. Did you raise any donations? ",
+        "title": "Maria in session_32",
+        "vector_rank": 8,
+        "vector_score": 0.380462308932
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "18355f425a7f0af7a5888f61dd82b4db02cbf3d4bbe84141a5c5370e10ea2574",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 494,
+            "raw_event_sha256": "e9d12fd1e94c4923873894eedee12269808a17935f92fb4c153233e8a1448484",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_24"
+          }
+        ],
+        "final_score": 0.022504456328,
+        "lexical_rank": 6,
+        "lexical_score": 5.921906471252,
+        "memory_id": "memory_97dd35a3865ca030115b",
+        "memory_type": "user_preference",
+        "rank": 5,
+        "source_uri": "codecairn://memory/memory_97dd35a3865ca030115b",
+        "summary": "2023-07-17T15:34:30+00:00 — Maria: Wow, John! That sounds awesome. It's so important to appreciate and support those who served in the military. Did you learn anything cool during your visit?",
+        "title": "Maria in session_24",
+        "vector_rank": 76,
+        "vector_score": 0.364875572659
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "d455f4aa6dd0b4b5fe40b48f60f643da69b93561be1e5a7607bab42c49d86ec8",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 38,
+            "raw_event_sha256": "ba080e33581a77dc115200a9cc56a2873d1b8b1f2256d9cc5784fe36af2161b7",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_2"
+          }
+        ],
+        "final_score": 0.020920920921,
+        "lexical_rank": 75,
+        "lexical_score": 2.528855085373,
+        "memory_id": "memory_d05ca21b71a6240efd0a",
+        "memory_type": "user_preference",
+        "rank": 6,
+        "source_uri": "codecairn://memory/memory_d05ca21b71a6240efd0a",
+        "summary": "2022-12-22T18:21:00+00:00 — Maria: Yeah, John! It definitely builds a strong bond. Those shared meals really make life enjoyable and meaningful. What did you make? [Image caption: a photo of a table with pizzas and salads on it]",
+        "title": "Maria in session_2",
+        "vector_rank": 14,
+        "vector_score": 0.377261267322
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "e95bc12916f77e688d3148ddac327dac5a92a1eaa8ebaa31f1492d18b58ee18e",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 364,
+            "raw_event_sha256": "00ee298c8238bde704e09dfefbfae38fff7829a97348c111aa79ca42d6a47a41",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_18"
+          }
+        ],
+        "final_score": 0.02045716481,
+        "lexical_rank": 77,
+        "lexical_score": 2.519783973694,
+        "memory_id": "memory_1dbf7b930f386addc51c",
+        "memory_type": "user_preference",
+        "rank": 7,
+        "source_uri": "codecairn://memory/memory_1dbf7b930f386addc51c",
+        "summary": "2023-06-12T14:48:00+00:00 — Maria: Glad you're finding comfort, John. That mountaineering trip sounds amazing. Did you reach the summit? When I was younger, my family and I went on a road trip to Oregon. [Image caption: a photo of a person standing on a cliff overlooking a canyon]",
+        "title": "Maria in session_18",
+        "vector_rank": 16,
+        "vector_score": 0.376255360734
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "2c7c9530894e6d47b2f29e027c0a3f16ba15510da5a08c4862e5407f6940c992",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 319,
+            "raw_event_sha256": "285c87a551f86a731aa46f0e90d6601cf971081210d388596812f65d853a6b91",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_15"
+          }
+        ],
+        "final_score": 0.018702814001,
+        "lexical_rank": 64,
+        "lexical_score": 2.722931623459,
+        "memory_id": "memory_b5b2a92548e76df1f2c2",
+        "memory_type": "user_preference",
+        "rank": 8,
+        "source_uri": "codecairn://memory/memory_b5b2a92548e76df1f2c2",
+        "summary": "2023-05-20T19:43:30+00:00 — Maria: Wow, John, that looks great! What did you do to make them so happy?",
+        "title": "Maria in session_15",
+        "vector_rank": 34,
+        "vector_score": 0.370239231003
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "c91301d880d60e2a210a2d55d9195c12acd8dd19cb47413f5a38819c0fd63bc4",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 129,
+            "raw_event_sha256": "cc0bf8275ee0ead500a29ff8829261ee6a041b643cd0bba794e7fdf2e173a7f8",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_7"
+          }
+        ],
+        "final_score": 0.017720530835,
+        "lexical_rank": 62,
+        "lexical_score": 2.7429022789,
+        "memory_id": "memory_ff808ac39b3729be2b32",
+        "memory_type": "user_preference",
+        "rank": 9,
+        "source_uri": "codecairn://memory/memory_ff808ac39b3729be2b32",
+        "summary": "2023-02-25T20:57:00+00:00 — Maria: Wow John, your enthusiasm for making a better future is inspiring. Making a positive impact is so rewarding! While volunteering yesterday, I met this amazing woman, Jean, who had been through a lot, yet stayed optimistic and resilient. She showed me the importance of gratitude and connection. [Image caption: a photo of a woman with a blue shirt and a ring on her neck]",
+        "title": "Maria in session_7",
+        "vector_rank": 45,
+        "vector_score": 0.36842105032
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "01bc5f01bd0a5bbcdaae8b9b23fde5be76457f3df700ccfcae47ee71007bf129",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 553,
+            "raw_event_sha256": "2de081c84d2b4d05cbf6d086ca1a266147dcb07bc6202c9663774af69c0bc780",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_27"
+          }
+        ],
+        "final_score": 0.017347386913,
+        "lexical_rank": 39,
+        "lexical_score": 3.23021197319,
+        "memory_id": "memory_4930f0eb142bd2169645",
+        "memory_type": "user_preference",
+        "rank": 10,
+        "source_uri": "codecairn://memory/memory_4930f0eb142bd2169645",
+        "summary": "2023-08-03T18:23:00+00:00 — John: Maria, what's the deal with that note? Who wrote it and what does it say?",
+        "title": "John in session_27",
+        "vector_rank": 78,
+        "vector_score": 0.364683589054
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "067ca36fff3ac0762dc30715927a73b69f18a9edf558af73f423433d65aa52b6",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 502,
+            "raw_event_sha256": "a23c29002e8cb6ab38e01a2389915daa06e84959c389a2a6dc79b69022ef7788",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_24"
+          }
+        ],
+        "final_score": 0.017021584818,
+        "lexical_rank": 58,
+        "lexical_score": 2.778860569,
+        "memory_id": "memory_b9f467043526e2348036",
+        "memory_type": "user_preference",
+        "rank": 11,
+        "source_uri": "codecairn://memory/memory_b9f467043526e2348036",
+        "summary": "2023-07-17T15:38:30+00:00 — Maria: This looks like fun! Where did you see that?",
+        "title": "Maria in session_24",
+        "vector_rank": 57,
+        "vector_score": 0.366963821075
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "2b5c5b6b4a0654c67109bf6da74b1751ee264fd2e3a4e863b1bd6bcc43c6c611",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 318,
+            "raw_event_sha256": "975cd9a135b984b913e69db59e9d8799ad4405d4b44daf391dfe86a54db6ff55",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_15"
+          }
+        ],
+        "final_score": 0.016464237517,
+        "lexical_rank": 54,
+        "lexical_score": 2.872861862183,
+        "memory_id": "memory_0a2f345930ae2a7c6105",
+        "memory_type": "user_preference",
+        "rank": 12,
+        "source_uri": "codecairn://memory/memory_0a2f345930ae2a7c6105",
+        "summary": "2023-05-20T19:43:00+00:00 — John: Awesome, Maria! I knew you'd be on board. With your help, we can make a real impact. Thank you so much! Here's a pic from last Friday with some veterans who are really excited about this. Their support keeps me motivated. [Image caption: a photography of a man shaking hands with a soldier in uniform]",
+        "title": "John in session_15",
+        "vector_rank": 70,
+        "vector_score": 0.365866038709
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "a9ac53aa3e86dbf9ac93bae536f2543ea0b1a7e8e31fb5095442e0f55f072a4a",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 234,
+            "raw_event_sha256": "cba4125f9237da27cce1dac77f70756d5aabef69b399f7f84de5aa2cbd6071fe",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_12"
+          }
+        ],
+        "final_score": 0.016393442623,
+        "lexical_rank": 1,
+        "lexical_score": 7.465802192688,
+        "memory_id": "memory_99c4be1aaeb64e565ae5",
+        "memory_type": "user_preference",
+        "rank": 13,
+        "source_uri": "codecairn://memory/memory_99c4be1aaeb64e565ae5",
+        "summary": "2023-04-18T19:38:30+00:00 — Maria: Wow, that must have been awesome! Being around people who share your passion is truly inspiring. How did it feel to be surrounded by like-minded individuals there?",
+        "title": "Maria in session_12",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "2b467300d079e3ccf619c31922cf8d9327cf61d219680456ace6a863bc50b185",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 567,
+            "raw_event_sha256": "ab58a00bad69a4efcee97eeceed44d1c4e332b7735a73e606de25cc27ef114d5",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_28"
+          }
+        ],
+        "final_score": 0.016129032258,
+        "lexical_rank": 2,
+        "lexical_score": 7.266623973846,
+        "memory_id": "memory_a716674aae07710b0553",
+        "memory_type": "user_preference",
+        "rank": 14,
+        "source_uri": "codecairn://memory/memory_a716674aae07710b0553",
+        "summary": "2023-08-05T17:21:00+00:00 — John: Thanks Maria! I may have found a job at a tech company I like that needs my mechanical skills for their hardware team. It feels different, but I think it's a great opportunity to learn and contribute.",
+        "title": "John in session_28",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "269cf9ad460a1b9531d32a0b73210457d1e223267cee2c0e7a9f10f473f5b24d",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 56,
+            "raw_event_sha256": "baedd0067197b59214a0fa13da037dca84df8b9c9820f756e757b7e3c127881d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_3"
+          }
+        ],
+        "final_score": 0.015873015873,
+        "lexical_rank": 3,
+        "lexical_score": 7.223718166351,
+        "memory_id": "memory_cb24e3745ac11191776c",
+        "memory_type": "user_preference",
+        "rank": 15,
+        "source_uri": "codecairn://memory/memory_cb24e3745ac11191776c",
+        "summary": "2023-01-01T20:36:00+00:00 — John: That's a chill pic! Where did you find it?",
+        "title": "John in session_3",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "2f9400e4ad61e5bee183c094f40cacbbc19567aec029bb38a30b25e18db9da96",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 308,
+            "raw_event_sha256": "c46522040f3d019b2c57fe6f420e41c61a1db8643e0112346b2f3476501e116c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_15"
+          }
+        ],
+        "final_score": 0.015873015873,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_d8036a48077821dd5772",
+        "memory_type": "user_preference",
+        "rank": 16,
+        "source_uri": "codecairn://memory/memory_d8036a48077821dd5772",
+        "summary": "2023-05-20T19:38:00+00:00 — John: Hey Maria, how's it going? Been real busy tackling a project to support military veterans. Trying to get a petition going, it's pretty rewarding but kinda stressful. How are you?",
+        "title": "John in session_15",
+        "vector_rank": 3,
+        "vector_score": 0.386830153429
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "093836181d907986717719b41d68cdfcb89bba2059c0aa915b9112c33ed28760",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 160,
+            "raw_event_sha256": "ee016d473ece53e979894b578e35c986dc6279c468e2b76be71011fdbd9621c0",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_8"
+          }
+        ],
+        "final_score": 0.015625,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_adf7ce9f32d3119db057",
+        "memory_type": "user_preference",
+        "rank": 17,
+        "source_uri": "codecairn://memory/memory_adf7ce9f32d3119db057",
+        "summary": "2023-03-06T18:12:00+00:00 — Maria: Wow, that's really cool! Have you discussed it with anyone yet?",
+        "title": "Maria in session_8",
+        "vector_rank": 4,
+        "vector_score": 0.384253913879
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "e2a02056666e5979af28a0da5977ec1fc70f4a8b1c0ef9856514bd41c966742d",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 521,
+            "raw_event_sha256": "ef0625e076c748dd4c674182cf1e97269d16ee55e160c48081a2f2da6a0fa791",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_25"
+          }
+        ],
+        "final_score": 0.015384615385,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_cd8674ab7267aa7af706",
+        "memory_type": "user_preference",
+        "rank": 18,
+        "source_uri": "codecairn://memory/memory_cd8674ab7267aa7af706",
+        "summary": "2023-07-22T18:26:30+00:00 — Maria: Cool, John! That definitely makes the workout experience more enjoyable. Do they offer a variety of classes?",
+        "title": "Maria in session_25",
+        "vector_rank": 5,
+        "vector_score": 0.382928016577
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "1ff327df6d7a3e247a09e74f1525e64c5916b9e840d360e945bfdb58cacc047d",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 113,
+            "raw_event_sha256": "27973d7074e221888860ccd998a4c7aee454743ea0193f6262ba6455b2ca4c70",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_6"
+          }
+        ],
+        "final_score": 0.015151515152,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_afd387c9204622427aed",
+        "memory_type": "user_preference",
+        "rank": 19,
+        "source_uri": "codecairn://memory/memory_afd387c9204622427aed",
+        "summary": "2023-02-05T14:38:00+00:00 — Maria: Wow, John, that's incredible! What inspired you to get involved with something like this?",
+        "title": "Maria in session_6",
+        "vector_rank": 6,
+        "vector_score": 0.38097023561
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "cb52c1a060aa55d093218904d75598ebb11395a76a41c49213ae87f235e7aab5",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 114,
+            "raw_event_sha256": "a1834630cce91a0b3da7fd349cc8d0e7b80ade92abce01537bb58289a4343673",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-41/session_6"
+          }
+        ],
+        "final_score": 0.014925373134,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_60de46521425fe76907f",
+        "memory_type": "user_preference",
+        "rank": 20,
+        "source_uri": "codecairn://memory/memory_60de46521425fe76907f",
+        "summary": "2023-02-05T14:38:30+00:00 — John: Seeing the effect unemployment has on our neighbors made me decide to act. I wanted to help out in these tough times by doing a community food drive. We can all make a difference! [Image caption: a photo of a thanksgiving potluck and food drive flyer]",
+        "title": "John in session_6",
+        "vector_rank": 7,
+        "vector_score": 0.380674880201
+      }
+    ],
+    "repo_key": "locomo/conv-41",
+    "vector_candidate_count": 80
+  },
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "status": "completed"
+}

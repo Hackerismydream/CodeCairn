@@ -1,0 +1,66 @@
+{
+  "answer_model": {
+    "adapter": "openai-compatible-chat-completions",
+    "base_url": "https://www.right.codes/codex/v1",
+    "max_attempts": 3,
+    "model": "gpt-5.4",
+    "retry_backoff_seconds": 1.0,
+    "timeout_seconds": 120.0
+  },
+  "created_at_utc": "2026-07-19T13:21:12.365718+00:00",
+  "dataset": {
+    "category_counts": {
+      "1": 282,
+      "2": 321,
+      "3": 96,
+      "4": 841,
+      "5": 446
+    },
+    "conversation_count": 10,
+    "license": "CC BY-NC 4.0",
+    "question_count": 1986,
+    "session_count": 272,
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "turn_count": 5882,
+    "url": "https://raw.githubusercontent.com/snap-research/locomo/main/data/locomo10.json"
+  },
+  "judge_model": null,
+  "judge_votes": 0,
+  "mode": "smoke",
+  "repository_commit": "e246766",
+  "retrieval": {
+    "method": "hybrid-rrf",
+    "top_k": 20
+  },
+  "run_id": "locomo-smoke-e246766-gpt54",
+  "schema_version": 1,
+  "scored": false,
+  "seed": 17,
+  "selection": {
+    "categories": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "conversation_ids": [
+      "conv-26",
+      "conv-30",
+      "conv-41",
+      "conv-42",
+      "conv-43",
+      "conv-44",
+      "conv-47",
+      "conv-48",
+      "conv-49",
+      "conv-50"
+    ],
+    "question_counts": {
+      "1": 282,
+      "2": 321,
+      "3": 96,
+      "4": 841
+    }
+  },
+  "suite": "locomo"
+}

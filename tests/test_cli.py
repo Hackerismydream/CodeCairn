@@ -160,5 +160,5 @@ def test_cli_help_lists_complete_public_surface() -> None:
     result = CliRunner().invoke(app, ["--help"])
 
     assert result.exit_code == 0, result.output
-    for command in ("import", "list", "recall", "eval", "doctor"):
+    for command in ("import", "list", "recall", "eval", "evidence", "doctor"):
         assert command in result.stdout

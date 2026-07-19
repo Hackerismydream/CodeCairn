@@ -1,0 +1,593 @@
+{
+  "answer": {
+    "cost_usd": null,
+    "input_tokens": 2820,
+    "model": "gpt-5.4",
+    "output_tokens": 74,
+    "text": "The context is insufficient to say exactly what kind of car Evan drives.\n\nThe closest evidence is from 2023-08-19, where Evan says he has a “trusty car” while discussing a photo captioned as “a truck parked in the middle of a forest,” but that does not clearly state that his own car is a truck."
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "evidence": [
+    "D1:2",
+    "D1:4",
+    "D18:1",
+    "D18:3",
+    "D22:2"
+  ],
+  "golden_answer": "Prius",
+  "judge_votes": [],
+  "question": "What kind of car does Evan drive?",
+  "question_id": "locomo-question_8ebb04bcad06d32d78bd",
+  "recall_markdown": "# Recall Context\n\nTask: What kind of car does Evan drive?\nRepository: `locomo/conv-49`\n\n## 1. Evan in session_7\n\n2023-08-15T16:22:00+00:00 — Evan: Mmm, it looks delicious! What did you put in it? I want to eat healthy, so what kind of recipes do you suggest?\n\n- Type: `user_preference`\n- Source: [memory_3013c0bf61089eb53acc](codecairn://memory/memory_3013c0bf61089eb53acc)\n- Evidence: 1 cited raw event(s)\n\n## 2. Evan in session_11\n\n2023-10-06T21:04:30+00:00 — Evan: Cool, Sam! Writing is a great way to express yourself. What kind of writing do you enjoy? And about the phone, I recommend trying to update it, it usually works for me!\n\n- Type: `user_preference`\n- Source: [memory_36f3d4fe1466b1b4dacf](codecairn://memory/memory_36f3d4fe1466b1b4dacf)\n- Evidence: 1 cited raw event(s)\n\n## 3. Sam in session_20\n\n2023-12-17T18:54:30+00:00 — Sam: She looks so confident! What kind of painting is that in the background?\n\n- Type: `user_preference`\n- Source: [memory_6b5457983250e3d7b762](codecairn://memory/memory_6b5457983250e3d7b762)\n- Evidence: 1 cited raw event(s)\n\n## 4. Evan in session_25\n\n2024-01-11T21:39:30+00:00 — Evan: Nice pic! Does being out in the countryside help you relax and get some fresh air away from the city?\n\n- Type: `user_preference`\n- Source: [memory_9b10ab529ec98257bead](codecairn://memory/memory_9b10ab529ec98257bead)\n- Evidence: 1 cited raw event(s)\n\n## 5. Evan in session_8\n\n2023-08-19T18:28:30+00:00 — Evan: Thanks! I love being in places like this - it brings back memories of road tripping in my trusty car. [Image caption: a photography of a truck parked in the middle of a forest]\n\n- Type: `user_preference`\n- Source: [memory_a6361543d4d0c852bd40](codecairn://memory/memory_a6361543d4d0c852bd40)\n- Evidence: 1 cited raw event(s)\n\n## 6. Evan in session_10\n\n2023-09-11T09:31:00+00:00 — Evan: Yeah, I get it. When I'm stressed, I always turn to something comforting. But I've found that painting or going for a drive helps too! [Image caption: a photo of a painting of a mountain range with a horse]\n\n- Type: `user_preference`\n- Source: [memory_31c490a29df7e882f662](codecairn://memory/memory_31c490a29df7e882f662)\n- Evidence: 1 cited raw event(s)\n\n## 7. Evan in session_16\n\n2023-11-09T21:20:30+00:00 — Evan: Thanks, Sam. Your kind words and support mean a lot. It's great to have you here. I'm gonna stay positive and keep going. Cheers! [Image caption: a photo of a person walking on the beach with a surfboard]\n\n- Type: `user_preference`\n- Source: [memory_62acea68770f0fd0362f](codecairn://memory/memory_62acea68770f0fd0362f)\n- Evidence: 1 cited raw event(s)\n\n## 8. Evan in session_24\n\n2024-01-10T00:20:00+00:00 — Evan: I was so embarrassed when I saw what happened the next morning, so I apologized and luckily they were understanding. Yeah, I was out of control--guess I gotta be more careful next time.\n\n- Type: `user_preference`\n- Source: [memory_da480b2bbbcebf7e07e2](codecairn://memory/memory_da480b2bbbcebf7e07e2)\n- Evidence: 1 cited raw event(s)\n\n## 9. Evan in session_9\n\n2023-08-27T10:21:30+00:00 — Evan: Yeah, thanks for the push, Sam. Oh, hey, I came across this pic when I was tidying up. I took a road trip last month - the scenery was stunning and nature really chilled me out. [Image caption: a photography of a car is parked near a lake with mountains in the background]\n\n- Type: `user_preference`\n- Source: [memory_70c36d8549016ec61fa1](codecairn://memory/memory_70c36d8549016ec61fa1)\n- Evidence: 1 cited raw event(s)\n\n## 10. Evan in session_24\n\n2024-01-10T00:23:00+00:00 — Evan: What advice are you planning to get from the doctor?\n\n- Type: `user_preference`\n- Source: [memory_71b5347ee3b9040e78e6](codecairn://memory/memory_71b5347ee3b9040e78e6)\n- Evidence: 1 cited raw event(s)\n\n## 11. Sam in session_9\n\n2023-08-27T10:18:00+00:00 — Sam: Hey Evan! Exciting news: I started a new diet and exercise routine last Monday and it's made a huge difference. I feel great! What about you, what changes have you made recently?\n\n- Type: `user_preference`\n- Source: [memory_0e7227d7558b1b19bca8](codecairn://memory/memory_0e7227d7558b1b19bca8)\n- Evidence: 1 cited raw event(s)\n\n## 12. Evan in session_10\n\n2023-09-11T09:30:00+00:00 — Evan: Yeah, breaking bad habits can be hard. Cravings can be tough too, but little victories count. What do you think sets off those cravings for you?\n\n- Type: `user_preference`\n- Source: [memory_a58c6eb5f583094024c6](codecairn://memory/memory_a58c6eb5f583094024c6)\n- Evidence: 1 cited raw event(s)\n\n## 13. Evan in session_2\n\n2023-05-24T19:15:00+00:00 — Evan: Yeah, what worked for me was finding a fitness routine I really enjoy. It's my go-to, I love the feeling of being healthy and strong. Making it fun and finding little ways to make smarter choices in my diet really added up. Don't forget, you got this!\n\n- Type: `user_preference`\n- Source: [memory_3d208264cc1add85c57a](codecairn://memory/memory_3d208264cc1add85c57a)\n- Evidence: 1 cited raw event(s)\n\n## 14. Evan in session_23\n\n2024-01-06T13:46:00+00:00 — Evan: Sure thing, Sam! Let's see if it lives up to the hype. I'll let you know what happens!\n\n- Type: `user_preference`\n- Source: [memory_f7c204033c6f6eb18476](codecairn://memory/memory_f7c204033c6f6eb18476)\n- Evidence: 1 cited raw event(s)\n\n## 15. Sam in session_21\n\n2023-12-26T16:29:00+00:00 — Sam: Wish I could feel the same about love, but I've started to enjoy running in the mornings, and it's been a great way to clear my head. What can you do, right?\n\n- Type: `user_preference`\n- Source: [memory_8f02e06e3fb3e2b424fc](codecairn://memory/memory_8f02e06e3fb3e2b424fc)\n- Evidence: 1 cited raw event(s)\n\n## 16. Sam in session_1\n\n2023-05-18T13:48:00+00:00 — Sam: Wow, not bad, what happened to the old one? Where'd you go, by the way? [Image caption: a photo of a person's feet on a car dashboard as the sun sets]\n\n- Type: `user_preference`\n- Source: [memory_b04f911b89ffc5acb397](codecairn://memory/memory_b04f911b89ffc5acb397)\n- Evidence: 1 cited raw event(s)\n\n## 17. Evan in session_16\n\n2023-11-09T21:14:30+00:00 — Evan: Wow, Sam! You've come such a long way. It's exciting to see what comes next for you in your quest for better health.\n\n- Type: `user_preference`\n- Source: [memory_1a7f4c5fed28ac241e07](codecairn://memory/memory_1a7f4c5fed28ac241e07)\n- Evidence: 1 cited raw event(s)\n\n## 18. Evan in session_10\n\n2023-09-11T09:28:00+00:00 — Evan: Hey Sam! Long time no talk! Hope all is good. What have I been doing these past few weeks? [Image caption: a photo of a painting of a sunset over a body of water]\n\n- Type: `user_preference`\n- Source: [memory_e3d966ad190f60e60a91](codecairn://memory/memory_e3d966ad190f60e60a91)\n- Evidence: 1 cited raw event(s)\n\n## 19. Evan in session_20\n\n2023-12-17T18:54:00+00:00 — Evan: Yeah, trying something new and succeeding gives a great feeling of accomplishment. Give it a go, even if it's just a little thing. You'll be amazed! [Image caption: a photo of a woman standing in front of a painting]\n\n- Type: `user_preference`\n- Source: [memory_61403b27e92dcec4ce4d](codecairn://memory/memory_61403b27e92dcec4ce4d)\n- Evidence: 1 cited raw event(s)\n\n## 20. Evan in session_8\n\n2023-08-19T18:27:30+00:00 — Evan: Thanks Sam! I aim to capture the vibe of nature in my paintings, conveying the peacefulness of being outdoors. [Image caption: a photo of a tree with pink flowers in a field]\n\n- Type: `user_preference`\n- Source: [memory_a984a9e4d1d515d7fd75](codecairn://memory/memory_a984a9e4d1d515d7fd75)\n- Evidence: 1 cited raw event(s)\n",
+  "retrieval": {
+    "latency_ms": 84.816,
+    "lexical_candidate_count": 80,
+    "limit": 20,
+    "query": "What kind of car does Evan drive?",
+    "ranked": [
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "c805a76ced6123e8df4103a811ddbf25c99650970dbce2f4fd6ddc0a9c046fa9",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 125,
+            "raw_event_sha256": "5c207785b423ec4447ad5b79ca01e3ac8f01aa54084ffa47a1045ba644926f99",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_7"
+          }
+        ],
+        "final_score": 0.032266458496,
+        "lexical_rank": 1,
+        "lexical_score": 6.483721733093,
+        "memory_id": "memory_3013c0bf61089eb53acc",
+        "memory_type": "user_preference",
+        "rank": 1,
+        "source_uri": "codecairn://memory/memory_3013c0bf61089eb53acc",
+        "summary": "2023-08-15T16:22:00+00:00 — Evan: Mmm, it looks delicious! What did you put in it? I want to eat healthy, so what kind of recipes do you suggest?",
+        "title": "Evan in session_7",
+        "vector_rank": 3,
+        "vector_score": 0.391091772814
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "7c441fdf75ccc385c6a009fb6dfbc081c00f58ef66b08391aef94374d926cccf",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 218,
+            "raw_event_sha256": "c38bfdb81b84a28c9308a59ef70ec8222b0e047a84a9e551dc2fc6f3b685530d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_11"
+          }
+        ],
+        "final_score": 0.032018442623,
+        "lexical_rank": 4,
+        "lexical_score": 5.665109157562,
+        "memory_id": "memory_36f3d4fe1466b1b4dacf",
+        "memory_type": "user_preference",
+        "rank": 2,
+        "source_uri": "codecairn://memory/memory_36f3d4fe1466b1b4dacf",
+        "summary": "2023-10-06T21:04:30+00:00 — Evan: Cool, Sam! Writing is a great way to express yourself. What kind of writing do you enjoy? And about the phone, I recommend trying to update it, it usually works for me!",
+        "title": "Evan in session_11",
+        "vector_rank": 1,
+        "vector_score": 0.405593830121
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "e6b4d534692db869b64a8a30bd6c4216c710d983da3f6132743ea6b2b1a86227",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 385,
+            "raw_event_sha256": "13ef6852ccfc7be2b21a03f47e58190f47f792f97870b0c876fb35fcd58ab05c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_20"
+          }
+        ],
+        "final_score": 0.031754032258,
+        "lexical_rank": 2,
+        "lexical_score": 6.313143253326,
+        "memory_id": "memory_6b5457983250e3d7b762",
+        "memory_type": "user_preference",
+        "rank": 3,
+        "source_uri": "codecairn://memory/memory_6b5457983250e3d7b762",
+        "summary": "2023-12-17T18:54:30+00:00 — Sam: She looks so confident! What kind of painting is that in the background?",
+        "title": "Sam in session_20",
+        "vector_rank": 4,
+        "vector_score": 0.388052674194
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "70ea7356673a13d12cf636fff60cd31cdaf51a394ee969fef92c4c2ec10a497b",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 494,
+            "raw_event_sha256": "37caef14e5b7c3fe59c383793315aa412eef4aae3c774ffee4c9ef9a60f49ed0",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_25"
+          }
+        ],
+        "final_score": 0.02967032967,
+        "lexical_rank": 5,
+        "lexical_score": 4.739332675934,
+        "memory_id": "memory_9b10ab529ec98257bead",
+        "memory_type": "user_preference",
+        "rank": 4,
+        "source_uri": "codecairn://memory/memory_9b10ab529ec98257bead",
+        "summary": "2024-01-11T21:39:30+00:00 — Evan: Nice pic! Does being out in the countryside help you relax and get some fresh air away from the city?",
+        "title": "Evan in session_25",
+        "vector_rank": 10,
+        "vector_score": 0.378171527127
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "ab00a16d6b26acb3189caad3579446618f9f9c916fef63c03113a3b32c855391",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 160,
+            "raw_event_sha256": "7eaddccba0491d669c3de22242feffb276146d946f1dac487405cd91e5d4c6ec",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_8"
+          }
+        ],
+        "final_score": 0.029642545772,
+        "lexical_rank": 14,
+        "lexical_score": 3.888195991516,
+        "memory_id": "memory_a6361543d4d0c852bd40",
+        "memory_type": "user_preference",
+        "rank": 5,
+        "source_uri": "codecairn://memory/memory_a6361543d4d0c852bd40",
+        "summary": "2023-08-19T18:28:30+00:00 — Evan: Thanks! I love being in places like this - it brings back memories of road tripping in my trusty car. [Image caption: a photography of a truck parked in the middle of a forest]",
+        "title": "Evan in session_8",
+        "vector_rank": 2,
+        "vector_score": 0.391104354259
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "580e5a2af1847c2e1e19408b7c96bed6dec5a0f1249cd7cae73867714444c3ce",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 195,
+            "raw_event_sha256": "77758713595de79069a7956c30e62aab665e3dc1a72e4c0dd0d29222889253eb",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_10"
+          }
+        ],
+        "final_score": 0.025245441795,
+        "lexical_rank": 9,
+        "lexical_score": 4.526136398315,
+        "memory_id": "memory_31c490a29df7e882f662",
+        "memory_type": "user_preference",
+        "rank": 6,
+        "source_uri": "codecairn://memory/memory_31c490a29df7e882f662",
+        "summary": "2023-09-11T09:31:00+00:00 — Evan: Yeah, I get it. When I'm stressed, I always turn to something comforting. But I've found that painting or going for a drive helps too! [Image caption: a photo of a painting of a mountain range with a horse]",
+        "title": "Evan in session_10",
+        "vector_rank": 33,
+        "vector_score": 0.365918593027
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "1f974ff7cf383741e8b590b2c82ac3a8e0f0e63e43c9c4c0fafcc0a87c2e2642",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 305,
+            "raw_event_sha256": "5b821675ffdda2bf5edb426df780fd7035000088e3afa317fa633387a8f0ce2d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_16"
+          }
+        ],
+        "final_score": 0.023839931886,
+        "lexical_rank": 21,
+        "lexical_score": 3.650394439697,
+        "memory_id": "memory_62acea68770f0fd0362f",
+        "memory_type": "user_preference",
+        "rank": 7,
+        "source_uri": "codecairn://memory/memory_62acea68770f0fd0362f",
+        "summary": "2023-11-09T21:20:30+00:00 — Evan: Thanks, Sam. Your kind words and support mean a lot. It's great to have you here. I'm gonna stay positive and keep going. Cheers! [Image caption: a photo of a person walking on the beach with a surfboard]",
+        "title": "Evan in session_16",
+        "vector_rank": 27,
+        "vector_score": 0.366443927309
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "9af3b7bfcb9b1b19ca01e0031efff22afe6baf5e05330058014ae02f85feac0a",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 471,
+            "raw_event_sha256": "3b63b45400bab32bca212723ba381ffb9ffb8b90df58c5b4d87cccf0dba397f3",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_24"
+          }
+        ],
+        "final_score": 0.022558960921,
+        "lexical_rank": 71,
+        "lexical_score": 1.581788063049,
+        "memory_id": "memory_da480b2bbbcebf7e07e2",
+        "memory_type": "user_preference",
+        "rank": 8,
+        "source_uri": "codecairn://memory/memory_da480b2bbbcebf7e07e2",
+        "summary": "2024-01-10T00:20:00+00:00 — Evan: I was so embarrassed when I saw what happened the next morning, so I apologized and luckily they were understanding. Yeah, I was out of control--guess I gotta be more careful next time.",
+        "title": "Evan in session_24",
+        "vector_rank": 7,
+        "vector_score": 0.381988324609
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "19a580fbe192940b103a771006775e473de742164dfb2ff326f11dc2c0cbedab",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 177,
+            "raw_event_sha256": "ef8d2bde7fa3e507a3c9d66e4815249bd9d185c819e3adfc11bb96eb9b422b33",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_9"
+          }
+        ],
+        "final_score": 0.021674311927,
+        "lexical_rank": 20,
+        "lexical_score": 3.661631584167,
+        "memory_id": "memory_70c36d8549016ec61fa1",
+        "memory_type": "user_preference",
+        "rank": 9,
+        "source_uri": "codecairn://memory/memory_70c36d8549016ec61fa1",
+        "summary": "2023-08-27T10:21:30+00:00 — Evan: Yeah, thanks for the push, Sam. Oh, hey, I came across this pic when I was tidying up. I took a road trip last month - the scenery was stunning and nature really chilled me out. [Image caption: a photography of a car is parked near a lake with mountains in the background]",
+        "title": "Evan in session_9",
+        "vector_rank": 49,
+        "vector_score": 0.361961469776
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "426f4f65a5b26fc61d8a06721e44f451c1348be072bab64e3c3eab71aada58f1",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 477,
+            "raw_event_sha256": "cc72aafc9668e2e5bc830e56d057e706f6b3525f59c5c62e977520022f3e7c2f",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_24"
+          }
+        ],
+        "final_score": 0.021139101862,
+        "lexical_rank": 50,
+        "lexical_score": 1.715178489685,
+        "memory_id": "memory_71b5347ee3b9040e78e6",
+        "memory_type": "user_preference",
+        "rank": 10,
+        "source_uri": "codecairn://memory/memory_71b5347ee3b9040e78e6",
+        "summary": "2024-01-10T00:23:00+00:00 — Evan: What advice are you planning to get from the doctor?",
+        "title": "Evan in session_24",
+        "vector_rank": 23,
+        "vector_score": 0.367700541276
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "73f2cf41ef569a4a2d84506d91e7fcc4621002c7f58e6bd1bdc043d4e763e7a2",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 170,
+            "raw_event_sha256": "7390e4f4f14ef4036613b597df6e0de955788d3d52a4d7cf28cf16073d78b22f",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_9"
+          }
+        ],
+        "final_score": 0.020600414079,
+        "lexical_rank": 24,
+        "lexical_score": 2.397562026978,
+        "memory_id": "memory_0e7227d7558b1b19bca8",
+        "memory_type": "user_preference",
+        "rank": 11,
+        "source_uri": "codecairn://memory/memory_0e7227d7558b1b19bca8",
+        "summary": "2023-08-27T10:18:00+00:00 — Sam: Hey Evan! Exciting news: I started a new diet and exercise routine last Monday and it's made a huge difference. I feel great! What about you, what changes have you made recently?",
+        "title": "Sam in session_9",
+        "vector_rank": 55,
+        "vector_score": 0.361183727019
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "bd672054896bd3fa04069f1d9e044275f8e3beb8db79429f1f729dadc85328ad",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 193,
+            "raw_event_sha256": "8d18419de1c11cdabeea7a0acb70cd0dd8bce74029165d722437638b54f48b19",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_10"
+          }
+        ],
+        "final_score": 0.0205,
+        "lexical_rank": 65,
+        "lexical_score": 1.613191246986,
+        "memory_id": "memory_a58c6eb5f583094024c6",
+        "memory_type": "user_preference",
+        "rank": 12,
+        "source_uri": "codecairn://memory/memory_a58c6eb5f583094024c6",
+        "summary": "2023-09-11T09:30:00+00:00 — Evan: Yeah, breaking bad habits can be hard. Cravings can be tough too, but little victories count. What do you think sets off those cravings for you?",
+        "title": "Evan in session_10",
+        "vector_rank": 20,
+        "vector_score": 0.369073073372
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "d1a0d310cb49eb09d2f621b7029ce0fb629958690aac1bee1d43ea92de0fa171",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 30,
+            "raw_event_sha256": "3622a05a0aaea53a911f496ce6e9811950f1e5b406b44c741d1acfefdb84fcdc",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_2"
+          }
+        ],
+        "final_score": 0.020233389799,
+        "lexical_rank": 78,
+        "lexical_score": 1.528183698654,
+        "memory_id": "memory_3d208264cc1add85c57a",
+        "memory_type": "user_preference",
+        "rank": 13,
+        "source_uri": "codecairn://memory/memory_3d208264cc1add85c57a",
+        "summary": "2023-05-24T19:15:00+00:00 — Evan: Yeah, what worked for me was finding a fitness routine I really enjoy. It's my go-to, I love the feeling of being healthy and strong. Making it fun and finding little ways to make smarter choices in my diet really added up. Don't forget, you got this!",
+        "title": "Evan in session_2",
+        "vector_rank": 17,
+        "vector_score": 0.369979870902
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "6506eb907367d4c7f8b729f66efa0bd9b11274180036f41f91ca60278b60cdd3",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 460,
+            "raw_event_sha256": "a39b8e9996226a65f135acd0932802e82cc9491c2bda8c497cdac310bf70d77d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_23"
+          }
+        ],
+        "final_score": 0.018856286898,
+        "lexical_rank": 57,
+        "lexical_score": 1.652525782585,
+        "memory_id": "memory_f7c204033c6f6eb18476",
+        "memory_type": "user_preference",
+        "rank": 14,
+        "source_uri": "codecairn://memory/memory_f7c204033c6f6eb18476",
+        "summary": "2024-01-06T13:46:00+00:00 — Evan: Sure thing, Sam! Let's see if it lives up to the hype. I'll let you know what happens!",
+        "title": "Evan in session_23",
+        "vector_rank": 37,
+        "vector_score": 0.364855322602
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "31ba802dcbee779820e874c4cf6a1aefa444f778386be99ea67ecbb79bcaa3b0",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 397,
+            "raw_event_sha256": "a6809fd51df5d8bb12e59b9798588c120199d52a96232fa6277d2b6bc5bbde4d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_21"
+          }
+        ],
+        "final_score": 0.018771929825,
+        "lexical_rank": 40,
+        "lexical_score": 1.909184455872,
+        "memory_id": "memory_8f02e06e3fb3e2b424fc",
+        "memory_type": "user_preference",
+        "rank": 15,
+        "source_uri": "codecairn://memory/memory_8f02e06e3fb3e2b424fc",
+        "summary": "2023-12-26T16:29:00+00:00 — Sam: Wish I could feel the same about love, but I've started to enjoy running in the mornings, and it's been a great way to clear my head. What can you do, right?",
+        "title": "Sam in session_21",
+        "vector_rank": 54,
+        "vector_score": 0.361342482142
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "91719f0a08c826ae33b85ddd0c950ad8088a86680e1f44e279ba4e29e7d1168a",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 2,
+            "raw_event_sha256": "e8052dc16c3c707a0184d4d85ff10625bdca07e11c86301332bd23bd9be6877e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_1"
+          }
+        ],
+        "final_score": 0.015873015873,
+        "lexical_rank": 3,
+        "lexical_score": 6.129322052002,
+        "memory_id": "memory_b04f911b89ffc5acb397",
+        "memory_type": "user_preference",
+        "rank": 16,
+        "source_uri": "codecairn://memory/memory_b04f911b89ffc5acb397",
+        "summary": "2023-05-18T13:48:00+00:00 — Sam: Wow, not bad, what happened to the old one? Where'd you go, by the way? [Image caption: a photo of a person's feet on a car dashboard as the sun sets]",
+        "title": "Sam in session_1",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "5f02f3f53ee5688067f6419d79de29f896f20e7510b285fade66a65c3b3c3b1a",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 293,
+            "raw_event_sha256": "2bb950c343b5d53ede7463caf8a2b0a91fcaa1f550f11d9e71e1976cabb1a984",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_16"
+          }
+        ],
+        "final_score": 0.015727149377,
+        "lexical_rank": 61,
+        "lexical_score": 1.63920712471,
+        "memory_id": "memory_1a7f4c5fed28ac241e07",
+        "memory_type": "user_preference",
+        "rank": 17,
+        "source_uri": "codecairn://memory/memory_1a7f4c5fed28ac241e07",
+        "summary": "2023-11-09T21:14:30+00:00 — Evan: Wow, Sam! You've come such a long way. It's exciting to see what comes next for you in your quest for better health.",
+        "title": "Evan in session_16",
+        "vector_rank": 74,
+        "vector_score": 0.359991207719
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "79366cd36a053245a627daf0f5dbdd873042fc65034b9b0809ae8aa07a8a3f4a",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 189,
+            "raw_event_sha256": "407e9d200ed394264c49cd07e422e7b89a64b94c022f51b3efff93533b495fea",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_10"
+          }
+        ],
+        "final_score": 0.015686515748,
+        "lexical_rank": 67,
+        "lexical_score": 1.600484490395,
+        "memory_id": "memory_e3d966ad190f60e60a91",
+        "memory_type": "user_preference",
+        "rank": 18,
+        "source_uri": "codecairn://memory/memory_e3d966ad190f60e60a91",
+        "summary": "2023-09-11T09:28:00+00:00 — Evan: Hey Sam! Long time no talk! Hope all is good. What have I been doing these past few weeks? [Image caption: a photo of a painting of a sunset over a body of water]",
+        "title": "Evan in session_10",
+        "vector_rank": 68,
+        "vector_score": 0.360524949544
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "632190f94b1e4f2f83fa15003a8a6da618442079e358d749f4321c706bccd5f1",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 384,
+            "raw_event_sha256": "c3e093b4087b28f537b5b42786e4f9b5eeb27c3fc224d805b891d509a41df8b4",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_20"
+          }
+        ],
+        "final_score": 0.015384615385,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_61403b27e92dcec4ce4d",
+        "memory_type": "user_preference",
+        "rank": 19,
+        "source_uri": "codecairn://memory/memory_61403b27e92dcec4ce4d",
+        "summary": "2023-12-17T18:54:00+00:00 — Evan: Yeah, trying something new and succeeding gives a great feeling of accomplishment. Give it a go, even if it's just a little thing. You'll be amazed! [Image caption: a photo of a woman standing in front of a painting]",
+        "title": "Evan in session_20",
+        "vector_rank": 5,
+        "vector_score": 0.38696098726
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "edd0e934856bc546f30e961cb4525f817a2be4bb2aa87e286bd07c04e6cbc0b8",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 158,
+            "raw_event_sha256": "376ddc594ff7b8e3490289a008bfb26236fa374f27af055047dcdb6dde4d0b5c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-49/session_8"
+          }
+        ],
+        "final_score": 0.015151515152,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_a984a9e4d1d515d7fd75",
+        "memory_type": "user_preference",
+        "rank": 20,
+        "source_uri": "codecairn://memory/memory_a984a9e4d1d515d7fd75",
+        "summary": "2023-08-19T18:27:30+00:00 — Evan: Thanks Sam! I aim to capture the vibe of nature in my paintings, conveying the peacefulness of being outdoors. [Image caption: a photo of a tree with pink flowers in a field]",
+        "title": "Evan in session_8",
+        "vector_rank": 6,
+        "vector_score": 0.382265235843
+      }
+    ],
+    "repo_key": "locomo/conv-49",
+    "vector_candidate_count": 80
+  },
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "status": "completed"
+}

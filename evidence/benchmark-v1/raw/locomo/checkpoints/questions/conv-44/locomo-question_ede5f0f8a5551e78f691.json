@@ -1,0 +1,592 @@
+{
+  "answer": {
+    "cost_usd": null,
+    "input_tokens": 3070,
+    "model": "gpt-5.4",
+    "output_tokens": 58,
+    "text": "The context is insufficient to determine that. It mentions Audrey having multiple dogs and, on 2023-04-02, that “Pixie’s fitting in great,” implying a newer adoption then, but it does not say which year she adopted the first three dogs."
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "evidence": [
+    "D1:7"
+  ],
+  "golden_answer": "2020",
+  "judge_votes": [],
+  "question": "Which year did Audrey adopt the first three of her dogs?",
+  "question_id": "locomo-question_ede5f0f8a5551e78f691",
+  "recall_markdown": "# Recall Context\n\nTask: Which year did Audrey adopt the first three of her dogs?\nRepository: `locomo/conv-44`\n\n## 1. Audrey in session_19\n\n2023-09-24T17:54:30+00:00 — Audrey: I petted and hugged her, spoke calmly, and slowly walked her to relax. Our bond feels even stronger when moments like these show up. [Image caption: a photo of a dog laying on a bed with its head on the pillow]\n\n- Type: `user_preference`\n- Source: [memory_579d67ae767ef75a6007](codecairn://memory/memory_579d67ae767ef75a6007)\n- Evidence: 1 cited raw event(s)\n\n## 2. Andrew in session_26\n\n2023-10-28T14:49:30+00:00 — Andrew: Wow, that looks awesome! Do you think the dogs will like it? Which trail do you have in mind?\n\n- Type: `user_preference`\n- Source: [memory_5a64ed754329eab813c4](codecairn://memory/memory_5a64ed754329eab813c4)\n- Evidence: 1 cited raw event(s)\n\n## 3. Audrey in session_5\n\n2023-05-06T10:50:30+00:00 — Audrey: That's a good plan! I'm lucky to have a park near me - it's great for my pup's walks. Last Friday we took a road trip - we went to a beautiful national park and my dogs had a blast! It was an awesome trip! [Image caption: a photography of three dogs running through a field of grass]\n\n- Type: `user_preference`\n- Source: [memory_56bb95614f1777d15ec4](codecairn://memory/memory_56bb95614f1777d15ec4)\n- Evidence: 1 cited raw event(s)\n\n## 4. Audrey in session_17\n\n2023-08-24T00:24:30+00:00 — Audrey: Hey! Actually I've never been fishing. It's always been just chilling at the lake. I remember this moment a few years back when I sat by a gorgeous lake in the mountains with friends. So peaceful and calming. Just the sound of the birds, the stillness of the water, and the fresh air - it was so special. But yeah I have never gone on a fishing trip before. Here's a photo of the trip to the lake with my friend. [Image caption: a photo of a group of dogs standin…\n\n- Type: `user_preference`\n- Source: [memory_02f2ff6d3090ffc9af28](codecairn://memory/memory_02f2ff6d3090ffc9af28)\n- Evidence: 1 cited raw event(s)\n\n## 5. Audrey in session_11\n\n2023-07-08T09:54:30+00:00 — Audrey: Yup! Btw, there's going to be some cool stuff happening today. [Image caption: a photo of three dogs sitting on the floor with leashes]\n\n- Type: `user_preference`\n- Source: [memory_2e474dd27992134644ba](codecairn://memory/memory_2e474dd27992134644ba)\n- Evidence: 1 cited raw event(s)\n\n## 6. Audrey in session_11\n\n2023-07-08T10:01:30+00:00 — Audrey: I'm 100% sure that it's gonna be a great day! Just take a look how happy my dogs are just at out local park. [Image caption: a photography of a dog playing with a group of other dogs]\n\n- Type: `user_preference`\n- Source: [memory_d8ec2934f14c22f7d0ec](codecairn://memory/memory_d8ec2934f14c22f7d0ec)\n- Evidence: 1 cited raw event(s)\n\n## 7. Audrey in session_19\n\n2023-09-24T17:55:30+00:00 — Audrey: Building trust with them needs patience and regular training. Give them time and love, and praise their successes. [Image caption: a photography of three dogs wearing birthday hats and sitting next to each other]\n\n- Type: `user_preference`\n- Source: [memory_1676500dd05d197e3b61](codecairn://memory/memory_1676500dd05d197e3b61)\n- Evidence: 1 cited raw event(s)\n\n## 8. Audrey in session_11\n\n2023-07-08T09:49:30+00:00 — Audrey: Thanks! I got lucky finding a breeder nearby that has the dogs I wanted. Yeah places that allows dogs are really hard to find unfortunately .\n\n- Type: `user_preference`\n- Source: [memory_bfb4443b8e2f568da90a](codecairn://memory/memory_bfb4443b8e2f568da90a)\n- Evidence: 1 cited raw event(s)\n\n## 9. Audrey in session_19\n\n2023-09-24T17:59:30+00:00 — Audrey: I love them for that. They really do bring so much joy into my life. [Image caption: a photography of three small dogs sitting on a couch with a white fur]\n\n- Type: `user_preference`\n- Source: [memory_2d4d4fc55698fb42acfa](codecairn://memory/memory_2d4d4fc55698fb42acfa)\n- Evidence: 1 cited raw event(s)\n\n## 10. Audrey in session_2\n\n2023-04-02T14:44:00+00:00 — Audrey: Pixie's fitting in great! It took her a few days to get used to the other dogs, but now they're awesome friends. They love playing and exploring the house - so cute! [Image caption: a photography of a dog playing with a group of other dogs]\n\n- Type: `user_preference`\n- Source: [memory_779f08227b44963ec48a](codecairn://memory/memory_779f08227b44963ec48a)\n- Evidence: 1 cited raw event(s)\n\n## 11. Audrey in session_23\n\n2023-10-13T16:26:30+00:00 — Audrey: The dog park is like paradise for them! They love socializing with the other pups and getting lots of exercise. It's so cute to watch them running around and smelling all the stuff. Do you have any funny stories about your pup at the dog park? [Image caption: a photo of two dogs playing with a frisbee in a field]\n\n- Type: `user_preference`\n- Source: [memory_610cf46f63849318fe51](codecairn://memory/memory_610cf46f63849318fe51)\n- Evidence: 1 cited raw event(s)\n\n## 12. Audrey in session_3\n\n2023-04-16T16:32:30+00:00 — Audrey: Thanks! I got it a while ago. It represents my love for my pups and nature's beauty. [Image caption: a photography of a woman walking with her dogs in the woods]\n\n- Type: `user_preference`\n- Source: [memory_da9a3f1d75fe532a69c0](codecairn://memory/memory_da9a3f1d75fe532a69c0)\n- Evidence: 1 cited raw event(s)\n\n## 13. Audrey in session_4\n\n2023-05-03T17:49:00+00:00 — Audrey: My dogs go nuts when we go on hikes! They love exploring new scents and being in nature - it's their happy place. I can tell by their wagging tails and expressions how much they love it. It's so great to see them having so much fun! [Image caption: a photo of a dog running in a field with other dogs]\n\n- Type: `user_preference`\n- Source: [memory_722026a0879da2722427](codecairn://memory/memory_722026a0879da2722427)\n- Evidence: 1 cited raw event(s)\n\n## 14. Andrew in session_26\n\n2023-10-28T14:36:30+00:00 — Andrew: Oh no! Sorry to hear that your dogs haven't been themselves. Are they doing ok? How did the appointment with the animal behaviorist go? Did you receive any helpful advice or insights?\n\n- Type: `user_preference`\n- Source: [memory_f3d914d6a111a99e95a7](codecairn://memory/memory_f3d914d6a111a99e95a7)\n- Evidence: 1 cited raw event(s)\n\n## 15. Audrey in session_14\n\n2023-08-04T11:07:30+00:00 — Audrey: It's been tough at times, but overall it's going great. We're all growing together. Check out this pic of us on a trail hike! [Image caption: a photography of a woman walking her dogs down a path]\n\n- Type: `user_preference`\n- Source: [memory_c3d48c4914d940c33fe8](codecairn://memory/memory_c3d48c4914d940c33fe8)\n- Evidence: 1 cited raw event(s)\n\n## 16. Audrey in session_3\n\n2023-04-16T16:30:30+00:00 — Audrey: Yay! This'll be awesome! Seeing them all together, having fun and enjoying treats is the best. I can't imagine life without them, they bring so much joy. [Image caption: a photography of a dog running with three other dogs in the background]\n\n- Type: `user_preference`\n- Source: [memory_b715b3250df06ce77163](codecairn://memory/memory_b715b3250df06ce77163)\n- Evidence: 1 cited raw event(s)\n\n## 17. Audrey in session_19\n\n2023-09-24T17:58:30+00:00 — Audrey: They're all mutts. Two of them are Jack Russell mixes and the other two are Chihuahua mixes. And yea, I believe so! Some dog breeds do bond better than others. [Image caption: a photography of a group of dogs tied to a leash on a brick walkway]\n\n- Type: `user_preference`\n- Source: [memory_25a46d822f07a555b226](codecairn://memory/memory_25a46d822f07a555b226)\n- Evidence: 1 cited raw event(s)\n\n## 18. Audrey in session_18\n\n2023-09-06T19:57:30+00:00 — Audrey: Did you find a dog-friendly place to live yet? I remember you mentioning it.\n\n- Type: `user_preference`\n- Source: [memory_9159d608fd98eccec66b](codecairn://memory/memory_9159d608fd98eccec66b)\n- Evidence: 1 cited raw event(s)\n\n## 19. Audrey in session_27\n\n2023-11-04T19:59:30+00:00 — Audrey: That's cool! I love checking out new parks with my four pups. Last weekend was so fun - our dogs were able to run around and get some fresh air. On top of that, I recently joined a dog owners group to learn how to better take care of them. [Image caption: a photo of a group of people and dogs in a park]\n\n- Type: `user_preference`\n- Source: [memory_7914edff3846c9710e0f](codecairn://memory/memory_7914edff3846c9710e0f)\n- Evidence: 1 cited raw event(s)\n\n## 20. Andrew in session_28\n\n2023-11-22T09:04:30+00:00 — Andrew: No, we haven't got the chance to take them to the groomer yet. But will do that soon! So guess what, I can't help myself but to adpot another dog the other day. Here's a photo of the doggo! [Image caption: a photo of a woman feeding a dog hay in a barn]\n\n- Type: `user_preference`\n- Source: [memory_c2b979124f84cf3d9d56](codecairn://memory/memory_c2b979124f84cf3d9d56)\n- Evidence: 1 cited raw event(s)\n",
+  "retrieval": {
+    "latency_ms": 97.468,
+    "lexical_candidate_count": 80,
+    "limit": 20,
+    "query": "Which year did Audrey adopt the first three of her dogs?",
+    "ranked": [
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "7e06f984c61a166102396889fdef5785be99ddd3a971cec26c6f35bcd4849484",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 428,
+            "raw_event_sha256": "d4e56288daf89281c0511787613154d136b2ac25b770089e382a14ce8f1d737f",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_19"
+          }
+        ],
+        "final_score": 0.029709507042,
+        "lexical_rank": 4,
+        "lexical_score": 6.375272274017,
+        "memory_id": "memory_579d67ae767ef75a6007",
+        "memory_type": "user_preference",
+        "rank": 1,
+        "source_uri": "codecairn://memory/memory_579d67ae767ef75a6007",
+        "summary": "2023-09-24T17:54:30+00:00 — Audrey: I petted and hugged her, spoke calmly, and slowly walked her to relax. Our bond feels even stronger when moments like these show up. [Image caption: a photo of a dog laying on a bed with its head on the pillow]",
+        "title": "Audrey in session_19",
+        "vector_rank": 11,
+        "vector_score": 0.369244383462
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "02cb9650077de88414c34579f92d10d83c6e3324f5941e4e04627018dd8254c8",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 619,
+            "raw_event_sha256": "340725796af8e843ff48bb276c2a7a22015f288936d060d01d1c005b1d56a2bf",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_26"
+          }
+        ],
+        "final_score": 0.027432808156,
+        "lexical_rank": 5,
+        "lexical_score": 6.218535423279,
+        "memory_id": "memory_5a64ed754329eab813c4",
+        "memory_type": "user_preference",
+        "rank": 2,
+        "source_uri": "codecairn://memory/memory_5a64ed754329eab813c4",
+        "summary": "2023-10-28T14:49:30+00:00 — Andrew: Wow, that looks awesome! Do you think the dogs will like it? Which trail do you have in mind?",
+        "title": "Andrew in session_26",
+        "vector_rank": 23,
+        "vector_score": 0.364875572659
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b04ba6b636df45b094248b1d61ffca037a4367440f1a7159089dfe0a8c755a0e",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 118,
+            "raw_event_sha256": "d160db9ef2a177fc97caee474666b521d83e751b6af851acb9de20c00131451e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_5"
+          }
+        ],
+        "final_score": 0.027402402402,
+        "lexical_rank": 12,
+        "lexical_score": 5.514622688293,
+        "memory_id": "memory_56bb95614f1777d15ec4",
+        "memory_type": "user_preference",
+        "rank": 3,
+        "source_uri": "codecairn://memory/memory_56bb95614f1777d15ec4",
+        "summary": "2023-05-06T10:50:30+00:00 — Audrey: That's a good plan! I'm lucky to have a park near me - it's great for my pup's walks. Last Friday we took a road trip - we went to a beautiful national park and my dogs had a blast! It was an awesome trip! [Image caption: a photography of three dogs running through a field of grass]",
+        "title": "Audrey in session_5",
+        "vector_rank": 14,
+        "vector_score": 0.367555750021
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "23d323b9ed6e0af15d2d33ae7fc681d92758c1cdc62d12364d7ec5038277499b",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 383,
+            "raw_event_sha256": "a1f314562795772a88c091e3c668a0ed6b1f558bd5d57eb564f09d6c2a2d9200",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_17"
+          }
+        ],
+        "final_score": 0.026748251748,
+        "lexical_rank": 28,
+        "lexical_score": 4.772251605988,
+        "memory_id": "memory_02f2ff6d3090ffc9af28",
+        "memory_type": "user_preference",
+        "rank": 4,
+        "source_uri": "codecairn://memory/memory_02f2ff6d3090ffc9af28",
+        "summary": "2023-08-24T00:24:30+00:00 — Audrey: Hey! Actually I've never been fishing. It's always been just chilling at the lake. I remember this moment a few years back when I sat by a gorgeous lake in the mountains with friends. So peaceful and calming. Just the sound of the birds, the stillness of the water, and the fresh air - it was so special. But yeah I have never gone on a fishing trip before. Here's a photo of the trip to the lake with my friend. [Image caption: a photo of a group of dogs standing on a rock near a lake]",
+        "title": "Audrey in session_17",
+        "vector_rank": 5,
+        "vector_score": 0.375352006831
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "3a5c624e8dfa96514b7e25fe92d751f12ab360a44bba9fea2433436a21116281",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 259,
+            "raw_event_sha256": "9101ac8018581a170fb75b30f8e03962d6fb7611b38b9e8fdddd85b1eb09f674",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_11"
+          }
+        ],
+        "final_score": 0.025320462098,
+        "lexical_rank": 11,
+        "lexical_score": 5.593007564545,
+        "memory_id": "memory_2e474dd27992134644ba",
+        "memory_type": "user_preference",
+        "rank": 5,
+        "source_uri": "codecairn://memory/memory_2e474dd27992134644ba",
+        "summary": "2023-07-08T09:54:30+00:00 — Audrey: Yup! Btw, there's going to be some cool stuff happening today. [Image caption: a photo of three dogs sitting on the floor with leashes]",
+        "title": "Audrey in session_11",
+        "vector_rank": 29,
+        "vector_score": 0.363299359279
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "79b47442dbc7aed1c9e58c2969efb6887282ef4fedd93d18a90f858df1ef67aa",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 273,
+            "raw_event_sha256": "2fd463091a475afb3cca937024a3373a2576f51e3b265f8413a6cc655d804fea",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_11"
+          }
+        ],
+        "final_score": 0.025089094797,
+        "lexical_rank": 55,
+        "lexical_score": 1.640130758286,
+        "memory_id": "memory_d8ec2934f14c22f7d0ec",
+        "memory_type": "user_preference",
+        "rank": 6,
+        "source_uri": "codecairn://memory/memory_d8ec2934f14c22f7d0ec",
+        "summary": "2023-07-08T10:01:30+00:00 — Audrey: I'm 100% sure that it's gonna be a great day! Just take a look how happy my dogs are just at out local park. [Image caption: a photography of a dog playing with a group of other dogs]",
+        "title": "Audrey in session_11",
+        "vector_rank": 1,
+        "vector_score": 0.391766055465
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "fcbd0578e8c3d1bcf6597879056550ea402e9f5655827f76419325982086a089",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 430,
+            "raw_event_sha256": "bca28203a4660af3e44bc52728cb87fad2a1f52420d9c145e8e7fb09bc1dd878",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_19"
+          }
+        ],
+        "final_score": 0.0245215311,
+        "lexical_rank": 16,
+        "lexical_score": 5.427087783813,
+        "memory_id": "memory_1676500dd05d197e3b61",
+        "memory_type": "user_preference",
+        "rank": 7,
+        "source_uri": "codecairn://memory/memory_1676500dd05d197e3b61",
+        "summary": "2023-09-24T17:55:30+00:00 — Audrey: Building trust with them needs patience and regular training. Give them time and love, and praise their successes. [Image caption: a photography of three dogs wearing birthday hats and sitting next to each other]",
+        "title": "Audrey in session_19",
+        "vector_rank": 28,
+        "vector_score": 0.363831869466
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "89fcc7b1df868d40a1498ee1574dae0a5144c45a7fd087f98339ecfe97233897",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 249,
+            "raw_event_sha256": "2d5e846fdd04f32af403d14dc12aab21d7bfaf0eaab6c4bcc41e3735dc5fb52c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_11"
+          }
+        ],
+        "final_score": 0.023685515873,
+        "lexical_rank": 68,
+        "lexical_score": 1.452972531319,
+        "memory_id": "memory_bfb4443b8e2f568da90a",
+        "memory_type": "user_preference",
+        "rank": 8,
+        "source_uri": "codecairn://memory/memory_bfb4443b8e2f568da90a",
+        "summary": "2023-07-08T09:49:30+00:00 — Audrey: Thanks! I got lucky finding a breeder nearby that has the dogs I wanted. Yeah places that allows dogs are really hard to find unfortunately .",
+        "title": "Audrey in session_11",
+        "vector_rank": 3,
+        "vector_score": 0.381067946831
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "64db40e5746ddb92845067a2597179d7ff1a1a0962d4dd568a83f93fc7bd75fd",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 438,
+            "raw_event_sha256": "0cf6af3418b9932e247a2b6957d7a54841757069d45c4951d82dbe3bb472ad42",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_19"
+          }
+        ],
+        "final_score": 0.023222439661,
+        "lexical_rank": 13,
+        "lexical_score": 5.508799552917,
+        "memory_id": "memory_2d4d4fc55698fb42acfa",
+        "memory_type": "user_preference",
+        "rank": 9,
+        "source_uri": "codecairn://memory/memory_2d4d4fc55698fb42acfa",
+        "summary": "2023-09-24T17:59:30+00:00 — Audrey: I love them for that. They really do bring so much joy into my life. [Image caption: a photography of three small dogs sitting on a couch with a white fur]",
+        "title": "Audrey in session_19",
+        "vector_rank": 45,
+        "vector_score": 0.359137698732
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "80c316f5142e3848b59733c926b7e6b8f464a1554eadb394a0e83eb5b6a80711",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 28,
+            "raw_event_sha256": "5bab2e32ca679e3aacb86eb796b4c1e1ac7ceb99f61a484e319ebf15fe381f57",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_2"
+          }
+        ],
+        "final_score": 0.023137254902,
+        "lexical_rank": 15,
+        "lexical_score": 5.447217941284,
+        "memory_id": "memory_779f08227b44963ec48a",
+        "memory_type": "user_preference",
+        "rank": 10,
+        "source_uri": "codecairn://memory/memory_779f08227b44963ec48a",
+        "summary": "2023-04-02T14:44:00+00:00 — Audrey: Pixie's fitting in great! It took her a few days to get used to the other dogs, but now they're awesome friends. They love playing and exploring the house - so cute!\n [Image caption: a photography of a dog playing with a group of other dogs]",
+        "title": "Audrey in session_2",
+        "vector_rank": 42,
+        "vector_score": 0.359738056945
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b2cd63d40001074cb82477a857334b1f80eae326c2cc51e49cc363044d942d82",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 535,
+            "raw_event_sha256": "f5478e22ea099b075b0394f7151a66945248fe0c6eac945b509b24dd26ff8854",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_23"
+          }
+        ],
+        "final_score": 0.023109243697,
+        "lexical_rank": 59,
+        "lexical_score": 1.596832275391,
+        "memory_id": "memory_610cf46f63849318fe51",
+        "memory_type": "user_preference",
+        "rank": 11,
+        "source_uri": "codecairn://memory/memory_610cf46f63849318fe51",
+        "summary": "2023-10-13T16:26:30+00:00 — Audrey: The dog park is like paradise for them! They love socializing with the other pups and getting lots of exercise. It's so cute to watch them running around and smelling all the stuff. Do you have any funny stories about your pup at the dog park? [Image caption: a photo of two dogs playing with a frisbee in a field]",
+        "title": "Audrey in session_23",
+        "vector_rank": 8,
+        "vector_score": 0.371671619049
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "7604d4f385348de64c97084118cf76cffdfe3a9ab818a0a3a4320407c83150c1",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 77,
+            "raw_event_sha256": "400c41e49cac97d0696b37f2a5cae5501cdb5572897e58b2b5b3d5c622a7134e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_3"
+          }
+        ],
+        "final_score": 0.02303720376,
+        "lexical_rank": 23,
+        "lexical_score": 5.001470088959,
+        "memory_id": "memory_da9a3f1d75fe532a69c0",
+        "memory_type": "user_preference",
+        "rank": 12,
+        "source_uri": "codecairn://memory/memory_da9a3f1d75fe532a69c0",
+        "summary": "2023-04-16T16:32:30+00:00 — Audrey: Thanks! I got it a while ago. It represents my love for my pups and nature's beauty. [Image caption: a photography of a woman walking with her dogs in the woods]",
+        "title": "Audrey in session_3",
+        "vector_rank": 31,
+        "vector_score": 0.362024797592
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "2d9fdfcd8ce3e8f7bb079fee2abd1c925837a43bc3440e5dea6cac257ab82b59",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 97,
+            "raw_event_sha256": "fd3d8b2fc1ddb0e0ab38244ab26273274ca4861a43c00c874bef52f1c3b27ec5",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_4"
+          }
+        ],
+        "final_score": 0.022619047619,
+        "lexical_rank": 60,
+        "lexical_score": 1.593826889992,
+        "memory_id": "memory_722026a0879da2722427",
+        "memory_type": "user_preference",
+        "rank": 13,
+        "source_uri": "codecairn://memory/memory_722026a0879da2722427",
+        "summary": "2023-05-03T17:49:00+00:00 — Audrey: My dogs go nuts when we go on hikes! They love exploring new scents and being in nature - it's their happy place. I can tell by their wagging tails and expressions how much they love it. It's so great to see them having so much fun! [Image caption: a photo of a dog running in a field with other dogs]",
+        "title": "Audrey in session_4",
+        "vector_rank": 10,
+        "vector_score": 0.370435425262
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "c21ad7f38486a6f65f32c35574b2d7c6613e654e8ac4c310c0d946137133ed0f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 593,
+            "raw_event_sha256": "ff25da47bcf34726a5b30d02fcb439f0d7832563ef6a1276f3e4e468f7f51722",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_26"
+          }
+        ],
+        "final_score": 0.022457820337,
+        "lexical_rank": 8,
+        "lexical_score": 5.8123960495,
+        "memory_id": "memory_f3d914d6a111a99e95a7",
+        "memory_type": "user_preference",
+        "rank": 14,
+        "source_uri": "codecairn://memory/memory_f3d914d6a111a99e95a7",
+        "summary": "2023-10-28T14:36:30+00:00 — Andrew: Oh no! Sorry to hear that your dogs haven't been themselves. Are they doing ok? How did the appointment with the animal behaviorist go? Did you receive any helpful advice or insights?",
+        "title": "Andrew in session_26",
+        "vector_rank": 69,
+        "vector_score": 0.356302049863
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "ff865d2414b6f735dce33b75d992ee42da1e56008dea215388fbb8dc02e9f983",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 322,
+            "raw_event_sha256": "64f47e2fae38c53b797b0bc4178eb163d76e3f1e391fdc973914b3965374afc2",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_14"
+          }
+        ],
+        "final_score": 0.022266204849,
+        "lexical_rank": 26,
+        "lexical_score": 4.873043060303,
+        "memory_id": "memory_c3d48c4914d940c33fe8",
+        "memory_type": "user_preference",
+        "rank": 15,
+        "source_uri": "codecairn://memory/memory_c3d48c4914d940c33fe8",
+        "summary": "2023-08-04T11:07:30+00:00 — Audrey: It's been tough at times, but overall it's going great. We're all growing together. Check out this pic of us on a trail hike! [Image caption: a photography of a woman walking her dogs down a path]",
+        "title": "Audrey in session_14",
+        "vector_rank": 34,
+        "vector_score": 0.361697634243
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "5eb5bbc695ff7da8938bc235f128b58e1bb7c8fbdec0bcbabdf30f8d94fbcd42",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 73,
+            "raw_event_sha256": "bc0a52a5a36a7ce826cbd3003148d04b1efef5f73fa5442326810e3519bec225",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_3"
+          }
+        ],
+        "final_score": 0.021861471861,
+        "lexical_rank": 10,
+        "lexical_score": 5.698568344116,
+        "memory_id": "memory_b715b3250df06ce77163",
+        "memory_type": "user_preference",
+        "rank": 16,
+        "source_uri": "codecairn://memory/memory_b715b3250df06ce77163",
+        "summary": "2023-04-16T16:30:30+00:00 — Audrey: Yay! This'll be awesome! Seeing them all together, having fun and enjoying treats is the best. I can't imagine life without them, they bring so much joy. [Image caption: a photography of a dog running with three other dogs in the background]",
+        "title": "Audrey in session_3",
+        "vector_rank": 72,
+        "vector_score": 0.355666674256
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "ec176ba9f5fa2642426eca702726f4f1a4a600e9b469a2cd76209d4e211e4e78",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 436,
+            "raw_event_sha256": "2c5075520396453a96a5262c972b68a9e9915ca7d1aab5b6de2ba9b31ea93f37",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_19"
+          }
+        ],
+        "final_score": 0.019694244604,
+        "lexical_rank": 79,
+        "lexical_score": 1.401921153069,
+        "memory_id": "memory_25a46d822f07a555b226",
+        "memory_type": "user_preference",
+        "rank": 17,
+        "source_uri": "codecairn://memory/memory_25a46d822f07a555b226",
+        "summary": "2023-09-24T17:58:30+00:00 — Audrey: They're all mutts. Two of them are Jack Russell mixes and the other two are Chihuahua mixes. And yea, I believe so! Some dog breeds do bond better than others. [Image caption: a photography of a group of dogs tied to a leash on a brick walkway]",
+        "title": "Audrey in session_19",
+        "vector_rank": 20,
+        "vector_score": 0.365942010335
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "2568c7c714bbe3530714ae0abfbfae899558f4c9ee582cdf116ed3970da377eb",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 420,
+            "raw_event_sha256": "d28898f6f3de42b236af930c58619bba5018450df58a5362a5e44174d46e0ff0",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_18"
+          }
+        ],
+        "final_score": 0.019307832423,
+        "lexical_rank": 30,
+        "lexical_score": 4.668378353119,
+        "memory_id": "memory_9159d608fd98eccec66b",
+        "memory_type": "user_preference",
+        "rank": 18,
+        "source_uri": "codecairn://memory/memory_9159d608fd98eccec66b",
+        "summary": "2023-09-06T19:57:30+00:00 — Audrey: Did you find a dog-friendly place to live yet? I remember you mentioning it.",
+        "title": "Audrey in session_18",
+        "vector_rank": 62,
+        "vector_score": 0.357406960989
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "92ace3ed6329e6abbcbfa6df939fc5c38ce1ffad15abe683c612f1bdf4a8495f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 640,
+            "raw_event_sha256": "a0b1405145f56aca2c6562dc4e813d5bf43d132036322045f88b19511f5cb2ea",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_27"
+          }
+        ],
+        "final_score": 0.019017150982,
+        "lexical_rank": 61,
+        "lexical_score": 1.584877252579,
+        "memory_id": "memory_7914edff3846c9710e0f",
+        "memory_type": "user_preference",
+        "rank": 19,
+        "source_uri": "codecairn://memory/memory_7914edff3846c9710e0f",
+        "summary": "2023-11-04T19:59:30+00:00 — Audrey: That's cool! I love checking out new parks with my four pups. Last weekend was so fun - our dogs were able to run around and get some fresh air. On top of that, I recently joined a dog owners group to learn how to better take care of them. [Image caption: a photo of a group of people and dogs in a park]",
+        "title": "Audrey in session_27",
+        "vector_rank": 33,
+        "vector_score": 0.361879335966
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "fbf37060e4f7c6e221bc40b025138ffcff003dc69659893a50cbbcaa57b23913",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 662,
+            "raw_event_sha256": "b06ed120ea34e9cfe913a6fe0c3edce776601b053d47ce972ae76b4b3e31a8ca",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-44/session_28"
+          }
+        ],
+        "final_score": 0.016835016835,
+        "lexical_rank": 72,
+        "lexical_score": 1.428908586502,
+        "memory_id": "memory_c2b979124f84cf3d9d56",
+        "memory_type": "user_preference",
+        "rank": 20,
+        "source_uri": "codecairn://memory/memory_c2b979124f84cf3d9d56",
+        "summary": "2023-11-22T09:04:30+00:00 — Andrew: No, we haven't got the chance to take them to the groomer yet. But will do that soon! So guess what, I can't help myself but to adpot another dog the other day. Here's a photo of the doggo! [Image caption: a photo of a woman feeding a dog hay in a barn]",
+        "title": "Andrew in session_28",
+        "vector_rank": 48,
+        "vector_score": 0.358993410586
+      }
+    ],
+    "repo_key": "locomo/conv-44",
+    "vector_candidate_count": 80
+  },
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "status": "completed"
+}

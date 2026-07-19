@@ -82,6 +82,12 @@ Each run has an isolated workspace and immutable manifest. LoCoMo is a benchmark
 adapter over the memory interface; coding-task A/B is a separate agent execution
 adapter over the evaluation interface.
 
+The evidence-bundle reducer sits outside the runtime use cases. It copies only
+public aggregate inputs, recomputes the four suite reports, derives inventory
+counts, and generates recruiting copy from those values. A bundle SHA-256
+inventory and deterministic verifier prevent a checked-in metric or resume
+bullet from drifting away from its underlying artifacts.
+
 CLI and HTTP depend on `CodeCairnApplication`, a shared use-case facade. The
 composition root supplies the local runtime, evaluation dispatch, and
 operational diagnostics. HTTP adds path authorization, request identifiers,

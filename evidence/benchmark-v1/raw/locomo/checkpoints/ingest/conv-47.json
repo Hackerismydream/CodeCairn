@@ -1,0 +1,10 @@
+{
+  "accepted_memory_count": 689,
+  "memory_root": "runtime/conv-47",
+  "rejected_memory_count": 0,
+  "sample_id": "conv-47",
+  "session_count": 31,
+  "speaker_a": "James",
+  "speaker_b": "John",
+  "turn_count": 689
+}
