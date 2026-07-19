@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011295,
+    "cost_usd": null,
+    "input_tokens": 2895,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 435,
+    "reasoning_tokens": 376,
+    "text": "Melanie saw a sign posted on a door stating that someone is not being able to leave (as indicated by the photo caption in the memory from session_16, 2023-09-13T00:16:30, and her follow-up that it was just a precaution).",
+    "uncached_input_tokens": 2895
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002211,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 280,
+      "reasoning_tokens": 272,
+      "response_chars": 20,
+      "uncached_input_tokens": 177,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 325,
+      "reasoning_tokens": 317,
+      "response_chars": 20,
+      "uncached_input_tokens": 49,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007262000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 96,
+      "reasoning_tokens": 88,
+      "response_chars": 20,
+      "uncached_input_tokens": 49,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7f96c45871438c7c4d2c",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ea7bfa6ba810b5d883972252c044a6bea3b77c15b94399bae2840313242e5b80",
+  "status": "completed"
+}

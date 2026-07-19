@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009537,
+    "cost_usd": null,
+    "input_tokens": 2735,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 222,
+    "reasoning_tokens": 183,
+    "text": "Anthony and John ended up playing an intense Harry Potter trivia contest during the charity event. (Source: John in session_4, memory_f90ff78b974561501df1)",
+    "uncached_input_tokens": 2735
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001281,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 20,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 188,
+      "reasoning_tokens": 180,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013802,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 217,
+      "reasoning_tokens": 209,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_958c9979d49152f21259",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "f484f550eaf4127f51bde29a0e3653a1f5ad13ea495caa1befe74ba4ab97d462",
+  "status": "completed"
+}

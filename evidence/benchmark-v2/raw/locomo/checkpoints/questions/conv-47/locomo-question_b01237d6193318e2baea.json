@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00939,
+    "cost_usd": null,
+    "input_tokens": 2684,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 223,
+    "reasoning_tokens": 176,
+    "text": "Based on the memory context, James asked Samantha to be his girlfriend on September 3, 2022. In a message on September 4, 2022, he mentions doing it \"yesterday\" at the theater.",
+    "uncached_input_tokens": 2684
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001281,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 134,
+      "reasoning_tokens": 126,
+      "response_chars": 20,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008282000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 122,
+      "reasoning_tokens": 114,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b01237d6193318e2baea",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "4fa73689b86b157e5787e2bd34568096ca3bda86451d79936d58af0de7961e33",
+  "status": "completed"
+}

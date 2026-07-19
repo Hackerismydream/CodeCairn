@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011028,
+    "cost_usd": null,
+    "input_tokens": 2760,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 458,
+    "reasoning_tokens": 409,
+    "text": "The provided context does not mention any family members visiting James in the last year. The memories only reference family outings (road trips, game nights) but no visits from specific relatives. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2760
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002043,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 260,
+      "reasoning_tokens": 252,
+      "response_chars": 18,
+      "uncached_input_tokens": 161,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005702000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 18,
+      "uncached_input_tokens": 33,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 18,
+      "uncached_input_tokens": 33,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_70b94c88b4fdfa570041",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "a5305599d70b2a4e40ae02f76482b2561b6697185949f5d38312a2ab63bd75e8",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012069,
+    "cost_usd": null,
+    "input_tokens": 2613,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 705,
+    "reasoning_tokens": 649,
+    "text": "Based on the memory context, John mentioned doing a volunteer event for a cause: he volunteered at a career fair at a local school to help kids affected by a lack of resources (2023-04-07). No other specific causes are attributed to events he has done.",
+    "uncached_input_tokens": 2613
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001116,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 101,
+      "reasoning_tokens": 93,
+      "response_chars": 18,
+      "uncached_input_tokens": 170,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 249,
+      "reasoning_tokens": 241,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015092,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 230,
+      "reasoning_tokens": 222,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_56bc737e41d22aa24da3",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "c0b4224cad7bd4baeaae3584d1599a5349c83418b1b4954372e1948d857be05f",
+  "status": "completed"
+}

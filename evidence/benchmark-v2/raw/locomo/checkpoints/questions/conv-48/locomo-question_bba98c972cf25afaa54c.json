@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010347,
+    "cost_usd": null,
+    "input_tokens": 3039,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 205,
+    "reasoning_tokens": 170,
+    "text": "Deborah advised breaking studying into smaller pieces and setting goals, and using planners or schedulers to stay organized and manage time, with Jolene having asked for such tips.",
+    "uncached_input_tokens": 3039
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001737,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 209,
+      "reasoning_tokens": 201,
+      "response_chars": 20,
+      "uncached_input_tokens": 161,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016682,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 261,
+      "reasoning_tokens": 253,
+      "response_chars": 20,
+      "uncached_input_tokens": 33,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018242,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 287,
+      "reasoning_tokens": 279,
+      "response_chars": 20,
+      "uncached_input_tokens": 33,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bba98c972cf25afaa54c",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "db52f5c2399fdeee5d06ca2f24f1f842a0143285e4585114e5097cb84fd8a9cc",
+  "status": "completed"
+}

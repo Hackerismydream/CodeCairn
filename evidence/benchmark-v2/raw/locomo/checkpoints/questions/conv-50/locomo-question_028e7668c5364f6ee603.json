@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00882,
+    "cost_usd": null,
+    "input_tokens": 2592,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 174,
+    "reasoning_tokens": 130,
+    "text": "The provided memory context does not contain any information about Calvin buying a second Ferrari. There is only a mention of a Ferrari in general, but no purchase details or timing. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2592
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001866,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 234,
+      "reasoning_tokens": 226,
+      "response_chars": 18,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 139,
+      "reasoning_tokens": 131,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008732000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_028e7668c5364f6ee603",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "29dac1439aa7883ba65d183d2a201ae91fd689ec51201a9e233f1b354e5a404c",
+  "status": "completed"
+}

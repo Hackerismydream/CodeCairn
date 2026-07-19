@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008841,
+    "cost_usd": null,
+    "input_tokens": 2583,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 182,
+    "reasoning_tokens": 155,
+    "text": "James received the phone number of a beautiful girl he met during the beach outing. Her name isn't mentioned in the provided context.",
+    "uncached_input_tokens": 2583
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001011,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 100,
+      "reasoning_tokens": 92,
+      "response_chars": 18,
+      "uncached_input_tokens": 137,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 103,
+      "reasoning_tokens": 95,
+      "response_chars": 18,
+      "uncached_input_tokens": 9,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005522000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 87,
+      "reasoning_tokens": 79,
+      "response_chars": 18,
+      "uncached_input_tokens": 9,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_06e387e432aba47ad7ec",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "b6554a0815b01847973d43bba4e0fe47e344a608e626df1ed5d2296e41477b1e",
+  "status": "completed"
+}

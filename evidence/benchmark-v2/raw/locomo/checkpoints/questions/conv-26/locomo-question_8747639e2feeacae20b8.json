@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012111,
+    "cost_usd": null,
+    "input_tokens": 3007,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 515,
+    "reasoning_tokens": 474,
+    "text": "Caroline mentioned drawing a self-portrait on **2023-08-23** (session 13), stating she made it \"last week.\" The exact date of the drawing is not provided.",
+    "uncached_input_tokens": 3007
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001857,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 20,
+      "uncached_input_tokens": 155,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 202,
+      "reasoning_tokens": 194,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019322,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 308,
+      "reasoning_tokens": 300,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8747639e2feeacae20b8",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ab6b83e637fb15edbe3b337fd391147efccb0a1f01c4e6b5717cdccef428b9e2",
+  "status": "completed"
+}

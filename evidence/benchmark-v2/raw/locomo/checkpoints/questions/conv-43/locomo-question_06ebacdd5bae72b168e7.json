@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010599,
+    "cost_usd": null,
+    "input_tokens": 2803,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 365,
+    "reasoning_tokens": 317,
+    "text": "John finds mentoring rewarding because he enjoys sharing his skills and knowledge, seeing the younger players' growth, improvement, and confidence, and making a positive impact on their lives. It also keeps him involved in the game during the off-season.",
+    "uncached_input_tokens": 2803
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00264,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 359,
+      "reasoning_tokens": 351,
+      "response_chars": 20,
+      "uncached_input_tokens": 162,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015992,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 249,
+      "reasoning_tokens": 241,
+      "response_chars": 20,
+      "uncached_input_tokens": 34,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 326,
+      "reasoning_tokens": 318,
+      "response_chars": 20,
+      "uncached_input_tokens": 34,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_06ebacdd5bae72b168e7",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "29dceb36a7058843d72bbccaac655351bb647190d498cdd2bd9a1e17c1121b7b",
+  "status": "completed"
+}

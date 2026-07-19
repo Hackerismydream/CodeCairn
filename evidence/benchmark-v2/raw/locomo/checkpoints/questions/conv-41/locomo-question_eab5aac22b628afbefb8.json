@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009045,
+    "cost_usd": null,
+    "input_tokens": 2739,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 138,
+    "reasoning_tokens": 101,
+    "text": "Based on the memory context, the flood ruined lots of homes in John's old area because the infrastructure wasn't great (session_23, 2023-07-07).",
+    "uncached_input_tokens": 2739
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00144,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 164,
+      "reasoning_tokens": 156,
+      "response_chars": 20,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_eab5aac22b628afbefb8",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "43030434c0b9bd8be6a56ced346ca8001825cda05eb7e234551cd2b268d83b17",
+  "status": "completed"
+}

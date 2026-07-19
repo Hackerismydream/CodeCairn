@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010581,
+    "cost_usd": null,
+    "input_tokens": 3195,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 166,
+    "reasoning_tokens": 146,
+    "text": "Audrey had a knee injury that prevented her from walking her dogs for a period of time.",
+    "uncached_input_tokens": 3195
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00102,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 103,
+      "reasoning_tokens": 95,
+      "response_chars": 20,
+      "uncached_input_tokens": 134,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 170,
+      "reasoning_tokens": 162,
+      "response_chars": 20,
+      "uncached_input_tokens": 6,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012812000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 20,
+      "uncached_input_tokens": 6,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_556a95ed5b8a12a88fa6",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "79c4528b90fcb547d2c463fc15a24a86ad662eb9b04d29269aeca3eaf750d1fd",
+  "status": "completed"
+}

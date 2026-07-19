@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008928,
+    "cost_usd": null,
+    "input_tokens": 2696,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 140,
+    "reasoning_tokens": 103,
+    "text": "Maria was inspired to start volunteering by her aunt, who believed in volunteering and helped her family during tough times (mentioned in session_5 on 2023-01-28).",
+    "uncached_input_tokens": 2696
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001314,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 20,
+      "uncached_input_tokens": 142,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1d2cdaa35fb2ad63fa1c",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "f4b4140ac5bd49661ff21dcc3121a0e7f0a46617c7f928030220d71fe0b96870",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013191,
+    "cost_usd": null,
+    "input_tokens": 2777,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 810,
+    "reasoning_tokens": 747,
+    "text": "The provided memory context mentions John practices yoga for strength and flexibility, including a pose he holds for 30-60 seconds to build strength and stability, but it does not specify any yoga style or pose focused on core strength. Therefore, the context is insufficient to recommend a specific kind of yoga for that purpose.",
+    "uncached_input_tokens": 2777
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000948,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 71,
+      "reasoning_tokens": 63,
+      "response_chars": 18,
+      "uncached_input_tokens": 174,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015092,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 213,
+      "reasoning_tokens": 205,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6038a1ac1c81d8893aed",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "26be5cd7303896e4d004008c6aa6f318e02099f23388265544c69d86f2fac9ed",
+  "status": "completed"
+}

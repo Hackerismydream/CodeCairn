@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009708,
+    "cost_usd": null,
+    "input_tokens": 2774,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 231,
+    "reasoning_tokens": 198,
+    "text": "The provided memory context does not include John’s answer to Tim’s question about how long he holds the yoga pose. Therefore, the information is insufficient.",
+    "uncached_input_tokens": 2774
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00138,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 157,
+      "reasoning_tokens": 149,
+      "response_chars": 18,
+      "uncached_input_tokens": 146,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010232000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 161,
+      "reasoning_tokens": 153,
+      "response_chars": 18,
+      "uncached_input_tokens": 18,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 67,
+      "reasoning_tokens": 59,
+      "response_chars": 18,
+      "uncached_input_tokens": 18,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d6adf162d31726140bbd",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "2d827cb13a065b03f9055be58cfd966fd45cfb853b26c96b692642c96582b1d4",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010548,
+    "cost_usd": null,
+    "input_tokens": 3042,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 237,
+    "reasoning_tokens": 201,
+    "text": "Jolene and her partner traveled to a meditation retreat in Phuket for a few weeks in September 2023 (mentioned on 2023-09-12).",
+    "uncached_input_tokens": 3042
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001167,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 20,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009842,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 151,
+      "reasoning_tokens": 143,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 127,
+      "reasoning_tokens": 119,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6de4e9cb69fd972daf70",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "f86d295abd557bcb5e92f8cbd2d81c31f5cdb3f7160eb1d836cc19fb07a95675",
+  "status": "completed"
+}

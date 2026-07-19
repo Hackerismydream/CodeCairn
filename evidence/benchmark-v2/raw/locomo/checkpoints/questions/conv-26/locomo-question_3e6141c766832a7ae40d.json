@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008454,
+    "cost_usd": null,
+    "input_tokens": 2460,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 179,
+    "reasoning_tokens": 139,
+    "text": "The provided memory context does not contain any information about what instruments Melanie plays. The entries mostly show her asking questions to others about their music and art, but not revealing her own instrument-playing abilities.",
+    "uncached_input_tokens": 2460
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000939,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 84,
+      "reasoning_tokens": 76,
+      "response_chars": 18,
+      "uncached_input_tokens": 145,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007562000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 109,
+      "response_chars": 18,
+      "uncached_input_tokens": 17,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007562000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 109,
+      "response_chars": 18,
+      "uncached_input_tokens": 17,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3e6141c766832a7ae40d",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "b3844955285051785288384125031fe29e425fc406ac84185e31cc90d14d65cb",
+  "status": "completed"
+}

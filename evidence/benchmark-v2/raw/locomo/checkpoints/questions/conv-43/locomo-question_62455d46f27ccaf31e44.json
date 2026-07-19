@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009768,
+    "cost_usd": null,
+    "input_tokens": 2840,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 208,
+    "reasoning_tokens": 169,
+    "text": "Tim planned to go to Universal Studios in September 2023, as he mentioned in a conversation on August 31, 2023, that he was planning a trip \"next month.\"",
+    "uncached_input_tokens": 2840
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001548,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 20,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 129,
+      "reasoning_tokens": 121,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 123,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_62455d46f27ccaf31e44",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "df54ac127344e87e409e4cea3d97b593fe2abe769723bd742016da5eb867ee01",
+  "status": "completed"
+}

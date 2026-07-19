@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009903,
+    "cost_usd": null,
+    "input_tokens": 2819,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 241,
+    "reasoning_tokens": 213,
+    "text": "Evan suggested that Sam ask a doctor for diet and exercise tips (from session_24 on 2024-01-10).",
+    "uncached_input_tokens": 2819
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003024,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 433,
+      "reasoning_tokens": 425,
+      "response_chars": 18,
+      "uncached_input_tokens": 142,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0047372,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 782,
+      "reasoning_tokens": 774,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025291999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 414,
+      "reasoning_tokens": 406,
+      "response_chars": 18,
+      "uncached_input_tokens": 14,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_646f5155922f9e3f0df7",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "4da4e4336ba1f251efa976fca3793348ffc3012be1db7cb170e519fd5c7df7af",
+  "status": "completed"
+}

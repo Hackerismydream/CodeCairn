@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010737,
+    "cost_usd": null,
+    "input_tokens": 2987,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 296,
+    "reasoning_tokens": 249,
+    "text": "Melanie felt amazed and awed. She described the experience as \"amazing,\" feeling \"part of something huge and awe-inspiring\" and \"at one with the universe\" while watching the sky light up with streaks of light.",
+    "uncached_input_tokens": 2987
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001518,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 174,
+      "reasoning_tokens": 166,
+      "response_chars": 20,
+      "uncached_input_tokens": 158,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013052,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 202,
+      "reasoning_tokens": 194,
+      "response_chars": 20,
+      "uncached_input_tokens": 30,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009752000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 147,
+      "reasoning_tokens": 139,
+      "response_chars": 20,
+      "uncached_input_tokens": 30,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b146bb68cc991979eb10",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "16859e2f4b5d0feab001a9dec05e1d8291480b2f47ea9331f18949571b1f7ce0",
+  "status": "completed"
+}

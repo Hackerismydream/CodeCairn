@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0017775999999999998,
+    "cost_usd": null,
+    "input_tokens": 2974,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 269,
+    "reasoning_tokens": 221,
+    "text": "Caroline went to the LGBTQ support group on May 7, 2023. This is based on her statement on May 8, 2023 (session_1) that she \"went to a LGBTQ support group yesterday.\"",
+    "uncached_input_tokens": 30
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001188,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 20,
+      "uncached_input_tokens": 160,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 159,
+      "reasoning_tokens": 151,
+      "response_chars": 20,
+      "uncached_input_tokens": 32,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004712,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 62,
+      "reasoning_tokens": 54,
+      "response_chars": 20,
+      "uncached_input_tokens": 32,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ff702917991d0d8a918f",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "5119dd3734296838ca41872112ea5d76d6dc9f302a7fb107353cc58664fb1183",
+  "status": "completed"
+}

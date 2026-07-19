@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009573,
+    "cost_usd": null,
+    "input_tokens": 2619,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 286,
+    "reasoning_tokens": 248,
+    "text": "The provided memory context does not include any information about Maria mentioning community service involvement on 31 July, 2023. The available records closest to that date do not address the question.",
+    "uncached_input_tokens": 2619
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00123,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 18,
+      "uncached_input_tokens": 160,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008852,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 123,
+      "response_chars": 18,
+      "uncached_input_tokens": 32,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009632,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 144,
+      "reasoning_tokens": 136,
+      "response_chars": 18,
+      "uncached_input_tokens": 32,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_072f236744a503a17a3f",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "07cf4e562c605b4641079d241a6f21fa26d4963b21cd3896a53e0300270f44ba",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009693,
+    "cost_usd": null,
+    "input_tokens": 2631,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 300,
+    "reasoning_tokens": 253,
+    "text": "John helped renovate the community center \"last year\" relative to his statement on August 5, 2023, which indicates the renovation occurred sometime in 2022. No more specific date is provided in the memory context.",
+    "uncached_input_tokens": 2631
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001527,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 177,
+      "reasoning_tokens": 169,
+      "response_chars": 20,
+      "uncached_input_tokens": 155,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c3c76bf74b6f530e6a28",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "e23ab8ed2dc0ed2347ac81840a4cba95bb607cc0bae9c04d12286fbfcc39e7c5",
+  "status": "completed"
+}

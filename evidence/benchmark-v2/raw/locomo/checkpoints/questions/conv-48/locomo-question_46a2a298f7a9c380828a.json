@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009495,
+    "cost_usd": null,
+    "input_tokens": 2765,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 200,
+    "reasoning_tokens": 164,
+    "text": "The provided memory context contains no interactions on 13 March, 2023. Therefore, it is insufficient to answer what Jolene asked Deb to help with on that date.",
+    "uncached_input_tokens": 2765
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001317,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 144,
+      "reasoning_tokens": 136,
+      "response_chars": 18,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004082,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 56,
+      "reasoning_tokens": 48,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007622000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 115,
+      "reasoning_tokens": 107,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_46a2a298f7a9c380828a",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "e66b9fe14b94d003c1a5da823a0e0bb48cce877c6dac03334bbf73d43e773d35",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00933,
+    "cost_usd": null,
+    "input_tokens": 2520,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 295,
+    "reasoning_tokens": 261,
+    "text": "In June 2023, the only available memory shows Jolene asking about a statue in a picture (session_14, June 26, 2023).",
+    "uncached_input_tokens": 2520
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00123,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 150,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 121,
+      "reasoning_tokens": 113,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 135,
+      "reasoning_tokens": 127,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a5ac26052ea21d7b7223",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "52818ce797cbbcc1b537b88b314bfd94cc9e7416a7a010bd84ea4e07982d5262",
+  "status": "completed"
+}

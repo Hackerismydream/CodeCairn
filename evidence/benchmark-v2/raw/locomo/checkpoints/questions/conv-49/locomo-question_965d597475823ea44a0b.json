@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012096,
+    "cost_usd": null,
+    "input_tokens": 2856,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 588,
+    "reasoning_tokens": 514,
+    "text": "The provided memory context contains only one mention of Evan having an adventure with a stranger: he helped a lost tourist find their way, and they ended up taking an unexpected tour around the city together (session_11, 2023-10-06). There is no indication that this type of event is recurring. The context is insufficient to identify a recurring adventure.",
+    "uncached_input_tokens": 2856
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001725,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 18,
+      "uncached_input_tokens": 189,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013322,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 18,
+      "uncached_input_tokens": 61,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 212,
+      "reasoning_tokens": 204,
+      "response_chars": 18,
+      "uncached_input_tokens": 61,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_965d597475823ea44a0b",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "48d4ec413bc817d09962016b27ae31f2f9fc921b30a07d2679d97b54b6c2bfc3",
+  "status": "completed"
+}

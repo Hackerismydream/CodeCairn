@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009891,
+    "cost_usd": null,
+    "input_tokens": 2921,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 188,
+    "reasoning_tokens": 155,
+    "text": "Based on the memory from 2022-08-26, John didn't want to go to Starbucks because he preferred to get a beer somewhere else instead.",
+    "uncached_input_tokens": 2921
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001848,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 233,
+      "reasoning_tokens": 225,
+      "response_chars": 20,
+      "uncached_input_tokens": 150,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0043412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 712,
+      "reasoning_tokens": 704,
+      "response_chars": 20,
+      "uncached_input_tokens": 22,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0044432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 729,
+      "reasoning_tokens": 721,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_63de843ce70065bd42c8",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "69219d379acc45748c18503614422d96882dff3178ccb098e7819669da3824f2",
+  "status": "completed"
+}

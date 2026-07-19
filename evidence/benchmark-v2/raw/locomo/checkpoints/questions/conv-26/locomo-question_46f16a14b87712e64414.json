@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010527,
+    "cost_usd": null,
+    "input_tokens": 2649,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 430,
+    "reasoning_tokens": 370,
+    "text": "The provided memory context doesn't include any information about what pet Caroline has. While there are conversations mentioning pets and a direct question from Melanie about whether Caroline has pets, Caroline’s response to that question isn’t included in the context. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2649
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 95,
+      "reasoning_tokens": 87,
+      "response_chars": 18,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 68,
+      "reasoning_tokens": 60,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 65,
+      "reasoning_tokens": 57,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_46f16a14b87712e64414",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "6477bb93c005cf93676c121f8abec8be890b1282caf394639d974a0c494fbb81",
+  "status": "completed"
+}

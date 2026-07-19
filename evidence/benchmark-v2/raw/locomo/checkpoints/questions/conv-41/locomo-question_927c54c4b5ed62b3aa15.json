@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009894,
+    "cost_usd": null,
+    "input_tokens": 2862,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 218,
+    "reasoning_tokens": 202,
+    "text": "Maria received a medal at the homeless shelter in early August 2023.",
+    "uncached_input_tokens": 2862
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00171,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 18,
+      "uncached_input_tokens": 130,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009212000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 18,
+      "uncached_input_tokens": 2,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026671999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 443,
+      "reasoning_tokens": 435,
+      "response_chars": 18,
+      "uncached_input_tokens": 2,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_927c54c4b5ed62b3aa15",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "385aee09f4b31a6573182b79e01fab8d954a2fe83e8fa10dc71ba9a24b20f25b",
+  "status": "completed"
+}

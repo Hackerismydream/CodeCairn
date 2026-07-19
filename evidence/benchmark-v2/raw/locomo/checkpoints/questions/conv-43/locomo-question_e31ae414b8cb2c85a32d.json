@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010128,
+    "cost_usd": null,
+    "input_tokens": 2552,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 412,
+    "reasoning_tokens": 380,
+    "text": "Tim mentions loving the tradition of prepping the Thanksgiving feast, sharing what they’re thankful for, and especially watching movies like “Home Alone” afterward.",
+    "uncached_input_tokens": 2552
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.005667,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 870,
+      "reasoning_tokens": 862,
+      "response_chars": 18,
+      "uncached_input_tokens": 149,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021241999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 343,
+      "reasoning_tokens": 335,
+      "response_chars": 20,
+      "uncached_input_tokens": 21,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025922,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 421,
+      "reasoning_tokens": 413,
+      "response_chars": 18,
+      "uncached_input_tokens": 21,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e31ae414b8cb2c85a32d",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "ac4dd227009dd272e3a282f07d89e01a0eaba85580e03cfa3caa15c98ad2f3c3",
+  "status": "completed"
+}

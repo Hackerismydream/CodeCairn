@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011937,
+    "cost_usd": null,
+    "input_tokens": 2843,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 568,
+    "reasoning_tokens": 534,
+    "text": "Maria has practiced aerial yoga (mentioned on 2023-06-12) and kundalini yoga (mentioned on 2023-06-16).",
+    "uncached_input_tokens": 2843
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002187,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 292,
+      "reasoning_tokens": 284,
+      "response_chars": 20,
+      "uncached_input_tokens": 145,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008462000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 20,
+      "uncached_input_tokens": 17,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007262000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 112,
+      "reasoning_tokens": 104,
+      "response_chars": 20,
+      "uncached_input_tokens": 17,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e08eb96498973d4d74e0",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "65a5569f6aef93afdabb2db74b7bdff570358e6ad069ba93a9ca65e72819b8f7",
+  "status": "completed"
+}

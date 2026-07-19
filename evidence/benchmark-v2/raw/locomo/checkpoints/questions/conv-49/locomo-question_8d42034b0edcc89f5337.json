@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010593,
+    "cost_usd": null,
+    "input_tokens": 3067,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 232,
+    "reasoning_tokens": 210,
+    "text": "According to Evan, the instructor in his watercolor painting classes emphasizes observing nature and painting what you see.",
+    "uncached_input_tokens": 3067
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001206,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 20,
+      "uncached_input_tokens": 138,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005972000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 94,
+      "reasoning_tokens": 86,
+      "response_chars": 20,
+      "uncached_input_tokens": 10,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007472000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 20,
+      "uncached_input_tokens": 10,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8d42034b0edcc89f5337",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "1db4505f9c30ea609c75b5fb97588fce8f782f076579de6d3a4b45d6f5b5a242",
+  "status": "completed"
+}

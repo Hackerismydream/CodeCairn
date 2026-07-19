@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012762,
+    "cost_usd": null,
+    "input_tokens": 2866,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 694,
+    "reasoning_tokens": 639,
+    "text": "The provided context does not specify what Melanie's hand-painted bowl is a reminder of. Although several memories mention bowls and pottery (e.g., sessions 4, 12, and 16), none explicitly connect a hand-painted bowl to a particular personal reminder.",
+    "uncached_input_tokens": 2866
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002226,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 288,
+      "reasoning_tokens": 280,
+      "response_chars": 18,
+      "uncached_input_tokens": 166,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 73,
+      "reasoning_tokens": 65,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016652000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 258,
+      "reasoning_tokens": 250,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ff8869e1c990e6fe1868",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "3ae0d4556f630b936fc7037509efebc4d47880dfb00a39cb0f7d3a335e279159",
+  "status": "completed"
+}

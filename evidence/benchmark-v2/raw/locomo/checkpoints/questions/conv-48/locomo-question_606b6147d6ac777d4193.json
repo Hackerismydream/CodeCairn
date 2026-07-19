@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.001492,
+    "cost_usd": null,
+    "input_tokens": 2570,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 233,
+    "reasoning_tokens": 211,
+    "text": "The provided memory context does not contain any information about Jolene reading a book in January 2023.",
+    "uncached_input_tokens": 10
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00117,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 127,
+      "reasoning_tokens": 119,
+      "response_chars": 18,
+      "uncached_input_tokens": 136,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009872000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 160,
+      "reasoning_tokens": 152,
+      "response_chars": 18,
+      "uncached_input_tokens": 8,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010712,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 174,
+      "reasoning_tokens": 166,
+      "response_chars": 18,
+      "uncached_input_tokens": 8,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_606b6147d6ac777d4193",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "04762d046c417fdf6360746b1a334fcbf55b094bf0112a2a9a6e9cb39ffec35c",
+  "status": "completed"
+}

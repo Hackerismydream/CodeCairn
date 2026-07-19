@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0054614,
+    "cost_usd": null,
+    "input_tokens": 2869,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 872,
+    "reasoning_tokens": 774,
+    "text": "John has mentioned winning in three distinct instances based on the provided context:\n\n- Session 3 (2023-07-16): \"We pulled off a tough win!\"\n- Session 22 (2023-12-08): \"Winning felt amazing...\"\n- Session 24 (2023-12-16): \"Winning was such a thrill...\"\n\nThese appear to refer to separate games, as they occur on different dates. Therefore, John has mentioned winning 3 games.",
+    "uncached_input_tokens": 53
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 214,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 60,
+      "reasoning_tokens": 52,
+      "response_chars": 18,
+      "uncached_input_tokens": 214,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 214,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 83,
+      "reasoning_tokens": 75,
+      "response_chars": 18,
+      "uncached_input_tokens": 86,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006212,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 214,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 60,
+      "reasoning_tokens": 52,
+      "response_chars": 18,
+      "uncached_input_tokens": 86,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f212a6c2b1680e250cc5",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "6083dc4b3159e1033a2ed17a67610d795b10ce25831336e74c2a833a224d7549",
+  "status": "completed"
+}

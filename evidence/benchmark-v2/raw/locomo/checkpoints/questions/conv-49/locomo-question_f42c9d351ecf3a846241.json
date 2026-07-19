@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009873,
+    "cost_usd": null,
+    "input_tokens": 2903,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 194,
+    "reasoning_tokens": 153,
+    "text": "Based on the memory from session_23 on January 6, 2024, Evan says they are off to Canada \"next month\" for their honeymoon, which means February 2024.",
+    "uncached_input_tokens": 2903
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000795,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 56,
+      "reasoning_tokens": 48,
+      "response_chars": 20,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012182,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 190,
+      "reasoning_tokens": 182,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005282,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 75,
+      "reasoning_tokens": 67,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f42c9d351ecf3a846241",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "87af4dd942f9bdfbf40b85fd4407e21a5c6480e542aa1b622cdfcf8f039568f4",
+  "status": "completed"
+}

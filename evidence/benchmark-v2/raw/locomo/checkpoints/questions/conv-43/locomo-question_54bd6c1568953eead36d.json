@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009405,
+    "cost_usd": null,
+    "input_tokens": 2557,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 289,
+    "reasoning_tokens": 270,
+    "text": "Tim joined a fantasy literature forum (as mentioned on 2023-06-15).",
+    "uncached_input_tokens": 2557
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001518,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 190,
+      "reasoning_tokens": 182,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001074,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000984,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 101,
+      "reasoning_tokens": 93,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_54bd6c1568953eead36d",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "b7a993d178c539bf2f5b7241f8df0b0f174da2bc1844394f7d45abf9375c0dc9",
+  "status": "completed"
+}

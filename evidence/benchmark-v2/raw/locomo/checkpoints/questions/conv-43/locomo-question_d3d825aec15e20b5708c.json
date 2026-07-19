@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013989,
+    "cost_usd": null,
+    "input_tokens": 2695,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 984,
+    "reasoning_tokens": 964,
+    "text": "The provided memory context does not contain any information about sports collectibles owned by Tim or John.",
+    "uncached_input_tokens": 2695
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001173,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 123,
+      "response_chars": 18,
+      "uncached_input_tokens": 129,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 1,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 18,
+      "uncached_input_tokens": 1,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d3d825aec15e20b5708c",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "6a814b286c8a501d50d3b4fe361f6f10c1f01eccec093b38ceaad7fd4e269d9d",
+  "status": "completed"
+}

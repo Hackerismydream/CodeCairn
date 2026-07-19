@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01116,
+    "cost_usd": null,
+    "input_tokens": 3204,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 258,
+    "reasoning_tokens": 224,
+    "text": "On October 24, 2023 (as indicated by Calvin's message on October 25, 2023, saying he visited the sights \"yesterday\").",
+    "uncached_input_tokens": 3204
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001983,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 253,
+      "reasoning_tokens": 245,
+      "response_chars": 20,
+      "uncached_input_tokens": 155,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 256,
+      "reasoning_tokens": 248,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 180,
+      "reasoning_tokens": 172,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a6ce1c809cb4319b5ab6",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "a7d8fffe4d318e1ba08faba9b8c086bfd7a386dc49eec43f44b5faab19831f4e",
+  "status": "completed"
+}

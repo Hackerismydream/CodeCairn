@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01497,
+    "cost_usd": null,
+    "input_tokens": 2812,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1089,
+    "reasoning_tokens": 1019,
+    "text": "Based on the memory context, on 7 July 2023, John mentioned Maria's prior offer (not specified in the provided memories) as the immediate motivation for him to gather people and discuss potential solutions, and he requested her thoughts. The context does not detail the offer's nature, so the precise motivation beyond the offer itself is unclear.",
+    "uncached_input_tokens": 2812
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002133,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 259,
+      "reasoning_tokens": 251,
+      "response_chars": 18,
+      "uncached_input_tokens": 193,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 268,
+      "reasoning_tokens": 260,
+      "response_chars": 18,
+      "uncached_input_tokens": 65,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 286,
+      "reasoning_tokens": 278,
+      "response_chars": 18,
+      "uncached_input_tokens": 65,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3f983a1a9d5f562c1c0a",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "d414aac1e7e4c8898cca307f9b1ad22cee82c861c9af34d32e3e5bc6d8cec37d",
+  "status": "completed"
+}

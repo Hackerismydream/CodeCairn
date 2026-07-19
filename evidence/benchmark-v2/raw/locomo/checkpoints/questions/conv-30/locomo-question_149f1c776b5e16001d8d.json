@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.001816,
+    "cost_usd": null,
+    "input_tokens": 2618,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 263,
+    "reasoning_tokens": 224,
+    "text": "The provided memory context does not specify exactly when Jon started reading \"The Lean Startup.\" It only shows that on May 27, 2023, he mentioned he was currently reading it.",
+    "uncached_input_tokens": 58
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002391,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 323,
+      "reasoning_tokens": 315,
+      "response_chars": 18,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014822000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 235,
+      "reasoning_tokens": 227,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_149f1c776b5e16001d8d",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "afa2ae25811954564cdbe17cd25ae03c5bcc1085fdcc73c36d5fd2f4d00cca51",
+  "status": "completed"
+}

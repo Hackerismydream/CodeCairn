@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01167,
+    "cost_usd": null,
+    "input_tokens": 2798,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 546,
+    "reasoning_tokens": 517,
+    "text": "The provided information does not specify what Tim is excited to see at Universal Studios. He only mentions planning a trip there, without further details.",
+    "uncached_input_tokens": 2798
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001128,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 18,
+      "uncached_input_tokens": 138,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008372000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 134,
+      "reasoning_tokens": 126,
+      "response_chars": 18,
+      "uncached_input_tokens": 10,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 158,
+      "reasoning_tokens": 150,
+      "response_chars": 18,
+      "uncached_input_tokens": 10,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fcdeeb9e1e3b8a7c946e",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "dd06dfdcbc369d305af114d588e3b6057792d13a2d59847310c3d43656d7dc1d",
+  "status": "completed"
+}

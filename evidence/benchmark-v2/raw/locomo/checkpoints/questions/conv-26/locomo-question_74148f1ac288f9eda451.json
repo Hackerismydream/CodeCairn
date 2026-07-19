@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010056,
+    "cost_usd": null,
+    "input_tokens": 2802,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 275,
+    "reasoning_tokens": 234,
+    "text": "Melanie made the plate in pottery class on August 24, 2023, as she refers to it as \"yesterday\" in a conversation timestamped August 25, 2023.",
+    "uncached_input_tokens": 2802
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001311,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 143,
+      "reasoning_tokens": 135,
+      "response_chars": 20,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009542,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 147,
+      "reasoning_tokens": 139,
+      "response_chars": 20,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 20,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_74148f1ac288f9eda451",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "fed19ee6a432e189c87ff7e35ade2a2e9d2f8ab671177c049fcbae5c0432f3fd",
+  "status": "completed"
+}

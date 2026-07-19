@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009228,
+    "cost_usd": null,
+    "input_tokens": 2766,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 155,
+    "reasoning_tokens": 125,
+    "text": "Evan describes the island he grew up on as his \"happy place\" (from session_17 on 2023-11-21).",
+    "uncached_input_tokens": 2766
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00135,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 155,
+      "reasoning_tokens": 147,
+      "response_chars": 20,
+      "uncached_input_tokens": 140,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013832,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 224,
+      "reasoning_tokens": 216,
+      "response_chars": 20,
+      "uncached_input_tokens": 12,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007472000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 20,
+      "uncached_input_tokens": 12,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bfc25905581443575f87",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "67476ca6ca6b3bb032ea60684b697c6e57c8b18092036270effbf394138b1c8d",
+  "status": "completed"
+}

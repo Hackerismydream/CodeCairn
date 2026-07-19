@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014805,
+    "cost_usd": null,
+    "input_tokens": 2919,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1008,
+    "reasoning_tokens": 924,
+    "text": "Audrey shared several examples: a photo of her dogs playing fetch in the park, along with advice to socialize, exercise daily, and add mental stimulation (2023-11-04); a photo of a basket of stuffed toys and games she uses indoors (2023-11-04); and a mention of activities like puzzles, training, and hide-and-seek (2023-11-04).",
+    "uncached_input_tokens": 2919
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0084,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1298,
+      "reasoning_tokens": 1290,
+      "response_chars": 18,
+      "uncached_input_tokens": 204,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0065071999999999994,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1046,
+      "reasoning_tokens": 1038,
+      "response_chars": 20,
+      "uncached_input_tokens": 76,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.007389199999999999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1193,
+      "reasoning_tokens": 1185,
+      "response_chars": 20,
+      "uncached_input_tokens": 76,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_16c237a248fc8fb3e586",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "7a7eff8bb64810f5590f14723ae480ae2a99ad12683fa261ad0d98078b8e1eb2",
+  "status": "completed"
+}

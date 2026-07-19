@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010212,
+    "cost_usd": null,
+    "input_tokens": 3126,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 139,
+    "reasoning_tokens": 119,
+    "text": "Maria made a painting of a castle on a hill to remind her of the trip to England.",
+    "uncached_input_tokens": 3126
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001851,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 239,
+      "reasoning_tokens": 231,
+      "response_chars": 20,
+      "uncached_input_tokens": 139,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 20,
+      "uncached_input_tokens": 11,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 237,
+      "reasoning_tokens": 226,
+      "response_chars": 24,
+      "uncached_input_tokens": 11,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c9b115212a99eebfb2cb",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "8e0d8f74d295ce20b8d1b90ff73e1460b63aeec7947381c734bb1557334782c9",
+  "status": "completed"
+}

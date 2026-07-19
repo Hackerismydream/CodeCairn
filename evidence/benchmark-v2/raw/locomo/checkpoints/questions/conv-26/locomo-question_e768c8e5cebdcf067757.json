@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008436,
+    "cost_usd": null,
+    "input_tokens": 2514,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 149,
+    "reasoning_tokens": 114,
+    "text": "The provided memory context does not contain Melanie's pets' names. It shows a conversation about pets where Caroline asks for their names, but Melanie's answer is not included.",
+    "uncached_input_tokens": 2514
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001959,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 255,
+      "reasoning_tokens": 247,
+      "response_chars": 18,
+      "uncached_input_tokens": 143,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 18,
+      "uncached_input_tokens": 15,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 18,
+      "uncached_input_tokens": 15,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e768c8e5cebdcf067757",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "3d83c42e8731765f5d3690f483d3bace49aef94657f774089a96a3e1d090770d",
+  "status": "completed"
+}

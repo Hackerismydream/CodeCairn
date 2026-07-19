@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009546,
+    "cost_usd": null,
+    "input_tokens": 2616,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 283,
+    "reasoning_tokens": 243,
+    "text": "Gina offers to create cool content and manage Jon's social media accounts (memory\\_a9613d60b31b8c28501e, July 21, 2023).",
+    "uncached_input_tokens": 2616
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001845,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 20,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010922,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 165,
+      "reasoning_tokens": 157,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_37c001d9a875acdd76f7",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "a9b17dfef8fbfdec14635e5ae8f34d3b24024eff01824a2a606024e82a06ec8b",
+  "status": "completed"
+}

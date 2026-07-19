@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010527,
+    "cost_usd": null,
+    "input_tokens": 2997,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 256,
+    "reasoning_tokens": 209,
+    "text": "Jolene had dinner and drinks with her friends on the night of **February 21, 2023** (as she mentioned it happened \"last night\" in a message timestamped February 22, 2023).",
+    "uncached_input_tokens": 2997
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001914,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 238,
+      "reasoning_tokens": 230,
+      "response_chars": 20,
+      "uncached_input_tokens": 162,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 351,
+      "reasoning_tokens": 343,
+      "response_chars": 20,
+      "uncached_input_tokens": 34,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 69,
+      "reasoning_tokens": 61,
+      "response_chars": 20,
+      "uncached_input_tokens": 34,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d9b23e3741f743f14d22",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "f2bb64d0f23a46a1098920815ad862bdc182f055e66b41921bd8f71cbc46a260",
+  "status": "completed"
+}

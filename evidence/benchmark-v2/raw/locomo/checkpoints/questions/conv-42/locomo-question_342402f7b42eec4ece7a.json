@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013698,
+    "cost_usd": null,
+    "input_tokens": 2806,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 880,
+    "reasoning_tokens": 829,
+    "text": "The provided memory context does not include any instance where Joanna explicitly plans a time to go over to Nate's and share recipes. While there are several exchanges about recipes and invitations from Nate, no specific plan by Joanna to visit for that purpose is recorded.",
+    "uncached_input_tokens": 2806
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00159,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 18,
+      "uncached_input_tokens": 166,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 244,
+      "reasoning_tokens": 236,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 224,
+      "reasoning_tokens": 216,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_342402f7b42eec4ece7a",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "36ef4bdff7a7b6a9d1eca910f35c04102ed0bcfb85c2ac1806cd3494d9f4cbed",
+  "status": "completed"
+}

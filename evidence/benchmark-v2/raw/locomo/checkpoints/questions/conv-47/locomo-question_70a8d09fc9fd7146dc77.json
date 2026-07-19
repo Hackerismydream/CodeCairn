@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009102,
+    "cost_usd": null,
+    "input_tokens": 2564,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 235,
+    "reasoning_tokens": 201,
+    "text": "The provided memory context does not contain any events or decisions involving James and Samantha on 31 October, 2022. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2564
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001533,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 18,
+      "uncached_input_tokens": 149,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 18,
+      "uncached_input_tokens": 21,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.00043819999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 62,
+      "reasoning_tokens": 54,
+      "response_chars": 18,
+      "uncached_input_tokens": 21,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_70a8d09fc9fd7146dc77",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "819899284938d3e0b4d4fe9d735a8b6dc5963a6e90b6bde0772f6089b1994748",
+  "status": "completed"
+}

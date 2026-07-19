@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0052096,
+    "cost_usd": null,
+    "input_tokens": 3004,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 826,
+    "reasoning_tokens": 731,
+    "text": "The memory context indicates Dave booked a trip to a mountainous region on June 9, 2023, planning to go \"next month\" (July 2023). However, there is no timestamped event confirming that trip actually occurred. A later memory on July 21, 2023, mentions a road trip with friends through countryside, but it does not explicitly mention mountains. Therefore, the context is insufficient to state when Dave took a trip to mountainous regions.",
+    "uncached_input_tokens": 60
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002154,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 257,
+      "reasoning_tokens": 249,
+      "response_chars": 18,
+      "uncached_input_tokens": 204,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 277,
+      "reasoning_tokens": 269,
+      "response_chars": 18,
+      "uncached_input_tokens": 76,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 162,
+      "reasoning_tokens": 154,
+      "response_chars": 18,
+      "uncached_input_tokens": 76,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7f0dbf77c77e87f1c0c8",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "94d2becb1c2d6136594dfb5071799193b1fa36cf8f21790a3769de4f820aa4aa",
+  "status": "completed"
+}

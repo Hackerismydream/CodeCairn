@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0041741999999999994,
+    "cost_usd": null,
+    "input_tokens": 2709,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 674,
+    "reasoning_tokens": 575,
+    "text": "Melanie's kids enjoy outdoor activities like exploring parks and camping (they get excited about learning in nature and roasting marshmallows) and creative projects such as painting and pottery.  \n- Evidence: They had fun at a park (2023-08-28) and while camping (2023-09-13); they also do painting together (2023-07-17) and pottery (implied by a question about other creative projects, 2023-07-15).",
+    "uncached_input_tokens": 21
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001524,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 150,
+      "reasoning_tokens": 142,
+      "response_chars": 18,
+      "uncached_input_tokens": 208,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 278,
+      "reasoning_tokens": 270,
+      "response_chars": 18,
+      "uncached_input_tokens": 80,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 80,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_44fbeab12237b5fadd0d",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "8ccb4e027ef40ab5898f0af76a5e069ccc77c9ae9eef67fd0fb31d9e72b9d3f7",
+  "status": "completed"
+}

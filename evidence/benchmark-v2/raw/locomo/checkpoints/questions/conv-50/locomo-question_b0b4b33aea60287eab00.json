@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009102,
+    "cost_usd": null,
+    "input_tokens": 2720,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 157,
+    "reasoning_tokens": 111,
+    "text": "The provided memory context does not specify the design featured on Calvin's guitar. Dave complimented it as unique and special, but no details about the design (e.g., a logo, image, or pattern) are mentioned.",
+    "uncached_input_tokens": 2720
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000822,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 61,
+      "reasoning_tokens": 50,
+      "response_chars": 22,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 174,
+      "reasoning_tokens": 166,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006992000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 104,
+      "reasoning_tokens": 96,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b0b4b33aea60287eab00",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "0a2cae0b4ca120957902530cf6b24ec1a74a6cbefb3eae79f660838e7b47312b",
+  "status": "completed"
+}

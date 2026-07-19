@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011622,
+    "cost_usd": null,
+    "input_tokens": 2576,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 649,
+    "reasoning_tokens": 597,
+    "text": "The context does not provide details about the specific milestone Jolene achieved. On 4 February 2023, she mentioned having had a \"major milestone last week\" that was a huge accomplishment for her as an engineer, but no further specifics are given.",
+    "uncached_input_tokens": 2576
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001011,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 81,
+      "reasoning_tokens": 73,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007802000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 106,
+      "reasoning_tokens": 98,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 81,
+      "reasoning_tokens": 73,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_885ea12e0d1e5e905561",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "83f00949011735228b5fbf43f937a49d0bcd9743d89e3d93f8b5173ab367845a",
+  "status": "completed"
+}

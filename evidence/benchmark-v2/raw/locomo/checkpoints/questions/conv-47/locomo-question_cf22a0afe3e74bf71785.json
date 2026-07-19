@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009432,
+    "cost_usd": null,
+    "input_tokens": 2542,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 301,
+    "reasoning_tokens": 255,
+    "text": "James signed up for cooking classes on September 2, 2022, based on his message on September 4, 2022, where he said he signed up two days prior and had already attended the first lesson.",
+    "uncached_input_tokens": 2542
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000936,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 20,
+      "uncached_input_tokens": 156,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 20,
+      "uncached_input_tokens": 28,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 20,
+      "uncached_input_tokens": 28,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cf22a0afe3e74bf71785",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "0b27b81eaacac8063dff7bbb0753e45feb1915b0811209fcbb45735e7c8661d1",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013761,
+    "cost_usd": null,
+    "input_tokens": 2807,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 890,
+    "reasoning_tokens": 794,
+    "text": "Based on the conversations, Audrey reminds Andrew to **take care of himself and find ways to manage stress** (2023-09-06). She also suggests that **finding ways to connect with nature** can help when city life feels overwhelming (2023-04-16). Andrew himself has noted that active dogs like his German Shepherd need plenty of play and exercise, so ensuring Toby gets enough activity may ease the strain of apartment living (2023-05-06).",
+    "uncached_input_tokens": 2807
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001905,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 241,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 197,
+      "reasoning_tokens": 189,
+      "response_chars": 18,
+      "uncached_input_tokens": 241,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 241,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 260,
+      "reasoning_tokens": 252,
+      "response_chars": 18,
+      "uncached_input_tokens": 113,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 241,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 106,
+      "reasoning_tokens": 98,
+      "response_chars": 18,
+      "uncached_input_tokens": 113,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_077230ed9581db2d2211",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "20f17e1d28f16150f643c646a5ab7d1d5b72489b61e81fa6f5f1d2a99269c380",
+  "status": "completed"
+}

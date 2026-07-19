@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0019065999999999998,
+    "cost_usd": null,
+    "input_tokens": 3027,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 264,
+    "reasoning_tokens": 219,
+    "text": "The provided memories do not identify a specific person who inspired Dave’s passion for car engineering. They describe his fascination beginning at age ten when he found an old car in a neighbor’s garage and fixed it himself.",
+    "uncached_input_tokens": 83
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001461,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 18,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011522000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 180,
+      "reasoning_tokens": 172,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e31431fd91a8ab701c91",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "529a4d021cce3b85bc71d3e20d5ea94e7287516368f3da871cbef3a0963892cd",
+  "status": "completed"
+}

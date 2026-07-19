@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013161,
+    "cost_usd": null,
+    "input_tokens": 2853,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 767,
+    "reasoning_tokens": 723,
+    "text": "Sam was dealing with work stress, as well as stress from a health scare (gastritis) and phone trouble in October 2023, based on his comments in sessions on October 14 and 17.",
+    "uncached_input_tokens": 2853
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001908,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 240,
+      "reasoning_tokens": 232,
+      "response_chars": 18,
+      "uncached_input_tokens": 156,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0037172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 605,
+      "reasoning_tokens": 597,
+      "response_chars": 18,
+      "uncached_input_tokens": 28,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0085172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1405,
+      "reasoning_tokens": 1397,
+      "response_chars": 18,
+      "uncached_input_tokens": 28,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cb7300d91b0f2966e208",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "88e1f8dffec73de8e283137be82e9a3257de08d0508515b8aef4f16eb91ea0a1",
+  "status": "completed"
+}

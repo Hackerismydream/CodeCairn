@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011331,
+    "cost_usd": null,
+    "input_tokens": 2867,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 455,
+    "reasoning_tokens": 443,
+    "text": "John volunteered at a career fair at a local school.",
+    "uncached_input_tokens": 2867
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001125,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 20,
+      "uncached_input_tokens": 123,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001497,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 188,
+      "reasoning_tokens": 180,
+      "response_chars": 20,
+      "uncached_input_tokens": 123,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003147,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 463,
+      "reasoning_tokens": 455,
+      "response_chars": 20,
+      "uncached_input_tokens": 123,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_61725a4ecd4931d95748",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "52c2018e93013391af8ecdabca9325dc12af19a5f51476e44b3d83aa76527bf0",
+  "status": "completed"
+}

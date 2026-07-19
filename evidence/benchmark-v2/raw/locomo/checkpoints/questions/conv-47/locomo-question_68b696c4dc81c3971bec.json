@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00906,
+    "cost_usd": null,
+    "input_tokens": 2538,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 241,
+    "reasoning_tokens": 182,
+    "text": "In April 2022, James adopted a pup (a dog) from a shelter in Stamford and named him Ned.  \n(Source: memory_c5cee3b3b4d92fccb141, session_5, 2022-04-12)",
+    "uncached_input_tokens": 2538
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00153,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 20,
+      "uncached_input_tokens": 168,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 264,
+      "reasoning_tokens": 256,
+      "response_chars": 20,
+      "uncached_input_tokens": 40,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 280,
+      "reasoning_tokens": 272,
+      "response_chars": 20,
+      "uncached_input_tokens": 40,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_68b696c4dc81c3971bec",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "91930fe9ea6925e14da74421c09298176923ee17c586ed911233bbc5103a2487",
+  "status": "completed"
+}

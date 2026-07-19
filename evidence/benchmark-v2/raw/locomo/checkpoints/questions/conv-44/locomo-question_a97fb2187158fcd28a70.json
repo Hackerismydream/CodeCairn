@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012297,
+    "cost_usd": null,
+    "input_tokens": 2651,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 724,
+    "reasoning_tokens": 654,
+    "text": "As of September 2023, Andrew had one pet: a dog named Toby. This is based on mentions of Toby in August 2023 (entries 6, 8, 13) and no earlier or contemporary evidence of any other pets. The next mention of a new pet occurs in October 2023 (entry 15).",
+    "uncached_input_tokens": 2651
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001011,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 20,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010442000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 147,
+      "reasoning_tokens": 139,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 92,
+      "reasoning_tokens": 84,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a97fb2187158fcd28a70",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "1a3a793d85e063b5db3847f3e71d0dc374901445b3f40f6fd516e537a1a86d70",
+  "status": "completed"
+}

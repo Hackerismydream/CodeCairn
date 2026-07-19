@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011229,
+    "cost_usd": null,
+    "input_tokens": 3163,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 290,
+    "reasoning_tokens": 245,
+    "text": "According to the memory context, Calvin mentions that nature's beauty helps us appreciate life when it's tough, describing it as \"like a breath of fresh air\" (2023-11-17, session_30).",
+    "uncached_input_tokens": 3163
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001554,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 180,
+      "reasoning_tokens": 172,
+      "response_chars": 20,
+      "uncached_input_tokens": 158,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 176,
+      "reasoning_tokens": 168,
+      "response_chars": 20,
+      "uncached_input_tokens": 30,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 205,
+      "reasoning_tokens": 197,
+      "response_chars": 20,
+      "uncached_input_tokens": 30,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7b03d315a00b393322cf",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "4aa556a221898b9b5130ae9d467c7c14826800c396731cd6ad84243abad5789e",
+  "status": "completed"
+}

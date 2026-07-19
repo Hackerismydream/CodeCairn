@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0031301999999999996,
+    "cost_usd": null,
+    "input_tokens": 2761,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 474,
+    "reasoning_tokens": 451,
+    "text": "The memory context does not contain any information about Andrew's activities during the first weekend of August 2023.",
+    "uncached_input_tokens": 73
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001254,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 18,
+      "uncached_input_tokens": 136,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006212,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 99,
+      "reasoning_tokens": 91,
+      "response_chars": 18,
+      "uncached_input_tokens": 8,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007472000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 18,
+      "uncached_input_tokens": 8,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ce1d09ca1c2cef360df8",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "610dded00ead852006760bec303893d563ba8dbf8dd1f0b842c5fcd2fe9d031f",
+  "status": "completed"
+}

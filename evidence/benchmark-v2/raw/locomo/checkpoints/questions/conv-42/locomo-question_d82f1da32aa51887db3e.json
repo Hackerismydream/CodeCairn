@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008988,
+    "cost_usd": null,
+    "input_tokens": 2606,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 195,
+    "reasoning_tokens": 162,
+    "text": "Nate won his second tournament the week before May 2, 2022. He mentioned on that date, \"Last week I won my second tournament!\"",
+    "uncached_input_tokens": 2606
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001236,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 20,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013832,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 20,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 192,
+      "reasoning_tokens": 184,
+      "response_chars": 20,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d82f1da32aa51887db3e",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "d2846c502798718283163d450c383b5320ca0d3201521e4a8ad9c2e01973d8a5",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3072,
+    "cost_cny": 0.0035598,
+    "cost_usd": null,
+    "input_tokens": 3157,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 538,
+    "reasoning_tokens": 478,
+    "text": "Playing with his dog in an indoor play area (e.g., fetching a ball) would be an indoor activity Andrew would enjoy and that makes his dog happy, as evidenced by him sharing a photo of dogs doing exactly that (memory_0fc72afa1f3bbb33833d).",
+    "uncached_input_tokens": 85
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001542,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 18,
+      "uncached_input_tokens": 176,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 91,
+      "reasoning_tokens": 83,
+      "response_chars": 18,
+      "uncached_input_tokens": 48,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012092000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 177,
+      "reasoning_tokens": 169,
+      "response_chars": 18,
+      "uncached_input_tokens": 48,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d467c4a61e4f536a88dc",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "df26cd49db82c82fc39c10b498f899288d9d1be9bdbf145018b094ded03e8823",
+  "status": "completed"
+}

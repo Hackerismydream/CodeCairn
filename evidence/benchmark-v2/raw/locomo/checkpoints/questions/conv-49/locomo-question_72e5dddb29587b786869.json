@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010836,
+    "cost_usd": null,
+    "input_tokens": 3122,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 245,
+    "reasoning_tokens": 230,
+    "text": "Evan started painting a few years back as a stress-buster.",
+    "uncached_input_tokens": 3122
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001902,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 253,
+      "reasoning_tokens": 245,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00219,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 301,
+      "reasoning_tokens": 293,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 158,
+      "reasoning_tokens": 150,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_72e5dddb29587b786869",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "b54e1f70b9872cfe4f70d2b6beb31d4ea2d00313bd5686b41274560b0650f5e1",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011322,
+    "cost_usd": null,
+    "input_tokens": 2792,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 491,
+    "reasoning_tokens": 437,
+    "text": "Jolene practices yoga and meditation to relax and stay focused (session_20, 2023-08-21). She also plans camping trips with her partner to connect with nature and practice yoga (session_26, 2023-09-08).",
+    "uncached_input_tokens": 2792
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001803,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 18,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2a619eb90b10b19b1d97",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "39baf7d74e342335125abeb28d466893b95263e52ed4ee4a85d4b279c3399dfd",
+  "status": "completed"
+}

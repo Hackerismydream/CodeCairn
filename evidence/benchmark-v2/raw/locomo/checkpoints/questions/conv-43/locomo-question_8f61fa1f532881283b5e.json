@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009678,
+    "cost_usd": null,
+    "input_tokens": 2816,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 205,
+    "reasoning_tokens": 180,
+    "text": "According to John in session_6 (2023-08-11), his number one goal is winning a championship.",
+    "uncached_input_tokens": 2816
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001452,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 174,
+      "reasoning_tokens": 166,
+      "response_chars": 20,
+      "uncached_input_tokens": 136,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009512,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 20,
+      "uncached_input_tokens": 8,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006092000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 97,
+      "reasoning_tokens": 89,
+      "response_chars": 20,
+      "uncached_input_tokens": 8,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8f61fa1f532881283b5e",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "ae23d4ca2335dea8f517a59b9735d55bea7d1147e1d27a782f5c18f9e5b46a6c",
+  "status": "completed"
+}

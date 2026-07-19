@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3072,
+    "cost_cny": 0.0018108,
+    "cost_usd": null,
+    "input_tokens": 3174,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 238,
+    "reasoning_tokens": 210,
+    "text": "Audrey has joined a dog owners group and signed up for a workshop about bonding with her pet to take better care of her dogs.",
+    "uncached_input_tokens": 102
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003246,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 459,
+      "reasoning_tokens": 451,
+      "response_chars": 18,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018992,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 298,
+      "reasoning_tokens": 290,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0030091999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 483,
+      "reasoning_tokens": 475,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_224bcc05bc0d5c00db3b",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "fe17147cfc887c928fa7fe7fc12fc293666920d66680e8d9dd0fd184c02dde9d",
+  "status": "completed"
+}

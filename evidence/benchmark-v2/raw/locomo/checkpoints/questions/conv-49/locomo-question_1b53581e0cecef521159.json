@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009993,
+    "cost_usd": null,
+    "input_tokens": 2875,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 228,
+    "reasoning_tokens": 195,
+    "text": "Evan started taking watercolor painting classes in 2023, as he mentioned learning about watercolors in a session on August 19, 2023.",
+    "uncached_input_tokens": 2875
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00153,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 20,
+      "uncached_input_tokens": 146,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 20,
+      "uncached_input_tokens": 18,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 20,
+      "uncached_input_tokens": 18,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1b53581e0cecef521159",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "7e6c9ca06c5e53cccb488c6487817bb1db691e53077218081c6137e5d220ec58",
+  "status": "completed"
+}

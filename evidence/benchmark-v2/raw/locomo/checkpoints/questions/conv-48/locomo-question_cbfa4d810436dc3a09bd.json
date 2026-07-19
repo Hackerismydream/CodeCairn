@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.001339,
+    "cost_usd": null,
+    "input_tokens": 2637,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 174,
+    "reasoning_tokens": 149,
+    "text": "Deborah tried the Dancer Pose (Natarajasana), as mentioned on 2023-06-26.",
+    "uncached_input_tokens": 77
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001521,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 18,
+      "uncached_input_tokens": 143,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008522,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 134,
+      "reasoning_tokens": 126,
+      "response_chars": 18,
+      "uncached_input_tokens": 15,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 135,
+      "reasoning_tokens": 127,
+      "response_chars": 18,
+      "uncached_input_tokens": 15,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cbfa4d810436dc3a09bd",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "93d2860dfd2f348d3fd5f7af4ab0774343bec1281ceb9f952984546e2a01ddce",
+  "status": "completed"
+}

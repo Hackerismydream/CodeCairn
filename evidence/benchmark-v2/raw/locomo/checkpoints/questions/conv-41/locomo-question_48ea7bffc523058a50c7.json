@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.004678399999999999,
+    "cost_usd": null,
+    "input_tokens": 2896,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 728,
+    "reasoning_tokens": 695,
+    "text": "Maria went to the beach in December 2022, as she mentioned on January 1, 2023 that she took a photo there \"last month\".",
+    "uncached_input_tokens": 80
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001554,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 188,
+      "reasoning_tokens": 180,
+      "response_chars": 20,
+      "uncached_input_tokens": 142,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 161,
+      "reasoning_tokens": 153,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_48ea7bffc523058a50c7",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "6ca914d384cdd2d398fe54df18102bf7b25419df95fcdc6336c9d06dfcae4042",
+  "status": "completed"
+}

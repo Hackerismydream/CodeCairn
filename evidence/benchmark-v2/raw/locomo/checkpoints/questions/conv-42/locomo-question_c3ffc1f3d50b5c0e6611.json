@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009561,
+    "cost_usd": null,
+    "input_tokens": 2805,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 191,
+    "reasoning_tokens": 137,
+    "text": "The provided memory context does not contain any information about Nate feeling he could do something when out in cool places like Whispering Falls. Only Joanna mentions feeling she could write a whole movie in such places. The context is insufficient to answer what Nate feels he could do.",
+    "uncached_input_tokens": 2805
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002334,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 304,
+      "reasoning_tokens": 296,
+      "response_chars": 18,
+      "uncached_input_tokens": 170,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 184,
+      "reasoning_tokens": 176,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c3ffc1f3d50b5c0e6611",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "02b5776072cdcc63a3396be7cb3bdb61c9b60d4f447f07255f03b59ae71a7d19",
+  "status": "completed"
+}

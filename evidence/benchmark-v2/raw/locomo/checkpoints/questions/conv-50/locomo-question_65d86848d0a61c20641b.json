@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010605,
+    "cost_usd": null,
+    "input_tokens": 3165,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 185,
+    "reasoning_tokens": 151,
+    "text": "Dave bought the vintage camera in November 2023 (he mentioned in a message on November 17, 2023, that he bought it \"this month\").",
+    "uncached_input_tokens": 3165
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001065,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 106,
+      "reasoning_tokens": 98,
+      "response_chars": 20,
+      "uncached_input_tokens": 143,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007802000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 122,
+      "reasoning_tokens": 114,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009362000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_65d86848d0a61c20641b",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "e32777ba033e343f70bd848f3b570d960f1d93cb5bae6e5408a999071b6b6cfe",
+  "status": "completed"
+}

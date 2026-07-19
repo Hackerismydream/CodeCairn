@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011976,
+    "cost_usd": null,
+    "input_tokens": 3060,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 466,
+    "reasoning_tokens": 378,
+    "text": "John finds being a mentor to younger players very positive. He describes it as \"really rewarding,\" \"awesome,\" \"super rewarding,\" and \"so fulfilling.\" He enjoys providing advice, support, and being a positive role model, and loves sharing his skills and knowledge with them (memories from 2023-10-17T13:51:00, 13:53:00, and 13:54:00).",
+    "uncached_input_tokens": 3060
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001236,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 20,
+      "uncached_input_tokens": 208,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 20,
+      "uncached_input_tokens": 80,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008192000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 96,
+      "reasoning_tokens": 88,
+      "response_chars": 20,
+      "uncached_input_tokens": 80,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f2cea98f48bfc9f7bdec",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "1fe0ff40ec737deae68b10a4cb62c758bd1d3c02f34afe443a8312bceec7d1ec",
+  "status": "completed"
+}

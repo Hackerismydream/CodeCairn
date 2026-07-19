@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012615,
+    "cost_usd": null,
+    "input_tokens": 2883,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 661,
+    "reasoning_tokens": 600,
+    "text": "According to a message from Joanna on June 5, 2022, she wrote “a few bits for a screenplay” the day before (June 4) that appeared on the big screen. The image caption shows a Spider-Man poster, suggesting the screenplay may have been related to that film.",
+    "uncached_input_tokens": 2883
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001989,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 246,
+      "reasoning_tokens": 238,
+      "response_chars": 20,
+      "uncached_input_tokens": 171,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 83,
+      "reasoning_tokens": 75,
+      "response_chars": 20,
+      "uncached_input_tokens": 43,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011342000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 167,
+      "reasoning_tokens": 159,
+      "response_chars": 20,
+      "uncached_input_tokens": 43,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5459eb347f327ca1004a",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "dbba52d6e6ffde0a1b75d1936bc42ec03841eec2b36f7c62bd97ec25c7bf658f",
+  "status": "completed"
+}

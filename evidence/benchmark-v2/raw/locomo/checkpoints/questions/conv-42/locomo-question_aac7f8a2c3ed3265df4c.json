@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0074024,
+    "cost_usd": null,
+    "input_tokens": 2882,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1189,
+    "reasoning_tokens": 1137,
+    "text": "As of January 23, 2022, Nate stated he had his first two turtles for 3 years (session_2). No later explicit duration is provided, so the current length of ownership beyond that date cannot be determined from the given context.",
+    "uncached_input_tokens": 66
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002433,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 326,
+      "reasoning_tokens": 318,
+      "response_chars": 20,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028921999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 466,
+      "reasoning_tokens": 458,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013922000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_aac7f8a2c3ed3265df4c",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "0e8aeecd136c6f90938683cc39735210ca60f6338f6f250ffcc064b1ffdf8e32",
+  "status": "completed"
+}

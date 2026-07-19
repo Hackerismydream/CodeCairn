@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009573,
+    "cost_usd": null,
+    "input_tokens": 2975,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 108,
+    "reasoning_tokens": 83,
+    "text": "Jolene's mom stressed the value of helping others, which she wants to keep in mind for her engineering projects.",
+    "uncached_input_tokens": 2975
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001434,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 146,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008732000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 20,
+      "uncached_input_tokens": 18,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 20,
+      "uncached_input_tokens": 18,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_021e8d0d1f9addd53ffd",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "4e727a298a8446ae4d702d7f5ef4156216ce1595036e811488fb9555ee7e2783",
+  "status": "completed"
+}

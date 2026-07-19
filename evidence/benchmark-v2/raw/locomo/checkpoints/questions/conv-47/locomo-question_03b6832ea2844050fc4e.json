@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009108,
+    "cost_usd": null,
+    "input_tokens": 2516,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 260,
+    "reasoning_tokens": 203,
+    "text": "According to the memory context, John revealed on August 6, 2022, that he recently left his IT job after three years, seeking more meaningful work, and had already started a new job which he very much enjoys. No further details about his job situation are provided.",
+    "uncached_input_tokens": 2516
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002901,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 392,
+      "reasoning_tokens": 384,
+      "response_chars": 18,
+      "uncached_input_tokens": 183,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 389,
+      "reasoning_tokens": 381,
+      "response_chars": 18,
+      "uncached_input_tokens": 55,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 284,
+      "reasoning_tokens": 276,
+      "response_chars": 18,
+      "uncached_input_tokens": 55,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_03b6832ea2844050fc4e",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "d79e4a5dd5416d31d061cc99e7fb01ba0248a9eab9666db74120c456672e6a0a",
+  "status": "completed"
+}

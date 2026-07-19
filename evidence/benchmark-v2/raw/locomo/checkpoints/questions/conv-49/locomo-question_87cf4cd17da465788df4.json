@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01584,
+    "cost_usd": null,
+    "input_tokens": 2956,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1162,
+    "reasoning_tokens": 1090,
+    "text": "The provided memory context does not show Sam explicitly agreeing to try any specific alternative to soda and candy. The initial suggestion from Evan was flavored seltzer water and dark chocolate, but Sam declined that idea. Later mentions of a diet or trying cookies are not directly linked to replacing soda and candy. Thus, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2956
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002193,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 269,
+      "reasoning_tokens": 261,
+      "response_chars": 18,
+      "uncached_input_tokens": 193,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0032822,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 514,
+      "reasoning_tokens": 506,
+      "response_chars": 18,
+      "uncached_input_tokens": 65,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 65,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_87cf4cd17da465788df4",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "0dd2c6ceb4661938f00b229f7a3df7d28c97fd44d86e404b5af92a3fc0ece4f2",
+  "status": "completed"
+}

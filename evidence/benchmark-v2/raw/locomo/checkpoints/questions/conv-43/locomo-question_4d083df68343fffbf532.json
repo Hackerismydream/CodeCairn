@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01194,
+    "cost_usd": null,
+    "input_tokens": 2918,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 531,
+    "reasoning_tokens": 447,
+    "text": "The provided memory context does not specify the exact method John will use to share the recipe. It shows Tim asking for the recipe (memory #6) and later thanking John for sharing it (memory #16), both during the same session on 2023-10-21. This suggests John shared it within that conversation, but no details about how (e.g., verbally, text, link) are given.",
+    "uncached_input_tokens": 2918
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001401,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 199,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 134,
+      "reasoning_tokens": 126,
+      "response_chars": 18,
+      "uncached_input_tokens": 199,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014822000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 199,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 18,
+      "uncached_input_tokens": 71,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014342,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 199,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 203,
+      "reasoning_tokens": 195,
+      "response_chars": 18,
+      "uncached_input_tokens": 71,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4d083df68343fffbf532",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "7f867eeecf633f89240367069dfffb9bc8b2fa7d2add67008466cab8fbf5661e",
+  "status": "completed"
+}

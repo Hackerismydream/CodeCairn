@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0017896,
+    "cost_usd": null,
+    "input_tokens": 2964,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 276,
+    "reasoning_tokens": 211,
+    "text": "Deborah and Jolene plan to try fresh pastries when they meet at the new café. (This is based on Jolene’s message on 2023-09-08 suggesting they meet at a café and try fresh pastries; there is no further context confirming Deborah’s agreement or detailing other plans.)",
+    "uncached_input_tokens": 20
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 280,
+      "reasoning_tokens": 272,
+      "response_chars": 18,
+      "uncached_input_tokens": 184,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 242,
+      "reasoning_tokens": 234,
+      "response_chars": 18,
+      "uncached_input_tokens": 56,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 308,
+      "reasoning_tokens": 300,
+      "response_chars": 18,
+      "uncached_input_tokens": 56,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7df291b7321fb54f8bcf",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "e2a4eda51a758ba7dfb821fb65e303928b957cddb1283b8366445312f5d969f3",
+  "status": "completed"
+}

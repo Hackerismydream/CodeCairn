@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010662,
+    "cost_usd": null,
+    "input_tokens": 2968,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 293,
+    "reasoning_tokens": 231,
+    "text": "Based on the provided memory context, there is no direct evidence that Melanie identifies as a member of the LGBTQ community. Her statements show strong support and allyship for the community, but she does not self-identify as a member within these memories. The context is insufficient to confirm her as a member.",
+    "uncached_input_tokens": 2968
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 266,
+      "reasoning_tokens": 258,
+      "response_chars": 20,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b17cc16b2eb1e2d677ad",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "0606c67805453f4c35eff23e50e2f33b771134d32eb4e16c435eea93212d9d95",
+  "status": "completed"
+}

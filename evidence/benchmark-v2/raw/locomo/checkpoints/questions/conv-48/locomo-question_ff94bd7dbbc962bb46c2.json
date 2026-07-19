@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011322,
+    "cost_usd": null,
+    "input_tokens": 3112,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 331,
+    "reasoning_tokens": 270,
+    "text": "The last photo of Deborah and Karlie was taken in the summer of 2022, according to Deborah's statement on 2023-02-22 (memory_1baa4173f46bb8b84a52). She described it as \"last summer when we hiked.\"",
+    "uncached_input_tokens": 3112
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001371,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 20,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 101,
+      "reasoning_tokens": 93,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ff94bd7dbbc962bb46c2",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "4e96bd516b80178770df53bcf0657f8d60bb5c851d30f65bde463039ef2dcb4e",
+  "status": "completed"
+}

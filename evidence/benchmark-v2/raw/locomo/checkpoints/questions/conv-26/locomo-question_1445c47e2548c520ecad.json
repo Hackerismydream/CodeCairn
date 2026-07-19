@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010605,
+    "cost_usd": null,
+    "input_tokens": 2911,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 312,
+    "reasoning_tokens": 259,
+    "text": "Melanie prioritizes self-care as a way to better care for her family. She states, “It's a journey for me, but when I look after myself, I'm able to better look after my family” (2023-05-25).",
+    "uncached_input_tokens": 2911
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001893,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015002000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 226,
+      "reasoning_tokens": 218,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1445c47e2548c520ecad",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "1e8d128f05fcd337fa625762f5cf78d75b4e8c5d253df1ea9ac5e1178741d19d",
+  "status": "completed"
+}

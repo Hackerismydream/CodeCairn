@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0013904000000000002,
+    "cost_usd": null,
+    "input_tokens": 2854,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 201,
+    "reasoning_tokens": 167,
+    "text": "James mentioned on April 29, 2022, that he bought the adventure book \"three days ago,\" which would be April 26, 2022.",
+    "uncached_input_tokens": 38
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001155,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 20,
+      "uncached_input_tokens": 147,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008102000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015902,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 255,
+      "reasoning_tokens": 247,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5e921cd60f086f8b0734",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "1745c31b9451e9851bef9195804bb895ab2600151b201940b70b2edf6a642eeb",
+  "status": "completed"
+}

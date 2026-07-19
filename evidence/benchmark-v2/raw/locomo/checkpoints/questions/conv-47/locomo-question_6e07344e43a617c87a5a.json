@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009048,
+    "cost_usd": null,
+    "input_tokens": 2674,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 171,
+    "reasoning_tokens": 115,
+    "text": "The provided memory context does not contain any information about James’s location on July 12, 2022. The closest event is from July 9, 2022, where James mentions returning on July 20, but no location is specified for July 12.",
+    "uncached_input_tokens": 2674
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001269,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 18,
+      "uncached_input_tokens": 167,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 18,
+      "uncached_input_tokens": 39,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 90,
+      "reasoning_tokens": 82,
+      "response_chars": 18,
+      "uncached_input_tokens": 39,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6e07344e43a617c87a5a",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "bc5e3f5c77986a949f9f19e8c8e4988453b6786efdc21d83374b085ce931a9f7",
+  "status": "completed"
+}

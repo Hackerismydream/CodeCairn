@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0016154000000000001,
+    "cost_usd": null,
+    "input_tokens": 2935,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 198,
+    "reasoning_tokens": 166,
+    "text": "John went to a convention with colleagues in March 2023, as he mentioned on April 18, 2023 that it happened \"last month\".",
+    "uncached_input_tokens": 119
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001521,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 20,
+      "uncached_input_tokens": 143,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 140,
+      "reasoning_tokens": 132,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 155,
+      "reasoning_tokens": 147,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4243fe933ccfbb69fb2e",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "fcba4c4411e1a20bc18ce0dbf80d8ba7f6b9096701f715d3376155b69aac9108",
+  "status": "completed"
+}

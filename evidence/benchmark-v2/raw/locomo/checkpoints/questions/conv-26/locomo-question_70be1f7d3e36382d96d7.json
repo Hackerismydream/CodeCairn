@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011688,
+    "cost_usd": null,
+    "input_tokens": 2932,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 482,
+    "reasoning_tokens": 431,
+    "text": "Based on the provided memory context, Melanie has two children. This is evidenced by a photo she shared in session_18 (2023-10-20) with the caption \"a photo of two children standing on a rocky cliff overlooking a canyon.\"",
+    "uncached_input_tokens": 2932
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000798,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 55,
+      "reasoning_tokens": 47,
+      "response_chars": 18,
+      "uncached_input_tokens": 156,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 18,
+      "uncached_input_tokens": 28,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004052,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 53,
+      "reasoning_tokens": 45,
+      "response_chars": 18,
+      "uncached_input_tokens": 28,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_70be1f7d3e36382d96d7",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ab221826ae43e005658be383242885c80622a1dbf23f2f6598150852d341c977",
+  "status": "completed"
+}

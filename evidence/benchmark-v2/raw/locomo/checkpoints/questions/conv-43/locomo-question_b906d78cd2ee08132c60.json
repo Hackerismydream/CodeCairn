@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009174,
+    "cost_usd": null,
+    "input_tokens": 2678,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 190,
+    "reasoning_tokens": 168,
+    "text": "The wedding ceremony was held in a greenhouse, as indicated by John's message and the accompanying image caption.",
+    "uncached_input_tokens": 2678
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000744,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 57,
+      "reasoning_tokens": 49,
+      "response_chars": 20,
+      "uncached_input_tokens": 134,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 83,
+      "reasoning_tokens": 75,
+      "response_chars": 20,
+      "uncached_input_tokens": 6,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009992,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 155,
+      "response_chars": 20,
+      "uncached_input_tokens": 6,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b906d78cd2ee08132c60",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "05ec26bcaa4858ee0c338746d479ae2f458f9a0da9982d7d4bd2739db5da1525",
+  "status": "completed"
+}

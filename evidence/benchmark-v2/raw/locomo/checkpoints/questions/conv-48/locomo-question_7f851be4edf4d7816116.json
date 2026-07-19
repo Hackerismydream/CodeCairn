@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009918,
+    "cost_usd": null,
+    "input_tokens": 2730,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 288,
+    "reasoning_tokens": 234,
+    "text": "The provided memory context does not include any statement from Deborah about surfing. Jolene asks Deborah \"Have you ever tried surfing?\" in session_29, but no response is recorded. Therefore, based on the available memories, it is unknown whether Deborah has tried surfing.",
+    "uncached_input_tokens": 2730
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001236,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 18,
+      "uncached_input_tokens": 156,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 28,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 129,
+      "reasoning_tokens": 121,
+      "response_chars": 18,
+      "uncached_input_tokens": 28,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7f851be4edf4d7816116",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "87732b4841a36d48231c1058346deaa44dfe6b33216ace3897bf662229f204b7",
+  "status": "completed"
+}

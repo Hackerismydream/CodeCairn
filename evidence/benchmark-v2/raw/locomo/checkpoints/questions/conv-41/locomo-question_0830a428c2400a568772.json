@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010464,
+    "cost_usd": null,
+    "input_tokens": 2846,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 321,
+    "reasoning_tokens": 245,
+    "text": "Maria got the idea for the castle shadow box from a trip to England a few years ago. She was mesmerized by the castles and wanted to bring that same magic into her home. (Source: memory_0cfd131650127fb5e747 from session_8, 2023-03-06T18:10:00+00:00)",
+    "uncached_input_tokens": 2846
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001359,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 20,
+      "uncached_input_tokens": 187,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011162000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 20,
+      "uncached_input_tokens": 59,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 20,
+      "uncached_input_tokens": 59,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0830a428c2400a568772",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "b61c7f1b5be8f71ff1c0d35e5484608e33ea554393dbf1fd05c688d2318e4c2d",
+  "status": "completed"
+}

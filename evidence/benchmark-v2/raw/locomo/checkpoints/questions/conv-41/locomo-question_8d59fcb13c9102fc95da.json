@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011772,
+    "cost_usd": null,
+    "input_tokens": 3064,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 430,
+    "reasoning_tokens": 365,
+    "text": "Maria mentioned receiving a medal from the homeless shelter in a message on **2023-08-09** (timestamp 2023-08-09T20:06:00+00:00), referring to it as happening \"last week,\" so the actual medal receipt likely occurred around early August 2023.",
+    "uncached_input_tokens": 3064
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001521,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 155,
+      "response_chars": 20,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023401999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 363,
+      "reasoning_tokens": 355,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.013704200000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 2257,
+      "reasoning_tokens": 2249,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8d59fcb13c9102fc95da",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "365df6a1d8912df29c075fe8eb19c473f3c239ac1bb6a92ce6ff5b3842071c50",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011814,
+    "cost_usd": null,
+    "input_tokens": 3154,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 392,
+    "reasoning_tokens": 329,
+    "text": "Dave finds restoring old cars satisfying because he enjoys the process of transforming a broken-down vehicle, bringing it back to life, and the accompanying sense of accomplishment (2023-10-04, 2023-10-23, 2023-09-02, 2023-05-01).",
+    "uncached_input_tokens": 3154
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001839,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 217,
+      "reasoning_tokens": 209,
+      "response_chars": 20,
+      "uncached_input_tokens": 179,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 20,
+      "uncached_input_tokens": 51,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 274,
+      "reasoning_tokens": 266,
+      "response_chars": 20,
+      "uncached_input_tokens": 51,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_29d29e537b8df7de8d2a",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "6c2a9d51d3ad4daa1a2cc869ffaaa8e6839a1a9ad8d88dae3dff0c3e3e58999a",
+  "status": "completed"
+}

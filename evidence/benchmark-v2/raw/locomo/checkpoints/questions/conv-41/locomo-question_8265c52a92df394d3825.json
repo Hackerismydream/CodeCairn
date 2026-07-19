@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0045222,
+    "cost_usd": null,
+    "input_tokens": 2731,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 721,
+    "reasoning_tokens": 667,
+    "text": "Based on the context, Maria has made friends at church, as she explicitly mentions \"my friends from church\" in two separate memories (2023-08-05 and 2023-07-22). No other specific location where she made friends is indicated.",
+    "uncached_input_tokens": 43
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001896,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 235,
+      "reasoning_tokens": 227,
+      "response_chars": 18,
+      "uncached_input_tokens": 162,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 225,
+      "reasoning_tokens": 217,
+      "response_chars": 18,
+      "uncached_input_tokens": 34,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 212,
+      "reasoning_tokens": 204,
+      "response_chars": 18,
+      "uncached_input_tokens": 34,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8265c52a92df394d3825",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "c77fea6d34f24da2fedf7dbf0c923cc30dbfd61781c397ee606541d0f0361657",
+  "status": "completed"
+}

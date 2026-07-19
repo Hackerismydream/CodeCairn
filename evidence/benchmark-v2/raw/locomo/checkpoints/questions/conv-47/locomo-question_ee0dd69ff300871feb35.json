@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009555,
+    "cost_usd": null,
+    "input_tokens": 2937,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 124,
+    "reasoning_tokens": 117,
+    "text": "Daisy is a Labrador.",
+    "uncached_input_tokens": 2937
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000957,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 115,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 20,
+      "uncached_input_tokens": 115,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000921,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 115,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 96,
+      "reasoning_tokens": 88,
+      "response_chars": 20,
+      "uncached_input_tokens": 115,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000813,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 115,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 20,
+      "uncached_input_tokens": 115,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ee0dd69ff300871feb35",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "9bf337d25e3be0c3a1f92aafc92ed1a66b1e3d2cea2b6f05c2961eb6c694284b",
+  "status": "completed"
+}

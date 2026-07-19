@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01002,
+    "cost_usd": null,
+    "input_tokens": 2608,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 366,
+    "reasoning_tokens": 325,
+    "text": "Jolene recently played Overcooked 2, which she described to Deb as a good co-op game about hilarious and chaotic cooking (session 19, 2023-08-19).",
+    "uncached_input_tokens": 2608
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001308,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 18,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 107,
+      "reasoning_tokens": 99,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_30c7067b241dcc05d218",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "c8e080dacea3c73ea99a8091aa4a640190dbd5377708f343ccdf3ad48e59c809",
+  "status": "completed"
+}

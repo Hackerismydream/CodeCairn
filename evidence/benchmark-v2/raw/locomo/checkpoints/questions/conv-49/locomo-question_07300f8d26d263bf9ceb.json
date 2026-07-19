@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011601,
+    "cost_usd": null,
+    "input_tokens": 2795,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 536,
+    "reasoning_tokens": 471,
+    "text": "Sam adopted a new diet and exercise routine starting in August 2023, focusing on healthier eating (e.g., spinach, avocado, strawberries) and regular physical activity. After a gastritis scare in October, he further prioritized nutritious eating and exercise, and by late December he was hiking as part of his healthier lifestyle.",
+    "uncached_input_tokens": 2795
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004041,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 583,
+      "reasoning_tokens": 575,
+      "response_chars": 18,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024121999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 375,
+      "reasoning_tokens": 367,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0038282,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 611,
+      "reasoning_tokens": 603,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_07300f8d26d263bf9ceb",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "8e323396229e351181c5d853bd93dd4ef76466ddb0b89bc43476b0285d813140",
+  "status": "completed"
+}

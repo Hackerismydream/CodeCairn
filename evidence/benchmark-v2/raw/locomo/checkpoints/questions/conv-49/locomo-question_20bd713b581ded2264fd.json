@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013341,
+    "cost_usd": null,
+    "input_tokens": 2839,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 804,
+    "reasoning_tokens": 632,
+    "text": "Based on the memory context, Sam recommended the following to Evan:\n\n- **Grilled dish with veggies**: Sam described marinating and grilling something (presumably a protein) with vegetables, calling it flavorful (session_7).\n- **Offered more recipes from a cooking class**: Sam volunteered to share additional recipes from their cooking class if Evan specified what he was looking for (session_7).\n- **Healthy meal example**: Sam shared a photo of a bowl of beef and vegetables with a “Healthy Choice” package, referencing their own diet transformation (session_10). This may serve as a subtle recommendation for healthy eating, though not a direct recipe.\n\nNo specific recipe names or detailed instructions were provided in the available context. The information is sufficient to indicate Sam recommended grilled vegetables with a marinated dish and offered broader recipe suggestions from a cooking class.",
+    "uncached_input_tokens": 2839
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002406,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 302,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 18,
+      "uncached_input_tokens": 302,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0010444,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 302,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 150,
+      "reasoning_tokens": 142,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0012184000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 302,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 179,
+      "reasoning_tokens": 171,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_20bd713b581ded2264fd",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "7e33073c2090330323c556cec49c838a2ff90f63f5a7db275548327c00a0f06e",
+  "status": "completed"
+}

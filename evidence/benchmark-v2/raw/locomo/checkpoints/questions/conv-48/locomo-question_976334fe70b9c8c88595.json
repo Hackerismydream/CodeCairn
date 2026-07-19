@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0020624000000000003,
+    "cost_usd": null,
+    "input_tokens": 2874,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 303,
+    "reasoning_tokens": 262,
+    "text": "The provided memory context does not include any information about a project Jolene was working on at the beginning of January 2023. The earliest relevant timestamps are from late January 2023 onwards.",
+    "uncached_input_tokens": 58
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001608,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 158,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009392000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 18,
+      "uncached_input_tokens": 30,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007472000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 109,
+      "reasoning_tokens": 101,
+      "response_chars": 18,
+      "uncached_input_tokens": 30,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_976334fe70b9c8c88595",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "e5aff989d4de24c3ef8bd30b5fdaa2a1558384274a33e3b27c8975d34a57d810",
+  "status": "completed"
+}

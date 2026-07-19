@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010251,
+    "cost_usd": null,
+    "input_tokens": 2839,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 289,
+    "reasoning_tokens": 232,
+    "text": "Evan's family motivates him to take care of his health, as he directly stated in a conversation on August 7, 2023 (session_5). He also mentioned that a smartwatch helps track his progress and serves as a constant reminder, supporting his health goals.",
+    "uncached_input_tokens": 2839
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002367,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 308,
+      "reasoning_tokens": 300,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021902,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 342,
+      "reasoning_tokens": 334,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 322,
+      "reasoning_tokens": 314,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2c4801e72d20eae3ac47",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "e9e096b2eafab2efc8707e8212ed591cb20b64e53783f19dcc9fb14eba15058b",
+  "status": "completed"
+}

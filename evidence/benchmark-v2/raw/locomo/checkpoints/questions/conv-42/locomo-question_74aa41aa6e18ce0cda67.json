@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010338,
+    "cost_usd": null,
+    "input_tokens": 3084,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 181,
+    "reasoning_tokens": 168,
+    "text": "Joanna shared a photo of a chocolate raspberry tart.",
+    "uncached_input_tokens": 3084
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001053,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 107,
+      "reasoning_tokens": 99,
+      "response_chars": 20,
+      "uncached_input_tokens": 137,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 20,
+      "uncached_input_tokens": 9,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009182000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 20,
+      "uncached_input_tokens": 9,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_74aa41aa6e18ce0cda67",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "5a7452b6451e53221028b312474e774a21278e16a0416a83ad2bd17fc1e00607",
+  "status": "completed"
+}

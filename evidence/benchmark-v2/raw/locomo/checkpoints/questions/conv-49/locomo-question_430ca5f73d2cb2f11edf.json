@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010794,
+    "cost_usd": null,
+    "input_tokens": 2788,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 405,
+    "reasoning_tokens": 349,
+    "text": "Based on the memory context, Sam finds connecting with nature, particularly through hiking, to be a stress reliever. This is evidenced by his statement in session_14: \"Totally! I'm so pumped for this hike. Connecting with nature is exactly what I need.\"",
+    "uncached_input_tokens": 2788
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001836,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 18,
+      "uncached_input_tokens": 174,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010832,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 157,
+      "reasoning_tokens": 149,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_430ca5f73d2cb2f11edf",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "5b846553247f0052d8d0aebbb7ba6ce39feb315568f654fcb3a6941a4807f885",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0013454,
+    "cost_usd": null,
+    "input_tokens": 2921,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 160,
+    "reasoning_tokens": 141,
+    "text": "The provided context does not mention Joanna watching \"Eternal Sunshine of the Spotless Mind.\"",
+    "uncached_input_tokens": 105
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000975,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 96,
+      "reasoning_tokens": 88,
+      "response_chars": 18,
+      "uncached_input_tokens": 133,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006122,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 99,
+      "reasoning_tokens": 91,
+      "response_chars": 18,
+      "uncached_input_tokens": 5,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007682,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 18,
+      "uncached_input_tokens": 5,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2d000356ce4142eebdb9",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "898cdc27f1acc7d0f0ea95e91be51b62bb2c212ff902ebdb583eaf995be2cb56",
+  "status": "completed"
+}

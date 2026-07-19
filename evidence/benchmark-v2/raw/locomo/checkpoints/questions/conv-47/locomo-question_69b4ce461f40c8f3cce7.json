@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009099,
+    "cost_usd": null,
+    "input_tokens": 2653,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 190,
+    "reasoning_tokens": 163,
+    "text": "John left his IT job because he wanted something that made a difference, as he mentioned on August 6, 2022.",
+    "uncached_input_tokens": 2653
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.005751,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 888,
+      "reasoning_tokens": 880,
+      "response_chars": 18,
+      "uncached_input_tokens": 141,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019802,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 323,
+      "reasoning_tokens": 315,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0031742,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 522,
+      "reasoning_tokens": 514,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_69b4ce461f40c8f3cce7",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "ba433fd364c55ce5368d3394e58aaef09b47f7161b2aa8a92982cf6850ccbcc2",
+  "status": "completed"
+}

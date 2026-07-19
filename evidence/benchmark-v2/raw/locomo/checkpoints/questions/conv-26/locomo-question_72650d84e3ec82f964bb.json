@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009204,
+    "cost_usd": null,
+    "input_tokens": 2688,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 190,
+    "reasoning_tokens": 152,
+    "text": "Melanie bought the figurines on October 21, 2023. She mentioned “yesterday” in a message on October 22, 2023 (memory_14).",
+    "uncached_input_tokens": 2688
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001221,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 20,
+      "uncached_input_tokens": 147,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008162,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_72650d84e3ec82f964bb",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "d60da57e3f2241a99e317361d7cfddf2cd65947fc27fc533d3707dd4df38265b",
+  "status": "completed"
+}

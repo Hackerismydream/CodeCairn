@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009636,
+    "cost_usd": null,
+    "input_tokens": 2774,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 219,
+    "reasoning_tokens": 177,
+    "text": "John says he feels stuck and questioning his decisions and goals because he doesn't feel like he’s making much of an impact. This is from session_30 on 2023-08-11.",
+    "uncached_input_tokens": 2774
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001755,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 213,
+      "reasoning_tokens": 205,
+      "response_chars": 20,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 193,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012122,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 186,
+      "reasoning_tokens": 178,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e3a0fd1825c5c4cd45c4",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "9d18c6baa2430291f10795b9a0b5ce8bd6644e1b6fbb60a650097b7b394922d5",
+  "status": "completed"
+}

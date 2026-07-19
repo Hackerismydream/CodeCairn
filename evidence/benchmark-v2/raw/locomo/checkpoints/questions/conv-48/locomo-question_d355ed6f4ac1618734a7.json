@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010602,
+    "cost_usd": null,
+    "input_tokens": 2898,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 318,
+    "reasoning_tokens": 279,
+    "text": "Deborah went to the community meetup on Friday, September 1, 2023 (referenced as “last Friday” in her message on September 3, 2023).",
+    "uncached_input_tokens": 2898
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003108,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 442,
+      "reasoning_tokens": 434,
+      "response_chars": 18,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 188,
+      "reasoning_tokens": 180,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 200,
+      "reasoning_tokens": 192,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d355ed6f4ac1618734a7",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "540cdfced900fdde8c72c760bbc7fd9210141dee4d75bd5a45052b844c0a8c68",
+  "status": "completed"
+}

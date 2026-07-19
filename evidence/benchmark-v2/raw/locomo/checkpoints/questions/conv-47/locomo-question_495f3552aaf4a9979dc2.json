@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009417,
+    "cost_usd": null,
+    "input_tokens": 2661,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 239,
+    "reasoning_tokens": 203,
+    "text": "James enjoyed reading, especially while snuggled under the covers, on cold winter days (memory_4f57044b12ccd7cee6e8).",
+    "uncached_input_tokens": 2661
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001518,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 20,
+      "uncached_input_tokens": 150,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010352,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 161,
+      "reasoning_tokens": 153,
+      "response_chars": 20,
+      "uncached_input_tokens": 22,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012092000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 190,
+      "reasoning_tokens": 179,
+      "response_chars": 24,
+      "uncached_input_tokens": 22,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_495f3552aaf4a9979dc2",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "b5d05dca8b4fd7a912dac7bca786898e61fef192976a87713c598b29d5bcb4dc",
+  "status": "completed"
+}

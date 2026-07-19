@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011766,
+    "cost_usd": null,
+    "input_tokens": 2868,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 527,
+    "reasoning_tokens": 447,
+    "text": "The provided context does not include any information about John hosting an event for veterans in May 2023. While he mentions working on a petition for veterans (May 20) and starting a community infrastructure project (May 6), neither is a hosted event. The only hosted event mentioned—a 5K charity run for veterans—took place in August 2023, not May.",
+    "uncached_input_tokens": 2868
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0021,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 18,
+      "uncached_input_tokens": 200,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 243,
+      "reasoning_tokens": 235,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a3af7da6d849b1ffd352",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "ae18eb2eca9fcb5b4722e10e178887e813d84731f21ed1a235c6b7bd826f736f",
+  "status": "completed"
+}

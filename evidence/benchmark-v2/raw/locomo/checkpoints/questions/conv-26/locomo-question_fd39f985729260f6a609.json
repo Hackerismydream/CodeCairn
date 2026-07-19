@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009285,
+    "cost_usd": null,
+    "input_tokens": 2675,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 210,
+    "reasoning_tokens": 187,
+    "text": "Melanie showed Caroline a painting inspired by sunsets, featuring a pink sky, which she described as calming.",
+    "uncached_input_tokens": 2675
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001584,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 192,
+      "reasoning_tokens": 184,
+      "response_chars": 20,
+      "uncached_input_tokens": 144,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 20,
+      "uncached_input_tokens": 16,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018572,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 301,
+      "reasoning_tokens": 293,
+      "response_chars": 20,
+      "uncached_input_tokens": 16,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fd39f985729260f6a609",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "1df1ffcc8f2edc01931c22e2aafd835245516cd03976e26bdd4e2d34fee73816",
+  "status": "completed"
+}

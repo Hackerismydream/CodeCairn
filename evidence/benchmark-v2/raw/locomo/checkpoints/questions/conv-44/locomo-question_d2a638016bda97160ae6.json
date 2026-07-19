@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009378,
+    "cost_usd": null,
+    "input_tokens": 2904,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 111,
+    "reasoning_tokens": 95,
+    "text": "Audrey saw a flyer for the workshop at her local pet store.",
+    "uncached_input_tokens": 2904
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00108,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 20,
+      "uncached_input_tokens": 134,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 158,
+      "reasoning_tokens": 150,
+      "response_chars": 20,
+      "uncached_input_tokens": 6,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008732000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 142,
+      "reasoning_tokens": 134,
+      "response_chars": 20,
+      "uncached_input_tokens": 6,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d2a638016bda97160ae6",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "656c15a09724a479d71ec19d0e6e991315235726fbaa55d68f849d1354d14cfe",
+  "status": "completed"
+}

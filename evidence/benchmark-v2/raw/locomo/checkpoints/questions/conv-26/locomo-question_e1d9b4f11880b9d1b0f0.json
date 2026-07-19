@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01083,
+    "cost_usd": null,
+    "input_tokens": 2738,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 436,
+    "reasoning_tokens": 390,
+    "text": "According to a message on October 13, 2023, Melanie mentioned she \"got hurt\" the previous month, suggesting her injury occurred around September 2023. The exact date is not specified in the provided context.",
+    "uncached_input_tokens": 2738
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001485,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 20,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010442000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 162,
+      "reasoning_tokens": 154,
+      "response_chars": 20,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011522000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 180,
+      "reasoning_tokens": 172,
+      "response_chars": 20,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e1d9b4f11880b9d1b0f0",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ae4f415c5f335c30cd4fe6aed4aaaf73b267d15e01fba5e4c73cd0ffb3e0e0ae",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009564,
+    "cost_usd": null,
+    "input_tokens": 2870,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 159,
+    "reasoning_tokens": 149,
+    "text": "When Jolene was 10 years old.",
+    "uncached_input_tokens": 2870
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001185,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 20,
+      "uncached_input_tokens": 121,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001245,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 147,
+      "reasoning_tokens": 139,
+      "response_chars": 20,
+      "uncached_input_tokens": 121,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001377,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 20,
+      "uncached_input_tokens": 121,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cc60c427587d2ac26be4",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "825ad5cac3d6a2a33cbc5d3759f7f38420a3c3b801312245880aa5f7b131d354",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009774,
+    "cost_usd": null,
+    "input_tokens": 2954,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 152,
+    "reasoning_tokens": 146,
+    "text": "A Nintendo game console.",
+    "uncached_input_tokens": 2954
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001635,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 20,
+      "uncached_input_tokens": 123,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001125,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 20,
+      "uncached_input_tokens": 123,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000753,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 64,
+      "reasoning_tokens": 56,
+      "response_chars": 20,
+      "uncached_input_tokens": 123,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5d002c215992c3a57e89",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "249775029f7e1378292a31f5e886d554ae5cb61b21189f5ff61b4589ce3ee590",
+  "status": "completed"
+}

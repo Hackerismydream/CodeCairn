@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008112,
+    "cost_usd": null,
+    "input_tokens": 2430,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 137,
+    "reasoning_tokens": 121,
+    "text": "The provided memory context does not contain any information about Jolene's age.",
+    "uncached_input_tokens": 2430
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001311,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 18,
+      "uncached_input_tokens": 129,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009842,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 155,
+      "response_chars": 18,
+      "uncached_input_tokens": 1,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006002000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 99,
+      "reasoning_tokens": 91,
+      "response_chars": 18,
+      "uncached_input_tokens": 1,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_059520a636d8a275089b",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "eaf863c4f612740c9456094f37fe6568d8908aa5ba6b56d24bf4660811eb901f",
+  "status": "completed"
+}

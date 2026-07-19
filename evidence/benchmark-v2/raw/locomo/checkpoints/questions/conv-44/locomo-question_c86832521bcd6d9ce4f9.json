@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010035,
+    "cost_usd": null,
+    "input_tokens": 3047,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 149,
+    "reasoning_tokens": 133,
+    "text": "Audrey takes her dogs for walks very often, multiple times a day.",
+    "uncached_input_tokens": 3047
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002481,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 351,
+      "reasoning_tokens": 343,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001263,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001293,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 153,
+      "reasoning_tokens": 145,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c86832521bcd6d9ce4f9",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "70bfba1e92f24f31d2a0773b488108a4f33884699e587b9f7d24618da274fe43",
+  "status": "completed"
+}

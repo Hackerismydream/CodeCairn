@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011676,
+    "cost_usd": null,
+    "input_tokens": 2684,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 604,
+    "reasoning_tokens": 563,
+    "text": "Melanie mentioned on June 27, 2023, that she had taken her family camping in the mountains the previous week, which would place the trip around June 20, 2023.",
+    "uncached_input_tokens": 2684
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001269,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 135,
+      "reasoning_tokens": 124,
+      "response_chars": 24,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010082000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 155,
+      "reasoning_tokens": 147,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011342000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 176,
+      "reasoning_tokens": 168,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e895aff5cd8abf725d26",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "96f770c31863f3aa153f6542208c5ca17c39d036cdaa88083b89ecf56c6ac27c",
+  "status": "completed"
+}

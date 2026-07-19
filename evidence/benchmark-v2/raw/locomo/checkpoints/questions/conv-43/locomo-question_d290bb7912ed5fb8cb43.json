@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011301,
+    "cost_usd": null,
+    "input_tokens": 2901,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 433,
+    "reasoning_tokens": 385,
+    "text": "The provided memory context does not mention any specific Star Wars book. Tim enjoys Star Wars films and fantasy novels, so he may like Star Wars books in general, but no particular title is suggested. The context is insufficient to name one.",
+    "uncached_input_tokens": 2901
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00144,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 18,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 164,
+      "reasoning_tokens": 156,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d290bb7912ed5fb8cb43",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "115726b1e5ea89d9dc9869ab6ec7820e65fa96b0db5fb98b4b68d3d7e1f61817",
+  "status": "completed"
+}

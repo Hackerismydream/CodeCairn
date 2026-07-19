@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.018609,
+    "cost_usd": null,
+    "input_tokens": 2943,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1630,
+    "reasoning_tokens": 1484,
+    "text": "Evan and Sam both turn to painting as a creative outlet during difficult times. Evan finds that art helps him “recognize and handle” his emotions, and he describes his work as joyful and liberating, embracing the process without restraint. He also uses cooking and baking (trying new recipes) as a way to stay busy and creative. Sam shares this interest, making plans to paint together, and draws inspiration from art exhibits. While the direct link to “coping” is most explicit for Evan, Sam’s engagement with painting and appreciation of creative work suggests she also finds value in these outlets when life feels challenging. (The context does not elaborate on Sam’s specific coping through creativity beyond these shared moments.)",
+    "uncached_input_tokens": 2943
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004248,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 280,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 568,
+      "reasoning_tokens": 560,
+      "response_chars": 18,
+      "uncached_input_tokens": 280,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0027304,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 280,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 442,
+      "reasoning_tokens": 434,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0031984,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 280,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 520,
+      "reasoning_tokens": 512,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7feb6300468d3f0f6fd7",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "188cc1237e12d383a7868d54fdc5e17f2f95a27fcf020455b75c6c37917bc21f",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010899,
+    "cost_usd": null,
+    "input_tokens": 3019,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 307,
+    "reasoning_tokens": 288,
+    "text": "Based on his living space in an apartment, Andrew was looking to adopt a smaller dog.",
+    "uncached_input_tokens": 3019
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000966,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 95,
+      "reasoning_tokens": 87,
+      "response_chars": 20,
+      "uncached_input_tokens": 132,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 222,
+      "reasoning_tokens": 214,
+      "response_chars": 20,
+      "uncached_input_tokens": 4,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 135,
+      "reasoning_tokens": 127,
+      "response_chars": 20,
+      "uncached_input_tokens": 4,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fb9745bf2f2f81053cff",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "c074f2985ce3602499556b20efbe33c6a94e9b838169d2704c48a505a1a757b5",
+  "status": "completed"
+}

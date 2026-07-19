@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011916,
+    "cost_usd": null,
+    "input_tokens": 2878,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 547,
+    "reasoning_tokens": 514,
+    "text": "As of November 2023, it has been approximately 4 months since Andrew adopted his first pet, Toby, on July 11, 2023.",
+    "uncached_input_tokens": 2878
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001161,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 20,
+      "uncached_input_tokens": 149,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 122,
+      "reasoning_tokens": 114,
+      "response_chars": 20,
+      "uncached_input_tokens": 21,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 20,
+      "uncached_input_tokens": 21,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_484db07d4abd17c7e74c",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "f6ddfb009d29c22ecfb998dc5682a5211681c04677bf6d9928b649b4164e5c85",
+  "status": "completed"
+}

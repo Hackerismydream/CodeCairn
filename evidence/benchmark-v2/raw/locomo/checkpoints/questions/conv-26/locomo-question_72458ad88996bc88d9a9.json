@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010647,
+    "cost_usd": null,
+    "input_tokens": 2677,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 436,
+    "reasoning_tokens": 368,
+    "text": "Caroline creates drawings and paintings, with a particular fondness for depicting flowers. This is evidenced in her own words from sessions on 2023-08-25 and 2023-09-13, where she notes that drawing flowers is a favorite subject, and that painting and drawing help her express feelings and explore her identity.",
+    "uncached_input_tokens": 2677
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001089,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 95,
+      "reasoning_tokens": 87,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 85,
+      "reasoning_tokens": 77,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013742000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 206,
+      "reasoning_tokens": 198,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_72458ad88996bc88d9a9",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "f5fa4bcc9a540c47240b15f7de05021ff8ee6e07964ea8777e248ca2f195f8d5",
+  "status": "completed"
+}

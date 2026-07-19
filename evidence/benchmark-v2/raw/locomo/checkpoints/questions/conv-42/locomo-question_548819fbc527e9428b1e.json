@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008751,
+    "cost_usd": null,
+    "input_tokens": 2599,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 159,
+    "reasoning_tokens": 137,
+    "text": "Joanna had an audition for a writing gig, as mentioned on March 24, 2022.",
+    "uncached_input_tokens": 2599
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001464,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000918,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 90,
+      "reasoning_tokens": 82,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_548819fbc527e9428b1e",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "1ded5200b2b0b1af638f466e2577b0af77bb89d2114a6e7b9bc17f66764435c5",
+  "status": "completed"
+}

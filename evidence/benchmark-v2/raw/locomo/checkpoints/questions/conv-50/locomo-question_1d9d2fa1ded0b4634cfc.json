@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011514,
+    "cost_usd": null,
+    "input_tokens": 2942,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 448,
+    "reasoning_tokens": 371,
+    "text": "For Dave, working on cars represents a deep passion and source of fulfillment. It’s a therapeutic escape that relaxes him, gives him a sense of accomplishment from transforming broken vehicles, and connects him to fond childhood memories with his dad. It also satisfies his love for engineering and helping others, while fueling his dream of continued learning and one day building a custom car from scratch.",
+    "uncached_input_tokens": 2942
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 124,
+      "reasoning_tokens": 116,
+      "response_chars": 20,
+      "uncached_input_tokens": 192,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017672,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 262,
+      "reasoning_tokens": 254,
+      "response_chars": 20,
+      "uncached_input_tokens": 64,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0032012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 501,
+      "reasoning_tokens": 493,
+      "response_chars": 20,
+      "uncached_input_tokens": 64,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1d9d2fa1ded0b4634cfc",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "4f53d5e20d9c86ce90111439fc03e9e1182bd212044515482c0e4a78bd7c80b7",
+  "status": "completed"
+}

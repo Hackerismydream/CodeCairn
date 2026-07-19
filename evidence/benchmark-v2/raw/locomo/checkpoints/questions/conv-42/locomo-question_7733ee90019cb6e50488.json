@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.019224,
+    "cost_usd": null,
+    "input_tokens": 2750,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1829,
+    "reasoning_tokens": 1776,
+    "text": "The provided memory context does not specify when Joanna started writing her third screenplay. The only clear start dates are for her second screenplay (2022-02-25) and a book (2022-07-10). No entry mentions beginning a third screenplay.",
+    "uncached_input_tokens": 2750
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001143,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 110,
+      "reasoning_tokens": 102,
+      "response_chars": 18,
+      "uncached_input_tokens": 161,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011282,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 18,
+      "uncached_input_tokens": 33,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 18,
+      "uncached_input_tokens": 33,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7733ee90019cb6e50488",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "0d2709ae1eb07cbe9a8546e19780c3e46f4b0f4c974909fbe429ccf68e95b0a5",
+  "status": "completed"
+}

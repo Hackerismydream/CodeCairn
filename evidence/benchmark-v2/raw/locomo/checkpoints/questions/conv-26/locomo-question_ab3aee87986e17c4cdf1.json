@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010497,
+    "cost_usd": null,
+    "input_tokens": 2785,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 357,
+    "reasoning_tokens": 278,
+    "text": "Caroline participated in:\n\n- An LGBTQ+ pride parade (session_5, last week before 2023-07-03)\n- An LGBTQ conference (session_7, on 2023-07-10, mentioned on 2023-07-12)\n- An LGBTQ+ counseling workshop (session_4, on a Friday before 2023-06-27)",
+    "uncached_input_tokens": 2785
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00258,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 332,
+      "reasoning_tokens": 324,
+      "response_chars": 18,
+      "uncached_input_tokens": 196,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012992000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 18,
+      "uncached_input_tokens": 68,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 321,
+      "reasoning_tokens": 313,
+      "response_chars": 18,
+      "uncached_input_tokens": 68,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ab3aee87986e17c4cdf1",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "bb780c3bbea31824a37a18c8d3ec319eda556c55226b53655362c844c1aec90d",
+  "status": "completed"
+}

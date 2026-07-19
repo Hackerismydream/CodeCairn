@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013317,
+    "cost_usd": null,
+    "input_tokens": 2899,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 770,
+    "reasoning_tokens": 706,
+    "text": "The provided context does not specify a concrete plan. John says he wants to \"make sure we make progress in the coming weeks to ensure that we honor the memories of our loved ones\" (2023-06-03), which appears in response to condolences about his dog Max, but no further details are given.",
+    "uncached_input_tokens": 2899
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 238,
+      "reasoning_tokens": 230,
+      "response_chars": 18,
+      "uncached_input_tokens": 178,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012392,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 18,
+      "uncached_input_tokens": 50,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 67,
+      "reasoning_tokens": 59,
+      "response_chars": 18,
+      "uncached_input_tokens": 50,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b728f1f3290d878b4d37",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "655518fe90bd7a0100e3a3d9a790b66dfb45a93efe09bd73c749e913c5b08773",
+  "status": "completed"
+}

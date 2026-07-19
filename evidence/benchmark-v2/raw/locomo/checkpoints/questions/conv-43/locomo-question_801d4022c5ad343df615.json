@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009738,
+    "cost_usd": null,
+    "input_tokens": 2936,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 155,
+    "reasoning_tokens": 141,
+    "text": "The forest picture was taken in a forest near John's hometown.",
+    "uncached_input_tokens": 2936
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002811,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 404,
+      "reasoning_tokens": 396,
+      "response_chars": 20,
+      "uncached_input_tokens": 129,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 20,
+      "uncached_input_tokens": 1,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028261999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 470,
+      "reasoning_tokens": 462,
+      "response_chars": 20,
+      "uncached_input_tokens": 1,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_801d4022c5ad343df615",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "af0b9d899ba768ca0cb81bf866cd5451c602364dfe76e2ad958b5779b4e1d550",
+  "status": "completed"
+}

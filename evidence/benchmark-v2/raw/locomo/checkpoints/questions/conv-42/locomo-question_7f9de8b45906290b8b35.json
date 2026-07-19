@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013776,
+    "cost_usd": null,
+    "input_tokens": 2976,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 808,
+    "reasoning_tokens": 751,
+    "text": "The context only states Joanna finished writing her book around late September 2022, based on her October 6, 2022 message saying she finished \"last week.\" No start date is provided, so it is impossible to determine how long it took. The context is insufficient.",
+    "uncached_input_tokens": 2976
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00165,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 18,
+      "uncached_input_tokens": 168,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015452,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 237,
+      "reasoning_tokens": 229,
+      "response_chars": 18,
+      "uncached_input_tokens": 40,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 153,
+      "reasoning_tokens": 145,
+      "response_chars": 18,
+      "uncached_input_tokens": 40,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7f9de8b45906290b8b35",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "f5336da5a10867a176b6eacd33eddd2fe2f0f81cf1f8ac08325ce62a1686ef6e",
+  "status": "completed"
+}

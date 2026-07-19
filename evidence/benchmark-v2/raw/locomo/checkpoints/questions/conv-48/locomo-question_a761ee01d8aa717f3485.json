@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00864,
+    "cost_usd": null,
+    "input_tokens": 2598,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 141,
+    "reasoning_tokens": 101,
+    "text": "Deborah spent time in the garden to find comfort after losing a friend, as she mentioned the roses and dahlias brought her peace (session_6, 2023-02-22).",
+    "uncached_input_tokens": 2598
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 20,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 129,
+      "reasoning_tokens": 121,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 187,
+      "reasoning_tokens": 179,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a761ee01d8aa717f3485",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "00698e635243e355149c51e55090008513039c86fc93b16b98bdfb435bbc2f6f",
+  "status": "completed"
+}

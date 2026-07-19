@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0027375999999999998,
+    "cost_usd": null,
+    "input_tokens": 2950,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 441,
+    "reasoning_tokens": 345,
+    "text": "Gina started her clothing store primarily because she lost her job and wanted to be her own boss while doing something she loved (session_14 on 2023-06-13). She also mentioned that opening the store had been a long-time dream (session_6 on 2023-03-16) and that her passion for fashion and dance allowed her to express creativity and share her love with others (session_8 on 2023-04-03).",
+    "uncached_input_tokens": 6
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002745,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 344,
+      "reasoning_tokens": 336,
+      "response_chars": 20,
+      "uncached_input_tokens": 227,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022321999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 322,
+      "reasoning_tokens": 314,
+      "response_chars": 20,
+      "uncached_input_tokens": 99,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025261999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 371,
+      "reasoning_tokens": 363,
+      "response_chars": 20,
+      "uncached_input_tokens": 99,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f2d7db5e446057ce5935",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "d64544efcbf6a995b0b7b3cf23e8c2de0cf961c991e8c99afa43b30709579553",
+  "status": "completed"
+}

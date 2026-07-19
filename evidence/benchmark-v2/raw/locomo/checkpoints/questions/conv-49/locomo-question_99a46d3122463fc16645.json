@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009843,
+    "cost_usd": null,
+    "input_tokens": 2819,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 231,
+    "reasoning_tokens": 196,
+    "text": "According to Evan, it is important for Sam to believe in himself, take things one day at a time, and remember that his worth is not defined by his weight.",
+    "uncached_input_tokens": 2819
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003408,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 491,
+      "reasoning_tokens": 483,
+      "response_chars": 20,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0049532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 812,
+      "reasoning_tokens": 804,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0048332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 792,
+      "reasoning_tokens": 784,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_99a46d3122463fc16645",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "38dd853d25ba397c45221015d01fcff84a1a790e10e21be2ac65cb91f2801de5",
+  "status": "completed"
+}

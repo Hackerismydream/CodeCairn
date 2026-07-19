@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013359,
+    "cost_usd": null,
+    "input_tokens": 2945,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 754,
+    "reasoning_tokens": 670,
+    "text": "The provided memory context does not mention national parks or theme parks, nor does it contain any direct statement about Melanie’s preference between them. While Melanie enjoys outdoor activities with her kids (such as playground visits and beach trips) and values family time, there is no evidence comparing the two specific options. Therefore, the context is insufficient to determine whether she would be more interested in a national park or a theme park.",
+    "uncached_input_tokens": 2945
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00195,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 224,
+      "reasoning_tokens": 216,
+      "response_chars": 18,
+      "uncached_input_tokens": 202,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008552000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010652,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 140,
+      "reasoning_tokens": 132,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0e425c1a7d7a2486cbf2",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "2a428fffed75190379fa602281b6f9c7fa5e6b7d34cd32c68fb4c01b04b45d5f",
+  "status": "completed"
+}

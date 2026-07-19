@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012657,
+    "cost_usd": null,
+    "input_tokens": 2849,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 685,
+    "reasoning_tokens": 561,
+    "text": "Jolene interns at a well-known engineering firm to gain real-world experience and test her skills. She also works on engineering projects, such as designing and building a sustainable water purifier for a rural community. Additionally, she is actively studying and considering further internships to enhance her expertise.  \n**Sources:**  \n- Session 13 (2023-06-06): interning at an engineering firm.  \n- Session 4 (2023-02-04): completed a sustainable water purifier project.  \n- Session 21 (2023-08-24): focusing on studying and planning more internships.",
+    "uncached_input_tokens": 2849
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002124,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 258,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 225,
+      "reasoning_tokens": 217,
+      "response_chars": 18,
+      "uncached_input_tokens": 258,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0012364000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 258,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 204,
+      "reasoning_tokens": 196,
+      "response_chars": 18,
+      "uncached_input_tokens": 2,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0014524000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 258,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 240,
+      "reasoning_tokens": 232,
+      "response_chars": 18,
+      "uncached_input_tokens": 2,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c6d43a59090f72edf0ae",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "982bfd532214b9cc74c6471fd9877e30eeac237774a749238ec498196a3376cf",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014178,
+    "cost_usd": null,
+    "input_tokens": 2838,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 944,
+    "reasoning_tokens": 880,
+    "text": "Calvin and Dave both rely on hard work, dedication, mutual support, and collaboration. Calvin draws inspiration from exploring music styles, watching performances, and working with other artists. Dave focuses on reminding himself of his passion, learning from others, taking breaks, and using his blog and car mods to inspire people.",
+    "uncached_input_tokens": 2838
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003036,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 419,
+      "reasoning_tokens": 411,
+      "response_chars": 20,
+      "uncached_input_tokens": 174,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 412,
+      "reasoning_tokens": 404,
+      "response_chars": 20,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0032732,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 522,
+      "reasoning_tokens": 514,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9bfa6a5bd303226e0cd7",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "644ac9f1402118116a2ec9312a01cd1c6c56d7cb24c771d1bb8ada09d7fae409",
+  "status": "completed"
+}

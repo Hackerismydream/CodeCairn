@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012213,
+    "cost_usd": null,
+    "input_tokens": 2715,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 678,
+    "reasoning_tokens": 619,
+    "text": "Nate made a lactose-free dessert using coconut milk, as he directly states in session_26. Additionally, in session_18, he mentions sharing his love for dairy-free desserts and includes an image of a dessert with whipped cream and chocolate sauce, suggesting he has made such a recipe.",
+    "uncached_input_tokens": 2715
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 342,
+      "reasoning_tokens": 334,
+      "response_chars": 18,
+      "uncached_input_tokens": 170,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017312,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 267,
+      "reasoning_tokens": 259,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015752000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 241,
+      "reasoning_tokens": 233,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c42122285a6e420dcc64",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "b9517b1e023111bd106216d90bc29607b73900989b36648599ee889bc3e261c0",
+  "status": "completed"
+}

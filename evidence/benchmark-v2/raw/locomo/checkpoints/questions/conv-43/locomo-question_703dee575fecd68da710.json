@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010566,
+    "cost_usd": null,
+    "input_tokens": 3184,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 169,
+    "reasoning_tokens": 135,
+    "text": "John practiced basketball outside for hours as a way of dealing with doubts and stress (2023-12-11T20:32:00+00:00).",
+    "uncached_input_tokens": 3184
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001395,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 20,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0029042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 471,
+      "reasoning_tokens": 463,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 308,
+      "reasoning_tokens": 300,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_703dee575fecd68da710",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "86d9d11af93799366a583d444c287e3d4b0059b46e6bc9425f57d0b39371150d",
+  "status": "completed"
+}

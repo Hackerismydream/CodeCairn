@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010494,
+    "cost_usd": null,
+    "input_tokens": 2746,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 376,
+    "reasoning_tokens": 354,
+    "text": "The provided memory context does not contain any information about what food Deborah's mom made for her on birthdays.",
+    "uncached_input_tokens": 2746
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001029,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 18,
+      "uncached_input_tokens": 133,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009002000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 147,
+      "reasoning_tokens": 139,
+      "response_chars": 18,
+      "uncached_input_tokens": 5,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007802000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 127,
+      "reasoning_tokens": 119,
+      "response_chars": 18,
+      "uncached_input_tokens": 5,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_daeb0029e605a88eaca6",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "323579a75ef61e6256e76270dbf4e90c2b099a4352990954fde68d1b409df76d",
+  "status": "completed"
+}

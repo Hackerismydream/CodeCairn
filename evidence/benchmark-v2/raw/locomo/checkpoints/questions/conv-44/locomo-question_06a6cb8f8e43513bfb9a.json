@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0019154,
+    "cost_usd": null,
+    "input_tokens": 2855,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 288,
+    "reasoning_tokens": 258,
+    "text": "Andrew really misses the peacefulness of nature and being able to go hiking, as stated in sessions such as session_3 and session_9.",
+    "uncached_input_tokens": 39
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001635,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 202,
+      "reasoning_tokens": 194,
+      "response_chars": 20,
+      "uncached_input_tokens": 141,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 104,
+      "reasoning_tokens": 96,
+      "response_chars": 20,
+      "uncached_input_tokens": 13,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015002000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 243,
+      "reasoning_tokens": 235,
+      "response_chars": 20,
+      "uncached_input_tokens": 13,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_06a6cb8f8e43513bfb9a",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "2f8b427ca3e4947104d2f882253716822a23b73c0c6629d0323a785f4704bfd7",
+  "status": "completed"
+}

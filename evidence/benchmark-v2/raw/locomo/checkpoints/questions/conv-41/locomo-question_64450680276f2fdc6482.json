@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010377,
+    "cost_usd": null,
+    "input_tokens": 2793,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 333,
+    "reasoning_tokens": 308,
+    "text": "Maria is getting ready for a fundraiser featuring a chili cook-off at the shelter on May 25, 2023.",
+    "uncached_input_tokens": 2793
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001455,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 20,
+      "uncached_input_tokens": 141,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 268,
+      "reasoning_tokens": 260,
+      "response_chars": 20,
+      "uncached_input_tokens": 13,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 236,
+      "reasoning_tokens": 228,
+      "response_chars": 20,
+      "uncached_input_tokens": 13,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_64450680276f2fdc6482",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "f7ccb5f7317323b426697814521d2811057850e1aa51c653ae724dad95895299",
+  "status": "completed"
+}

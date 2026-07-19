@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009501,
+    "cost_usd": null,
+    "input_tokens": 2793,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 187,
+    "reasoning_tokens": 155,
+    "text": "Andrew recently tried sushi, as he mentioned visiting a new spot in town that serves sushi (2023-10-24T10:15:00).",
+    "uncached_input_tokens": 2793
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001245,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 20,
+      "uncached_input_tokens": 143,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006182000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 95,
+      "reasoning_tokens": 87,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006722000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 104,
+      "reasoning_tokens": 96,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bcae67c89b98b4273f40",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "08a23aee165d8ca6f614f9aef99820cb9aef2c20deeef7dd40119fce7b75fe73",
+  "status": "completed"
+}

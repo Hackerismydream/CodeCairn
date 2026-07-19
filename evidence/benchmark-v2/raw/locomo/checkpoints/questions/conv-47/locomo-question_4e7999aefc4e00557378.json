@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00978,
+    "cost_usd": null,
+    "input_tokens": 2894,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 183,
+    "reasoning_tokens": 168,
+    "text": "John used to play drums when he was younger to let off steam.",
+    "uncached_input_tokens": 2894
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002199,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 303,
+      "reasoning_tokens": 295,
+      "response_chars": 20,
+      "uncached_input_tokens": 127,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000987,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 101,
+      "reasoning_tokens": 93,
+      "response_chars": 20,
+      "uncached_input_tokens": 127,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001551,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 195,
+      "reasoning_tokens": 187,
+      "response_chars": 20,
+      "uncached_input_tokens": 127,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4e7999aefc4e00557378",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "f2df2c63969e09a54a457beb565442cd1bb202e7e68ccd55bb6b4bfce788d84a",
+  "status": "completed"
+}

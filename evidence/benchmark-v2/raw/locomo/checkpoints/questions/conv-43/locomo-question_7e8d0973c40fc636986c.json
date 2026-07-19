@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01032,
+    "cost_usd": null,
+    "input_tokens": 3048,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 196,
+    "reasoning_tokens": 151,
+    "text": "According to the memory from session_27 on 2024-01-02, John has a painting of a man smoking a cigarette in his room. It serves as a reminder to stay true and be a leader.",
+    "uncached_input_tokens": 3048
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001653,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 196,
+      "reasoning_tokens": 188,
+      "response_chars": 18,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 255,
+      "reasoning_tokens": 247,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 229,
+      "reasoning_tokens": 221,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7e8d0973c40fc636986c",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "93a35c911a9dfcbb750de3717175a1d398e2967ae034ea072dc2866e81844792",
+  "status": "completed"
+}

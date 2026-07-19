@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011055,
+    "cost_usd": null,
+    "input_tokens": 2941,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 372,
+    "reasoning_tokens": 290,
+    "text": "Based on the provided memory context, Dave has mentioned attending two car shows:\n\n*   One described as an \"awesome event\" that was a \"car lover's paradise\" with classic cars (session_1 on 2023-03-23).\n*   One he went to \"Last Friday\" before October 8, 2023 (session_22 on 2023-10-08).",
+    "uncached_input_tokens": 2941
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000945,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 62,
+      "reasoning_tokens": 54,
+      "response_chars": 20,
+      "uncached_input_tokens": 191,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008102000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 103,
+      "reasoning_tokens": 95,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007802000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_077ff39712a785168ae4",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "da3863f298b10220eb6d824cdad9069884df4d5b3ce970bc4ee49eebfaa49a0f",
+  "status": "completed"
+}

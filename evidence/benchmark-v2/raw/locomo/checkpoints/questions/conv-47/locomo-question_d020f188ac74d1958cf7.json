@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.005653,
+    "cost_usd": null,
+    "input_tokens": 2635,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 894,
+    "reasoning_tokens": 839,
+    "text": "The provided memory context does not contain explicit statements from John or James about their favorite games. While there are mentions of gaming interests (e.g., James enjoys RPGs for storytelling, John mentions CS:GO as an example for tournaments), no specific favorite games are identified.",
+    "uncached_input_tokens": 75
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001353,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 138,
+      "reasoning_tokens": 130,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007262000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 97,
+      "reasoning_tokens": 89,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 87,
+      "reasoning_tokens": 79,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d020f188ac74d1958cf7",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "ea3de47248a63ef19d9dd0e333e1f8f93820ac89ca06885075fa19fa22db319c",
+  "status": "completed"
+}

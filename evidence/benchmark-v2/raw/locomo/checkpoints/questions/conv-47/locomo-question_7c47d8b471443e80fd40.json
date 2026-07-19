@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011325,
+    "cost_usd": null,
+    "input_tokens": 2653,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 561,
+    "reasoning_tokens": 485,
+    "text": "The provided memory context does not contain an explicit start date for John's IT job. The only relevant detail is that he left his IT job after 3 years on August 6, 2022 (memory #8). This implies he likely started in mid‑2019, but no specific date or month is given. Therefore, the context is insufficient to answer precisely.",
+    "uncached_input_tokens": 2653
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 421,
+      "reasoning_tokens": 413,
+      "response_chars": 18,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 195,
+      "reasoning_tokens": 187,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 328,
+      "reasoning_tokens": 320,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7c47d8b471443e80fd40",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "4b8dce98fbcc347b09a81c955a1a3efc731f15d88e1205b99b78304f6b6ab6f7",
+  "status": "completed"
+}

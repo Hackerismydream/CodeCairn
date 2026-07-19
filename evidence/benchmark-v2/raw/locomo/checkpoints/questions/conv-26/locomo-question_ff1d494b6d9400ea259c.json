@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011073,
+    "cost_usd": null,
+    "input_tokens": 2849,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 421,
+    "reasoning_tokens": 310,
+    "text": "Based on the provided memory context, the children handled the accident by enjoying a subsequent trip to the Grand Canyon. However, the context does not provide a direct description of their emotional reaction or specific handling of the accident itself.\n\n**Evidence:**\n- Caroline asked Melanie, \"How did they handle the accident?\" (1. Caroline in session_18)\n- Right before this, Melanie stated, \"Thankfully, they enjoyed the Grand Canyon a lot!\" while discussing how much she needs her family after the accident (2. Melanie in session_18).",
+    "uncached_input_tokens": 2849
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001653,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 162,
+      "reasoning_tokens": 154,
+      "response_chars": 18,
+      "uncached_input_tokens": 227,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 18,
+      "uncached_input_tokens": 99,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010682,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 18,
+      "uncached_input_tokens": 99,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ff1d494b6d9400ea259c",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "f621747719004835f037de35045211053761ad7c9371686d15831636b88ec19c",
+  "status": "completed"
+}

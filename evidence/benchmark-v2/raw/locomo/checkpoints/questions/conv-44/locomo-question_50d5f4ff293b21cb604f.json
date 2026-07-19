@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009669,
+    "cost_usd": null,
+    "input_tokens": 2967,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 128,
+    "reasoning_tokens": 95,
+    "text": "On June 26, 2023, Audrey recalled that she and her friends stumbled across a stunning lake in the mountains during a hike a few years back.",
+    "uncached_input_tokens": 2967
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001941,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 243,
+      "reasoning_tokens": 235,
+      "response_chars": 20,
+      "uncached_input_tokens": 161,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 20,
+      "uncached_input_tokens": 33,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 20,
+      "uncached_input_tokens": 33,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_50d5f4ff293b21cb604f",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "61e0692ab5eab243eea2bc76e0c216401f1cca24b9725364dff25e42f10eb284",
+  "status": "completed"
+}

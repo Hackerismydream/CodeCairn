@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009192,
+    "cost_usd": null,
+    "input_tokens": 2764,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 150,
+    "reasoning_tokens": 112,
+    "text": "Joanna gets her ideas for characters from everywhere: people she knows, things she's seen, and what she imagines (session_25, 2022-10-25).",
+    "uncached_input_tokens": 2764
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001605,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 190,
+      "reasoning_tokens": 182,
+      "response_chars": 20,
+      "uncached_input_tokens": 155,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013742000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 215,
+      "reasoning_tokens": 207,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_659271959736224e7460",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "e3a9246ec0e96ca5165dd70347c2b0bb02aa3da44a965b4ed1dde686b2366d73",
+  "status": "completed"
+}

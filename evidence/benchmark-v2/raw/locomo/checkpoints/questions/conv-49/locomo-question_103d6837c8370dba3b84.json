@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009465,
+    "cost_usd": null,
+    "input_tokens": 2897,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 129,
+    "reasoning_tokens": 118,
+    "text": "Evan suggested that Sam keep trying new things.",
+    "uncached_input_tokens": 2897
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001806,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 238,
+      "reasoning_tokens": 230,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001158,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0024,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 337,
+      "reasoning_tokens": 329,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_103d6837c8370dba3b84",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "cfe9722160dc396b771d2301d4a4724fb74e746264582ca6b2a6424aeaeffec0",
+  "status": "completed"
+}

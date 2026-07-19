@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010416,
+    "cost_usd": null,
+    "input_tokens": 2874,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 299,
+    "reasoning_tokens": 245,
+    "text": "The provided memory context does not specify the exact kind of pastries—only that Andrew and his girlfriend enjoyed \"delicious pastries\" at the cafe, as seen in a photo of a bakery display with pastries and coffee. The specific types are not mentioned.",
+    "uncached_input_tokens": 2874
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001965,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 241,
+      "reasoning_tokens": 233,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 90,
+      "reasoning_tokens": 82,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_648d564b8b8f804b5bb1",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "88455f36acbd57b0ee6e9c59c89b10b4b74d8448496cf7f643b294ae9086eb17",
+  "status": "completed"
+}

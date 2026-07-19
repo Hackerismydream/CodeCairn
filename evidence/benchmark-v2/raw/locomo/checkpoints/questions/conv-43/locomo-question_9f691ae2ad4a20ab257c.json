@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009798,
+    "cost_usd": null,
+    "input_tokens": 2724,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 271,
+    "reasoning_tokens": 240,
+    "text": "The provided memory context does not include John's stated position on his team. Tim asked about it, but there is no record of John's answer.",
+    "uncached_input_tokens": 2724
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001491,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 18,
+      "uncached_input_tokens": 141,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.00040219999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 60,
+      "reasoning_tokens": 52,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9f691ae2ad4a20ab257c",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "7295055b393ae58ab965a184d2adc7fe13a04091cf9ccda4ba491ac84581bc53",
+  "status": "completed"
+}

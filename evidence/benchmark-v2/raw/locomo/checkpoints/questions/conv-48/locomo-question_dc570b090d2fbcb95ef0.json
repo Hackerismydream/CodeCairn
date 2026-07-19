@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011424,
+    "cost_usd": null,
+    "input_tokens": 2560,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 624,
+    "reasoning_tokens": 569,
+    "text": "Jolene has mentioned that video games serve as a nice distraction during tough times, and that her pet Susie (a snake) and pets in general have been great company and help when times get tough (session_16, 2023-08-01).",
+    "uncached_input_tokens": 2560
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001791,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 20,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012182,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 179,
+      "reasoning_tokens": 171,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_dc570b090d2fbcb95ef0",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "bf519bb743e5931d6c7e3e2709a7779e4a0fcfabe370ece0e2828ae45d675669",
+  "status": "completed"
+}

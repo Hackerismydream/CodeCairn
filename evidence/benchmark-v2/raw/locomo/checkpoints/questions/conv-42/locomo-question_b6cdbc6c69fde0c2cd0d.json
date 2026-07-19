@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010395,
+    "cost_usd": null,
+    "input_tokens": 2649,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 408,
+    "reasoning_tokens": 378,
+    "text": "The memory context does not specify which particular screenplay was rejected; it only mentions rejections in general terms without identifying a title. Context is insufficient.",
+    "uncached_input_tokens": 2649
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 18,
+      "uncached_input_tokens": 150,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007172000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b6cdbc6c69fde0c2cd0d",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "1a547577fce13a265264a2f90fe2d6ed93d989c3b2d2200f89db2b6983324253",
+  "status": "completed"
+}

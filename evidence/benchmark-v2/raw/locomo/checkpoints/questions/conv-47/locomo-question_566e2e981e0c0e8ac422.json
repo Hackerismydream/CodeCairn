@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0020322,
+    "cost_usd": null,
+    "input_tokens": 2757,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 293,
+    "reasoning_tokens": 229,
+    "text": "The provided memory context does not contain any mention of a board game involving finding an imposter that John discusses with James. The context only includes references to strategy board games and \"Dungeons of the Dragon,\" none of which relate to an imposter theme. Therefore, the information is insufficient to answer the question.",
+    "uncached_input_tokens": 69
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001455,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 18,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006542000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 82,
+      "reasoning_tokens": 74,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 194,
+      "reasoning_tokens": 186,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_566e2e981e0c0e8ac422",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "76043fc3d4e7883bc5d5d17492ecc1994804964955fb8c4edffb19fda52c9560",
+  "status": "completed"
+}

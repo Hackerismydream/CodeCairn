@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010455,
+    "cost_usd": null,
+    "input_tokens": 2999,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 243,
+    "reasoning_tokens": 223,
+    "text": "Calvin recently got a new Ferrari, which he described as a \"masterpiece on wheels.\"",
+    "uncached_input_tokens": 2999
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001959,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 259,
+      "reasoning_tokens": 251,
+      "response_chars": 20,
+      "uncached_input_tokens": 135,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015542,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 255,
+      "reasoning_tokens": 247,
+      "response_chars": 20,
+      "uncached_input_tokens": 7,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 215,
+      "reasoning_tokens": 207,
+      "response_chars": 20,
+      "uncached_input_tokens": 7,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c362eb25f8e566d5af76",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "1bc0c05e6bc4fead440b6766dffcde2e6360066e5119d5183f089f955a4cf519",
+  "status": "completed"
+}

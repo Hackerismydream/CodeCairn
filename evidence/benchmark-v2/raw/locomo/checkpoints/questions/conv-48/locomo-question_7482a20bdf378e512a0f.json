@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011376,
+    "cost_usd": null,
+    "input_tokens": 2634,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 579,
+    "reasoning_tokens": 525,
+    "text": "Jolene suggested \"The Legend of Zelda: Breath of the Wild\" (referred to as \"Zelda BOTW\") as an awesome open-world game for the Nintendo Switch, based on her statement on 2023-08-19.",
+    "uncached_input_tokens": 2634
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001689,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 195,
+      "reasoning_tokens": 187,
+      "response_chars": 20,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 20,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 20,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7482a20bdf378e512a0f",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "c7bcd2d2837f5b11870fdfd9bd309471e8c72f1a9017828b54137292c6b2d316",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011709,
+    "cost_usd": null,
+    "input_tokens": 3029,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 437,
+    "reasoning_tokens": 387,
+    "text": "The memory context does not specify when the drunken night with friends occurred. Evan only refers to it on 2024-01-11, saying he had to apologize to his partner for it, but no date for the event itself is given.",
+    "uncached_input_tokens": 3029
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002223,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 289,
+      "reasoning_tokens": 281,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007742000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 111,
+      "reasoning_tokens": 103,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 92,
+      "reasoning_tokens": 84,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a23d607c864273337336",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "5b8b9dd02a4040357a7c61ae8d0a96fa30eca3cbae8de587feb63f9a62953a73",
+  "status": "completed"
+}

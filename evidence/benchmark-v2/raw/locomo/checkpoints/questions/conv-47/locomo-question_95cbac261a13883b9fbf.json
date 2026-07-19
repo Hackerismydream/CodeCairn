@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009726,
+    "cost_usd": null,
+    "input_tokens": 2802,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 220,
+    "reasoning_tokens": 167,
+    "text": "The purpose of the gaming tournament was to support a children's hospital. John felt great \"knowing we were playing for a good cause\" (15), and James congratulated him on \"organizing a gaming tournament for a children's hospital\" (19).",
+    "uncached_input_tokens": 2802
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003021,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 415,
+      "reasoning_tokens": 407,
+      "response_chars": 20,
+      "uncached_input_tokens": 177,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.004056199999999999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 651,
+      "reasoning_tokens": 643,
+      "response_chars": 20,
+      "uncached_input_tokens": 49,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024841999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 389,
+      "reasoning_tokens": 381,
+      "response_chars": 20,
+      "uncached_input_tokens": 49,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_95cbac261a13883b9fbf",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "d96152f3566518808f13028185ec74449ac2aea5a67006a885f9a1cd0b135951",
+  "status": "completed"
+}

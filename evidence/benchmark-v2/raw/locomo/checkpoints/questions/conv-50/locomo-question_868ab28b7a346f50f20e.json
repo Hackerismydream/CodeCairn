@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012663,
+    "cost_usd": null,
+    "input_tokens": 3021,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 600,
+    "reasoning_tokens": 568,
+    "text": "Based on the provided memory context, Dave mentions one hobby besides fixing cars: taking regular walks with friends in the park. No other hobbies are clearly stated.",
+    "uncached_input_tokens": 3021
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001467,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 18,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 152,
+      "response_chars": 22,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 244,
+      "reasoning_tokens": 236,
+      "response_chars": 18,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_868ab28b7a346f50f20e",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "580672a9a735e07986e7965e81e052a2b737387e14044727156a4c21873514d8",
+  "status": "completed"
+}

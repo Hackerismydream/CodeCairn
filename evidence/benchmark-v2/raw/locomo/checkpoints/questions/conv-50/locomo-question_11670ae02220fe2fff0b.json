@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012951,
+    "cost_usd": null,
+    "input_tokens": 2873,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 722,
+    "reasoning_tokens": 646,
+    "text": "The provided memory context does not contain any direct statement from Dave about what he considers important for making his custom cars unique. A related remark from Calvin (session_13) mentions that \"customizing a masterpiece with those small details is what makes it unique and personalized,\" but Dave's own views on the topic are not captured here. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2873
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002961,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 399,
+      "reasoning_tokens": 391,
+      "response_chars": 18,
+      "uncached_input_tokens": 189,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 153,
+      "reasoning_tokens": 145,
+      "response_chars": 18,
+      "uncached_input_tokens": 61,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017102,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 254,
+      "reasoning_tokens": 246,
+      "response_chars": 18,
+      "uncached_input_tokens": 61,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_11670ae02220fe2fff0b",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "ba1102bd642992d1e0c3a88b0a5853e79c40c4e819630fe8acf8bcacacc6eb38",
+  "status": "completed"
+}

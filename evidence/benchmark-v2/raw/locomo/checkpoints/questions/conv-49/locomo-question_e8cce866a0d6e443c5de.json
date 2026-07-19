@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010734,
+    "cost_usd": null,
+    "input_tokens": 2994,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 292,
+    "reasoning_tokens": 272,
+    "text": "Evan started painting years ago after being inspired by a painting given to him by a friend.",
+    "uncached_input_tokens": 2994
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0015,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 183,
+      "reasoning_tokens": 175,
+      "response_chars": 18,
+      "uncached_input_tokens": 134,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008012000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 6,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009452000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 18,
+      "uncached_input_tokens": 6,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e8cce866a0d6e443c5de",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "c907e7834273f81e2b3fab3f2dce13a6d997f1fa14128f1fad005e4256405875",
+  "status": "completed"
+}

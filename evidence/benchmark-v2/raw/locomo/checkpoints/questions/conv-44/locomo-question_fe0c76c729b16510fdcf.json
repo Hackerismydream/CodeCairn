@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009333,
+    "cost_usd": null,
+    "input_tokens": 2813,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 149,
+    "reasoning_tokens": 117,
+    "text": "Audrey got new beds for her dogs to give them extra comfort as the weather cooled down (session_18, 2023-09-06).",
+    "uncached_input_tokens": 2813
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001317,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 20,
+      "uncached_input_tokens": 149,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 260,
+      "reasoning_tokens": 252,
+      "response_chars": 20,
+      "uncached_input_tokens": 21,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 235,
+      "reasoning_tokens": 227,
+      "response_chars": 20,
+      "uncached_input_tokens": 21,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fe0c76c729b16510fdcf",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "4a576c49c123346f5007680b48ce7761833e728ff4593513a71032833f497829",
+  "status": "completed"
+}

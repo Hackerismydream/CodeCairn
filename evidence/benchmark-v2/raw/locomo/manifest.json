@@ -1,0 +1,103 @@
+{
+  "answer_model": {
+    "adapter": "openai-compatible-chat-completions",
+    "base_url": "https://api.deepseek.com",
+    "max_attempts": 3,
+    "model": "deepseek-v4-pro",
+    "pricing": {
+      "cached_input_per_million": 0.025,
+      "currency": "CNY",
+      "output_per_million": 6.0,
+      "uncached_input_per_million": 3.0
+    },
+    "pricing_source": {
+      "observed_at": "2026-07-19",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing/"
+    },
+    "reasoning_effort": "high",
+    "retry_backoff_seconds": 1.0,
+    "send_seed": false,
+    "thinking": "enabled",
+    "timeout_seconds": 120.0
+  },
+  "checkpoint_policy": "missing-only",
+  "created_at_utc": "2026-07-19T15:44:15.794333+00:00",
+  "dataset": {
+    "category_counts": {
+      "1": 282,
+      "2": 321,
+      "3": 96,
+      "4": 841,
+      "5": 446
+    },
+    "conversation_count": 10,
+    "license": "CC BY-NC 4.0",
+    "question_count": 1986,
+    "session_count": 272,
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "turn_count": 5882,
+    "url": "https://raw.githubusercontent.com/snap-research/locomo/main/data/locomo10.json"
+  },
+  "judge_model": {
+    "adapter": "openai-compatible-chat-completions",
+    "base_url": "https://api.deepseek.com",
+    "max_attempts": 3,
+    "model": "deepseek-v4-pro",
+    "pricing": {
+      "cached_input_per_million": 0.025,
+      "currency": "CNY",
+      "output_per_million": 6.0,
+      "uncached_input_per_million": 3.0
+    },
+    "pricing_source": {
+      "observed_at": "2026-07-19",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing/"
+    },
+    "reasoning_effort": "high",
+    "retry_backoff_seconds": 1.0,
+    "send_seed": false,
+    "thinking": "enabled",
+    "timeout_seconds": 120.0
+  },
+  "judge_response_max_attempts": 3,
+  "judge_response_max_chars": 32768,
+  "judge_votes": 3,
+  "max_workers": 10,
+  "mode": "full",
+  "repository_commit": "0487238",
+  "retrieval": {
+    "method": "hybrid-rrf",
+    "top_k": 20
+  },
+  "run_id": "locomo-full-deepseek-v4-pro-20260719-r2",
+  "schema_version": 1,
+  "scored": true,
+  "seed": 17,
+  "selection": {
+    "categories": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "conversation_ids": [
+      "conv-26",
+      "conv-30",
+      "conv-41",
+      "conv-42",
+      "conv-43",
+      "conv-44",
+      "conv-47",
+      "conv-48",
+      "conv-49",
+      "conv-50"
+    ],
+    "question_counts": {
+      "1": 282,
+      "2": 321,
+      "3": 96,
+      "4": 841
+    }
+  },
+  "suite": "locomo"
+}

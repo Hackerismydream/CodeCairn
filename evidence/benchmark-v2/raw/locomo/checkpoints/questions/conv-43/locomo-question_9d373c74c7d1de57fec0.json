@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009027,
+    "cost_usd": null,
+    "input_tokens": 2661,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 174,
+    "reasoning_tokens": 157,
+    "text": "John met back up with his teammates on August 15, 2023.",
+    "uncached_input_tokens": 2661
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001554,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 192,
+      "reasoning_tokens": 184,
+      "response_chars": 20,
+      "uncached_input_tokens": 134,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010712,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 20,
+      "uncached_input_tokens": 6,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 129,
+      "reasoning_tokens": 121,
+      "response_chars": 20,
+      "uncached_input_tokens": 6,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9d373c74c7d1de57fec0",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "d31bb05dd93bd87b711711b67e1f4aadc58c877bfc5e44e2397d42c9f12a7f62",
+  "status": "completed"
+}

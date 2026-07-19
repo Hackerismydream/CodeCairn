@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00873,
+    "cost_usd": null,
+    "input_tokens": 2724,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 93,
+    "reasoning_tokens": 68,
+    "text": "One of Jolene's favorite dishes is lasagna. (Mentioned on 2023-03-02).",
+    "uncached_input_tokens": 2724
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001131,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 122,
+      "reasoning_tokens": 114,
+      "response_chars": 20,
+      "uncached_input_tokens": 133,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 20,
+      "uncached_input_tokens": 5,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 20,
+      "uncached_input_tokens": 5,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a90ff3881dd0850775e5",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "84e3c966e37a4ca09d1570a7aaf30372441270dbee24d10a24c46fb6443b3cd2",
+  "status": "completed"
+}

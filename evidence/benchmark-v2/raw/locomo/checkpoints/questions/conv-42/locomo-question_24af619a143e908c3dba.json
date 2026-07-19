@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011661,
+    "cost_usd": null,
+    "input_tokens": 2999,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 444,
+    "reasoning_tokens": 305,
+    "text": "On October 25, 2022, Joanna described seeing her characters come alive on the big screen as “totally surreal” and her favorite part, as it felt like they “jumped off the page and became real” (memory_126181dd21d47e7041fd, 2022-10-25T20:18:30+00:00). She also mentioned earlier that day that seeing the movie script was a “surreal experience” and overall “a satisfying moment” (memory_d1a00d2d858ebf5c20bb, 2022-10-25T20:16:30+00:00).",
+    "uncached_input_tokens": 2999
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001506,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 262,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 18,
+      "uncached_input_tokens": 262,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0018964000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 262,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 312,
+      "reasoning_tokens": 304,
+      "response_chars": 18,
+      "uncached_input_tokens": 6,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0030244,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 262,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 500,
+      "reasoning_tokens": 492,
+      "response_chars": 18,
+      "uncached_input_tokens": 6,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_24af619a143e908c3dba",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "919ae670e84b507a061d54394212286cc448b12ed918adcb31af9c9358f054ea",
+  "status": "completed"
+}

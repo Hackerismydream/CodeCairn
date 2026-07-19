@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0032236,
+    "cost_usd": null,
+    "input_tokens": 2952,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 521,
+    "reasoning_tokens": 453,
+    "text": "Based on the memory context, Calvin mentions heading to Boston and suggests meeting up there: \"My tour ends soon and I’m heading to Boston. Maybe we can meet up then!\" (2023-08-22T11:10:30). Boston is in the United States, so the implied country is the United States.",
+    "uncached_input_tokens": 8
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001587,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 176,
+      "reasoning_tokens": 168,
+      "response_chars": 20,
+      "uncached_input_tokens": 177,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 180,
+      "reasoning_tokens": 172,
+      "response_chars": 20,
+      "uncached_input_tokens": 49,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 20,
+      "uncached_input_tokens": 49,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4f3c29e8d81a31903fdf",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "c89074a627435f517eacbc4c2c4302a9ee6ffc22b7571435dacb248f716ceacf",
+  "status": "completed"
+}

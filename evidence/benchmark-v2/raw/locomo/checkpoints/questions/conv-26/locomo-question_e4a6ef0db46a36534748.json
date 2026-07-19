@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012462,
+    "cost_usd": null,
+    "input_tokens": 2732,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 711,
+    "reasoning_tokens": 679,
+    "text": "The memory context indicates that there was an accident involving Melanie's son, but he was okay. However, the context does not explicitly mention a road trip.",
+    "uncached_input_tokens": 2732
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001575,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 20,
+      "uncached_input_tokens": 143,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022381999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 365,
+      "reasoning_tokens": 357,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 259,
+      "reasoning_tokens": 251,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e4a6ef0db46a36534748",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "3356498dd8ef250c036594de076ef18730931547767002f3bb46b9182c66d900",
+  "status": "completed"
+}

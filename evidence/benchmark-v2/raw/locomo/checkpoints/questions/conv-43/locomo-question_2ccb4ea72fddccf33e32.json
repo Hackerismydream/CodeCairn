@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012189,
+    "cost_usd": null,
+    "input_tokens": 2617,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 723,
+    "reasoning_tokens": 661,
+    "text": "The provided memory context does not contain any recommendation from John to Tim regarding a city in January 2024. While Tim asks for travel recommendations on 2024-01-12 (entry 1), John’s response is not included, and no other John entry from that month mentions a city.",
+    "uncached_input_tokens": 2617
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000834,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 53,
+      "reasoning_tokens": 45,
+      "response_chars": 18,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010832,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 158,
+      "reasoning_tokens": 150,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2ccb4ea72fddccf33e32",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "a0dbd1fbc21960b40a7b63f697f43c5ad0e339f23bbb7fb7178ae3c2b7dcbc12",
+  "status": "completed"
+}

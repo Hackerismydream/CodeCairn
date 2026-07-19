@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010794,
+    "cost_usd": null,
+    "input_tokens": 2724,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 437,
+    "reasoning_tokens": 371,
+    "text": "The provided memory context does not include any information about problems Andrew faced before he adopted Toby. The conversations all reference Toby as already being part of his life, with the earliest timestamp (May 2023) showing an exchange that doesn’t mention pre-adoption struggles. Therefore, the context is insufficient to answer this question.",
+    "uncached_input_tokens": 2724
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001323,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 18,
+      "uncached_input_tokens": 185,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017222000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 258,
+      "reasoning_tokens": 250,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008822000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9be051aeb72f538ee3ff",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "2ff450f490579e5c84af5c9c7621c74f115aad78f3ae3b23f4437e119fec8dcd",
+  "status": "completed"
+}

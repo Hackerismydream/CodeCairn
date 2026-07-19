@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012372,
+    "cost_usd": null,
+    "input_tokens": 2980,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 572,
+    "reasoning_tokens": 378,
+    "text": "Based on the memory context, John has expressed a concrete plan to work with a local organization that helps disadvantaged kids with sports and school (2023-08-11T13:16:00+00:00, memory_a1cb6880bd8c12b9b30a). He wants to use his platform to make a positive community impact and inspire others, as he also stated his broader goal to give back through charity (2023-08-11T13:15:00+00:00, memory_0302b7d4d3fcc8b93b8a; 2023-09-21T20:26:00+00:00, memory_922fce140d8ce035ed50). No named prominent national or global charity is mentioned, so the most relevant organization is that unnamed local group, chosen because it aligns with his desire to support disadvantaged youth in sport and education.",
+    "uncached_input_tokens": 2980
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001986,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 342,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 160,
+      "reasoning_tokens": 152,
+      "response_chars": 18,
+      "uncached_input_tokens": 342,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0013984000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 342,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 86,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0025624000000000003,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 342,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 383,
+      "reasoning_tokens": 375,
+      "response_chars": 18,
+      "uncached_input_tokens": 86,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_eea17a6cae2517e1e17c",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "bba92f9e8bd4ee7b4d866bc9627dd02b4554fa671a326e2ecad2d06ff992284b",
+  "status": "completed"
+}

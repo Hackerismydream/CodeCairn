@@ -1,0 +1,16 @@
+{
+  "arm": "memory-on",
+  "cached_input_tokens": 54656,
+  "cost_usd": null,
+  "input_tokens": 61081,
+  "outcome": "passed",
+  "output_tokens": 877,
+  "repeat": 3,
+  "repeated_failed_commands": 0,
+  "repeated_file_reads": 0,
+  "run_id": "task-01-memory-on-r03-23ac5138b9f2",
+  "schema_version": 1,
+  "steps_to_first_useful_action": 7,
+  "task_id": "task-01",
+  "workspace_snapshot_after_sha256": "6dea1f6fa2dc87cb8080be3684591d605d87942a92fcb52216f4ad2a9eb1069e"
+}

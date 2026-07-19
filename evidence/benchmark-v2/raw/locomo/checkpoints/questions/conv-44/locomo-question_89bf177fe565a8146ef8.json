@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0032656,
+    "cost_usd": null,
+    "input_tokens": 2984,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 512,
+    "reasoning_tokens": 428,
+    "text": "Based on the memory context, Andrew has done rock climbing as an outdoor activity other than hiking. He mentions taking a rock climbing class and reaching the top (2023-06-13T17:23:00 and 2023-06-13T17:26:00). No other completed outdoor activities besides hiking are mentioned; kayaking and bungee jumping are mentioned only as potential future activities.",
+    "uncached_input_tokens": 40
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002427,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 306,
+      "reasoning_tokens": 298,
+      "response_chars": 18,
+      "uncached_input_tokens": 197,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024841999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 379,
+      "reasoning_tokens": 371,
+      "response_chars": 18,
+      "uncached_input_tokens": 69,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 114,
+      "reasoning_tokens": 106,
+      "response_chars": 18,
+      "uncached_input_tokens": 69,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_89bf177fe565a8146ef8",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "9a7617982e880033d720bee52d5c9528b5cf9d7dda29a8f9bb4f1572673d4742",
+  "status": "completed"
+}

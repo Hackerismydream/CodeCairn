@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011142,
+    "cost_usd": null,
+    "input_tokens": 2928,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 393,
+    "reasoning_tokens": 350,
+    "text": "The provided memory context does not contain Calvin's answer about how long he planned to stay in Japan. The only relevant mention is Dave asking the question in session_1, but Calvin's response is not included.",
+    "uncached_input_tokens": 2928
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001071,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 103,
+      "reasoning_tokens": 95,
+      "response_chars": 18,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009182000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d2f1eff2222e8ef08ce6",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "b45c2f39f1921e840d05a7a312d3dc9128f06a0b77847445e8913af97d5d6343",
+  "status": "completed"
+}

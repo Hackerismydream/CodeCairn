@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009153,
+    "cost_usd": null,
+    "input_tokens": 2745,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 153,
+    "reasoning_tokens": 140,
+    "text": "Caroline made a stained glass window for a local church.",
+    "uncached_input_tokens": 2745
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001545,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 197,
+      "reasoning_tokens": 189,
+      "response_chars": 20,
+      "uncached_input_tokens": 121,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000855,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 82,
+      "reasoning_tokens": 74,
+      "response_chars": 20,
+      "uncached_input_tokens": 121,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001395,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 20,
+      "uncached_input_tokens": 121,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_766b56744b4939ec163b",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "a0fc020faf113b084223386ca15669ce586c260af8f1881517d770f3614544b4",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0027641999999999996,
+    "cost_usd": null,
+    "input_tokens": 2773,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 407,
+    "reasoning_tokens": 372,
+    "text": "According to the memory context, Jon mentioned on April 3, 2023 (in session_8) that he was expanding his dance studio's social media presence.",
+    "uncached_input_tokens": 85
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001701,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 20,
+      "uncached_input_tokens": 147,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027841999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 454,
+      "reasoning_tokens": 446,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0029042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 474,
+      "reasoning_tokens": 466,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e19fae22605273633454",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "4712689518203a5a74ceb292232ce20508f47d676e303141b5d0fbef15f0b1d1",
+  "status": "completed"
+}

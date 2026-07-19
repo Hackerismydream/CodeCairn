@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009816,
+    "cost_usd": null,
+    "input_tokens": 2850,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 211,
+    "reasoning_tokens": 172,
+    "text": "Evan's son had two accidents: a soccer accident in August 2023 where he hurt his ankle, and a bike accident in December 2023 where he fell off his bike.",
+    "uncached_input_tokens": 2850
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00135,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 20,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 207,
+      "reasoning_tokens": 199,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 161,
+      "reasoning_tokens": 153,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e251d9c85d024f4dcfe9",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "aad472dbec6713c24bf67cae50977774442584264910d7cc1ad3c9087fdff422",
+  "status": "completed"
+}

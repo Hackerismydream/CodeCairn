@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01437,
+    "cost_usd": null,
+    "input_tokens": 2828,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 981,
+    "reasoning_tokens": 921,
+    "text": "The provided memory context does not contain information about which city John was in before traveling to Chicago. The only mention of Chicago is a statement from John on 2023-08-11 saying \"I was in Chicago, it was awesome!\" (session_6), with no prior city mentioned.",
+    "uncached_input_tokens": 2828
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 18,
+      "uncached_input_tokens": 168,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008732000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 18,
+      "uncached_input_tokens": 40,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008732000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 18,
+      "uncached_input_tokens": 40,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7f26506769ea160555b4",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "59ed7320465346de4b8d1f26393f23555038461000ec0c3a82d88b2986fe2b5b",
+  "status": "completed"
+}

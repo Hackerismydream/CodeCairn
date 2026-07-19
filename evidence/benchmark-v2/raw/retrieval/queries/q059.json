@@ -1,0 +1,159 @@
+{
+  "latency_ms": 8.146,
+  "lexical_candidate_count": 4,
+  "query_id": "q059",
+  "rankings": [
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "500cf519aac1cbc0da846a374972d02757638add9850d513eddb3f92828e3172",
+      "final_score": 0.032018442623,
+      "key": "fe-errors",
+      "lexical_rank": 1,
+      "lexical_score": 1.574904918671,
+      "memory_id": "memory_aa8a5ff5b3348d146856",
+      "rank": 1,
+      "vector_rank": 4,
+      "vector_score": 0.351080076825
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "7e1fbd2530c843ba23adbe9ae6a3590e7112a17c8d4a5af032eca16665693d19",
+      "final_score": 0.031754032258,
+      "key": "fe-server-state",
+      "lexical_rank": 4,
+      "lexical_score": 1.338838458061,
+      "memory_id": "memory_aaad51df8068c45eb244",
+      "rank": 2,
+      "vector_rank": 2,
+      "vector_score": 0.356720444145
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "45fa6d819726934b4d5509be96ea124e8a1730aecab67b547ef1003b0b553b87",
+      "final_score": 0.031257631258,
+      "key": "fe-state",
+      "lexical_rank": 3,
+      "lexical_score": 1.343313217163,
+      "memory_id": "memory_45c980c253dba6ce44e1",
+      "rank": 3,
+      "vector_rank": 5,
+      "vector_score": 0.342430319787
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "2cac99d14ce9c3c410fa2280dc4a21c7d382b05f6782ff5ede3a76b621a7c2ba",
+      "final_score": 0.031054405392,
+      "key": "fe-e2e",
+      "lexical_rank": 2,
+      "lexical_score": 1.574904918671,
+      "memory_id": "memory_ba664fd532f935ae49a1",
+      "rank": 4,
+      "vector_rank": 7,
+      "vector_score": 0.342271292603
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "e2c39892315aff383df72f29d8315b5aa0228770062402c920da5e0cda20380c",
+      "final_score": 0.016393442623,
+      "key": "fe-client",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_92ba54e3657adcea6b85",
+      "rank": 5,
+      "vector_rank": 1,
+      "vector_score": 0.364870811472
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "c175aa4a2a29a8cbfb4d6509248c5b19f564a89ee21fc48d8abf62ea944da0c9",
+      "final_score": 0.015873015873,
+      "key": "fe-style",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_61c7998c43dfaf31d3cb",
+      "rank": 6,
+      "vector_rank": 3,
+      "vector_score": 0.355721769409
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "edb67943464fa686bf339d6058c3f377b9e9520700f5528230121ab54a90d8df",
+      "final_score": 0.015151515152,
+      "key": "fe-format",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_b8e75e096efa2077710d",
+      "rank": 7,
+      "vector_rank": 6,
+      "vector_score": 0.342310274265
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "4beb18c57530a7c9f41fdd46c7661f89ebc54fe9b22350af41c40fff4c9d19d8",
+      "final_score": 0.014705882353,
+      "key": "fe-flags",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_1e8b7c30c3731d216c44",
+      "rank": 8,
+      "vector_rank": 8,
+      "vector_score": 0.333333306842
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "ae67041573f79d1bd417317fb483c50dbd55d8876ffbf45c3b44945a9207f985",
+      "final_score": 0.014492753623,
+      "key": "fe-tests",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_ceea0aa90355a54283ec",
+      "rank": 9,
+      "vector_rank": 9,
+      "vector_score": 0.333333280351
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "c30f8fef98eeccc0e20f108fba5ad0913e0143c3f6537ce7f59a0651b2316487",
+      "final_score": 0.014285714286,
+      "key": "fe-unit",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_f369b5f9e0287ad0d43c",
+      "rank": 10,
+      "vector_rank": 10,
+      "vector_score": 0.32894476693
+    }
+  ],
+  "relevant_keys": [
+    "fe-state"
+  ],
+  "repo_key": "acme/frontend",
+  "repository_isolation_violation": false,
+  "schema_version": 1,
+  "text": "Where does lightweight browser state belong?",
+  "vector_candidate_count": 10
+}

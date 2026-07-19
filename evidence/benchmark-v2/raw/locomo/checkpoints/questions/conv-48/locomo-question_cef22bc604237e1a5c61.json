@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010674,
+    "cost_usd": null,
+    "input_tokens": 3076,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 241,
+    "reasoning_tokens": 201,
+    "text": "The memory context does not specify a location for the cool diving spot; it only mentions that Jolene and her partner found one after a scuba diving lesson, but no place name is given.",
+    "uncached_input_tokens": 3076
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002043,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 265,
+      "reasoning_tokens": 257,
+      "response_chars": 18,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 96,
+      "reasoning_tokens": 88,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009182000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cef22bc604237e1a5c61",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "30ca20c67bc8ca1e9fe47e7787ea027840dc00ea8ae80a3a50c9f426ba0c1ec4",
+  "status": "completed"
+}

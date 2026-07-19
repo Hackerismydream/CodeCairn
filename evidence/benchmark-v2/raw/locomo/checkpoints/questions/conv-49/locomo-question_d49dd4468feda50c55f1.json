@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009348,
+    "cost_usd": null,
+    "input_tokens": 2718,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 199,
+    "reasoning_tokens": 185,
+    "text": "Sam's recurring dream is flying over skyscrapers.",
+    "uncached_input_tokens": 2718
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002148,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 295,
+      "reasoning_tokens": 287,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001386,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d49dd4468feda50c55f1",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "a59b7651d6682bc40e463483b7915730adbe8c51046bed940978442aa1ad2980",
+  "status": "completed"
+}

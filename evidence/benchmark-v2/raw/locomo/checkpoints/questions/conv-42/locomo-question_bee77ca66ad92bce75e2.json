@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012807,
+    "cost_usd": null,
+    "input_tokens": 2999,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 635,
+    "reasoning_tokens": 520,
+    "text": "Based on the memory context, Joanna mentions that she is starting to film her own movie, which suggests she is beginning to perform the duties of a **filmmaker/director**. Specifically, in session_29 on 2022-11-11, she says: *\"Nate, can you believe it? I'm finally filming my own movie from the road-trip script!\"* [memory_dad6bc15bd862e1014a0]. This indicates she has moved beyond writing scripts to taking on the practical work of making a movie.",
+    "uncached_input_tokens": 2999
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002925,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 233,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 371,
+      "reasoning_tokens": 363,
+      "response_chars": 20,
+      "uncached_input_tokens": 233,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020941999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 233,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 296,
+      "reasoning_tokens": 288,
+      "response_chars": 20,
+      "uncached_input_tokens": 105,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 233,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 395,
+      "reasoning_tokens": 387,
+      "response_chars": 20,
+      "uncached_input_tokens": 105,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bee77ca66ad92bce75e2",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "87a5bc739d80398db563ee1c2bcec83f94bbc2f2bd92ec2c579d3bb735acbd26",
+  "status": "completed"
+}

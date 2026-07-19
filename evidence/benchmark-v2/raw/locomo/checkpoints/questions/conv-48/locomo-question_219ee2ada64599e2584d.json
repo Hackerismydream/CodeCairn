@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009678,
+    "cost_usd": null,
+    "input_tokens": 2742,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 242,
+    "reasoning_tokens": 195,
+    "text": "The provided memory context does not mention Jolene doing yoga at Talkeetna. The closest entry is from 2023-09-20, where she describes doing yoga with a beautiful backdrop, but no location is specified.",
+    "uncached_input_tokens": 2742
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001614,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 188,
+      "reasoning_tokens": 180,
+      "response_chars": 18,
+      "uncached_input_tokens": 162,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 18,
+      "uncached_input_tokens": 34,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 157,
+      "reasoning_tokens": 149,
+      "response_chars": 18,
+      "uncached_input_tokens": 34,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_219ee2ada64599e2584d",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "c03a0cdb5097b73e4190930a7a4aef514cb9d72a52ea3111efce87087632886c",
+  "status": "completed"
+}

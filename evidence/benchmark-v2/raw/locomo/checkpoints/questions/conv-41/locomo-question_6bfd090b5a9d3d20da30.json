@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0013274,
+    "cost_usd": null,
+    "input_tokens": 2839,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 198,
+    "reasoning_tokens": 181,
+    "text": "The provided context does not contain any information about items John had as a child.",
+    "uncached_input_tokens": 23
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001308,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000696,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 52,
+      "reasoning_tokens": 44,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6bfd090b5a9d3d20da30",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "3d565da297a98bccf90edee2eed3185f3956f4af21003fb421af1d9b59313af0",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010419,
+    "cost_usd": null,
+    "input_tokens": 2823,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 325,
+    "reasoning_tokens": 293,
+    "text": "In July 2023, Mel and her kids painted a nature-inspired sunset with a palm tree, as mentioned on July 15, 2023.",
+    "uncached_input_tokens": 2823
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00156,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 20,
+      "uncached_input_tokens": 150,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008372000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 20,
+      "uncached_input_tokens": 22,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010352,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 161,
+      "reasoning_tokens": 153,
+      "response_chars": 20,
+      "uncached_input_tokens": 22,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8c3df3b888cb45748eab",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "67f62c6ed2723cefa8587e4e4ce25de14a605db69cb02f72718111dd41ff88cc",
+  "status": "completed"
+}

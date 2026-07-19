@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011118,
+    "cost_usd": null,
+    "input_tokens": 2704,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 501,
+    "reasoning_tokens": 445,
+    "text": "Jolene accomplished coming up with some neat solutions for her engineering project during the mini retreat on 9 February 2023. (Source: memory_9744485cb5257213133d, 2023-02-09T21:05:00)",
+    "uncached_input_tokens": 2704
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002124,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 264,
+      "reasoning_tokens": 256,
+      "response_chars": 20,
+      "uncached_input_tokens": 180,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012452000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 20,
+      "uncached_input_tokens": 52,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018692000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 285,
+      "reasoning_tokens": 277,
+      "response_chars": 20,
+      "uncached_input_tokens": 52,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9f4086c7c96d7cc10d39",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "437ba84dfbe296062571024472f3c5c038d345f1861334ae262ed21375d21c80",
+  "status": "completed"
+}

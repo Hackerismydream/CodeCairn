@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.007219199999999999,
+    "cost_usd": null,
+    "input_tokens": 2744,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1164,
+    "reasoning_tokens": 1067,
+    "text": "The memory context does not explicitly state when John resumed playing drums in his adulthood. In session_3 (2022-03-27), he says, \"Thanks, James! I play drums too!\" which suggests he may have been playing at that time, but later in session_24 (2022-09-18) he mentions, \"I used to play drums when I was younger, but haven't in a while.\" No specific date of resumption is provided.",
+    "uncached_input_tokens": 56
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002136,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 252,
+      "reasoning_tokens": 244,
+      "response_chars": 18,
+      "uncached_input_tokens": 208,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 159,
+      "reasoning_tokens": 151,
+      "response_chars": 18,
+      "uncached_input_tokens": 80,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009752000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 122,
+      "reasoning_tokens": 114,
+      "response_chars": 18,
+      "uncached_input_tokens": 80,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4a443cb5a79273c902b8",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "4b21b71e5ff8597a2e954bc546f576448d26c4e28c9f78ca54b8bda2fe6eee27",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011328,
+    "cost_usd": null,
+    "input_tokens": 2678,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 549,
+    "reasoning_tokens": 454,
+    "text": "Based on the provided memories, there is no evidence that Jolene has tried surfing. As of 2023-03-22, she expressed motivation to try it (\"pumped to try surfing,\" \"when I'll learn to surf\") and stated she was going to push herself to make it happen, but did not indicate having already done so. A later session (2023-09-17) only shows her asking Deborah about surfing, not her own experience.",
+    "uncached_input_tokens": 2678
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001158,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 93,
+      "reasoning_tokens": 85,
+      "response_chars": 20,
+      "uncached_input_tokens": 200,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 20,
+      "uncached_input_tokens": 72,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 95,
+      "reasoning_tokens": 87,
+      "response_chars": 20,
+      "uncached_input_tokens": 72,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_844dc7e8b21a2704d4f0",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "054c218b13d85f5a06815f445dea93afa695cf42e20caf408b5ceea28f972de9",
+  "status": "completed"
+}

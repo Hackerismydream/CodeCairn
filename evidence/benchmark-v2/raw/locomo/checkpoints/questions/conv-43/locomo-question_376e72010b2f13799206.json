@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011616,
+    "cost_usd": null,
+    "input_tokens": 2610,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 631,
+    "reasoning_tokens": 605,
+    "text": "The memory context does not contain a clear statement of John's favorite book series, so it is insufficient to answer the question.",
+    "uncached_input_tokens": 2610
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000855,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 66,
+      "response_chars": 22,
+      "uncached_input_tokens": 131,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007922000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 3,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005882000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 96,
+      "reasoning_tokens": 88,
+      "response_chars": 18,
+      "uncached_input_tokens": 3,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_376e72010b2f13799206",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "e9e096af82834f106bc0ad448e4db831220231443bba5a933bbff26ee8e0f037",
+  "status": "completed"
+}

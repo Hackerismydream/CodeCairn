@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 1024,
+    "cost_cny": 0.0049306,
+    "cost_usd": null,
+    "input_tokens": 2433,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 113,
+    "reasoning_tokens": 68,
+    "text": "The provided memory context does not contain any information about John's health or any suspected health problems. The conversations focus on casual topics like games, programming, and pets. Therefore, the context is insufficient to answer this question.",
+    "uncached_input_tokens": 1409
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001149,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 18,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005342000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 69,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005702000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 83,
+      "reasoning_tokens": 75,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_829e28167f7d8e1d6e51",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "f9dd47a9bbc17af8eecbd159ec84d88248e6fb35b78d0f78c1595facf4f7c74b",
+  "status": "completed"
+}

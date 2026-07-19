@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3072,
+    "cost_cny": 0.004288800000000001,
+    "cost_usd": null,
+    "input_tokens": 3116,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 680,
+    "reasoning_tokens": 524,
+    "text": "Evan describes the woman he met in Canada as “awesome” and “incredible,” and says being with her “makes me feel alive” (2023-08-07T19:52:00). He also calls her “definitely great” and shares that “every moment with her is really fun and energizing” (2023-08-07T19:53:00). Later, he reveals he was “in love with her at first sight” (2023-12-26T16:26:30). After marrying her, he says he feels “really lucky to have found someone who gets me” (2024-01-06T13:33:00). These are the only descriptions provided in the memory context.",
+    "uncached_input_tokens": 44
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.006723,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 311,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 965,
+      "reasoning_tokens": 957,
+      "response_chars": 18,
+      "uncached_input_tokens": 311,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.006933399999999999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 311,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1127,
+      "reasoning_tokens": 1119,
+      "response_chars": 18,
+      "uncached_input_tokens": 55,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.005313399999999999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 311,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 857,
+      "reasoning_tokens": 849,
+      "response_chars": 18,
+      "uncached_input_tokens": 55,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9ed37c13c3a8ad3855b2",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "ae391d82210c829c951e9035dc1dfd1f4c1cf6c57c8cbf74c9ac66114f174329",
+  "status": "completed"
+}

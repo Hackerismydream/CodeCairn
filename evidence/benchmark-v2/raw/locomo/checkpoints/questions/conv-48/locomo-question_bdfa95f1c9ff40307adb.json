@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011754,
+    "cost_usd": null,
+    "input_tokens": 2892,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 513,
+    "reasoning_tokens": 431,
+    "text": "The provided context does not indicate that Deborah went to an art show with Anna. Deborah mentions going to an art show \"with a friend\" on 2023-04-09, but the friend is not named. Anna is mentioned in other contexts as a neighbor and yoga class companion, but there is no evidence linking her to the art show. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2892
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 18,
+      "uncached_input_tokens": 196,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024392,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 372,
+      "reasoning_tokens": 364,
+      "response_chars": 18,
+      "uncached_input_tokens": 68,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 68,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bdfa95f1c9ff40307adb",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "14807b63450dc8b64831a7c086b0fd78150470ce1bcf95c72b1977433df99144",
+  "status": "completed"
+}

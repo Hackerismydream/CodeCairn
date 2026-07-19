@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012543,
+    "cost_usd": null,
+    "input_tokens": 2941,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 620,
+    "reasoning_tokens": 538,
+    "text": "Calvin’s soul is fueled by music—particularly the excitement of performing, balancing his signature sound with new experimentation, and pursuing what he loves regardless of obstacles (e.g., memory_52c0e1741028d0f0164b, memory_612ab55415c55deda39c, memory_d8a808a2f2c5fa096ad0).",
+    "uncached_input_tokens": 2941
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001287,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 121,
+      "reasoning_tokens": 113,
+      "response_chars": 20,
+      "uncached_input_tokens": 187,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 20,
+      "uncached_input_tokens": 59,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 346,
+      "reasoning_tokens": 338,
+      "response_chars": 20,
+      "uncached_input_tokens": 59,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5ca354dc6c1d87d81628",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "3fa53161de3d4da6d539a559dcdab157d532f188b8ad1f79a1758cc17a5c636b",
+  "status": "completed"
+}

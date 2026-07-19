@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010422,
+    "cost_usd": null,
+    "input_tokens": 2766,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 354,
+    "reasoning_tokens": 319,
+    "text": "Evan suggested swimming, yoga, and walking as good low-impact exercise options (source: memory_4f94f65ce31018d03c5f).",
+    "uncached_input_tokens": 2766
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000861,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 70,
+      "reasoning_tokens": 62,
+      "response_chars": 20,
+      "uncached_input_tokens": 147,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008522,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_279be33085b75b0b6265",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "1c41bc9b779bbdf60e44a529918cd0cb31e7ecd0b2e35ae1f53e9bdad27aef63",
+  "status": "completed"
+}

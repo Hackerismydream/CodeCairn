@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008931,
+    "cost_usd": null,
+    "input_tokens": 2559,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 209,
+    "reasoning_tokens": 143,
+    "text": "Evan is planning a big family reunion next summer.  \n\n> Evan (2023-12-09T13:50:00+00:00): \"Yeah, we're planning a big family reunion next summer.\"  \n> — source: [memory_ccfd98cf622aaa7bc2a2]",
+    "uncached_input_tokens": 2559
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002274,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 289,
+      "reasoning_tokens": 281,
+      "response_chars": 20,
+      "uncached_input_tokens": 180,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008852,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 121,
+      "reasoning_tokens": 113,
+      "response_chars": 20,
+      "uncached_input_tokens": 52,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 167,
+      "reasoning_tokens": 159,
+      "response_chars": 20,
+      "uncached_input_tokens": 52,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6d51ea17f2a38339273a",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "a1067ddccf2ac1147a861ed3565683cb9ab39000995a16eaf58fa2c9a9b53c0e",
+  "status": "completed"
+}

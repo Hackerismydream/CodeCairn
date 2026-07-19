@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013209,
+    "cost_usd": null,
+    "input_tokens": 2749,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 827,
+    "reasoning_tokens": 764,
+    "text": "Nate plays games on PC (e.g., CS:GO) and Nintendo consoles (he mentions being a big fan of Nintendo games). The context also shows he creates gaming content on a computer and uses a video game controller, but it doesn’t specify the exact platform for Street Fighter or other games.",
+    "uncached_input_tokens": 2749
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002676,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 359,
+      "reasoning_tokens": 351,
+      "response_chars": 18,
+      "uncached_input_tokens": 174,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018692000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 288,
+      "reasoning_tokens": 280,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023912,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 375,
+      "reasoning_tokens": 367,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2f77d12263d77f4a9798",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "fd60798d32e5e955ea2bdaa678e585aa26880142c162ac3c738c18fbc5999aee",
+  "status": "completed"
+}

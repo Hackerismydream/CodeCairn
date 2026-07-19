@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01104,
+    "cost_usd": null,
+    "input_tokens": 2930,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 375,
+    "reasoning_tokens": 301,
+    "text": "Based on the provided memory context, Maria stated on 2023-08-03 that she started volunteering at the homeless shelter \"about a year ago\" (source: memory_5bed0ad543ba9c9be9f9). This would place the start date around approximately August 2022. No exact start date is available in the context.",
+    "uncached_input_tokens": 2930
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 20,
+      "uncached_input_tokens": 184,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 194,
+      "reasoning_tokens": 186,
+      "response_chars": 20,
+      "uncached_input_tokens": 56,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014852,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 56,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_77587ebdde46cd61c2df",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "f9d00286b9843e7a09e02a4193f7635405d6bb601f28166eb4cad79957d3bae1",
+  "status": "completed"
+}

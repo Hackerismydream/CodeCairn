@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0049212,
+    "cost_usd": null,
+    "input_tokens": 2740,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 783,
+    "reasoning_tokens": 734,
+    "text": "The memory context shows Sam mentioned a frustrating issue with broken self-checkout machines at the supermarket once (2023-06-06). There is no evidence of this being a recurring issue. The context is insufficient to identify a recurring frustration.",
+    "uncached_input_tokens": 52
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002721,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 372,
+      "reasoning_tokens": 364,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 405,
+      "reasoning_tokens": 397,
+      "response_chars": 20,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011462,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 173,
+      "reasoning_tokens": 165,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4f7065bd9554addaf3df",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "93d09e2c14d833d27d2cae26117f1b5c56a736ee751ea316fe02d7bcbae37b90",
+  "status": "completed"
+}

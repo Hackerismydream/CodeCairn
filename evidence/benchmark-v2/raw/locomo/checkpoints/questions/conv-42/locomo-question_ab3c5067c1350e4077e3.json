@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011364,
+    "cost_usd": null,
+    "input_tokens": 2650,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 569,
+    "reasoning_tokens": 512,
+    "text": "The provided memory context does not include any statement from Nate answering which type of movies he enjoys the most. While Joanna asks about his movie preferences in session_1 and session_23, Nate’s responses are not captured. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2650
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001911,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 235,
+      "reasoning_tokens": 227,
+      "response_chars": 18,
+      "uncached_input_tokens": 167,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 76,
+      "reasoning_tokens": 68,
+      "response_chars": 18,
+      "uncached_input_tokens": 39,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005162000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 66,
+      "reasoning_tokens": 58,
+      "response_chars": 18,
+      "uncached_input_tokens": 39,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ab3c5067c1350e4077e3",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "314526bface1bdf0a6980f7472845679cf23dfecac37b0b5c4064b02999ca79e",
+  "status": "completed"
+}

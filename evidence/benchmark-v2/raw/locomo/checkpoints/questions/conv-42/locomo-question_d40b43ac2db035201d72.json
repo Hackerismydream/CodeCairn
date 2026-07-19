@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009321,
+    "cost_usd": null,
+    "input_tokens": 2685,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 211,
+    "reasoning_tokens": 199,
+    "text": "Nate took his turtles to the beach in Tampa.",
+    "uncached_input_tokens": 2685
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001518,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 20,
+      "uncached_input_tokens": 120,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 260,
+      "reasoning_tokens": 252,
+      "response_chars": 20,
+      "uncached_input_tokens": 120,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001188,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 138,
+      "reasoning_tokens": 130,
+      "response_chars": 20,
+      "uncached_input_tokens": 120,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d40b43ac2db035201d72",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "1f569c1c7289f9fadecb4b369446437a3ff5210d6e3fadc85b8d626bb0e6ffb8",
+  "status": "completed"
+}

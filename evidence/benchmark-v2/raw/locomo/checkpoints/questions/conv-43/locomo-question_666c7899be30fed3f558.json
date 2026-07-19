@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010398,
+    "cost_usd": null,
+    "input_tokens": 2678,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 394,
+    "reasoning_tokens": 325,
+    "text": "The provided memory context does not include any statement from John identifying a favorite character from *Lord of the Rings*. While John expresses general enthusiasm for the series (memory 2) and someone asks him about favorite characters (memory 19), his answer is not recorded among the given memories. Therefore, the information is insufficient to answer the question.",
+    "uncached_input_tokens": 2678
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001212,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 111,
+      "reasoning_tokens": 103,
+      "response_chars": 18,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 114,
+      "reasoning_tokens": 106,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006452000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 80,
+      "reasoning_tokens": 72,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_666c7899be30fed3f558",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "77307f593815a0b46054f4fa6b97aed81bcc155cb5ae0bcb631c22a8bbbaa14a",
+  "status": "completed"
+}

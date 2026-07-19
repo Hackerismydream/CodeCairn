@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011103,
+    "cost_usd": null,
+    "input_tokens": 2795,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 453,
+    "reasoning_tokens": 399,
+    "text": "Based on the memory context, during the small party with veterans, John described the experience as \"awesome\" and \"heartwarming.\" He had a great time seeing the veterans make connections and form new friendships, and the smiles made it emotionally positive and fulfilling for him.",
+    "uncached_input_tokens": 2795
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001809,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017822,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 278,
+      "reasoning_tokens": 270,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0055742,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 910,
+      "reasoning_tokens": 902,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d76b186b3229c28dc732",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "26f0d49efdedb9bae752bdc25ab71a1247be2af0165c59beb02187091b54b873",
+  "status": "completed"
+}

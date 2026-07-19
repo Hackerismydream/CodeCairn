@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011955,
+    "cost_usd": null,
+    "input_tokens": 2861,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 562,
+    "reasoning_tokens": 489,
+    "text": "Based on the provided memory context, James asked Samantha to be his girlfriend on September 4, 2022, and they decided to move in together on October 31, 2022. This indicates they dated for approximately 2 months before deciding to cohabitate. No explicit duration is stated, but the timeline is derived from the attributed timestamps.",
+    "uncached_input_tokens": 2861
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002859,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 383,
+      "reasoning_tokens": 375,
+      "response_chars": 18,
+      "uncached_input_tokens": 187,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012902,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 63,
+      "reasoning_tokens": 55,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0650cd87539df6ff449a",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "420b0ca3ea6b680ec4dede3b090d0de785942de046424be04edfcb9040c45ef0",
+  "status": "completed"
+}

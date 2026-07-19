@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010707,
+    "cost_usd": null,
+    "input_tokens": 2899,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 335,
+    "reasoning_tokens": 274,
+    "text": "The provided context confirms Dave sold the car he restored last year, but it does not specify when the sale occurred. The only relevant timestamped statement is from 2023-10-23, where Dave mentions he already sold it to a collector. The exact date of the sale is not given.",
+    "uncached_input_tokens": 2899
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002115,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 268,
+      "reasoning_tokens": 260,
+      "response_chars": 18,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020162,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 315,
+      "reasoning_tokens": 307,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f5848bbd3dbb72551766",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "40052d6e675102ad03bb496fc8b9e514f607a9973c34d45e520612dc24ea9fe2",
+  "status": "completed"
+}

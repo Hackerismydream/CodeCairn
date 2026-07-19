@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011511,
+    "cost_usd": null,
+    "input_tokens": 2485,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 676,
+    "reasoning_tokens": 598,
+    "text": "The provided memory context does not contain the exact date James first met Samantha. The earliest mention is on 2022-08-10, when James says he'll call her, and later on 2022-09-04, he mentions asking her to be his girlfriend the day before. Thus, they met sometime before September 2022, but no specific date is available.",
+    "uncached_input_tokens": 2485
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002196,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 273,
+      "reasoning_tokens": 265,
+      "response_chars": 18,
+      "uncached_input_tokens": 186,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014852,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 218,
+      "reasoning_tokens": 210,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bb232f8cfc2994d710d1",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "d7c044f7599ad93e4d1b7113dde7806fe86e5e4af50686cb4d0c4c099a3df12c",
+  "status": "completed"
+}

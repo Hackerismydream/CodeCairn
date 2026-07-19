@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.003613,
+    "cost_usd": null,
+    "input_tokens": 2643,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 550,
+    "reasoning_tokens": 488,
+    "text": "The exact start date is not provided. John received his dream job offer on June 13, 2022, and by August 6, 2022, he says he is already loving the new job, so he started sometime in that window. The context is insufficient to give a precise date.",
+    "uncached_input_tokens": 83
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001683,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 195,
+      "reasoning_tokens": 187,
+      "response_chars": 18,
+      "uncached_input_tokens": 171,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014162,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 214,
+      "reasoning_tokens": 206,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 212,
+      "reasoning_tokens": 204,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b111a0d9d3df5cda8984",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "a1b8d71441560dcda9b1ec1a6a427d045973a6e218a3934018b0ba8e7bfe82b6",
+  "status": "completed"
+}

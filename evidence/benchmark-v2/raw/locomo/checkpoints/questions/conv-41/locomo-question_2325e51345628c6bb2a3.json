@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010281,
+    "cost_usd": null,
+    "input_tokens": 3045,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 191,
+    "reasoning_tokens": 153,
+    "text": "According to a message from Maria on May 25, 2023, she needs to spread the word about the **chili cook-off** at the fundraiser for the volunteer shelter.",
+    "uncached_input_tokens": 3045
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001098,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 106,
+      "reasoning_tokens": 98,
+      "response_chars": 20,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009752000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006272000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 91,
+      "reasoning_tokens": 83,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2325e51345628c6bb2a3",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "fb6e8ed3f9dc320cc242b0dae7eb490d82e74268afe15abc803cd8b4cb6f3f2e",
+  "status": "completed"
+}

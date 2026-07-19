@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013995,
+    "cost_usd": null,
+    "input_tokens": 2667,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 999,
+    "reasoning_tokens": 914,
+    "text": "Melanie mentioned camping in two messages from July 2023. On July 6, she shared a photo of her family camping at the beach, suggesting a camping trip around that date. On July 15, she said they went on another camping trip in the forest, indicating a second trip around that date. Thus, she went camping at least twice in July: around July 6 and around July 15.",
+    "uncached_input_tokens": 2667
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.006093,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 917,
+      "reasoning_tokens": 909,
+      "response_chars": 18,
+      "uncached_input_tokens": 197,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0035581999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 558,
+      "reasoning_tokens": 550,
+      "response_chars": 18,
+      "uncached_input_tokens": 69,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0050402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 805,
+      "reasoning_tokens": 797,
+      "response_chars": 18,
+      "uncached_input_tokens": 69,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0a134119854098ba370f",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ee1fd3c9db0680a92d694029c7a7d725398dbfa59c8edddc252a2a4dfab3d6ce",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010239,
+    "cost_usd": null,
+    "input_tokens": 2845,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 284,
+    "reasoning_tokens": 224,
+    "text": "Dave came back from San Francisco with insights on car modification on 1st September 2023, as mentioned in his message dated September 2, 2023, where he says, \"yesterday I came back from San Francsico with some great insights and knowledge on car modification.\"",
+    "uncached_input_tokens": 2845
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002457,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 320,
+      "reasoning_tokens": 312,
+      "response_chars": 20,
+      "uncached_input_tokens": 179,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 20,
+      "uncached_input_tokens": 51,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011882000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 20,
+      "uncached_input_tokens": 51,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fa87707fb4e02fce0325",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "deabb8165c51af0de2a13d58e701bba5724fb39c417d85d5688ec2ee8e97b5e0",
+  "status": "completed"
+}

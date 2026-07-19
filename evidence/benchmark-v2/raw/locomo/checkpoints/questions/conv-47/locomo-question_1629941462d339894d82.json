@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0021341999999999997,
+    "cost_usd": null,
+    "input_tokens": 2797,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 290,
+    "reasoning_tokens": 265,
+    "text": "The memory context indicates that James adopted the puppy from a shelter in Stamford, but it does not specify the state.",
+    "uncached_input_tokens": 109
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001839,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 239,
+      "reasoning_tokens": 228,
+      "response_chars": 22,
+      "uncached_input_tokens": 135,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 142,
+      "reasoning_tokens": 134,
+      "response_chars": 18,
+      "uncached_input_tokens": 7,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006182000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 99,
+      "reasoning_tokens": 91,
+      "response_chars": 18,
+      "uncached_input_tokens": 7,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1629941462d339894d82",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "c13a8ee039424313675ca5678e5113d60abacda250a0c5421a481ab665a7cfc0",
+  "status": "completed"
+}

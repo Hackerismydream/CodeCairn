@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0019662,
+    "cost_usd": null,
+    "input_tokens": 2771,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 275,
+    "reasoning_tokens": 246,
+    "text": "Deborah listens to instrumental tracks with mellow melodies and rhythms during her yoga practice. She specifically mentioned a favorite track called “Savana”.",
+    "uncached_input_tokens": 83
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001179,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 18,
+      "uncached_input_tokens": 141,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007682,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 121,
+      "reasoning_tokens": 113,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010802000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 173,
+      "reasoning_tokens": 165,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_85b8e8e88bb03d6a55e7",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "894a6f4ddca1fa4b9c72adc2d38aff2dc0c2ab7c4af80fa6d59333ecfa3398e7",
+  "status": "completed"
+}

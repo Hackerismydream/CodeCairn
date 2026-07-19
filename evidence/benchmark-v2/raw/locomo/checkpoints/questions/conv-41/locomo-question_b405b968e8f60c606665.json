@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011658,
+    "cost_usd": null,
+    "input_tokens": 2802,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 542,
+    "reasoning_tokens": 505,
+    "text": "Maria volunteers at a homeless shelter and a local dog shelter, based on multiple mentions in her conversations. However, the specific names of these shelters are not provided in the memory context.",
+    "uncached_input_tokens": 2802
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001746,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 218,
+      "reasoning_tokens": 210,
+      "response_chars": 20,
+      "uncached_input_tokens": 146,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009272000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 20,
+      "uncached_input_tokens": 18,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 183,
+      "reasoning_tokens": 175,
+      "response_chars": 20,
+      "uncached_input_tokens": 18,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b405b968e8f60c606665",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "fbc027e3f64f30c27e20edee36607d3bc691e22473b41ef8752305718dee538a",
+  "status": "completed"
+}

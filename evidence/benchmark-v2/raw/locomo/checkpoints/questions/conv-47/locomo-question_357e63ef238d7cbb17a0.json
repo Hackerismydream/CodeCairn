@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014211,
+    "cost_usd": null,
+    "input_tokens": 2885,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 926,
+    "reasoning_tokens": 904,
+    "text": "John started playing FIFA 23 (mentioned in session_30 on 2022-11-05).",
+    "uncached_input_tokens": 2885
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002727,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 375,
+      "reasoning_tokens": 367,
+      "response_chars": 18,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 200,
+      "reasoning_tokens": 192,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 297,
+      "reasoning_tokens": 289,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_357e63ef238d7cbb17a0",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "bd143c420f830074280edfe6f23354a6d2f086b14fed2de9a381577018795377",
+  "status": "completed"
+}

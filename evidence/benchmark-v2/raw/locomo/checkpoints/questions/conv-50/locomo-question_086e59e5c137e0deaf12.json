@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009609,
+    "cost_usd": null,
+    "input_tokens": 2741,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 231,
+    "reasoning_tokens": 198,
+    "text": "Calvin invited his old high school buddy (no specific name given in the memory) to see him perform in Boston on 13 November, 2023.",
+    "uncached_input_tokens": 2741
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001356,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 150,
+      "reasoning_tokens": 142,
+      "response_chars": 20,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 221,
+      "reasoning_tokens": 213,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009452000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_086e59e5c137e0deaf12",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "2445d1b94117c8e62f8025e9fda867b95b12ab4a9b059dd85e17e6375f3bde9c",
+  "status": "completed"
+}

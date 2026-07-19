@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012519,
+    "cost_usd": null,
+    "input_tokens": 2941,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 616,
+    "reasoning_tokens": 566,
+    "text": "Gina designed her store's furniture and decor to create a cozy and inviting atmosphere for customers to browse trendy pieces (Gina, 2023-02-01T00:49:30). The context does not provide further explicit reasons.",
+    "uncached_input_tokens": 2941
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00246,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 329,
+      "reasoning_tokens": 321,
+      "response_chars": 18,
+      "uncached_input_tokens": 162,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 332,
+      "reasoning_tokens": 324,
+      "response_chars": 20,
+      "uncached_input_tokens": 34,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0039752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 645,
+      "reasoning_tokens": 637,
+      "response_chars": 18,
+      "uncached_input_tokens": 34,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f29fd0831125bafdb4aa",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "eb78f448334975dd61876b46631db9400762e494e576b7df878762e4d30fe8d2",
+  "status": "completed"
+}

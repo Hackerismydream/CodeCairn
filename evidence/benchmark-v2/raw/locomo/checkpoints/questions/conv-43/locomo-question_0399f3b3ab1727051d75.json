@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011007,
+    "cost_usd": null,
+    "input_tokens": 2731,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 469,
+    "reasoning_tokens": 435,
+    "text": "John supplements his basketball training with strength training. He balances basketball and strength workouts, follows a workout plan, and found a new gym to stay fit for pro ball.",
+    "uncached_input_tokens": 2731
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001668,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 206,
+      "reasoning_tokens": 198,
+      "response_chars": 18,
+      "uncached_input_tokens": 144,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 18,
+      "uncached_input_tokens": 16,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 233,
+      "reasoning_tokens": 225,
+      "response_chars": 18,
+      "uncached_input_tokens": 16,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0399f3b3ab1727051d75",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "76a328458bd15b8aa1e66ab0fd14a63c870faba2aa1ae13115796da4bf4e9830",
+  "status": "completed"
+}

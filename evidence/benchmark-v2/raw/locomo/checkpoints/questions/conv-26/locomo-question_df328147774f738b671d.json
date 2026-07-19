@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011346,
+    "cost_usd": null,
+    "input_tokens": 2752,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 515,
+    "reasoning_tokens": 473,
+    "text": "Based on the memory context, Melanie mentioned on August 14, 2023, that they celebrated her daughter's birthday the previous night. This suggests her daughter's birthday is on August 13th.",
+    "uncached_input_tokens": 2752
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001167,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 121,
+      "reasoning_tokens": 113,
+      "response_chars": 20,
+      "uncached_input_tokens": 147,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0003482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 48,
+      "reasoning_tokens": 40,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007802000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_df328147774f738b671d",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ae32de8196a55c1a98df8487c7964655ce69dbd60019964d1ca4f10b4eb0adcb",
+  "status": "completed"
+}

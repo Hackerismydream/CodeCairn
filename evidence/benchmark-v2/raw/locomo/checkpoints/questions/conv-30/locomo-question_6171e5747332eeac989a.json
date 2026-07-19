@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009702,
+    "cost_usd": null,
+    "input_tokens": 2822,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 206,
+    "reasoning_tokens": 164,
+    "text": "The provided memory context does not contain Jon's answer regarding the type of flooring he is looking for. Gina asked him about it on 2023-01-29, but his response is not included.",
+    "uncached_input_tokens": 2822
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001089,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 18,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005822000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 84,
+      "reasoning_tokens": 76,
+      "response_chars": 18,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007742000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 18,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6171e5747332eeac989a",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "86563181dbcd35dd38055b70e7f3448758e7ffb9385691c6e3874261c6280c1a",
+  "status": "completed"
+}

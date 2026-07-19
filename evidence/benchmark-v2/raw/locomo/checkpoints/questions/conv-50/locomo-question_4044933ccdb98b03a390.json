@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010404,
+    "cost_usd": null,
+    "input_tokens": 3054,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 207,
+    "reasoning_tokens": 170,
+    "text": "Dave finds people's reactions when they see the finished restoration project satisfying and says it makes all the hard work worth it (session_19, 2023-09-15).",
+    "uncached_input_tokens": 3054
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001836,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 227,
+      "reasoning_tokens": 219,
+      "response_chars": 20,
+      "uncached_input_tokens": 158,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 199,
+      "reasoning_tokens": 191,
+      "response_chars": 20,
+      "uncached_input_tokens": 30,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 159,
+      "reasoning_tokens": 151,
+      "response_chars": 20,
+      "uncached_input_tokens": 30,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4044933ccdb98b03a390",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "0adb8f025d9768cfbf029e37953ba5a72759c817df09d307bccb7016af1d4ff7",
+  "status": "completed"
+}

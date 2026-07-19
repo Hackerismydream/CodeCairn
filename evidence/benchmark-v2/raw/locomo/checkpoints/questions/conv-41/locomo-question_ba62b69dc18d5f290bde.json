@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011883,
+    "cost_usd": null,
+    "input_tokens": 2685,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 638,
+    "reasoning_tokens": 584,
+    "text": "Based on the context, John has gone camping. He describes being in nature, away from noise, and shares a photo of a tent in the woods (session_30, 2023-08-11T00:13:30+00:00).",
+    "uncached_input_tokens": 2685
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000798,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 51,
+      "reasoning_tokens": 43,
+      "response_chars": 18,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005432000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 72,
+      "reasoning_tokens": 64,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ba62b69dc18d5f290bde",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "79bfcd54bfd473f90952f9d5f5706277a32f8031dcd977a192c2a6a9105f6f94",
+  "status": "completed"
+}

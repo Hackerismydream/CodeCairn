@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009405,
+    "cost_usd": null,
+    "input_tokens": 2777,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 179,
+    "reasoning_tokens": 165,
+    "text": "The motto of Evan's family is \"Bring it on Home.\"",
+    "uncached_input_tokens": 2777
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000819,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 74,
+      "reasoning_tokens": 66,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000939,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 94,
+      "reasoning_tokens": 86,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001179,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 134,
+      "reasoning_tokens": 126,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7c20ed2e36b28b554509",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "9d9646b8d1da2d53d3d127d7a84ceff662e58aa251fa7f2fef88105ed72554b2",
+  "status": "completed"
+}

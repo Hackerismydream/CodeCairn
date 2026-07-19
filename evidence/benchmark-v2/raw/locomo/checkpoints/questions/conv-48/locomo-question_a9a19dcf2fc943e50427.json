@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008979,
+    "cost_usd": null,
+    "input_tokens": 2527,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 233,
+    "reasoning_tokens": 191,
+    "text": "Deborah mentioned in a memory from session_6 on 2023-02-22 that she visited Bali \"last year,\" indicating she was there in 2022. No exact date is provided.",
+    "uncached_input_tokens": 2527
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001326,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 147,
+      "reasoning_tokens": 139,
+      "response_chars": 20,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 164,
+      "reasoning_tokens": 156,
+      "response_chars": 20,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009992,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 20,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a9a19dcf2fc943e50427",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "a351f1d972bce39bf860a5464b8201802ba6faf3a4295427dfd80bb33de316f5",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010257,
+    "cost_usd": null,
+    "input_tokens": 3163,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 128,
+    "reasoning_tokens": 93,
+    "text": "The provided memory context does not include Dave's response to Calvin's question about the toughest part of car restoration. Therefore, the answer cannot be determined from the given information.",
+    "uncached_input_tokens": 3163
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 18,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 176,
+      "reasoning_tokens": 168,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_427e681ba9f496175584",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "a18bc0fec92e4b2a36a60b9f66bb057a2035de24bc24b4f304d52e4c4910e5ce",
+  "status": "completed"
+}

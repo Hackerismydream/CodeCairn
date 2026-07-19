@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3072,
+    "cost_cny": 0.0009767999999999999,
+    "cost_usd": null,
+    "input_tokens": 3142,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 115,
+    "reasoning_tokens": 83,
+    "text": "Based on the provided memory context, there is no information about Sam’s friends mocking him for being overweight. The context is insufficient to answer this question.",
+    "uncached_input_tokens": 70
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001308,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 18,
+      "uncached_input_tokens": 146,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005732000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 86,
+      "reasoning_tokens": 78,
+      "response_chars": 18,
+      "uncached_input_tokens": 18,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 159,
+      "reasoning_tokens": 151,
+      "response_chars": 18,
+      "uncached_input_tokens": 18,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b907bd918ca995b877ad",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "b7c1862bfead0cd160a56c11b44f8f7137c8c20c3ab53a5bc5d4fa77f8d9b69a",
+  "status": "completed"
+}

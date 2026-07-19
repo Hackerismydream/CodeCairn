@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009789,
+    "cost_usd": null,
+    "input_tokens": 2861,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 201,
+    "reasoning_tokens": 161,
+    "text": "The photo on Joanna's cork board, which is a picture of her family, reminds her of the love and encouragement from them every day (as stated on 2022-06-05).",
+    "uncached_input_tokens": 2861
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002061,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 266,
+      "reasoning_tokens": 258,
+      "response_chars": 20,
+      "uncached_input_tokens": 155,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013802,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007802000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_833673442761cd672b5b",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "59afd875ec8d9ca79b176bbe89e275d625d90a45431246f0fbf06c896c1033f5",
+  "status": "completed"
+}

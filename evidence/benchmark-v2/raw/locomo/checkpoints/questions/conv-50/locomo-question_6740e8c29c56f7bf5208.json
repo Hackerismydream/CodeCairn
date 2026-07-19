@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011763,
+    "cost_usd": null,
+    "input_tokens": 3179,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 371,
+    "reasoning_tokens": 305,
+    "text": "The memory context shows Dave shared a photo of a waterfall on November 17, 2023, describing it as a peaceful scene with rocks and a waterfall he snapped \"last week.\" However, no specific location is mentioned for where the photo was taken. The context is insufficient to answer where Dave took the stunning waterfall photo.",
+    "uncached_input_tokens": 3179
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 209,
+      "reasoning_tokens": 201,
+      "response_chars": 18,
+      "uncached_input_tokens": 176,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006992000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 92,
+      "reasoning_tokens": 84,
+      "response_chars": 18,
+      "uncached_input_tokens": 48,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011912000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 174,
+      "reasoning_tokens": 166,
+      "response_chars": 18,
+      "uncached_input_tokens": 48,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6740e8c29c56f7bf5208",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "e11cc073794eca58b0899de3a97c749826a0674961303f4281bca9a59d564b40",
+  "status": "completed"
+}

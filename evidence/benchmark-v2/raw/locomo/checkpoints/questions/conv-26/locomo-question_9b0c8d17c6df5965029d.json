@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0029774000000000003,
+    "cost_usd": null,
+    "input_tokens": 2845,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 470,
+    "reasoning_tokens": 435,
+    "text": "The provided memory context contains multiple mentions of Melanie painting sunsets, but none of her painting a sunrise. Therefore, it is insufficient to answer when she painted a sunrise.",
+    "uncached_input_tokens": 29
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000909,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 82,
+      "reasoning_tokens": 74,
+      "response_chars": 18,
+      "uncached_input_tokens": 139,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008522,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 18,
+      "uncached_input_tokens": 11,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005522000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 86,
+      "reasoning_tokens": 78,
+      "response_chars": 18,
+      "uncached_input_tokens": 11,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9b0c8d17c6df5965029d",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "0822b65d975e85be8aaacf4551f62a4f300db9d39602a2b272fd12485d6761a0",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011562,
+    "cost_usd": null,
+    "input_tokens": 2960,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 447,
+    "reasoning_tokens": 432,
+    "text": "The provided memory context does not contain the names of Audrey's dogs.",
+    "uncached_input_tokens": 2960
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 135,
+      "reasoning_tokens": 127,
+      "response_chars": 18,
+      "uncached_input_tokens": 130,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 18,
+      "uncached_input_tokens": 2,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007172000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 2,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_163b9a944f0941e0bfc1",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "038132f40c8b762ea917ae83125ee7f1732a32e7455187cc2301d319d674feee",
+  "status": "completed"
+}

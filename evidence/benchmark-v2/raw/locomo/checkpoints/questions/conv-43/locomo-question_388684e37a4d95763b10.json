@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00939,
+    "cost_usd": null,
+    "input_tokens": 2728,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 201,
+    "reasoning_tokens": 194,
+    "text": "Tim is learning German.",
+    "uncached_input_tokens": 2728
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000774,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 108,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 75,
+      "reasoning_tokens": 67,
+      "response_chars": 20,
+      "uncached_input_tokens": 108,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00114,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 108,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 20,
+      "uncached_input_tokens": 108,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00081,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 108,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 81,
+      "reasoning_tokens": 73,
+      "response_chars": 20,
+      "uncached_input_tokens": 108,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_388684e37a4d95763b10",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "fccb197e15a7de68f5efc309bc5c60dca7ff48cdd239f9caabe50e9bbc34113a",
+  "status": "completed"
+}

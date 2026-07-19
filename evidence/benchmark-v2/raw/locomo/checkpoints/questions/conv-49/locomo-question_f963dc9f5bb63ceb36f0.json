@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014742,
+    "cost_usd": null,
+    "input_tokens": 2684,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1115,
+    "reasoning_tokens": 1046,
+    "text": "The provided memory context does not contain sufficient information to identify a recurring frustration experienced by Evan. While there are isolated mentions of health issues (2023-08-07) and an embarrassing incident where he felt \"out of control\" (2024-01-10), no pattern or recurrence is evident from the available timestamps and messages.",
+    "uncached_input_tokens": 2684
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 18,
+      "uncached_input_tokens": 180,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010712,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 18,
+      "uncached_input_tokens": 52,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005312,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 62,
+      "reasoning_tokens": 54,
+      "response_chars": 18,
+      "uncached_input_tokens": 52,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f963dc9f5bb63ceb36f0",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "60f5ce859a309f052c6e214590d0bd8d4265460084835056ee9355c44d59e8c3",
+  "status": "completed"
+}

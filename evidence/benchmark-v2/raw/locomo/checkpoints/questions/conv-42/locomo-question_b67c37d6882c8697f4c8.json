@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015333,
+    "cost_usd": null,
+    "input_tokens": 2697,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1207,
+    "reasoning_tokens": 1161,
+    "text": "Joanna's third screenplay is about loss, identity, and connection, with elements of redemption and forgiveness. She describes it as a deep, emotional story that is very personal to her (sessions 12 and 17).",
+    "uncached_input_tokens": 2697
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001566,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 183,
+      "reasoning_tokens": 175,
+      "response_chars": 20,
+      "uncached_input_tokens": 156,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010232000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 20,
+      "uncached_input_tokens": 28,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013652,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 213,
+      "reasoning_tokens": 205,
+      "response_chars": 20,
+      "uncached_input_tokens": 28,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b67c37d6882c8697f4c8",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "4ad3ba233434a6d3b308fd52f2143e8a7f7346296c61e5d0f9a120f130efcb5f",
+  "status": "completed"
+}

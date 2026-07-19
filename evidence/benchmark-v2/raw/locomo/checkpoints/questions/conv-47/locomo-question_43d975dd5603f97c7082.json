@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0021044,
+    "cost_usd": null,
+    "input_tokens": 2896,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 299,
+    "reasoning_tokens": 243,
+    "text": "Based on the provided memory context, there is no information indicating that James had a girlfriend during April 2022. The earliest mention of a girlfriend is from September 2022, when James states he asked Samantha to be his girlfriend around September 3, 2022.",
+    "uncached_input_tokens": 80
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001413,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 153,
+      "reasoning_tokens": 145,
+      "response_chars": 20,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 186,
+      "reasoning_tokens": 178,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014162,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 217,
+      "reasoning_tokens": 209,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_43d975dd5603f97c7082",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "41893e713eba16f6cb12d7c796e18a66773313bd962db703d6b62c8cbfc8db27",
+  "status": "completed"
+}

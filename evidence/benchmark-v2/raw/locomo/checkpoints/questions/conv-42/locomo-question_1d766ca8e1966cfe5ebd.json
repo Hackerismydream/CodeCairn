@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010161,
+    "cost_usd": null,
+    "input_tokens": 2581,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 403,
+    "reasoning_tokens": 351,
+    "text": "On June 3, 2022, Joanna mentioned she was hiking with buddies that weekend (June 4–5, 2022) to a trail with a waterfall [memory_fa40e913987f1a6ebee1].",
+    "uncached_input_tokens": 2581
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 204,
+      "reasoning_tokens": 196,
+      "response_chars": 20,
+      "uncached_input_tokens": 166,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012632000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 20,
+      "uncached_input_tokens": 38,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 213,
+      "reasoning_tokens": 205,
+      "response_chars": 20,
+      "uncached_input_tokens": 38,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1d766ca8e1966cfe5ebd",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "4b0b8de04e3d7fb054addd2e52692f2fff12baab4d3549108a169e048fd63bdd",
+  "status": "completed"
+}

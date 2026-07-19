@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010635,
+    "cost_usd": null,
+    "input_tokens": 3033,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 256,
+    "reasoning_tokens": 221,
+    "text": "John achieved a career-high assist performance on Friday, December 8, 2023 (mentioned on December 11, 2023, referring to \"last Friday\").",
+    "uncached_input_tokens": 3033
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001563,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 186,
+      "reasoning_tokens": 178,
+      "response_chars": 18,
+      "uncached_input_tokens": 149,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016742,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 268,
+      "reasoning_tokens": 260,
+      "response_chars": 18,
+      "uncached_input_tokens": 21,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014642000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 233,
+      "reasoning_tokens": 225,
+      "response_chars": 18,
+      "uncached_input_tokens": 21,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_125bc7f78cb5e1523022",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "f2e78ba9e2e6f67c3ddb6cf92130ea313e41f859b5ebdbd92222d7b1bd03e902",
+  "status": "completed"
+}

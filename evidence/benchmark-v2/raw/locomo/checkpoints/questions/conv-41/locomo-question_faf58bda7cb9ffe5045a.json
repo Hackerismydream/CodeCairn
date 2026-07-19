@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0065233999999999995,
+    "cost_usd": null,
+    "input_tokens": 2907,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1030,
+    "reasoning_tokens": 957,
+    "text": "John took a road trip to the Pacific Northwest sometime in 2022. On April 10, 2023, he said, “We explored the coast up in the Pacific Northwest” during a road trip he had taken “last year.” (Source: John, session_11, 2023-04-10T18:15:00)",
+    "uncached_input_tokens": 91
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 229,
+      "reasoning_tokens": 221,
+      "response_chars": 20,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 54,
+      "reasoning_tokens": 46,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006272000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 69,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_faf58bda7cb9ffe5045a",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "09e2ba137a431efacc0758ec0c2354a60aba6e6095e2f98f1f711ee4832f09a7",
+  "status": "completed"
+}

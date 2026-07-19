@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011781,
+    "cost_usd": null,
+    "input_tokens": 3053,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 437,
+    "reasoning_tokens": 411,
+    "text": "John described it as wild and incredible, a total dream come true—just crazy, showing he was thrilled and ecstatic.",
+    "uncached_input_tokens": 3053
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002676,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 375,
+      "reasoning_tokens": 367,
+      "response_chars": 20,
+      "uncached_input_tokens": 142,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0043172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 712,
+      "reasoning_tokens": 704,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 424,
+      "reasoning_tokens": 416,
+      "response_chars": 18,
+      "uncached_input_tokens": 14,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_50ed08b5d15412c1b516",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "0da446a84d6ef5fbb88b96390a9ddf540b0118ff0b26501ab3f0be196f8da106",
+  "status": "completed"
+}

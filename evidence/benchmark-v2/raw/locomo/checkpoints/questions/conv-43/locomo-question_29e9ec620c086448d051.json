@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011439,
+    "cost_usd": null,
+    "input_tokens": 2999,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 407,
+    "reasoning_tokens": 349,
+    "text": "The provided memory context does not specify any particular exercises beyond an indirect mention of strength training in session_8 (Tim's question on 2023-08-21). No other exercises are identified, so the context is insufficient to answer what additional exercises might benefit John's basketball performance.",
+    "uncached_input_tokens": 2999
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001653,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017462,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 268,
+      "reasoning_tokens": 260,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_29e9ec620c086448d051",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "7db47a282805523738519097edc4b480b13594e5ff4a0437c27a6611b97911e0",
+  "status": "completed"
+}

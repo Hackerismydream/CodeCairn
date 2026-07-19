@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012465,
+    "cost_usd": null,
+    "input_tokens": 2597,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 779,
+    "reasoning_tokens": 719,
+    "text": "Based on the provided memory context, the only specific food Audrey explicitly expresses a liking for is sushi. In two different messages (both from session_25 on 2023-10-24), she remarks that sushi \"looks phenomenal\" and says she's going to order it for dinner.",
+    "uncached_input_tokens": 2597
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001311,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 177,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017942000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 274,
+      "reasoning_tokens": 266,
+      "response_chars": 18,
+      "uncached_input_tokens": 49,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017522,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 267,
+      "reasoning_tokens": 259,
+      "response_chars": 18,
+      "uncached_input_tokens": 49,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9f1a7a003e546854694a",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "a800ff452738a84fe4c3a9c3db5974dfa9cf45ead1de10477d9e22ed21157036",
+  "status": "completed"
+}

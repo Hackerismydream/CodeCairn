@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011289,
+    "cost_usd": null,
+    "input_tokens": 2875,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 444,
+    "reasoning_tokens": 364,
+    "text": "The provided context does not contain an explicit statement from Gina about her favorite style of dance. While Jon asks her directly in session_1 (2023-01-20T16:07:30+00:00), her response (2023-01-20T16:09:00+00:00) avoids naming a specific style, and no other memory provides this information.",
+    "uncached_input_tokens": 2875
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001269,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 18,
+      "uncached_input_tokens": 185,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012842,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008102000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 106,
+      "reasoning_tokens": 98,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_16c1a8a81726b9f2db82",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "4a0a707b5378ea864849f77700599090ad1e06ecf17ce4969ac827c8918a9022",
+  "status": "completed"
+}

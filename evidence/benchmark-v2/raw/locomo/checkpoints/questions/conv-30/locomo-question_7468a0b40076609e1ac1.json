@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011685,
+    "cost_usd": null,
+    "input_tokens": 2907,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 494,
+    "reasoning_tokens": 403,
+    "text": "Yes, both Jon and Gina have participated in dance competitions.  \n- Jon mentioned preparing for a dance competition near him (2023-02-04, memory_e8c1b89c93cce7cb56f4).  \n- Gina said she used to compete in dance competitions and won first place at regionals at age fifteen (2023-01-20, memory_e21432aa044a49a2ba47).",
+    "uncached_input_tokens": 2907
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00126,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 109,
+      "reasoning_tokens": 101,
+      "response_chars": 20,
+      "uncached_input_tokens": 202,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006512,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 71,
+      "reasoning_tokens": 63,
+      "response_chars": 20,
+      "uncached_input_tokens": 74,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 20,
+      "uncached_input_tokens": 74,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7468a0b40076609e1ac1",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "0e9a5e3238a23e1bd61555dd2666788ee0b901aa8a952fd67a2444e65871dc08",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012195,
+    "cost_usd": null,
+    "input_tokens": 2897,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 584,
+    "reasoning_tokens": 569,
+    "text": "Mel and her kids made a cup with a dog face on it.",
+    "uncached_input_tokens": 2897
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001893,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 20,
+      "uncached_input_tokens": 131,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 155,
+      "reasoning_tokens": 147,
+      "response_chars": 20,
+      "uncached_input_tokens": 3,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006002000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 20,
+      "uncached_input_tokens": 3,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9315d2dada6c8ff0aa72",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "9f2e2784658041e23651f44f4150beb64312a27994a44eb7f2b12af8583e53f0",
+  "status": "completed"
+}

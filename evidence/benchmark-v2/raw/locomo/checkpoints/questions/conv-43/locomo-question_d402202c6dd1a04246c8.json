@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01437,
+    "cost_usd": null,
+    "input_tokens": 2656,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1067,
+    "reasoning_tokens": 1021,
+    "text": "The provided memory context does not mention any specific books that John has read. The only relevant information is that on 2023-12-08 he stated he had not yet read George R. R. Martin's books.",
+    "uncached_input_tokens": 2656
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 236,
+      "reasoning_tokens": 228,
+      "response_chars": 18,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 297,
+      "reasoning_tokens": 289,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 180,
+      "reasoning_tokens": 172,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d402202c6dd1a04246c8",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "8cece4fb7813b561766e29f656bfbbc35b78374a66a78abfabfaa2a3c84e0919",
+  "status": "completed"
+}

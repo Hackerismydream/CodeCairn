@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009804,
+    "cost_usd": null,
+    "input_tokens": 2922,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 173,
+    "reasoning_tokens": 129,
+    "text": "Tim resonates with J.K. Rowling's quote: \"Turn on the light - happiness hides in the darkest of times.\" (2023-10-21T17:56:00+00:00)",
+    "uncached_input_tokens": 2922
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002151,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 275,
+      "reasoning_tokens": 267,
+      "response_chars": 20,
+      "uncached_input_tokens": 167,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010322,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 20,
+      "uncached_input_tokens": 39,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 242,
+      "reasoning_tokens": 234,
+      "response_chars": 20,
+      "uncached_input_tokens": 39,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3aca291a6e8f9945a035",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "51200986ca6a600f3af05df601451acd8742876aed8c18cdbd3f1a48057b03a4",
+  "status": "completed"
+}

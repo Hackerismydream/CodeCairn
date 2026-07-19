@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013638,
+    "cost_usd": null,
+    "input_tokens": 2950,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 798,
+    "reasoning_tokens": 763,
+    "text": "Nate is hosting a gaming party two weekends after June 3, 2022, which falls on the weekend of June 18–19, 2022.",
+    "uncached_input_tokens": 2950
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002088,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 274,
+      "reasoning_tokens": 266,
+      "response_chars": 18,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 382,
+      "reasoning_tokens": 374,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022351999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 362,
+      "reasoning_tokens": 354,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b36687a406c13923a21a",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "a79d45823a66a8ddcd20c883a3ef69b17e756c4fdaf11b6313dc32416203b866",
+  "status": "completed"
+}

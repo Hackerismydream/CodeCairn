@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2432,
+    "cost_cny": 0.0021188,
+    "cost_usd": null,
+    "input_tokens": 2514,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 302,
+    "reasoning_tokens": 236,
+    "text": "The provided memory context contains exchanges between Caroline and Melanie, but none explicitly state Caroline's identity. The snippets reference her interests in painting, art as self-expression, a significant song, and encouragement from Melanie, but no specific role, occupation, or defining trait is given. Thus, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 82
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 82,
+      "reasoning_tokens": 74,
+      "response_chars": 18,
+      "uncached_input_tokens": 170,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006572,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 88,
+      "reasoning_tokens": 80,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 190,
+      "reasoning_tokens": 182,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8a7e33afbafa1b677ba5",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "b9f3b7638a592b36030914915b75c89391317661208104bddeb6a2f492975e3b",
+  "status": "completed"
+}

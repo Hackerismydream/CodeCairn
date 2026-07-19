@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012537,
+    "cost_usd": null,
+    "input_tokens": 2693,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 743,
+    "reasoning_tokens": 599,
+    "text": "Evan enjoys painting landscapes and nature scenes, as well as contemporary figurative subjects. \n- He explicitly said \"I love painting landscapes. Nature's beauty captivates me and brings me peace\" (memory_03e10c7dd604c9206bff, 2023-08-19). \n- He also shared a \"contemporary figurative painting\" he had finished (memory_c15b90acf31ed01a97fc, 2023-12-17).\n- Other events show paintings of sunsets over water and a desert cactus (memory_e3d966ad190f60e60a91, memory_4a79acdd88151fe78650).",
+    "uncached_input_tokens": 2693
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001503,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 261,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 18,
+      "uncached_input_tokens": 261,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0023134,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 261,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 382,
+      "reasoning_tokens": 374,
+      "response_chars": 18,
+      "uncached_input_tokens": 5,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0028474,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 261,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 471,
+      "reasoning_tokens": 463,
+      "response_chars": 18,
+      "uncached_input_tokens": 5,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_06a36099050efd11e1fa",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "994fd186d36abd96d0cf1bd99eed3b801c5a9a92cd00fa276805323264970e1e",
+  "status": "completed"
+}

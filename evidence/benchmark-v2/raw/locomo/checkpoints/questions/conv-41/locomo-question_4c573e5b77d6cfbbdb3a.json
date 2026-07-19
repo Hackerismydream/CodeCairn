@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012474,
+    "cost_usd": null,
+    "input_tokens": 2820,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 669,
+    "reasoning_tokens": 623,
+    "text": "Cindy, a resident at the shelter where Maria volunteers, wrote a note of gratitude to Maria (2023-08-03). No other individuals are identified in the provided context as having written notes of gratitude to Maria.",
+    "uncached_input_tokens": 2820
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0018,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 223,
+      "reasoning_tokens": 215,
+      "response_chars": 18,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013652,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 214,
+      "reasoning_tokens": 206,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015512,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 245,
+      "reasoning_tokens": 237,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4c573e5b77d6cfbbdb3a",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "b0f6295ed8ad6fd6485c57ace8a4de4d11df5333187ee6bb304ae0382b93c2f9",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013443,
+    "cost_usd": null,
+    "input_tokens": 2789,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 846,
+    "reasoning_tokens": 781,
+    "text": "According to Nate in session_29 on 2022-11-11, he loves having turtles around because they're cool and make him feel calm, they don't require much looking after, and he especially enjoys seeing them soaking in the sun. He did not single out one aspect as the \"most\" important.",
+    "uncached_input_tokens": 2789
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003753,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 535,
+      "reasoning_tokens": 527,
+      "response_chars": 18,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024121999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 375,
+      "reasoning_tokens": 367,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0034562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 549,
+      "reasoning_tokens": 541,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8b990941a8088d1efc02",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "346e984983f62e972e19cab82bbd7bf27b6e98621b1ace0c900f34156601d695",
+  "status": "completed"
+}

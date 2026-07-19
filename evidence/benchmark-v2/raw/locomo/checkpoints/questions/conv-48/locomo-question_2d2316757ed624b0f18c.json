@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2304,
+    "cost_cny": 0.0055836,
+    "cost_usd": null,
+    "input_tokens": 2396,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 875,
+    "reasoning_tokens": 828,
+    "text": "The provided memory context does not specify what pets Jolene has. The only reference is Deborah mentioning pets to Jolene in session_2, but there is no detail about the type or number of pets. The context is insufficient.",
+    "uncached_input_tokens": 92
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001179,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 121,
+      "reasoning_tokens": 113,
+      "response_chars": 18,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006002000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 88,
+      "reasoning_tokens": 80,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.00048019999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 68,
+      "reasoning_tokens": 60,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2d2316757ed624b0f18c",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "ffa8e8851f15770f5f912301845b81c29f40c4bea7594e8587a472d193200a67",
+  "status": "completed"
+}

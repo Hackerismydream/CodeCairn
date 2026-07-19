@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012603,
+    "cost_usd": null,
+    "input_tokens": 2949,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 626,
+    "reasoning_tokens": 568,
+    "text": "The provided memory context does not contain information about which specific games were played at the gaming tournament on 31 October 2022. The only relevant memory (entry 1) mentions \"the tournament\" and shows a computer screen with a game menu, but no game name is given.",
+    "uncached_input_tokens": 2949
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001122,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 96,
+      "reasoning_tokens": 88,
+      "response_chars": 18,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005972000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 72,
+      "reasoning_tokens": 64,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009272000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 127,
+      "reasoning_tokens": 119,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b057e57329f9e4d542de",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "36cd7fbf43ae6a8daeeba5c2a510b06e493aeb89a2d8b0d40ebeaf2ade1c24a6",
+  "status": "completed"
+}

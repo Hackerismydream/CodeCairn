@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010224,
+    "cost_usd": null,
+    "input_tokens": 2866,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 271,
+    "reasoning_tokens": 221,
+    "text": "Based on the memory context, Dave's favorite activity is working on cars (car repair, restoration, and modification). Multiple memories show him engaged in fixing engines, opening his own garage, and sharing his passion for bringing old cars back to life.",
+    "uncached_input_tokens": 2866
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001575,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 20,
+      "uncached_input_tokens": 155,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 70,
+      "reasoning_tokens": 62,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026401999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 426,
+      "reasoning_tokens": 418,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3715ecc4703a30c0eb46",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "d1ed1e67971c328765457003d932c6b73fe92a5807bb3b3ced1013fc24bca32f",
+  "status": "completed"
+}

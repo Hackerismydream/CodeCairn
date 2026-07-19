@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010416,
+    "cost_usd": null,
+    "input_tokens": 3086,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 193,
+    "reasoning_tokens": 152,
+    "text": "Based on the provided memory context, certain authors are a source of inspiration for Tim's writing (memory_b482b012110eaa5398b4, 2023-10-21).",
+    "uncached_input_tokens": 3086
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001572,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 18,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009572000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6f7cdaf663b6da8af7f6",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "989989463193fc0553357a5c6024a9e7ebce2d8ff5e32636324f372be0578526",
+  "status": "completed"
+}

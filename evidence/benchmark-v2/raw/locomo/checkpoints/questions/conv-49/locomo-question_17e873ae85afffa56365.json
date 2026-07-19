@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0015942,
+    "cost_usd": null,
+    "input_tokens": 2785,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 206,
+    "reasoning_tokens": 176,
+    "text": "According to the provided memory context, Evan mentioned the incident on **2023-06-06**, saying it happened **\"last week\"**.",
+    "uncached_input_tokens": 97
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.006801,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1059,
+      "reasoning_tokens": 1051,
+      "response_chars": 18,
+      "uncached_input_tokens": 149,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017402000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 279,
+      "reasoning_tokens": 271,
+      "response_chars": 20,
+      "uncached_input_tokens": 21,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028561999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 465,
+      "reasoning_tokens": 457,
+      "response_chars": 20,
+      "uncached_input_tokens": 21,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_17e873ae85afffa56365",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "1121d654b3fcfd4430656cfb07b7a0f38aac22b06b4ee36edb34d13d69ba608f",
+  "status": "completed"
+}

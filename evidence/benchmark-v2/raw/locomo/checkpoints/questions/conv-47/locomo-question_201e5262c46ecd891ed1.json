@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009837,
+    "cost_usd": null,
+    "input_tokens": 2639,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 320,
+    "reasoning_tokens": 312,
+    "text": "James plans to call her tomorrow.",
+    "uncached_input_tokens": 2639
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004314,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 118,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 660,
+      "reasoning_tokens": 652,
+      "response_chars": 20,
+      "uncached_input_tokens": 118,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001176,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 118,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 20,
+      "uncached_input_tokens": 118,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002442,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 118,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 348,
+      "reasoning_tokens": 340,
+      "response_chars": 20,
+      "uncached_input_tokens": 118,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_201e5262c46ecd891ed1",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "5ff5cd4c5166cf3f6673b8e4386f6e6d0480c75c05719c56bbf4026a7aba56fe",
+  "status": "completed"
+}

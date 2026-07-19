@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0009284,
+    "cost_usd": null,
+    "input_tokens": 2920,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 91,
+    "reasoning_tokens": 75,
+    "text": "The provided memory context does not contain any information about Jolene visiting France.",
+    "uncached_input_tokens": 104
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001017,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 18,
+      "uncached_input_tokens": 123,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001365,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 18,
+      "uncached_input_tokens": 123,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000837,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 18,
+      "uncached_input_tokens": 123,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1ef2c4fafd48610c2b13",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "6765bce7bb81d435ec225fc46c7ec04515f500411c1ace707df6cae41ebb32b2",
+  "status": "completed"
+}

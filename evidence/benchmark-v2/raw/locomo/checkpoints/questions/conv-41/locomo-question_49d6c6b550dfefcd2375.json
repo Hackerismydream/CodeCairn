@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0029414000000000003,
+    "cost_usd": null,
+    "input_tokens": 2857,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 458,
+    "reasoning_tokens": 357,
+    "text": "Based on the provided memory context, yes, John would be considered a patriotic person. In session_27 (2023-08-03T18:24:00+00:00 and 2023-08-03T18:26:00+00:00), he mentioned visiting a military memorial with his children, calling it a meaningful experience that impacted them, and emphasized the importance of showing respect and appreciation for those who served the country. These statements and actions suggest patriotic sentiment.",
+    "uncached_input_tokens": 41
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001617,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 167,
+      "reasoning_tokens": 159,
+      "response_chars": 20,
+      "uncached_input_tokens": 205,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 286,
+      "reasoning_tokens": 278,
+      "response_chars": 20,
+      "uncached_input_tokens": 77,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024241999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 365,
+      "reasoning_tokens": 357,
+      "response_chars": 20,
+      "uncached_input_tokens": 77,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_49d6c6b550dfefcd2375",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "73c4a13c098e225f7b873f98326b615b659d5ac4aec240312e1585d50347953c",
+  "status": "completed"
+}

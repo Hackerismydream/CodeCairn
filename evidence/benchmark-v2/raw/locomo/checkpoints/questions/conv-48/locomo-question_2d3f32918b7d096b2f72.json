@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012861,
+    "cost_usd": null,
+    "input_tokens": 3111,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 588,
+    "reasoning_tokens": 520,
+    "text": "The provided memory context does not contain a direct statement from Jolene about her feelings regarding her progress in mindfulness and gratitude. Deborah's comment in session_27 (\"Glad you're getting into it!\") implies positive progress, but Jolene's own sentiments are not recorded here. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 3111
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002016,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 242,
+      "reasoning_tokens": 234,
+      "response_chars": 18,
+      "uncached_input_tokens": 188,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017912,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 268,
+      "reasoning_tokens": 260,
+      "response_chars": 18,
+      "uncached_input_tokens": 60,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 170,
+      "reasoning_tokens": 162,
+      "response_chars": 18,
+      "uncached_input_tokens": 60,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2d3f32918b7d096b2f72",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "3724bc3ed2edb66e071e18a3d637e703f7fc3c7be65a67f07786dc148b51d810",
+  "status": "completed"
+}

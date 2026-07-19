@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009552,
+    "cost_usd": null,
+    "input_tokens": 2592,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 296,
+    "reasoning_tokens": 258,
+    "text": "Andrew views his pets as family, friends, and confidantes, bringing joy and companionship to his life. (Sources: session_13, session_15, session_24)",
+    "uncached_input_tokens": 2592
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001944,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 253,
+      "reasoning_tokens": 245,
+      "response_chars": 18,
+      "uncached_input_tokens": 142,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027272,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 447,
+      "reasoning_tokens": 439,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 143,
+      "reasoning_tokens": 135,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f6d722428d4bb6a4afd4",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "4a6f6d0745d21b08b55bdf57edacd7000e53f24308695ac8517981eadfb4aef0",
+  "status": "completed"
+}

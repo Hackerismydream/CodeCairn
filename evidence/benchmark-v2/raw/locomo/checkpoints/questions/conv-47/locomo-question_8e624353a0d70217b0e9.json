@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008478,
+    "cost_usd": null,
+    "input_tokens": 2596,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 115,
+    "reasoning_tokens": 98,
+    "text": "John supports Manchester City, as stated on 2022-06-13.",
+    "uncached_input_tokens": 2596
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001761,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 233,
+      "reasoning_tokens": 226,
+      "response_chars": 19,
+      "uncached_input_tokens": 121,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000921,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 93,
+      "reasoning_tokens": 85,
+      "response_chars": 20,
+      "uncached_input_tokens": 121,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001179,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 20,
+      "uncached_input_tokens": 121,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8e624353a0d70217b0e9",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "1b5a36d73746cf5e180d7f815e60391e27c8f38010e5e56bcb685a179f625598",
+  "status": "completed"
+}

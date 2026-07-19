@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01299,
+    "cost_usd": null,
+    "input_tokens": 2924,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 703,
+    "reasoning_tokens": 634,
+    "text": "The provided memories do not specify when Andrew made his dogs a fun indoor area. The only relevant memory, from 2023-06-26T13:53:30+00:00, shows Andrew sharing a photo of a large indoor area with dogs playing, but there is no evidence that he created it. Insufficient context.",
+    "uncached_input_tokens": 2924
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000963,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 68,
+      "reasoning_tokens": 60,
+      "response_chars": 18,
+      "uncached_input_tokens": 185,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005822000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 68,
+      "reasoning_tokens": 60,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 308,
+      "reasoning_tokens": 300,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_92507ce980b234cbfde4",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "6b1c4be7745bea1785e4a775390434735c1bb57dad10d2fd433cd8e9d3e76e0b",
+  "status": "completed"
+}

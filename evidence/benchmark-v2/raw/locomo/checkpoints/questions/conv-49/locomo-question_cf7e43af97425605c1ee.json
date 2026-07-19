@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.016836,
+    "cost_usd": null,
+    "input_tokens": 2890,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1361,
+    "reasoning_tokens": 1291,
+    "text": "The memory context does not contain any request from Evan to Sam on 19 August 2023. Sam offered \"a flavorful and healthy grilled chicken and veggie stir-fry\" recipe at 18:20 UTC, but Evan's only recorded message that day is about skiing. The context is insufficient to determine what Evan requested on that date.",
+    "uncached_input_tokens": 2890
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001629,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 18,
+      "uncached_input_tokens": 187,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cf7e43af97425605c1ee",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "7c7e51aa090340bff668c8c30c206b38926b695549994118001fa387a1c5327c",
+  "status": "completed"
+}

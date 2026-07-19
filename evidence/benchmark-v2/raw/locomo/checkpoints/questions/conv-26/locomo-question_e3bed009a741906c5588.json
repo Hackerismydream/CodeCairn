@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013248,
+    "cost_usd": null,
+    "input_tokens": 2774,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 821,
+    "reasoning_tokens": 768,
+    "text": "Melanie and her family roasted marshmallows, told stories around the campfire, and enjoyed each other’s company during their camping trips. (Source: Melanie in session_10, 2023-07-20T21:01:30)",
+    "uncached_input_tokens": 2774
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002406,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 315,
+      "reasoning_tokens": 307,
+      "response_chars": 18,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 352,
+      "reasoning_tokens": 344,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016712,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 256,
+      "reasoning_tokens": 248,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e3bed009a741906c5588",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "762d6ab9698297928f5594632e5f1d1d2417bc6b7fd3aa8efc074415b5135e42",
+  "status": "completed"
+}

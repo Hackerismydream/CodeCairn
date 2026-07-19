@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010209,
+    "cost_usd": null,
+    "input_tokens": 2755,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 324,
+    "reasoning_tokens": 273,
+    "text": "The provided memory context does not include the name of any song that motivates Caroline to be courageous. It shows Melanie asking about meaningful songs and later commenting that a song fits Caroline's journey, but the specific song is not mentioned. The context is insufficient.",
+    "uncached_input_tokens": 2755
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00147,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 165,
+      "reasoning_tokens": 157,
+      "response_chars": 18,
+      "uncached_input_tokens": 160,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007472000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 18,
+      "uncached_input_tokens": 32,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 18,
+      "uncached_input_tokens": 32,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b505b6ca05322f2fdb90",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "a822b9e7615a320c21ebc65255d70bbbef9665836252133da4c6c40354ad6933",
+  "status": "completed"
+}

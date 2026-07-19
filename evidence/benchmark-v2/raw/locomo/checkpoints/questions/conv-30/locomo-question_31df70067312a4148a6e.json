@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0020474,
+    "cost_usd": null,
+    "input_tokens": 2935,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 270,
+    "reasoning_tokens": 230,
+    "text": "Jon lost his job as a banker on January 19, 2023 (the day before January 20, 2023, as he said \"yesterday\" in session_1).",
+    "uncached_input_tokens": 119
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000858,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 67,
+      "reasoning_tokens": 59,
+      "response_chars": 20,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007832000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006632000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_31df70067312a4148a6e",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "257c061d21f7b805c59cc15a0ed845a128a6615b1e86e6b9f86be025864e2e94",
+  "status": "completed"
+}

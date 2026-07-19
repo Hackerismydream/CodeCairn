@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009177,
+    "cost_usd": null,
+    "input_tokens": 2647,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 206,
+    "reasoning_tokens": 167,
+    "text": "The provided memory context does not contain any information about the ages of Deborah's cats. Only a mention of her having cats and one named Luna is present, with no details on their ages.",
+    "uncached_input_tokens": 2647
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000834,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 62,
+      "reasoning_tokens": 54,
+      "response_chars": 18,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 162,
+      "reasoning_tokens": 154,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010292,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 158,
+      "reasoning_tokens": 150,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_767a8e2cc542d9807f0a",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "127eaebb70e4e99bc5e1018cbdbe813de4c1701abfb7fdf0030cd730a19d5812",
+  "status": "completed"
+}

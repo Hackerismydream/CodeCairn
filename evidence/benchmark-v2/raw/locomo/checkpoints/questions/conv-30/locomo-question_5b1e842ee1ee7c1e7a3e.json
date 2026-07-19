@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009,
+    "cost_usd": null,
+    "input_tokens": 2690,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 155,
+    "reasoning_tokens": 124,
+    "text": "Gina's tattoo symbolizes freedom — specifically, dancing without worrying about what people think. It serves as a reminder to follow her passions and express herself.",
+    "uncached_input_tokens": 2690
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001167,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 20,
+      "uncached_input_tokens": 139,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 164,
+      "reasoning_tokens": 156,
+      "response_chars": 20,
+      "uncached_input_tokens": 11,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009242,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 20,
+      "uncached_input_tokens": 11,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5b1e842ee1ee7c1e7a3e",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "a3a8dbcac2b0f4f80d75f3c8afd76c85864dbe65a7fb4dc2fff0dcd925bc2faf",
+  "status": "completed"
+}

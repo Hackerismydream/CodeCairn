@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009006,
+    "cost_usd": null,
+    "input_tokens": 2676,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 163,
+    "reasoning_tokens": 120,
+    "text": "According to the memory context, Nate mentioned on 2022-10-09 in session_23 that he recently saw a movie called \"Inception\" which blew his mind with its twists and dream elements.",
+    "uncached_input_tokens": 2676
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001365,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 151,
+      "reasoning_tokens": 143,
+      "response_chars": 20,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007262000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011522000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 179,
+      "reasoning_tokens": 171,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_56dad89a0b909220a7d8",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "9e85ed46e923b64ee0d08c5d39aea4029b9bcaf3bf72347296248f7f07b808d7",
+  "status": "completed"
+}

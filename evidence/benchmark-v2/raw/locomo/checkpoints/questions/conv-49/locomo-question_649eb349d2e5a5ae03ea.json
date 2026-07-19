@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012225,
+    "cost_usd": null,
+    "input_tokens": 2807,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 634,
+    "reasoning_tokens": 603,
+    "text": "The provided memory context does not include any response from Sam regarding Evan's broken Prius setback. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2807
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 91,
+      "reasoning_tokens": 83,
+      "response_chars": 18,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009272000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 142,
+      "reasoning_tokens": 134,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_649eb349d2e5a5ae03ea",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "e1cccc981e8c4f1ee6bc9118fa937de3b9dd8ffccab54433f9b63c9c074bb558",
+  "status": "completed"
+}

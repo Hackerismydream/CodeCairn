@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3200,
+    "cost_cny": 0.002255,
+    "cost_usd": null,
+    "input_tokens": 3239,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 343,
+    "reasoning_tokens": 309,
+    "text": "The provided memory context does not include adoption dates for Audrey's other three dogs, so it is impossible to determine how many years passed between adopting Pixie and them.",
+    "uncached_input_tokens": 39
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000816,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 63,
+      "reasoning_tokens": 52,
+      "response_chars": 22,
+      "uncached_input_tokens": 146,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005792000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 87,
+      "reasoning_tokens": 79,
+      "response_chars": 18,
+      "uncached_input_tokens": 18,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015032000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 146,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 241,
+      "reasoning_tokens": 233,
+      "response_chars": 18,
+      "uncached_input_tokens": 18,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1567bcb31f7ad1926443",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "422259c03f10efc5ccffda755678100d77fbf60ca6da8d4d038387cb26249d03",
+  "status": "completed"
+}

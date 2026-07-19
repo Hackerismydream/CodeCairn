@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012636,
+    "cost_usd": null,
+    "input_tokens": 2842,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 685,
+    "reasoning_tokens": 660,
+    "text": "John is passionate about supporting veterans' rights, improving education and infrastructure in his community, and using technology for social good.",
+    "uncached_input_tokens": 2842
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002568,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 360,
+      "reasoning_tokens": 352,
+      "response_chars": 18,
+      "uncached_input_tokens": 136,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 378,
+      "reasoning_tokens": 370,
+      "response_chars": 20,
+      "uncached_input_tokens": 8,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0034592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 572,
+      "reasoning_tokens": 564,
+      "response_chars": 18,
+      "uncached_input_tokens": 8,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_376dd4d3f76203ca1c13",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "ff5b7ccea7c0abd72de626c36e0d80990d9a52278a8c5d8c29953987060b693b",
+  "status": "completed"
+}

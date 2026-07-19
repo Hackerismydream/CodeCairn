@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011094,
+    "cost_usd": null,
+    "input_tokens": 3034,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 332,
+    "reasoning_tokens": 292,
+    "text": "The provided memory context does not include Jolene's answer to Deborah's question about her favorite game to play with her mom on the Nintendo Wii. Only the question is shown, not the response.",
+    "uncached_input_tokens": 3034
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000975,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 81,
+      "reasoning_tokens": 73,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 227,
+      "reasoning_tokens": 219,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007442000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 106,
+      "reasoning_tokens": 98,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_19974d02b82b0e772076",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "360eeaf141ce70c04567f08badaff34b8a3f9f06866471f86b74a72c6ddf7d7b",
+  "status": "completed"
+}

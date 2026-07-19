@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010218,
+    "cost_usd": null,
+    "input_tokens": 2920,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 243,
+    "reasoning_tokens": 230,
+    "text": "Sam suggested that Evan try yoga for stress relief and flexibility.",
+    "uncached_input_tokens": 2920
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002556,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 365,
+      "reasoning_tokens": 357,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0027,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 389,
+      "reasoning_tokens": 381,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001632,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f2fa20018e9cbaeea269",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "bcd8d32fcab224aa5b9c4beb40e5de59e0a5460bb2504d36d85af506763619c6",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00999,
+    "cost_usd": null,
+    "input_tokens": 2682,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 324,
+    "reasoning_tokens": 293,
+    "text": "Tim mentions being excited to watch \"The Wheel of Time\" (2023-12-26T15:52:30+00:00).",
+    "uncached_input_tokens": 2682
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001314,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 20,
+      "uncached_input_tokens": 140,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 329,
+      "reasoning_tokens": 321,
+      "response_chars": 20,
+      "uncached_input_tokens": 12,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010232000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 164,
+      "reasoning_tokens": 156,
+      "response_chars": 20,
+      "uncached_input_tokens": 12,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e0a509288de528c31f6b",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "2c972c7b1cde4b9deda75e1322da2c7f641e65d4e09ef01cf801aa7869eba6a8",
+  "status": "completed"
+}

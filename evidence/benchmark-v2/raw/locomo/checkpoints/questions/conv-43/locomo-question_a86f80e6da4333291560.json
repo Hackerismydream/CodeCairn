@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0067301999999999996,
+    "cost_usd": null,
+    "input_tokens": 2815,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1047,
+    "reasoning_tokens": 963,
+    "text": "Based on the memory context, Tim has explicitly mentioned reading \"The Name of the Wind\" (session_6). Images show Harry Potter books (session_3, session_10), suggesting he reads that series. He also referenced an unnamed book about small changes making big differences (session_19) and a book with a \"storm of swords\" cover (session_17), but the title is not confirmed.",
+    "uncached_input_tokens": 127
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001716,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 218,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 177,
+      "reasoning_tokens": 169,
+      "response_chars": 18,
+      "uncached_input_tokens": 218,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 218,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 251,
+      "reasoning_tokens": 243,
+      "response_chars": 18,
+      "uncached_input_tokens": 90,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027392,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 218,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 411,
+      "reasoning_tokens": 403,
+      "response_chars": 18,
+      "uncached_input_tokens": 90,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a86f80e6da4333291560",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "d0bdfe58f43f80e1a240460ac9bd87fbf04b04d0739db66f04b05d010b8558fd",
+  "status": "completed"
+}

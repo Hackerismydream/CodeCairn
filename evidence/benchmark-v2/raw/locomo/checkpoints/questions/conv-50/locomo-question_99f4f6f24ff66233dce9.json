@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.0108,
+    "cost_usd": null,
+    "input_tokens": 3080,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 260,
+    "reasoning_tokens": 239,
+    "text": "According to Calvin, Dave's blog and car mods are inspiring and help people find their creativity.",
+    "uncached_input_tokens": 3080
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00144,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 170,
+      "reasoning_tokens": 162,
+      "response_chars": 20,
+      "uncached_input_tokens": 140,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 20,
+      "uncached_input_tokens": 12,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 468,
+      "reasoning_tokens": 460,
+      "response_chars": 20,
+      "uncached_input_tokens": 12,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_99f4f6f24ff66233dce9",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "a663f03e4f6511cf274f9e2326201f024516909b2d15154da56c5f156ff72b3f",
+  "status": "completed"
+}

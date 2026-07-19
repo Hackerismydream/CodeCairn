@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009198,
+    "cost_usd": null,
+    "input_tokens": 2564,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 251,
+    "reasoning_tokens": 236,
+    "text": "After the charity race, Melanie realized that self-care is really important.",
+    "uncached_input_tokens": 2564
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001593,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 204,
+      "reasoning_tokens": 196,
+      "response_chars": 20,
+      "uncached_input_tokens": 123,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001377,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 20,
+      "uncached_input_tokens": 123,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000969,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 100,
+      "reasoning_tokens": 92,
+      "response_chars": 20,
+      "uncached_input_tokens": 123,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a683f83d793cdc0bbddf",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "e1ba48a08fdce9a2102987a6da8c542d3400b303c621ecffc2d39329bf77aa0d",
+  "status": "completed"
+}

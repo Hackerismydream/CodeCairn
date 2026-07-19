@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014682,
+    "cost_usd": null,
+    "input_tokens": 2862,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1016,
+    "reasoning_tokens": 925,
+    "text": "The memory context indicates Maria mentioned adopting Coco \"two weeks ago\" on August 11, 2023, and adopting Shadow \"last week\" on August 13, 2023. Based on these approximate references, the adoptions occurred around July 28 and August 6, respectively—a gap of about 9 days, or roughly 1 week. However, the exact number of weeks cannot be determined from the provided timestamps.",
+    "uncached_input_tokens": 2862
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001788,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 198,
+      "reasoning_tokens": 190,
+      "response_chars": 18,
+      "uncached_input_tokens": 200,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022832,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 344,
+      "reasoning_tokens": 336,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 260,
+      "reasoning_tokens": 252,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_748ef87dc53b6938d498",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "cf6cfe6c82a77c0b02d7f62cc1e643c648faefdc193fae28083d1ac770c4e70b",
+  "status": "completed"
+}

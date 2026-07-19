@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012048,
+    "cost_usd": null,
+    "input_tokens": 3210,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 403,
+    "reasoning_tokens": 352,
+    "text": "The provided memory context does not include the name of any song from Calvin’s childhood that brings back memories of a road trip with his dad. Although Dave asks about it in session_20, Calvin’s response is not captured with that detail.",
+    "uncached_input_tokens": 3210
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001434,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 155,
+      "reasoning_tokens": 147,
+      "response_chars": 18,
+      "uncached_input_tokens": 168,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 66,
+      "reasoning_tokens": 58,
+      "response_chars": 18,
+      "uncached_input_tokens": 40,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 72,
+      "reasoning_tokens": 64,
+      "response_chars": 18,
+      "uncached_input_tokens": 40,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a5b832b778c10f29d127",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "b35f816765284d879c4df2378fbb82d56e0dc1c88cb2c2b8cfabcd152eaee042",
+  "status": "completed"
+}

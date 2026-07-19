@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01218,
+    "cost_usd": null,
+    "input_tokens": 2790,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 635,
+    "reasoning_tokens": 469,
+    "text": "Based on the provided context, Nate tried to disburse his vegan ice‑cream recipes in three ways:\n\n1. **Offered to send a recipe directly to Joanna** (memory `5045233137a762928185`, session_4, 2022‑02‑25).\n2. **Taught vegan ice‑cream recipes on his own cooking show** (memory `e5a2096afbe0c4445db4`, session_21, 2022‑09‑14).\n3. **Shared the ice cream (and presumably the recipes) with people in his vegan diet group** (memory `6ba0fcf10b4a33638f67`, session_16, 2022‑06‑24).\n\nThe context does not mention any other methods of distribution.",
+    "uncached_input_tokens": 2790
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004005,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 289,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 523,
+      "reasoning_tokens": 515,
+      "response_chars": 18,
+      "uncached_input_tokens": 289,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0050674,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 289,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 827,
+      "reasoning_tokens": 819,
+      "response_chars": 20,
+      "uncached_input_tokens": 33,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0023434000000000003,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 289,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 373,
+      "reasoning_tokens": 365,
+      "response_chars": 20,
+      "uncached_input_tokens": 33,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7ec3c5c6f12861690070",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "a5bc77a10b99ee1742bdc67fef92c5bc5db5745b0822de9e8a167930f4e9b378",
+  "status": "completed"
+}

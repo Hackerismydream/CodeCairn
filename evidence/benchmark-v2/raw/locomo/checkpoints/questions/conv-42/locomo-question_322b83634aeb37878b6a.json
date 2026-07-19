@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.010774200000000001,
+    "cost_usd": null,
+    "input_tokens": 2723,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1767,
+    "reasoning_tokens": 1656,
+    "text": "Based on the provided memories, Joanna and Nate share interests in movies, baking/desserts, and reading. Joanna notes they have similar interests and asks about movie preferences (2022-01-21). They later discuss the emotional impact of films (2022-10-09). Nate enthusiastically responds to Joanna’s baked goods and mentions making vegan ice cream (2022-06-24, 2022-09-14), indicating a shared enjoyment of food-related projects. They also exchange book recommendations (2022-08-22).",
+    "uncached_input_tokens": 35
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002985,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 223,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 386,
+      "reasoning_tokens": 375,
+      "response_chars": 22,
+      "uncached_input_tokens": 223,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0045062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 223,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 703,
+      "reasoning_tokens": 695,
+      "response_chars": 18,
+      "uncached_input_tokens": 95,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 223,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 289,
+      "reasoning_tokens": 281,
+      "response_chars": 18,
+      "uncached_input_tokens": 95,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_322b83634aeb37878b6a",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "1b2c9b997ed1f10fe563e2c5d2a4f68981129246670b30cd3f6184ebfbcdaea1",
+  "status": "completed"
+}

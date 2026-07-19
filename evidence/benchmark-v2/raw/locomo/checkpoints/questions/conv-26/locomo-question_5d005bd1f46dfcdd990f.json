@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009723,
+    "cost_usd": null,
+    "input_tokens": 2601,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 320,
+    "reasoning_tokens": 297,
+    "text": "The memory context does not contain Melanie's response to Caroline's question about how long she has been into art.",
+    "uncached_input_tokens": 2601
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001308,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 153,
+      "reasoning_tokens": 145,
+      "response_chars": 18,
+      "uncached_input_tokens": 130,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012212,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 202,
+      "reasoning_tokens": 194,
+      "response_chars": 18,
+      "uncached_input_tokens": 2,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 18,
+      "uncached_input_tokens": 2,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5d005bd1f46dfcdd990f",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "778956e05b1b245e2d1104e42e89409bbd97607115069274ca260cec3b2b9f41",
+  "status": "completed"
+}

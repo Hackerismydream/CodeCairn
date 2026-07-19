@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00933,
+    "cost_usd": null,
+    "input_tokens": 2600,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 255,
+    "reasoning_tokens": 215,
+    "text": "The context does not specify what Jean went through before meeting Maria. The only relevant memory (Maria in session_7) says Jean \"had been through a lot,\" but no details are provided.",
+    "uncached_input_tokens": 2600
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001356,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 150,
+      "reasoning_tokens": 142,
+      "response_chars": 18,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 180,
+      "reasoning_tokens": 172,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2738a60950eceb7f1cb1",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "390d91f4d11e24531ab3dd448d92d26fce41d630a42b13fff2920dbdcd892abb",
+  "status": "completed"
+}

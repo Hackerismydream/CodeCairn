@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010305,
+    "cost_usd": null,
+    "input_tokens": 2811,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 312,
+    "reasoning_tokens": 279,
+    "text": "The provided memory context does not include the names of John's children. The memories mention his kids and include images of children, but no names are ever stated.",
+    "uncached_input_tokens": 2811
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001035,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 18,
+      "uncached_input_tokens": 141,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005162000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 79,
+      "reasoning_tokens": 71,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_595762cbdc379b6edf1f",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "2eae317664dadfb2498f4652b97e17bdbefc7d1d983a2013e149b102432bf023",
+  "status": "completed"
+}

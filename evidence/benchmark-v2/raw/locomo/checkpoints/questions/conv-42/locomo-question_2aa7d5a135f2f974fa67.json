@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014778,
+    "cost_usd": null,
+    "input_tokens": 2886,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1020,
+    "reasoning_tokens": 993,
+    "text": "Nate has participated in at least 6 video game tournaments based on the provided memories. The context is sufficient for this count.",
+    "uncached_input_tokens": 2886
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001245,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 18,
+      "uncached_input_tokens": 133,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008102000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 18,
+      "uncached_input_tokens": 5,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007262000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 5,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2aa7d5a135f2f974fa67",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "202a70ce6d676b27280a69417148294041e3d6fa2e762753bfe8b1cf8f0318bb",
+  "status": "completed"
+}

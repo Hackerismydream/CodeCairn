@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010422,
+    "cost_usd": null,
+    "input_tokens": 2628,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 423,
+    "reasoning_tokens": 385,
+    "text": "The provided memory context does not specify when John got his dog Max. It only mentions Max in August 2023 and indicates John was considering adopting a dog in June 2023.",
+    "uncached_input_tokens": 2628
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001209,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 129,
+      "reasoning_tokens": 121,
+      "response_chars": 18,
+      "uncached_input_tokens": 145,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009482000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 18,
+      "uncached_input_tokens": 17,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 140,
+      "reasoning_tokens": 132,
+      "response_chars": 18,
+      "uncached_input_tokens": 17,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_be136dd87ac04b04087a",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "e3a83ea34a4501b25510f56d58789c33389a8f2b20ef173227600132e10c628b",
+  "status": "completed"
+}

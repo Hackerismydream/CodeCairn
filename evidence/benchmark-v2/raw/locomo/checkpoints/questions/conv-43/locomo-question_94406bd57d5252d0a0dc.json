@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012468,
+    "cost_usd": null,
+    "input_tokens": 2784,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 686,
+    "reasoning_tokens": 650,
+    "text": "John does not explicitly mention visiting any US cities in the provided memory context. The context shows Tim mentioning NYC, but John only refers to \"the city\" without naming it.",
+    "uncached_input_tokens": 2784
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001716,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 212,
+      "reasoning_tokens": 204,
+      "response_chars": 18,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007172000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 109,
+      "reasoning_tokens": 101,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 233,
+      "reasoning_tokens": 225,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_94406bd57d5252d0a0dc",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "fcd274fccde0da00edf7b1cf3b9c93214555ec78251d59ac5d74d835da422259",
+  "status": "completed"
+}

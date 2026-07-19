@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0027911999999999998,
+    "cost_usd": null,
+    "input_tokens": 2742,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 427,
+    "reasoning_tokens": 370,
+    "text": "The provided memory context does not contain a specific date or time for when Andrew will go hiking with Audrey. While both express interest in hiking together (e.g., Audrey suggests planning a trip in session_12 on 2023-07-11), no concrete plan is mentioned.",
+    "uncached_input_tokens": 54
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001101,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013082,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 200,
+      "reasoning_tokens": 192,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_456a2448856b7560ad0d",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "ddb1f9fdbd15abe0839555f6c916b572579b177dab046dbe7187d8bd0db4eb34",
+  "status": "completed"
+}

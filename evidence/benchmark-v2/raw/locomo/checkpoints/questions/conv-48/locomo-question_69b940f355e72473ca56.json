@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0047926,
+    "cost_usd": null,
+    "input_tokens": 3055,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 731,
+    "reasoning_tokens": 647,
+    "text": "Based on the provided memories, Deborah's father passed away suddenly just before she mentioned it on January 27, 2023. She later stated she took her mother's cat when her mother passed away (before August 26, 2023). Additionally, she refers to a photo as the \"last one\" with her friend Karlie, taken on their last hike, implying Karlie has also passed away.",
+    "uncached_input_tokens": 111
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001476,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 147,
+      "reasoning_tokens": 139,
+      "response_chars": 20,
+      "uncached_input_tokens": 198,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 265,
+      "reasoning_tokens": 257,
+      "response_chars": 20,
+      "uncached_input_tokens": 70,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 20,
+      "uncached_input_tokens": 70,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_69b940f355e72473ca56",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "90a6b48f6f8610200467c3c2bdbf86fc7a4c8786734d8fbc7c0d497252908cd1",
+  "status": "completed"
+}

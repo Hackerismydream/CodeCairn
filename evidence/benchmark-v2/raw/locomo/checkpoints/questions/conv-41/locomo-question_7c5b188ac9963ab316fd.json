@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010746,
+    "cost_usd": null,
+    "input_tokens": 2984,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 299,
+    "reasoning_tokens": 268,
+    "text": "John is volunteering to help veterans, as indicated by his work improving their confidence and skills (like reviewing an essay) in early August 2023.",
+    "uncached_input_tokens": 2984
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001125,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 114,
+      "reasoning_tokens": 106,
+      "response_chars": 18,
+      "uncached_input_tokens": 147,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 18,
+      "uncached_input_tokens": 19,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006242,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 94,
+      "reasoning_tokens": 86,
+      "response_chars": 18,
+      "uncached_input_tokens": 19,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7c5b188ac9963ab316fd",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "69892cbbb6b6d46e0410041c196253708c66ebfd96a3ac625682e8867cd4f5f8",
+  "status": "completed"
+}

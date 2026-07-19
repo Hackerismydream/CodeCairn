@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010719,
+    "cost_usd": null,
+    "input_tokens": 2771,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 401,
+    "reasoning_tokens": 361,
+    "text": "Tim showed John a map of Middle-earth from *The Lord of the Rings* (source: Tim, 2024-01-02T17:42:00+00:00).",
+    "uncached_input_tokens": 2771
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002004,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 257,
+      "reasoning_tokens": 249,
+      "response_chars": 20,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 213,
+      "reasoning_tokens": 205,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 251,
+      "reasoning_tokens": 243,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_65a4093469e56475511a",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "5fcb010a50baf9ebd920cdaa40886e31c888ad5182dd98b05175c7c6b3291d97",
+  "status": "completed"
+}

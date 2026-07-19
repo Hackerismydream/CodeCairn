@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009924,
+    "cost_usd": null,
+    "input_tokens": 2782,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 263,
+    "reasoning_tokens": 217,
+    "text": "Jolene is interested in future projects that make a real difference to communities, including sustainable initiatives, developing innovative solutions for environmental issues, and working with organizations focused on social causes, connecting her engineering passion with a positive impact.",
+    "uncached_input_tokens": 2782
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003813,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 553,
+      "reasoning_tokens": 545,
+      "response_chars": 20,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0035762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 577,
+      "reasoning_tokens": 569,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0034682,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 559,
+      "reasoning_tokens": 551,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5d115ef9c56b0afd5a24",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "4b662c4d5a924a7d6b973adbef8a0808d3c760bc0f3b89586e63dc3259d0b960",
+  "status": "completed"
+}

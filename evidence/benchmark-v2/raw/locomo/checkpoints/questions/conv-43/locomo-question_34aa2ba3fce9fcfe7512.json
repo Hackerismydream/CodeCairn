@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01089,
+    "cost_usd": null,
+    "input_tokens": 2746,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 442,
+    "reasoning_tokens": 392,
+    "text": "Based on his plan to visit Universal Studios in September 2023 (mentioned on 2023-08-31), Tim might be in California (Universal Studios Hollywood) or Florida (Universal Orlando Resort). The context does not specify which location.",
+    "uncached_input_tokens": 2746
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001215,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 20,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011882000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 177,
+      "reasoning_tokens": 169,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 66,
+      "reasoning_tokens": 58,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_34aa2ba3fce9fcfe7512",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "ad9d73f20455d931818f6276ff1eb44a339cc1d17c0cf2c36f730fa77165d89c",
+  "status": "completed"
+}

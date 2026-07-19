@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2432,
+    "cost_cny": 0.0027428,
+    "cost_usd": null,
+    "input_tokens": 2550,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 388,
+    "reasoning_tokens": 363,
+    "text": "The provided memory context contains no information about James starting to play Civilization VI. The context is insufficient to answer this question.",
+    "uncached_input_tokens": 118
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001158,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 127,
+      "reasoning_tokens": 119,
+      "response_chars": 18,
+      "uncached_input_tokens": 132,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005432000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 88,
+      "reasoning_tokens": 80,
+      "response_chars": 18,
+      "uncached_input_tokens": 4,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0003812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 61,
+      "reasoning_tokens": 53,
+      "response_chars": 18,
+      "uncached_input_tokens": 4,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0d20e0b6691acca3dde2",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "9e06e5e76078f95d216c3060370203d1cc433e97312adcd8ca6b61d87c80d98c",
+  "status": "completed"
+}

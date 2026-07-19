@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010386,
+    "cost_usd": null,
+    "input_tokens": 3048,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 207,
+    "reasoning_tokens": 176,
+    "text": "Playing Super Mario and The Legend of Zelda for hours on his first gaming system (a Nintendo) as a child sparked James' passion for gaming.",
+    "uncached_input_tokens": 3048
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001944,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 20,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009212000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 143,
+      "reasoning_tokens": 135,
+      "response_chars": 20,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 402,
+      "reasoning_tokens": 394,
+      "response_chars": 20,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_60f1a919f2f650204062",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "8103a25cb1401c962424e7383fbea6069a8fb78c372d674966dd1072433eaa7d",
+  "status": "completed"
+}

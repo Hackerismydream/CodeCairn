@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01281,
+    "cost_usd": null,
+    "input_tokens": 2806,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 732,
+    "reasoning_tokens": 676,
+    "text": "John describes the season with initial excitement for the opener (session_1), mentions overcoming a frustrating ankle injury from last season (session_19), and highlights that by December the team saw “the most growth in communication and bonding,” which improved their performances (session_25).",
+    "uncached_input_tokens": 2806
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001119,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 101,
+      "reasoning_tokens": 93,
+      "response_chars": 18,
+      "uncached_input_tokens": 171,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 226,
+      "reasoning_tokens": 218,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 135,
+      "reasoning_tokens": 127,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_68d469e45114b4783ad2",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "24d483c9b32a9868cda53507c5db7d46e9232e13a669a869bfb6ec21d274059c",
+  "status": "completed"
+}

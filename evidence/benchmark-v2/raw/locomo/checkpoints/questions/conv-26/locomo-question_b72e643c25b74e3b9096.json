@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010098,
+    "cost_usd": null,
+    "input_tokens": 2760,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 303,
+    "reasoning_tokens": 263,
+    "text": "Caroline mentioned on July 17, 2023 that she had joined a mentorship program for LGBTQ youth \"last weekend,\" meaning the weekend of July 15–16, 2023.",
+    "uncached_input_tokens": 2760
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001815,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 226,
+      "reasoning_tokens": 218,
+      "response_chars": 20,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009662000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015362000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 243,
+      "reasoning_tokens": 235,
+      "response_chars": 20,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b72e643c25b74e3b9096",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "66121d8a541b558e468ede6ac5dd2f31f309b3a445b1a92dcbd72bde3d3856a0",
+  "status": "completed"
+}

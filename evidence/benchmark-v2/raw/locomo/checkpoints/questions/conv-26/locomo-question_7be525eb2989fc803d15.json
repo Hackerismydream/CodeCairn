@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011694,
+    "cost_usd": null,
+    "input_tokens": 2518,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 690,
+    "reasoning_tokens": 654,
+    "text": "Melanie recently painted a sunset with a pink sky, inspired by sunsets, with blue streaks to convey tranquility (session_17, 2023-10-13).",
+    "uncached_input_tokens": 2518
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001272,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 142,
+      "reasoning_tokens": 134,
+      "response_chars": 20,
+      "uncached_input_tokens": 140,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 196,
+      "reasoning_tokens": 188,
+      "response_chars": 20,
+      "uncached_input_tokens": 12,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010292,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 165,
+      "reasoning_tokens": 157,
+      "response_chars": 20,
+      "uncached_input_tokens": 12,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7be525eb2989fc803d15",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "43813d16c19402d818b8014269ffafd2875abdd1672f37be0de50a8576bd3667",
+  "status": "completed"
+}

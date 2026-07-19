@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009138,
+    "cost_usd": null,
+    "input_tokens": 2788,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 129,
+    "reasoning_tokens": 97,
+    "text": "Calvin got his guitar customized with a shiny finish because it gives it a unique look and goes with his style (August 31, 2023).",
+    "uncached_input_tokens": 2788
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002256,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 305,
+      "reasoning_tokens": 297,
+      "response_chars": 20,
+      "uncached_input_tokens": 142,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019052000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 310,
+      "reasoning_tokens": 302,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020312,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 331,
+      "reasoning_tokens": 323,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fcb5dd3296f73dd21267",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "2349d95eff29e365fc1a4eb7bda4adac2b0c9e0ebf64de55a13fbdbeb48c16f7",
+  "status": "completed"
+}

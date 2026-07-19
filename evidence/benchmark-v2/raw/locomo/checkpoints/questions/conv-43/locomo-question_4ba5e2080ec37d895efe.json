@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011796,
+    "cost_usd": null,
+    "input_tokens": 2794,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 569,
+    "reasoning_tokens": 511,
+    "text": "The context does not provide the name of the popular music composer whose tunes Tim enjoys playing on the piano. Tim mentions in session_8 (2023-08-21) that he likes playing a theme from a favorite movie on the piano, but he does not identify the composer.",
+    "uncached_input_tokens": 2794
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 82,
+      "reasoning_tokens": 74,
+      "response_chars": 18,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005882000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 69,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4ba5e2080ec37d895efe",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "65a4d4695956ccc9581e446f63316a4f778f6ad1871d73fbd0a7f1306e34080a",
+  "status": "completed"
+}

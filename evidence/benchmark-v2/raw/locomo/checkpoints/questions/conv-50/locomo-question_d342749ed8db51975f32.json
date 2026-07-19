@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0044446,
+    "cost_usd": null,
+    "input_tokens": 3059,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 671,
+    "reasoning_tokens": 604,
+    "text": "The provided memories do not mention the number of employees at Dave's car maintenance shop. While one photo shows a group of people in front of a car, it is not clear if they are employees, and no other events provide staffing details. Therefore, the context is insufficient to answer whether Dave's shop employs a lot of people.",
+    "uncached_input_tokens": 115
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001053,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011522000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 60,
+      "reasoning_tokens": 52,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d342749ed8db51975f32",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "9675620062fe3334e6c6208dae6731ce34fa1c4e5ceb2ee49a33fa32e51b0bdc",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012951,
+    "cost_usd": null,
+    "input_tokens": 2849,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 734,
+    "reasoning_tokens": 677,
+    "text": "Evan experienced a health scare (referenced by Sam, but no details are given), and Sam mentioned dealing with discomfort that limits her movement, which she brought up in a conversation about health scares. No specific events or diagnoses are described for either person in the provided context.",
+    "uncached_input_tokens": 2849
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002763,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 229,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 346,
+      "reasoning_tokens": 338,
+      "response_chars": 18,
+      "uncached_input_tokens": 229,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 229,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 204,
+      "reasoning_tokens": 196,
+      "response_chars": 18,
+      "uncached_input_tokens": 101,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023521999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 229,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 341,
+      "reasoning_tokens": 333,
+      "response_chars": 18,
+      "uncached_input_tokens": 101,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c5a6d414252f022f7fb1",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "afe792de9a2f78854439a478f96b4ad65a358480ec96d633410355870d8309d4",
+  "status": "completed"
+}

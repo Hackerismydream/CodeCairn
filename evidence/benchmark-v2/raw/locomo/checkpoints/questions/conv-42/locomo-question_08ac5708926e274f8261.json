@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01269,
+    "cost_usd": null,
+    "input_tokens": 2818,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 706,
+    "reasoning_tokens": 677,
+    "text": "The provided memory context does not contain any mention of Joanna finding old notebooks last week that prompted her to reflect on her progress as a writer.",
+    "uncached_input_tokens": 2818
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001029,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 18,
+      "uncached_input_tokens": 147,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013922000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 222,
+      "reasoning_tokens": 214,
+      "response_chars": 18,
+      "uncached_input_tokens": 19,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009482000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 18,
+      "uncached_input_tokens": 19,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_08ac5708926e274f8261",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "70798eb86dd86c40774eb1b5397ee41dbf53ae418fa07ec540a6504ebbd4a7be",
+  "status": "completed"
+}

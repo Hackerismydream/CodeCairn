@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009429,
+    "cost_usd": null,
+    "input_tokens": 2831,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 156,
+    "reasoning_tokens": 120,
+    "text": "Jon's favorite style of dance is contemporary, as he stated on 2023-01-20 (source: memory_b6058a9de79503499359).",
+    "uncached_input_tokens": 2831
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001128,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 109,
+      "response_chars": 20,
+      "uncached_input_tokens": 142,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 142,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 104,
+      "reasoning_tokens": 96,
+      "response_chars": 20,
+      "uncached_input_tokens": 14,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9f79914ae0a34e8e86b5",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "64b5e1196d4530c1c893a443b3c59be6570409bbb7d819f6d19e4c64d51466ff",
+  "status": "completed"
+}

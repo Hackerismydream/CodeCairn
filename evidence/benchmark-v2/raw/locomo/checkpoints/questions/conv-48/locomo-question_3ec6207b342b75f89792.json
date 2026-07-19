@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010809,
+    "cost_usd": null,
+    "input_tokens": 2717,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 443,
+    "reasoning_tokens": 412,
+    "text": "Based on the provided memory context, besides practicing and teaching yoga, Deborah also enjoys running and organizing workshops and events that focus on mindfulness and self-care.",
+    "uncached_input_tokens": 2717
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001869,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 18,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009362000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 140,
+      "reasoning_tokens": 132,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 253,
+      "reasoning_tokens": 245,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3ec6207b342b75f89792",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "116904fb6908f21084e6a9ffaa95d89d7b5790a4e1434a9bb3575844f648da4f",
+  "status": "completed"
+}

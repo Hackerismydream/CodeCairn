@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008748,
+    "cost_usd": null,
+    "input_tokens": 2570,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 173,
+    "reasoning_tokens": 121,
+    "text": "The provided context does not contain any information about why Nate chose a particular hair color. The only mention of Nate dyeing his hair is in entry 5 from session_7, where he says he dyed his hair but does not explain the reason.",
+    "uncached_input_tokens": 2570
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001431,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 157,
+      "reasoning_tokens": 149,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007622000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 109,
+      "reasoning_tokens": 101,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_41ffe804396e6c2d5708",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "8f72fcefc18bb3494c20edf0990a712e79fc51ebc69d05d7ea2381e09d1a941c",
+  "status": "completed"
+}

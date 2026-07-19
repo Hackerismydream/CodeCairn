@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01131,
+    "cost_usd": null,
+    "input_tokens": 2938,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 416,
+    "reasoning_tokens": 358,
+    "text": "The provided memory context does not contain any details about Calvin's conversation with a specific artist at the gala. It only includes Calvin mentioning he attended a fancy gala in Boston and met interesting people, plus Dave asking who he chatted with, but Calvin's reply is not included.",
+    "uncached_input_tokens": 2938
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001509,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 18,
+      "uncached_input_tokens": 171,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006722000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 90,
+      "reasoning_tokens": 82,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3632c6ae9546a0f31c29",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "2ecd36cee0e93390a4093a1c8386a27e657d8585fdb3656f2afdee303c8c1bc5",
+  "status": "completed"
+}

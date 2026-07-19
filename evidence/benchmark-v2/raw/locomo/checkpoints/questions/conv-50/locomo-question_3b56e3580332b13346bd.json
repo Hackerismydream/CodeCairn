@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010806,
+    "cost_usd": null,
+    "input_tokens": 2848,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 377,
+    "reasoning_tokens": 328,
+    "text": "Dave had a great jam session with his band on the night of September 14, 2023 (referenced as \"last night\" in his message from September 15, 2023 at 00:13:00 UTC).",
+    "uncached_input_tokens": 2848
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001698,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 193,
+      "response_chars": 20,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012572,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 20,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 20,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3b56e3580332b13346bd",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "6e391079060c3d6869647374148948f360d892462cc473c0fb5d45ff61852495",
+  "status": "completed"
+}

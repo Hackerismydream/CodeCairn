@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.003589,
+    "cost_usd": null,
+    "input_tokens": 2577,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 579,
+    "reasoning_tokens": 513,
+    "text": "The provided memory context does not contain any direct statements or indications that James was feeling lonely before meeting Samantha. In session_6 (2022-04-20), he describes falling in love at first sight and regretting not approaching her, but this does not explicitly reference loneliness. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 17
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002253,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 279,
+      "reasoning_tokens": 271,
+      "response_chars": 18,
+      "uncached_input_tokens": 193,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007802000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 97,
+      "reasoning_tokens": 89,
+      "response_chars": 18,
+      "uncached_input_tokens": 65,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007922000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 99,
+      "reasoning_tokens": 91,
+      "response_chars": 18,
+      "uncached_input_tokens": 65,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_065f3eb69389d2934860",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "2d570400b642c53debbd09c87250ce5ca940a706ed34e99581e8744eb4cd76d6",
+  "status": "completed"
+}

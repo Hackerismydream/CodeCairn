@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009816,
+    "cost_usd": null,
+    "input_tokens": 2980,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 146,
+    "reasoning_tokens": 107,
+    "text": "The provided memory context does not contain any description by Audrey of new beds for her dogs. Andrew asks about pictures of new beds in context #12, but Audrey's response is not included.",
+    "uncached_input_tokens": 2980
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 162,
+      "reasoning_tokens": 154,
+      "response_chars": 18,
+      "uncached_input_tokens": 150,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009092000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 140,
+      "reasoning_tokens": 132,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 270,
+      "reasoning_tokens": 262,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1b1d8bdeb0a7db5ee514",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "84981178d45d89fd40f644da95351db5eddd8c0429e83215fd6a4bdb04a03bd9",
+  "status": "completed"
+}

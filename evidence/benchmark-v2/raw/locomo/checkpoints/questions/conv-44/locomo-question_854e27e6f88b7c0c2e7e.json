@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0017384000000000002,
+    "cost_usd": null,
+    "input_tokens": 2894,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 239,
+    "reasoning_tokens": 200,
+    "text": "Audrey moved to a new place on June 26, 2023, as indicated by her messages on that date mentioning she got a new place and was unboxing after moving.",
+    "uncached_input_tokens": 78
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001773,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 222,
+      "reasoning_tokens": 214,
+      "response_chars": 20,
+      "uncached_input_tokens": 147,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 401,
+      "reasoning_tokens": 393,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022082,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 358,
+      "reasoning_tokens": 350,
+      "response_chars": 20,
+      "uncached_input_tokens": 19,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_854e27e6f88b7c0c2e7e",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "bcdedd2b9602154b0338d5c0b7b0c919fe80bbc0a30ad2ae981b29d0a861b8a5",
+  "status": "completed"
+}

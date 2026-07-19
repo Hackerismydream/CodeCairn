@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011547,
+    "cost_usd": null,
+    "input_tokens": 3079,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 385,
+    "reasoning_tokens": 350,
+    "text": "Caroline attended the LGBTQ conference on July 10, 2023. (She mentioned it two days prior to her message on July 12, 2023.)",
+    "uncached_input_tokens": 3079
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000879,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 74,
+      "reasoning_tokens": 66,
+      "response_chars": 20,
+      "uncached_input_tokens": 145,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 20,
+      "uncached_input_tokens": 17,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 124,
+      "reasoning_tokens": 116,
+      "response_chars": 20,
+      "uncached_input_tokens": 17,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_695281a3d76631941f25",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "d89183936537ea5f4fdb97805845bfea537d404d7c8c31565944853ebf8b0443",
+  "status": "completed"
+}

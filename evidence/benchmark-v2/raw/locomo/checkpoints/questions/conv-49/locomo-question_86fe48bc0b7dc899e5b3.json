@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010572,
+    "cost_usd": null,
+    "input_tokens": 2744,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 390,
+    "reasoning_tokens": 358,
+    "text": "Evan spends his honeymoon skiing, trying local dishes, and enjoying breathtaking views, as inferred from Sam's mention of these activities when wishing him well.",
+    "uncached_input_tokens": 2744
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001941,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 241,
+      "reasoning_tokens": 233,
+      "response_chars": 18,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0036362,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 587,
+      "reasoning_tokens": 579,
+      "response_chars": 18,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017102,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 266,
+      "reasoning_tokens": 258,
+      "response_chars": 18,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_86fe48bc0b7dc899e5b3",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "c21d725ad350954bdf82df171943b248e6d46f722b8cfd5a658410b6529c0dcd",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015318,
+    "cost_usd": null,
+    "input_tokens": 2956,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1075,
+    "reasoning_tokens": 997,
+    "text": "The provided memory context does not contain enough information to answer how many dogs Maria adopted specifically from the dog shelter she volunteers at. While Maria mentions adopting a puppy named Shadow from “a shelter” (2023-08-13) and getting another puppy named Coco (around late July 2023), there is no explicit link that either adoption came from the shelter where she volunteers.",
+    "uncached_input_tokens": 2956
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 258,
+      "reasoning_tokens": 250,
+      "response_chars": 18,
+      "uncached_input_tokens": 188,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005912000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 68,
+      "reasoning_tokens": 60,
+      "response_chars": 18,
+      "uncached_input_tokens": 60,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013532000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 195,
+      "reasoning_tokens": 187,
+      "response_chars": 18,
+      "uncached_input_tokens": 60,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0c787549f9412ea2eb77",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "98cb4353d2df01ab65961b148bf3825adcf14f92851aa8873818b92525150222",
+  "status": "completed"
+}

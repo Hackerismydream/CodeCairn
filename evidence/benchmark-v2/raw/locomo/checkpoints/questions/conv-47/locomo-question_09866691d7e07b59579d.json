@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009645,
+    "cost_usd": null,
+    "input_tokens": 2631,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 292,
+    "reasoning_tokens": 242,
+    "text": "James planned to visit Vancouver after Toronto, as stated on 2022-07-09T17:18:00+00:00 (source: `memory_2533b9b0da13ddaeeff4`).",
+    "uncached_input_tokens": 2631
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001563,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 20,
+      "uncached_input_tokens": 157,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 20,
+      "uncached_input_tokens": 29,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024481999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 393,
+      "reasoning_tokens": 385,
+      "response_chars": 20,
+      "uncached_input_tokens": 29,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_09866691d7e07b59579d",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "8bc2524293ffb1880e7eaefcbc1414b0995e040a22dba1838294d6bb82d01422",
+  "status": "completed"
+}

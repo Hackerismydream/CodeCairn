@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010581,
+    "cost_usd": null,
+    "input_tokens": 3083,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 222,
+    "reasoning_tokens": 189,
+    "text": "Calvin says he digs deeper into his music to try to capture feelings, specifically those inspired by the struggles people go through (2023-10-23).",
+    "uncached_input_tokens": 3083
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00159,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 18,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0029311999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 478,
+      "reasoning_tokens": 470,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 451,
+      "reasoning_tokens": 443,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_91a1a198277e1f13728d",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "f030ddd590b83ac017757f2d569f116fbd6a4d1558010ddba1da2f00bd0014c0",
+  "status": "completed"
+}

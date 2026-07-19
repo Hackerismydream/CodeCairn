@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01185,
+    "cost_usd": null,
+    "input_tokens": 3022,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 464,
+    "reasoning_tokens": 416,
+    "text": "The provided context does not specify the exact date John got the ankle injury. In a message on November 21, 2023, John refers to hurting his ankle \"last season,\" but no precise date for the injury is given.",
+    "uncached_input_tokens": 3022
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001956,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 244,
+      "reasoning_tokens": 236,
+      "response_chars": 18,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011372,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 104,
+      "reasoning_tokens": 93,
+      "response_chars": 22,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_53f88782fb5444e91871",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "a0ceebe3b3807a5f57654fc5eb08d55c6c4a1df214dcc7bd27b9c0ae0e23f477",
+  "status": "completed"
+}

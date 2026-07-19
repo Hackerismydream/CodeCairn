@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009681,
+    "cost_usd": null,
+    "input_tokens": 2883,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 172,
+    "reasoning_tokens": 140,
+    "text": "The provided memory context does not contain any information about a bonsai tree or Evan's decision to get one. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2883
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001224,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 173,
+      "reasoning_tokens": 165,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 112,
+      "reasoning_tokens": 104,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9811c92664c3ce592228",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "6bf7890fe3228f0bea9a6fd519051a183f124846ab9bb10d9c5139d9291b9787",
+  "status": "completed"
+}

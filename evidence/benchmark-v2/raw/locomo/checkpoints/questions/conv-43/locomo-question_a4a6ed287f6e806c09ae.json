@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013173,
+    "cost_usd": null,
+    "input_tokens": 2783,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 804,
+    "reasoning_tokens": 728,
+    "text": "The memory context does not show John explicitly naming any cities he has visited. Tim mentions London and Edinburgh, but John does not confirm visiting either. One entry (session_27) has John saying \"I've been there before\" in response to an unspecified location, but the city is not identified. Therefore, the context is insufficient to answer which cities John has been to.",
+    "uncached_input_tokens": 2783
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001236,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 112,
+      "reasoning_tokens": 104,
+      "response_chars": 18,
+      "uncached_input_tokens": 188,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 252,
+      "reasoning_tokens": 244,
+      "response_chars": 18,
+      "uncached_input_tokens": 60,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 18,
+      "uncached_input_tokens": 60,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a4a6ed287f6e806c09ae",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "d09d9accba4c5740be8cc5acad4482372764b7e0de68e55f9e4a4a6a4953a8d5",
+  "status": "completed"
+}

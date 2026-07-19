@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008337,
+    "cost_usd": null,
+    "input_tokens": 2539,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 120,
+    "reasoning_tokens": 106,
+    "text": "The provided memory context doesn't include Maria's dogs' names.",
+    "uncached_input_tokens": 2539
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000981,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 103,
+      "reasoning_tokens": 95,
+      "response_chars": 18,
+      "uncached_input_tokens": 121,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000975,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 18,
+      "uncached_input_tokens": 121,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001047,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 114,
+      "reasoning_tokens": 106,
+      "response_chars": 18,
+      "uncached_input_tokens": 121,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_06a5013191e757cd4fc2",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "b59a4a48b2bc11ca6144883da53e6cacba29de068e0898031b0729dc33ce2029",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011526,
+    "cost_usd": null,
+    "input_tokens": 3012,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 415,
+    "reasoning_tokens": 342,
+    "text": "John is really excited about starting as a programming mentor for game developers. He says he's \"really excited to share my knowledge and motivate people who are passionate about gaming\" (2022-10-03) and also expresses being \"So stoked!\" about a related volunteer gig that combines his loves for gaming and helping (2022-10-03).",
+    "uncached_input_tokens": 3012
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001728,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 18,
+      "uncached_input_tokens": 190,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025052,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 386,
+      "reasoning_tokens": 378,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0033751999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 531,
+      "reasoning_tokens": 523,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5c1ce5ffe328d2116290",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "dc75dd6b1f5f2ed4d4014a19f8a785503bd30db86aa46fabf4c7a8fb8470e659",
+  "status": "completed"
+}

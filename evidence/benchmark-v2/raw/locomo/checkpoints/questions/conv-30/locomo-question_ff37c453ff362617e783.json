@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013575,
+    "cost_usd": null,
+    "input_tokens": 2949,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 788,
+    "reasoning_tokens": 761,
+    "text": "The provided memory context includes several photo captions of dancers but none explain what the dancers represent. The context is insufficient to answer.",
+    "uncached_input_tokens": 2949
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000873,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 69,
+      "response_chars": 18,
+      "uncached_input_tokens": 137,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013922000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 227,
+      "reasoning_tokens": 219,
+      "response_chars": 18,
+      "uncached_input_tokens": 9,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 18,
+      "uncached_input_tokens": 9,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ff37c453ff362617e783",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "9ab22d93d289e610ac23d3e74ade00675f4cc772bf66ac92b17ebba11227164d",
+  "status": "completed"
+}

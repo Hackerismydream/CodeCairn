@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008985,
+    "cost_usd": null,
+    "input_tokens": 2597,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 199,
+    "reasoning_tokens": 118,
+    "text": "Joanna named the stuffed animal dog Tilly because she used to have a real dog named Tilly back in Michigan. She became allergic and had to give her up, and the name helps her remember those past times when she could hold and squeeze animals without an allergic reaction. (Source: session_24, 2022-10-21T14:03:30+00:00)",
+    "uncached_input_tokens": 2597
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00165,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 20,
+      "uncached_input_tokens": 194,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025591999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 393,
+      "reasoning_tokens": 385,
+      "response_chars": 20,
+      "uncached_input_tokens": 66,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 179,
+      "reasoning_tokens": 171,
+      "response_chars": 20,
+      "uncached_input_tokens": 66,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d7317db9d68ea9620b68",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "74bb0e65f6ce9cab12be0ffade2146261077e6c65d3a50e37b77a142c6873be9",
+  "status": "completed"
+}

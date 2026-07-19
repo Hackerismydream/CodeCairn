@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.000907,
+    "cost_usd": null,
+    "input_tokens": 2591,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 125,
+    "reasoning_tokens": 92,
+    "text": "The provided memory context does not contain any information about Deborah meeting Anna. All snippets involve Deborah's conversations with Jolene, and the name Anna is not mentioned.",
+    "uncached_input_tokens": 31
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000756,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 56,
+      "reasoning_tokens": 48,
+      "response_chars": 18,
+      "uncached_input_tokens": 140,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 162,
+      "reasoning_tokens": 154,
+      "response_chars": 18,
+      "uncached_input_tokens": 12,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 18,
+      "uncached_input_tokens": 12,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f9cf61d43dc56c18f005",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "34ebdb8377021da320e75edbff9d605f0fdd155c9b585c6b00e75457e2984cfd",
+  "status": "completed"
+}

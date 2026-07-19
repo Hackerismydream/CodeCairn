@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01641,
+    "cost_usd": null,
+    "input_tokens": 2878,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1296,
+    "reasoning_tokens": 1238,
+    "text": "Calvin stays connected to the creative process by experimenting with different genres, pushing himself out of his comfort zone, and adding electronic elements to his songs, which he describes as “an exciting process of self-discovery and growth” (session_11, 2023-07-21).",
+    "uncached_input_tokens": 2878
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001821,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 18,
+      "uncached_input_tokens": 187,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008822000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 109,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 157,
+      "reasoning_tokens": 149,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b5350efa53a42f83f3e1",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "442cde9cc8275c213d25f3837346d96bae24750693746bed51bc11fbcf6c5f3c",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010539,
+    "cost_usd": null,
+    "input_tokens": 3141,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 186,
+    "reasoning_tokens": 146,
+    "text": "Andrew wants to live near a park or woods to give their dog a large, open space to run around (2023-05-06T10:50:00+00:00).",
+    "uncached_input_tokens": 3141
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002604,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 354,
+      "reasoning_tokens": 346,
+      "response_chars": 20,
+      "uncached_input_tokens": 160,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 32,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 303,
+      "reasoning_tokens": 295,
+      "response_chars": 20,
+      "uncached_input_tokens": 32,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8ba1f5359e462e20917f",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "c3f6458ddaf62625602b72f242a3d60c48dcd1229070a04ca46f5fcdef9ba1ca",
+  "status": "completed"
+}

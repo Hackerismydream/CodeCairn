@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010095,
+    "cost_usd": null,
+    "input_tokens": 2867,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 249,
+    "reasoning_tokens": 190,
+    "text": "Calvin believes that paying attention to small details is what makes an artist create something extraordinary, rather than just average (2023-10-23T14:27:30+00:00 and 2023-10-23T14:26:30+00:00).",
+    "uncached_input_tokens": 2867
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001614,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 183,
+      "reasoning_tokens": 175,
+      "response_chars": 20,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009632,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 138,
+      "reasoning_tokens": 130,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007652000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e07f948f77eb71c642ba",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "54e6fdcae1ec5e3a584cf98f924aca7c90e51281c586c39bde50e5f5e08cb981",
+  "status": "completed"
+}

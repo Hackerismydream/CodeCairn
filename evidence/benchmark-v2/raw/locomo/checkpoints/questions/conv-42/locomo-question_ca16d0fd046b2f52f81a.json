@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010086,
+    "cost_usd": null,
+    "input_tokens": 2718,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 322,
+    "reasoning_tokens": 306,
+    "text": "In August 2022, Joanna shared her book with her writers group.",
+    "uncached_input_tokens": 2718
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001101,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 20,
+      "uncached_input_tokens": 127,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001515,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 20,
+      "uncached_input_tokens": 127,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001263,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 147,
+      "reasoning_tokens": 139,
+      "response_chars": 20,
+      "uncached_input_tokens": 127,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ca16d0fd046b2f52f81a",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "f3ad23a85627d8df92e508e6e54315598e64118d641f69013ab013a94b84a5eb",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011952,
+    "cost_usd": null,
+    "input_tokens": 3136,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 424,
+    "reasoning_tokens": 384,
+    "text": "The provided memory context does not contain any information about how long Dave's work on the Ford Mustang took. Calvin asked about the restoration time in session_14, but no answer was recorded.",
+    "uncached_input_tokens": 3136
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001056,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 100,
+      "reasoning_tokens": 92,
+      "response_chars": 18,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 110,
+      "reasoning_tokens": 102,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_95553eada23dec05cbb2",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "6ff811d3e72814c13ec3e0f9f54dd257304b6f81485b79bc84a2490ddb7f098c",
+  "status": "completed"
+}

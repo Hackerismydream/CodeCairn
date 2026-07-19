@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010692,
+    "cost_usd": null,
+    "input_tokens": 2570,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 497,
+    "reasoning_tokens": 479,
+    "text": "The provided memory context does not include details about how Nate celebrated his international tournament win.",
+    "uncached_input_tokens": 2570
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001059,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 112,
+      "reasoning_tokens": 104,
+      "response_chars": 18,
+      "uncached_input_tokens": 129,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 92,
+      "reasoning_tokens": 84,
+      "response_chars": 18,
+      "uncached_input_tokens": 1,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 18,
+      "uncached_input_tokens": 1,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d0664148fddffe1056e9",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "5b52f332c0816744592c9d98c943e786395fc6cd318d593828816b86bb22b0c1",
+  "status": "completed"
+}

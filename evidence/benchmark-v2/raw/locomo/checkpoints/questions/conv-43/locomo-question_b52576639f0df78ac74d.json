@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.0093,
+    "cost_usd": null,
+    "input_tokens": 2588,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 256,
+    "reasoning_tokens": 236,
+    "text": "The provided memory context does not include John's response specifying which spice he added to the soup.",
+    "uncached_input_tokens": 2588
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001059,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 18,
+      "uncached_input_tokens": 127,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000867,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 81,
+      "reasoning_tokens": 73,
+      "response_chars": 18,
+      "uncached_input_tokens": 127,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001047,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 111,
+      "reasoning_tokens": 103,
+      "response_chars": 18,
+      "uncached_input_tokens": 127,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b52576639f0df78ac74d",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "dee08b4b677e21ae18bb9ab3a5798f0a5ffa02df7333690d162eb2cd1e2548d0",
+  "status": "completed"
+}

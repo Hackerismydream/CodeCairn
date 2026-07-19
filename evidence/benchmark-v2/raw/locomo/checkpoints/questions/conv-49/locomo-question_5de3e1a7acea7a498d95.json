@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.001996,
+    "cost_usd": null,
+    "input_tokens": 2626,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 289,
+    "reasoning_tokens": 255,
+    "text": "The provided memory context does not contain any information about roadtrips taken by Evan in May 2023. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 66
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00135,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 153,
+      "reasoning_tokens": 145,
+      "response_chars": 18,
+      "uncached_input_tokens": 144,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005372,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 81,
+      "reasoning_tokens": 73,
+      "response_chars": 18,
+      "uncached_input_tokens": 16,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 267,
+      "reasoning_tokens": 259,
+      "response_chars": 18,
+      "uncached_input_tokens": 16,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5de3e1a7acea7a498d95",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "facce70672a40a760658ff3afcf7a36cbe74e985b909896cbee40c035f622f82",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008979,
+    "cost_usd": null,
+    "input_tokens": 2651,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 171,
+    "reasoning_tokens": 143,
+    "text": "According to Nate's own statement on 2022-11-07, \"Xenoblade Chronicles\" is a fantasy RPG.",
+    "uncached_input_tokens": 2651
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001596,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 194,
+      "reasoning_tokens": 186,
+      "response_chars": 20,
+      "uncached_input_tokens": 144,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009272000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 20,
+      "uncached_input_tokens": 16,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 20,
+      "uncached_input_tokens": 16,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e14edb5dd397d22ee18c",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "b604ee7556fcfe4bc6da447b0ab9510139bcc7662808b7adca16cf1a6f6275ee",
+  "status": "completed"
+}

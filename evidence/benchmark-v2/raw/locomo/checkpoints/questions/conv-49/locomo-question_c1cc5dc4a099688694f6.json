@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015645,
+    "cost_usd": null,
+    "input_tokens": 2987,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1114,
+    "reasoning_tokens": 1052,
+    "text": "The provided memory context does not mention Sam resuming any activity in December 2023 after a long time. The only reference to Sam in that month is a remark about snacks being good \"after a hike,\" but there is no indication that Sam had personally resumed hiking or any other activity after a hiatus.",
+    "uncached_input_tokens": 2987
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002223,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 283,
+      "reasoning_tokens": 275,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008522,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 107,
+      "response_chars": 22,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c1cc5dc4a099688694f6",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "668380e79f9ac31992f3920e5b3c897f1f1c2bfdcf7f778355b609cfea374647",
+  "status": "completed"
+}

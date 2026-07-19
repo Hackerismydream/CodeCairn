@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009129,
+    "cost_usd": null,
+    "input_tokens": 2739,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 152,
+    "reasoning_tokens": 137,
+    "text": "James prepared an omelette for the first time in the cooking class.",
+    "uncached_input_tokens": 2739
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 354,
+      "reasoning_tokens": 346,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001278,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 150,
+      "reasoning_tokens": 142,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001278,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 126,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 150,
+      "reasoning_tokens": 142,
+      "response_chars": 20,
+      "uncached_input_tokens": 126,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_915d455e4b1782692022",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "12f66f90b1c0727470003128438c94a03d481da37229d08f69ce40dbe66f6db0",
+  "status": "completed"
+}

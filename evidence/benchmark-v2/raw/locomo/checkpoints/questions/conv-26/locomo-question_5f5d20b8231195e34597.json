@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01299,
+    "cost_usd": null,
+    "input_tokens": 2670,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 830,
+    "reasoning_tokens": 806,
+    "text": "Melanie has painted a lake sunrise, a sunset scene with a pink sky, a sunflower, and a horse.",
+    "uncached_input_tokens": 2670
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 472,
+      "reasoning_tokens": 464,
+      "response_chars": 18,
+      "uncached_input_tokens": 130,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013292,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 20,
+      "uncached_input_tokens": 2,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 454,
+      "reasoning_tokens": 446,
+      "response_chars": 20,
+      "uncached_input_tokens": 2,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5f5d20b8231195e34597",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "54f864513114fb7394eefb494d30705b41712d25c7f6315150fbc75da098173e",
+  "status": "completed"
+}

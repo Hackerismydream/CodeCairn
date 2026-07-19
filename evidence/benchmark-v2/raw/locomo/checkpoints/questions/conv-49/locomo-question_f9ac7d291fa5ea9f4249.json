@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013062,
+    "cost_usd": null,
+    "input_tokens": 2924,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 715,
+    "reasoning_tokens": 666,
+    "text": "The provided context does not include Evan stating what he found relaxing about the road trip to Jasper. While he described the glaciers and lakes as \"gorgeous\" and the trip as \"amazing,\" there is no explicit mention of relaxation.",
+    "uncached_input_tokens": 2924
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001182,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 112,
+      "reasoning_tokens": 104,
+      "response_chars": 18,
+      "uncached_input_tokens": 170,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010832,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 159,
+      "reasoning_tokens": 151,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 203,
+      "reasoning_tokens": 195,
+      "response_chars": 18,
+      "uncached_input_tokens": 42,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f9ac7d291fa5ea9f4249",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "abb4e756ee87aaaad8e6d03a7acd6229f3b76bbff77088af1cc2705faf6a5543",
+  "status": "completed"
+}

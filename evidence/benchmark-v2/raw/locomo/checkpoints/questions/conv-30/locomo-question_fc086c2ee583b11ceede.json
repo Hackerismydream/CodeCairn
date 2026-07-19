@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.0138,
+    "cost_usd": null,
+    "input_tokens": 2694,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 953,
+    "reasoning_tokens": 934,
+    "text": "Gina describes Jon's studio as expanding and giving dancers an outlet (session_8).",
+    "uncached_input_tokens": 2694
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00105,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 111,
+      "reasoning_tokens": 103,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00081,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 71,
+      "reasoning_tokens": 63,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fc086c2ee583b11ceede",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "4eaa28a59c2d5ee82010ecd02f874dd192c0d068f007e04f91d6cdaee7226296",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010779,
+    "cost_usd": null,
+    "input_tokens": 3151,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 221,
+    "reasoning_tokens": 171,
+    "text": "Evan got back from a vacation with his SO around August 13, 2023, based on his message timestamped 2023-08-13T16:09:00+00:00 saying he \"just got back.\"",
+    "uncached_input_tokens": 3151
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001767,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 212,
+      "reasoning_tokens": 204,
+      "response_chars": 20,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 251,
+      "reasoning_tokens": 243,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010922,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 155,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8a1b260f51b2499f8e80",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "ee792ebc9e4af32219be0edb3adcede414b27f4b0fbbec066c07234d3f6a1257",
+  "status": "completed"
+}

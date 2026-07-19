@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01332,
+    "cost_usd": null,
+    "input_tokens": 2706,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 867,
+    "reasoning_tokens": 841,
+    "text": "The memory context does not contain any explicit suggestion from Jolene to Deborah about doing an outdoor activity together. Insufficient context.",
+    "uncached_input_tokens": 2706
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001206,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 18,
+      "uncached_input_tokens": 136,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 18,
+      "uncached_input_tokens": 8,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005972000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 95,
+      "reasoning_tokens": 87,
+      "response_chars": 18,
+      "uncached_input_tokens": 8,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_634e70e9256b9883d41c",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "57da344deb84da268f830ceaccaad77b1d2e3261faaeb30670aa317043da2489",
+  "status": "completed"
+}

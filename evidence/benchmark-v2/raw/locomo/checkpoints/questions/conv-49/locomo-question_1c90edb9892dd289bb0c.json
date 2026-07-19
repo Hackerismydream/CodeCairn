@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011409,
+    "cost_usd": null,
+    "input_tokens": 2895,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 454,
+    "reasoning_tokens": 425,
+    "text": "Evan started taking his health seriously in 2023, following a health scare (heart palpitation) in early June of that year.",
+    "uncached_input_tokens": 2895
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001134,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 18,
+      "uncached_input_tokens": 138,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007712000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 18,
+      "uncached_input_tokens": 10,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 107,
+      "reasoning_tokens": 99,
+      "response_chars": 18,
+      "uncached_input_tokens": 10,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1c90edb9892dd289bb0c",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "ccb64a810ac73ada2b162165a81ea07f5884a508c08b1d58559d1c0617a4da01",
+  "status": "completed"
+}

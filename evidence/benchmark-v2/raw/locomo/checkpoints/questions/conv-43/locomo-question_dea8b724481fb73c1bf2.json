@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010617,
+    "cost_usd": null,
+    "input_tokens": 3047,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 246,
+    "reasoning_tokens": 215,
+    "text": "John had a career-high in assists in a basketball game against their rival (as indicated by the image caption and the context of his basketball-related interests).",
+    "uncached_input_tokens": 3047
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000894,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 69,
+      "response_chars": 20,
+      "uncached_input_tokens": 144,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 20,
+      "uncached_input_tokens": 16,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 183,
+      "reasoning_tokens": 175,
+      "response_chars": 20,
+      "uncached_input_tokens": 16,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_dea8b724481fb73c1bf2",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "07318f8f107d2c33238b7dd8308c5d39387a482193e60f8244538599a8c8e957",
+  "status": "completed"
+}

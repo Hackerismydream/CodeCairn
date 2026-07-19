@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0087524,
+    "cost_usd": null,
+    "input_tokens": 2872,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1419,
+    "reasoning_tokens": 1309,
+    "text": "Based on the provided memories, John’s expressed basketball goals are:\n- Improve his shooting percentage (as stated directly in session_1, 2023-05-21).\n- Continuously get better and surpass his personal goals (session_11, where he says “nothing like seeing myself get better and beating goals”).\n- Be a leader (session_27, referencing a painting that reminds him to “stay true and be a leader in everything I do”).\n- Train daily to improve and maintain his passion (session_27).",
+    "uncached_input_tokens": 56
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002241,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 231,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 258,
+      "reasoning_tokens": 250,
+      "response_chars": 18,
+      "uncached_input_tokens": 231,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 231,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 208,
+      "reasoning_tokens": 200,
+      "response_chars": 18,
+      "uncached_input_tokens": 103,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 231,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 138,
+      "reasoning_tokens": 130,
+      "response_chars": 18,
+      "uncached_input_tokens": 103,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5b8794c28b6f1eab754d",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "244743731a090139c3bde11de57b62f0508eef8ad7fd1addd188c7f434d291cc",
+  "status": "completed"
+}

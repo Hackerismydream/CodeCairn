@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009195,
+    "cost_usd": null,
+    "input_tokens": 2727,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 169,
+    "reasoning_tokens": 116,
+    "text": "The general sentiment about the upcoming grand opening is positive and enthusiastic. Jon expresses excitement, saying \"Let's make some awesome memories tomorrow at the grand opening!\" and Gina shows interest by asking when the studio opens. No negative sentiment is present in the provided context.",
+    "uncached_input_tokens": 2727
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002565,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 346,
+      "reasoning_tokens": 338,
+      "response_chars": 20,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 195,
+      "reasoning_tokens": 187,
+      "response_chars": 20,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009482000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 140,
+      "reasoning_tokens": 132,
+      "response_chars": 20,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a23a1fff70b6b1529c54",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "81ce6d899590dc20752dcead452dded61382b8b5538a8fba803bb16353389059",
+  "status": "completed"
+}

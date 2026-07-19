@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015333,
+    "cost_usd": null,
+    "input_tokens": 2783,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1164,
+    "reasoning_tokens": 1109,
+    "text": "Audrey has a tattoo of her four dogs on her arm, as stated in session_15 on 2023-08-16. Earlier, she also had tattoos of her dogs with a sunflower design (session_3, 2023-04-16).",
+    "uncached_input_tokens": 2783
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001545,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 173,
+      "reasoning_tokens": 165,
+      "response_chars": 20,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0040622,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 656,
+      "reasoning_tokens": 648,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 292,
+      "reasoning_tokens": 284,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1798a9602da2eeaea67d",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "f0d352cdb92f7e155b3ce0d3e1b3c1a63fe90c73c4a9cc53116e77301b767baa",
+  "status": "completed"
+}

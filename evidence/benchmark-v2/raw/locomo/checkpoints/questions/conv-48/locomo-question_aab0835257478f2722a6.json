@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0046036,
+    "cost_usd": null,
+    "input_tokens": 3070,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 692,
+    "reasoning_tokens": 334,
+    "text": "Based on the provided memories, Deborah found peace through multiple practices while grieving her loved ones:\n\n- **Spending time with family and cherishing memories**: After her father's passing, she channeled her grief by being with family and holding onto shared memories (source: memory_8234dfe04e14f72edeb7).\n- **Nature**: She explicitly states that nature helps her find peace every day and describes a favorite park with a forest trail and a calming beach (sources: memory_1c9bb7d2248795e487da, memory_47ce54928033a23fed97).\n- **Self-reflection and inner growth**: Nature and self-reflection helped her appreciate life’s beauty and grow (source: memory_8b1f3b330c1e2b04641c).\n- **Yoga and meditation**: Teaching yoga, attending a yoga retreat with like-minded people, and engaging in activities like meditation and self-reflection cultivated inner peace and balance (sources: memory_17f9c369ae1c44f7dfaa, memory_0269ea2b7509d409d4f5, memory_85e10b9892eeb3f6c357).\n- **Visiting meaningful places**: She visited her late mother's house, which made her feel her mother’s presence and comforted her, reminding her of her love and strength (sources: memory_30cb4d8b8e8e8189018e, memory_95ecd746ce78c083a33f).\n\nThus, a combination of family connection, treasured memories, nature, yoga/meditation, self-reflection, and revisiting significant locations helped Deborah navigate her grief.",
+    "uncached_input_tokens": 126
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003126,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 496,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 273,
+      "reasoning_tokens": 265,
+      "response_chars": 18,
+      "uncached_input_tokens": 496,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 384,
+      "cost_cny": 0.0020436,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 496,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 283,
+      "reasoning_tokens": 275,
+      "response_chars": 18,
+      "uncached_input_tokens": 112,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 384,
+      "cost_cny": 0.0025356,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 496,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 365,
+      "reasoning_tokens": 357,
+      "response_chars": 18,
+      "uncached_input_tokens": 112,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_aab0835257478f2722a6",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "7f60f8950d69fc3f78e83a9f020040aa3ff3f235bf72e579d300eeb4185f8a96",
+  "status": "completed"
+}

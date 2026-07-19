@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.001636,
+    "cost_usd": null,
+    "input_tokens": 2648,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 218,
+    "reasoning_tokens": 174,
+    "text": "Based on the provided memory context, Anthony is mentioned by John as someone he went to a charity event with, where they participated in a Harry Potter trivia contest. No further details about Anthony are available in the context.",
+    "uncached_input_tokens": 88
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002415,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 327,
+      "reasoning_tokens": 319,
+      "response_chars": 18,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0035822,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 585,
+      "reasoning_tokens": 577,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0046022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 755,
+      "reasoning_tokens": 747,
+      "response_chars": 18,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fdd2322a0ef0dbd6ddee",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "0a61f4c3f8dadf72068da482d23189fe60522e92d713b2b2870b0e3ccb44bc81",
+  "status": "completed"
+}

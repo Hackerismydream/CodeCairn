@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011055,
+    "cost_usd": null,
+    "input_tokens": 2997,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 344,
+    "reasoning_tokens": 310,
+    "text": "Joanna mentioned on October 6, 2022 that she finished up her writing for her book \"last week,\" indicating completion in late September 2022.",
+    "uncached_input_tokens": 2997
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001995,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 257,
+      "reasoning_tokens": 249,
+      "response_chars": 20,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028501999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 463,
+      "reasoning_tokens": 452,
+      "response_chars": 24,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 209,
+      "reasoning_tokens": 201,
+      "response_chars": 20,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c12c9d996ae8e08bf045",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "260dc0f98400e796afe6d14e2b4bf9c9cced8bc86344aba5b3051af88683fd5f",
+  "status": "completed"
+}

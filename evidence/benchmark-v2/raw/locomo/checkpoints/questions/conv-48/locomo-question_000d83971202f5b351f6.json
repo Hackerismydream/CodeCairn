@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012054,
+    "cost_usd": null,
+    "input_tokens": 2540,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 739,
+    "reasoning_tokens": 667,
+    "text": "Based on the provided memory context, the only indication of Deborah receiving something is a letter mentioned on 2023-01-27: “Look what letter I received yesterday!” (with a photo of a note). This is not explicitly called a gift, and no other gifts received by Deborah are mentioned. The context is insufficient to confirm any other gifts.",
+    "uncached_input_tokens": 2540
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001257,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 112,
+      "reasoning_tokens": 104,
+      "response_chars": 18,
+      "uncached_input_tokens": 195,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 224,
+      "reasoning_tokens": 213,
+      "response_chars": 22,
+      "uncached_input_tokens": 67,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008342,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 94,
+      "response_chars": 22,
+      "uncached_input_tokens": 67,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_000d83971202f5b351f6",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "3a702e2cd2c23de234c9fb9a61bd1d7a6d3f24c3ebd37d752a5edae906832dc1",
+  "status": "completed"
+}

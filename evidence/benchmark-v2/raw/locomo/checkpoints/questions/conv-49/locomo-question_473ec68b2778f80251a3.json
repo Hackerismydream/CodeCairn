@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3200,
+    "cost_cny": 0.002294,
+    "cost_usd": null,
+    "input_tokens": 3210,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 364,
+    "reasoning_tokens": 305,
+    "text": "According to the context, Sam mentioned on May 24, 2023, that he had a check-up with his doctor \"a few days ago\" and learned his weight was problematic. The exact date of the doctor visit is not specified, only that it was shortly before that conversation.",
+    "uncached_input_tokens": 10
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0021,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 259,
+      "reasoning_tokens": 251,
+      "response_chars": 20,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019292,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 294,
+      "reasoning_tokens": 286,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010232000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 143,
+      "reasoning_tokens": 135,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_473ec68b2778f80251a3",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "e37ecfe4d0a207f96065feeabc96dec750cd308164887b8d42abd6f10b9354ae",
+  "status": "completed"
+}

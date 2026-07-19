@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01083,
+    "cost_usd": null,
+    "input_tokens": 3138,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 236,
+    "reasoning_tokens": 215,
+    "text": "Tim recently started learning an instrument, as mentioned alongside joining a travel club and working on his studies.",
+    "uncached_input_tokens": 3138
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001734,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 20,
+      "uncached_input_tokens": 138,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 106,
+      "reasoning_tokens": 98,
+      "response_chars": 20,
+      "uncached_input_tokens": 10,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 20,
+      "uncached_input_tokens": 10,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_191a2952be9439f5bfad",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "0c24eab2b3af34aa8ded5d3293f2cb9e1d51061081f63b66e92833da0fbd65dd",
+  "status": "completed"
+}

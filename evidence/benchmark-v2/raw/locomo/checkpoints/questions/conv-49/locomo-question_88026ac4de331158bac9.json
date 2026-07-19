@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013428,
+    "cost_usd": null,
+    "input_tokens": 2856,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 810,
+    "reasoning_tokens": 758,
+    "text": "The provided memory context does not contain any mention of Evan discussing a fun activity he did in July 2023. All timestamps are from August 2023 or later, and no entry references July 2023 or any activity specifically occurring that month.",
+    "uncached_input_tokens": 2856
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001776,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 215,
+      "reasoning_tokens": 207,
+      "response_chars": 18,
+      "uncached_input_tokens": 162,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007712000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 111,
+      "reasoning_tokens": 103,
+      "response_chars": 18,
+      "uncached_input_tokens": 34,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 57,
+      "reasoning_tokens": 49,
+      "response_chars": 18,
+      "uncached_input_tokens": 34,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_88026ac4de331158bac9",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "2baf26c1180c790871534ad998e47421a5c7f4f623cfd0a58d9b7f1c7b11ccdb",
+  "status": "completed"
+}

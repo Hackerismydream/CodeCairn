@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008592,
+    "cost_usd": null,
+    "input_tokens": 2676,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 94,
+    "reasoning_tokens": 76,
+    "text": "The provided memory context does not contain any information about Nate winning a third tourney.",
+    "uncached_input_tokens": 2676
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001092,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 18,
+      "uncached_input_tokens": 132,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005312,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 86,
+      "reasoning_tokens": 78,
+      "response_chars": 18,
+      "uncached_input_tokens": 4,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 4,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f187c87ddb37321e6ae4",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "6384c008c90e87a07438464453d0d9ab95c50471a62706fe2eaecfd176d0d8be",
+  "status": "completed"
+}

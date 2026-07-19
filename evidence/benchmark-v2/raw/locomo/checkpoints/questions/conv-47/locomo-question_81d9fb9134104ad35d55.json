@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010686,
+    "cost_usd": null,
+    "input_tokens": 2522,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 520,
+    "reasoning_tokens": 463,
+    "text": "The provided context does not contain any information indicating that John is learning to play an instrument as of 27 March, 2022. The only relevant mention of learning an instrument on that date pertains to James, not John. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2522
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001251,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 18,
+      "uncached_input_tokens": 171,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012542,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 187,
+      "reasoning_tokens": 179,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 194,
+      "reasoning_tokens": 186,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_81d9fb9134104ad35d55",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "84d434f7823bf34c9364963146ac1ffd756c7a861aa1bbb7d5bf528fdc6a43a5",
+  "status": "completed"
+}

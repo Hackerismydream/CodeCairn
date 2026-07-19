@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01215,
+    "cost_usd": null,
+    "input_tokens": 2826,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 612,
+    "reasoning_tokens": 521,
+    "text": "The provided memory context does not contain an explicit agreement between Deborah and Jolene to go surfing on a specific date. The closest interaction is Jolene stating on 2023-09-17, \"So glad, all that remains is to agree and choose the right time for both of us,\" but it is unclear from the context if this refers to surfing, and no finalized date is given. Therefore, the information is insufficient to answer the question.",
+    "uncached_input_tokens": 2826
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001416,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 206,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 18,
+      "uncached_input_tokens": 206,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 206,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 90,
+      "reasoning_tokens": 82,
+      "response_chars": 18,
+      "uncached_input_tokens": 78,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 206,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 95,
+      "reasoning_tokens": 87,
+      "response_chars": 18,
+      "uncached_input_tokens": 78,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bab01857a265d6d0db9d",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "da7f4a61a6b312080f3bb7ec738a1e0f718c715c309b14b1513e990ba5fd5b05",
+  "status": "completed"
+}

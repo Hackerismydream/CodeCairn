@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011133,
+    "cost_usd": null,
+    "input_tokens": 2793,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 459,
+    "reasoning_tokens": 421,
+    "text": "The provided memory context contains no entries dated 3 June 2023, and no mention of Maria starting a new activity on that date. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2793
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001047,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 93,
+      "reasoning_tokens": 85,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 123,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005822000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 79,
+      "reasoning_tokens": 71,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a53fc7d80e04aae614e8",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "403810cc16208908af34c96f36aaf9560986375786325ac6fbd57635ea5405e2",
+  "status": "completed"
+}

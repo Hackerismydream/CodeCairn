@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013869,
+    "cost_usd": null,
+    "input_tokens": 2865,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 879,
+    "reasoning_tokens": 799,
+    "text": "The provided memory context does not contain any explicit plan made by Andrew and Audrey for the Saturday after October 28, 2023 (which would be November 4, 2023). The conversation snippets from October 28, 2023 (session_26) show Andrew asking Audrey about exploring plans and sharing a trail photo, but no concrete arrangement for a specific future date is recorded.",
+    "uncached_input_tokens": 2865
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000933,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 57,
+      "reasoning_tokens": 49,
+      "response_chars": 18,
+      "uncached_input_tokens": 197,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 296,
+      "reasoning_tokens": 288,
+      "response_chars": 18,
+      "uncached_input_tokens": 69,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 18,
+      "uncached_input_tokens": 69,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_69f0f238d8c1886cea3b",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "9fde0a53cbbb055b3c09bbee9d8a65276c3f80f5460dc3a1300a0da3d5049947",
+  "status": "completed"
+}

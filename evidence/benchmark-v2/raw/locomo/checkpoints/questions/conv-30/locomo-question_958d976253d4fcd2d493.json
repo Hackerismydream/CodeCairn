@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3072,
+    "cost_cny": 0.0018678,
+    "cost_usd": null,
+    "input_tokens": 3133,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 268,
+    "reasoning_tokens": 233,
+    "text": "According to Jon's message on 2023-04-25, he went to the fair \"yesterday,\" which would be **2023-04-24**.",
+    "uncached_input_tokens": 61
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001458,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008312,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_958d976253d4fcd2d493",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "039870cb9ee21930b98b70900ed9fd67df7eced55e6098db286148bd5f485809",
+  "status": "completed"
+}

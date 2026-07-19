@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013251,
+    "cost_usd": null,
+    "input_tokens": 2847,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 785,
+    "reasoning_tokens": 645,
+    "text": "Jon has made several positive remarks about Gina's store progress:\n\n- On 2023-02-08 (session_5), he said \"Looks like your store is growing\" (memory_1b3a6d421c9260e84f54).\n- On 2023-03-23 (session_7), he told her \"you're awesome with your store\" (memory_7d79f0ce02f6831dbad8).\n- On 2023-07-21 (session_18), he said \"congrats on the clothing store!\" (memory_5f7b7e8753f5a843c8ff).",
+    "uncached_input_tokens": 2847
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001776,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 260,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 18,
+      "uncached_input_tokens": 260,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0012784,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 260,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 18,
+      "uncached_input_tokens": 4,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0015844000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 260,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 261,
+      "reasoning_tokens": 253,
+      "response_chars": 18,
+      "uncached_input_tokens": 4,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ec9252dc9c54798c9b77",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "bb42c162e44f1aa8e4e8226e4453388dfc580d0135d9b6ce61f140d355c029e4",
+  "status": "completed"
+}

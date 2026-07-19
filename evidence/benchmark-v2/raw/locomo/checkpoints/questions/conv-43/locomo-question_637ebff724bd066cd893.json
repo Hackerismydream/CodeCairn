@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0017594000000000002,
+    "cost_usd": null,
+    "input_tokens": 2915,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 232,
+    "reasoning_tokens": 194,
+    "text": "The memory context mentions that John got a deal with a renowned outdoor gear company, but it does not name the company. Therefore, the context is insufficient to determine which company signed him.",
+    "uncached_input_tokens": 99
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001665,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 203,
+      "reasoning_tokens": 195,
+      "response_chars": 18,
+      "uncached_input_tokens": 149,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006002000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 18,
+      "uncached_input_tokens": 21,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005522000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 81,
+      "reasoning_tokens": 73,
+      "response_chars": 18,
+      "uncached_input_tokens": 21,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_637ebff724bd066cd893",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "93081ebbda4522ee93aeb3eed1b7a7030f4b899fb4b47653ef69f561e2d61773",
+  "status": "completed"
+}

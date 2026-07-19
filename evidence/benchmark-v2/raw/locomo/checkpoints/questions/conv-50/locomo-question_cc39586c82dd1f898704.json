@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011397,
+    "cost_usd": null,
+    "input_tokens": 2937,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 431,
+    "reasoning_tokens": 387,
+    "text": "Dave works on all kinds of cars at his shop, including regular maintenance and full restorations of classic cars (Dave, 2023-05-01T18:33:00+00:00).",
+    "uncached_input_tokens": 2937
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001908,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 234,
+      "reasoning_tokens": 226,
+      "response_chars": 20,
+      "uncached_input_tokens": 168,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014732,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 225,
+      "reasoning_tokens": 217,
+      "response_chars": 20,
+      "uncached_input_tokens": 40,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 20,
+      "uncached_input_tokens": 40,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cc39586c82dd1f898704",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "34f9bb493196208c4bd9121ae033c98f97f6490035ceb9fd4457eb300ef5c183",
+  "status": "completed"
+}

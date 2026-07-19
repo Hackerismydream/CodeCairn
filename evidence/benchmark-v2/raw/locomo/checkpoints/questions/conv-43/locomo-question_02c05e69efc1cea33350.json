@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011514,
+    "cost_usd": null,
+    "input_tokens": 3062,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 388,
+    "reasoning_tokens": 343,
+    "text": "The provided memory context does not contain any information about Tim visiting a country during the second week of November. The only recent travel mentioned is a trip to the UK for a Harry Potter conference in early October 2023.",
+    "uncached_input_tokens": 3062
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001137,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 18,
+      "uncached_input_tokens": 153,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024601999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 397,
+      "reasoning_tokens": 389,
+      "response_chars": 18,
+      "uncached_input_tokens": 25,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015182000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 153,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 240,
+      "reasoning_tokens": 232,
+      "response_chars": 18,
+      "uncached_input_tokens": 25,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_02c05e69efc1cea33350",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "153f4e348c1b970d095da2aff3fd5b0b5cf29e25f4e9e529882909abc1af8a50",
+  "status": "completed"
+}

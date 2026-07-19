@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0038261999999999997,
+    "cost_usd": null,
+    "input_tokens": 2787,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 577,
+    "reasoning_tokens": 560,
+    "text": "The provided memory context does not contain any information about European countries Maria has visited.",
+    "uncached_input_tokens": 99
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000807,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 73,
+      "reasoning_tokens": 65,
+      "response_chars": 18,
+      "uncached_input_tokens": 123,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000645,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 46,
+      "reasoning_tokens": 38,
+      "response_chars": 18,
+      "uncached_input_tokens": 123,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001203,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 123,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 139,
+      "reasoning_tokens": 131,
+      "response_chars": 18,
+      "uncached_input_tokens": 123,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_033ba04efc667746f49e",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "58b5ca60e0682586c2ccfee62e4a73ad0557ce810349a04146ba4f46e133f766",
+  "status": "completed"
+}

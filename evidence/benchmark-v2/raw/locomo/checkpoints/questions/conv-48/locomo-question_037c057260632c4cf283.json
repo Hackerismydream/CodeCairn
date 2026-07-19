@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01386,
+    "cost_usd": null,
+    "input_tokens": 2732,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 944,
+    "reasoning_tokens": 873,
+    "text": "Jolene plans to pursue surfing by gathering information, watching videos, getting a beginners’ guide, and then finding the right time and place to take a lesson (2023-03-22, session_10). As of 2023-09-17, she had started learning but hadn’t actually gone yet (session_29).",
+    "uncached_input_tokens": 2732
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002223,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 274,
+      "reasoning_tokens": 266,
+      "response_chars": 20,
+      "uncached_input_tokens": 193,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 218,
+      "reasoning_tokens": 210,
+      "response_chars": 20,
+      "uncached_input_tokens": 65,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0069602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1127,
+      "reasoning_tokens": 1119,
+      "response_chars": 18,
+      "uncached_input_tokens": 65,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_037c057260632c4cf283",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "d60c39a27a74a554cdc0fd569d0a6bedf709f2c6ecb1bf6b66d8b101f0d93c4e",
+  "status": "completed"
+}

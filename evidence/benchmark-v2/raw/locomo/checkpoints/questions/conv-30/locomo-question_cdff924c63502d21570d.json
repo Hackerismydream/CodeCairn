@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0039822,
+    "cost_usd": null,
+    "input_tokens": 2751,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 621,
+    "reasoning_tokens": 572,
+    "text": "Gina promoted her clothes store by launching an ad campaign (January 2023), and later by planning to work with fashion bloggers and influencers, running more ads, and using offers and promotions to attract new customers (April 2023).",
+    "uncached_input_tokens": 63
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002667,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 349,
+      "reasoning_tokens": 341,
+      "response_chars": 18,
+      "uncached_input_tokens": 191,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024841999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 382,
+      "reasoning_tokens": 374,
+      "response_chars": 18,
+      "uncached_input_tokens": 63,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 199,
+      "reasoning_tokens": 191,
+      "response_chars": 18,
+      "uncached_input_tokens": 63,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cdff924c63502d21570d",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "c5aaa046353b0d3e159d8d2aa6464dfc9ddd374f60f9cb01cfa329788a906122",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0030612,
+    "cost_usd": null,
+    "input_tokens": 2802,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 442,
+    "reasoning_tokens": 387,
+    "text": "The only beneficiary explicitly mentioned in the provided context is a children's hospital, as James notes in session_29 that John organized a gaming tournament for one. The earlier charity tournament in session_10 does not specify a beneficiary, only that money was raised \"for charity.\"",
+    "uncached_input_tokens": 114
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001572,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 18,
+      "uncached_input_tokens": 174,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_51f7a394b787de71055d",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "61b45adbcc2a6765553ef3a808ae135e221bf9f892e75d30dc82f4dbb55c0b61",
+  "status": "completed"
+}

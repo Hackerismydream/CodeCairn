@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010131,
+    "cost_usd": null,
+    "input_tokens": 2439,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 469,
+    "reasoning_tokens": 417,
+    "text": "Based on the memory context, James states in session_9 (2022-05-04) that he likes cheese pizza and prosciutto, directly responding to a question about his favorite pizza. So his favorites are cheese pizza and prosciutto.",
+    "uncached_input_tokens": 2439
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001563,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 18,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005342000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 73,
+      "reasoning_tokens": 65,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007562000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 110,
+      "reasoning_tokens": 102,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_411a359dbf38bddad098",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "2599f265c175d50368deea69f02aa5edd9f5349cf409c3f6b776a719db8609ea",
+  "status": "completed"
+}

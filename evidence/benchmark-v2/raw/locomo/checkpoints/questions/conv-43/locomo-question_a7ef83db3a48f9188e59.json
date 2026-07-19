@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009792,
+    "cost_usd": null,
+    "input_tokens": 3026,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 119,
+    "reasoning_tokens": 80,
+    "text": "Tim's passion for fantasy stuff (specifically mentioned in the context of Harry Potter) connects him with people from all over the world, as stated on 2023-10-13.",
+    "uncached_input_tokens": 3026
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001686,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 204,
+      "reasoning_tokens": 196,
+      "response_chars": 20,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0031951999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 519,
+      "reasoning_tokens": 511,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 321,
+      "reasoning_tokens": 313,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a7ef83db3a48f9188e59",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "a790d6da33e8d199efd35992e6f4d6f833db41550cd065d4bdf46655ae899e2e",
+  "status": "completed"
+}

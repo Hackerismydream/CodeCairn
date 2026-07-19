@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009609,
+    "cost_usd": null,
+    "input_tokens": 2759,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 222,
+    "reasoning_tokens": 170,
+    "text": "The provided context does not specify the title of the RPG game John is playing on 10 August, 2022. He mentions being hooked on a new RPG with great storytelling and characters, but the game's name is not given. Context is insufficient.",
+    "uncached_input_tokens": 2759
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 82,
+      "reasoning_tokens": 74,
+      "response_chars": 18,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009842,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 143,
+      "reasoning_tokens": 135,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006062000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 80,
+      "reasoning_tokens": 72,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8160d66695b34325991f",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "0f0008b55d2f35559cdf50429161c2b5eef1bfbb1eb034d0fe2171f9164155b8",
+  "status": "completed"
+}

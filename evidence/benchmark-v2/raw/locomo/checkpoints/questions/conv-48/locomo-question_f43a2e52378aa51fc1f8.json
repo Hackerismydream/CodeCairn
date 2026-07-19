@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2432,
+    "cost_cny": 0.0033848000000000003,
+    "cost_usd": null,
+    "input_tokens": 2516,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 512,
+    "reasoning_tokens": 457,
+    "text": "The provided memory context does not contain any information about projects Jolene is planning for next year. The mentions of her plans refer to the near future (next month or next Saturday) or are general, and her responses to Deborah's questions about future projects are not included.",
+    "uncached_input_tokens": 84
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001137,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017282,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 264,
+      "reasoning_tokens": 256,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f43a2e52378aa51fc1f8",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "2f4bafccc7d1204964b7ad29e4b1c59a7b64316895857fadfbb7a4d5173f2bbf",
+  "status": "completed"
+}

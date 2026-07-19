@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.001483,
+    "cost_usd": null,
+    "input_tokens": 2635,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 199,
+    "reasoning_tokens": 135,
+    "text": "The provided memory context does not contain any information about John doing martial arts. The only mention of martial arts is a question from Maria asking if a place is a martial arts studio or yoga studio, but John's response or background in martial arts is not included. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 75
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001101,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 96,
+      "reasoning_tokens": 88,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016082,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 244,
+      "reasoning_tokens": 236,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009302000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 123,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_328931cc37ac1b8e1452",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "692b87377c543e6c2c983663becdc191dbf40352178e33ecb3e135bada0c74e5",
+  "status": "completed"
+}

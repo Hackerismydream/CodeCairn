@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009594,
+    "cost_usd": null,
+    "input_tokens": 2776,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 211,
+    "reasoning_tokens": 176,
+    "text": "Maria described being at the waterfall as “awesome” and “breath-taking.” (2023-06-12T14:49:00+00:00)",
+    "uncached_input_tokens": 2776
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001806,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 226,
+      "reasoning_tokens": 218,
+      "response_chars": 18,
+      "uncached_input_tokens": 150,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008192000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 179,
+      "reasoning_tokens": 171,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c4dc1897386f650c2a60",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "7570daa9e4f562aed14e9e5b82b378f10ce389e7f21aee011fdc8b02592f0bca",
+  "status": "completed"
+}

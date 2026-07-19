@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012609,
+    "cost_usd": null,
+    "input_tokens": 2725,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 739,
+    "reasoning_tokens": 686,
+    "text": "The provided memory context only mentions one fantasy novel, \"The Name of the Wind\" (2023-08-11, Tim), and does not identify a second. Therefore, the context is insufficient to answer which two fantasy novels Tim particularly enjoys writing about.",
+    "uncached_input_tokens": 2725
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 209,
+      "reasoning_tokens": 201,
+      "response_chars": 18,
+      "uncached_input_tokens": 166,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_145362fab98330d8f63e",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "f52a33afdaf28223cf970e0e6d4e6be57f3d1d89cab8a83cd9a58794959c46d3",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013605,
+    "cost_usd": null,
+    "input_tokens": 2851,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 842,
+    "reasoning_tokens": 766,
+    "text": "The provided memory context does not include Joanna's specific recommendations. Nate asks for pointers (\"Any pointers on what I should get for my living room to make it comfy like that?\") and later thanks her (\"Thanks, I'll try that out for myself!\"), but Joanna's reply with the actual advice is missing. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2851
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001194,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 87,
+      "response_chars": 22,
+      "uncached_input_tokens": 202,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 139,
+      "reasoning_tokens": 131,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_be828ec04e37447bb6fa",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "83d95c937ce67177620e88ed60cd0ae435b6a83cf3f88e76111e114a32c90710",
+  "status": "completed"
+}

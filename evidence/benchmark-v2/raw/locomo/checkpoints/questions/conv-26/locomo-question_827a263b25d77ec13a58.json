@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.002344,
+    "cost_usd": null,
+    "input_tokens": 2688,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 316,
+    "reasoning_tokens": 227,
+    "text": "The provided memory context does not contain any direct or indirect evidence about Caroline’s reading preferences, collection of children’s books, or any mention of Dr. Seuss. While she shared a photo of a bookshelf, no titles or genres are described. Given her expressed interests in mental health counseling and LGBTQ activism, there is no basis to infer she likely owns Dr. Seuss books. The context is insufficient to make that determination.",
+    "uncached_input_tokens": 128
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001767,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 18,
+      "uncached_input_tokens": 207,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 100,
+      "reasoning_tokens": 92,
+      "response_chars": 18,
+      "uncached_input_tokens": 79,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 94,
+      "response_chars": 22,
+      "uncached_input_tokens": 79,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_827a263b25d77ec13a58",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "613b62126567fe957c2efadf83754c549f76960bfe3929386aaad2ad75dc54f7",
+  "status": "completed"
+}

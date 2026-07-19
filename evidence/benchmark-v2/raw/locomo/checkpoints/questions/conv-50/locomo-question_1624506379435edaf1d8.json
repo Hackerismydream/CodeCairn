@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014529,
+    "cost_usd": null,
+    "input_tokens": 2753,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1045,
+    "reasoning_tokens": 1025,
+    "text": "The memory context does not contain any specific location in Tokyo that Calvin mentions being excited to explore.",
+    "uncached_input_tokens": 2753
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001011,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 103,
+      "reasoning_tokens": 95,
+      "response_chars": 18,
+      "uncached_input_tokens": 131,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 18,
+      "uncached_input_tokens": 3,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004442,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 72,
+      "reasoning_tokens": 64,
+      "response_chars": 18,
+      "uncached_input_tokens": 3,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1624506379435edaf1d8",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "1494e639e286f3cee248f2189efafe2d958941de9b67c45d1eb6d80b9d696025",
+  "status": "completed"
+}

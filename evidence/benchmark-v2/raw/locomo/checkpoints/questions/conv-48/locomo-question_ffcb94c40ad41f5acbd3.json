@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012159,
+    "cost_usd": null,
+    "input_tokens": 2937,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 558,
+    "reasoning_tokens": 511,
+    "text": "Deborah feels peace and gratitude when she thinks about the time spent with her mom at their special spot. (Source: session_19, 2023-08-19T01:02:00+00:00)",
+    "uncached_input_tokens": 2937
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001701,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 193,
+      "response_chars": 20,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009902,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 74,
+      "reasoning_tokens": 66,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ffcb94c40ad41f5acbd3",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "7ef2c4cf2a4152683d6655bad3d25200f379ddcb878b48e00f895a84e487e103",
+  "status": "completed"
+}

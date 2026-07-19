@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01125,
+    "cost_usd": null,
+    "input_tokens": 2872,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 439,
+    "reasoning_tokens": 363,
+    "text": "John's experience in New York City was amazing. He mentioned that everywhere he went there was something new and exciting, and he loved exploring the city and trying all the restaurants, calling it a must-visit (memories from session_9 on 2023-08-26). He also shared a photo of the cityscape, highlighting his enjoyment of discovering new cities.",
+    "uncached_input_tokens": 2872
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000969,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 70,
+      "reasoning_tokens": 62,
+      "response_chars": 20,
+      "uncached_input_tokens": 183,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016082,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 240,
+      "reasoning_tokens": 232,
+      "response_chars": 20,
+      "uncached_input_tokens": 55,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 20,
+      "uncached_input_tokens": 55,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_38d801f6e191884d8e18",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "8988ff643ff01b6490ec916b5a1d9b6358106d555f3e656534a17b37d955e8f3",
+  "status": "completed"
+}

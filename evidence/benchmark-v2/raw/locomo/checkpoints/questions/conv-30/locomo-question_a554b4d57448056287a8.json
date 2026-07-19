@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.019101,
+    "cost_usd": null,
+    "input_tokens": 2937,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1715,
+    "reasoning_tokens": 1648,
+    "text": "Gina, in a message on June 13, 2023 (session_13), says about the dancers in a photo of a dance class: \"Your one-on-one mentoring and training will really push dancers to reach their goals. I totally get it, I had a mentor too when I was learning how to dance.\"",
+    "uncached_input_tokens": 2937
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00183,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 18,
+      "uncached_input_tokens": 178,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015512,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 233,
+      "reasoning_tokens": 225,
+      "response_chars": 18,
+      "uncached_input_tokens": 50,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013052,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 192,
+      "reasoning_tokens": 184,
+      "response_chars": 18,
+      "uncached_input_tokens": 50,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a554b4d57448056287a8",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "cee777852b6377b90c4fbe01d7f8fa59e5da3ea448e39f7e1d5b0cac03690511",
+  "status": "completed"
+}

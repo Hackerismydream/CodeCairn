@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010665,
+    "cost_usd": null,
+    "input_tokens": 2615,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 470,
+    "reasoning_tokens": 426,
+    "text": "The provided memory context does not specify which tournament Nate won at the beginning of November 2022. On November 4, 2022, Nate mentions winning a video game tournament but gives no name or details.",
+    "uncached_input_tokens": 2615
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 18,
+      "uncached_input_tokens": 158,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008732000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 30,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 122,
+      "reasoning_tokens": 114,
+      "response_chars": 18,
+      "uncached_input_tokens": 30,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6b358ad42bc32c98313a",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "9f869bf274b35a12701a187ceb223e29d127a96f2c7af92a0f97d48f7852b3f3",
+  "status": "completed"
+}

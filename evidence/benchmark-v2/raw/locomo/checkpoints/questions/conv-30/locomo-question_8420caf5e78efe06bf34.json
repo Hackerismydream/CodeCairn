@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011295,
+    "cost_usd": null,
+    "input_tokens": 2989,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 388,
+    "reasoning_tokens": 325,
+    "text": "Jon is excited and enthusiastic about the opening night. He says he \"can't wait to see it all come together\" and that it's \"gonna be an awesome night.\" He's worked hard and wants to savor every moment. (Source: session_15, June 19, 2023)",
+    "uncached_input_tokens": 2989
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 70,
+      "reasoning_tokens": 62,
+      "response_chars": 20,
+      "uncached_input_tokens": 174,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 88,
+      "reasoning_tokens": 80,
+      "response_chars": 20,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 199,
+      "reasoning_tokens": 191,
+      "response_chars": 20,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8420caf5e78efe06bf34",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "9afae71723519fea08d0daa1386c08dbe91e49459c03d71f0b345558421adf0d",
+  "status": "completed"
+}

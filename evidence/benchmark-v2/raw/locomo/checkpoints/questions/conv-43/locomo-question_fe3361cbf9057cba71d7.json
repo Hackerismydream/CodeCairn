@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014439,
+    "cost_usd": null,
+    "input_tokens": 3003,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 905,
+    "reasoning_tokens": 846,
+    "text": "The provided memory context does not specify where Tim captured the photography of the sunset over the mountain range. The relevant entries (session_14 on 2023-10-17 and session_20 on 2023-12-01) include images matching the description but no location details.",
+    "uncached_input_tokens": 3003
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001293,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 171,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010742,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 157,
+      "reasoning_tokens": 149,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 245,
+      "reasoning_tokens": 237,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fe3361cbf9057cba71d7",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "232dce06cdb8bee5875e787cffb679921ba9eb0a90b32cc12bc533eb766262df",
+  "status": "completed"
+}

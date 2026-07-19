@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014004,
+    "cost_usd": null,
+    "input_tokens": 2906,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 881,
+    "reasoning_tokens": 827,
+    "text": "Based on the provided memory context, the only location explicitly mentioned where Deborah practices or leads yoga is a **local care home** (from session_18 on 2023-08-16, where she says she led a meditation yoga session to the elderly there).",
+    "uncached_input_tokens": 2906
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001104,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 18,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 90,
+      "reasoning_tokens": 82,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 100,
+      "reasoning_tokens": 92,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4b0b2828912ff5865a6e",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "28e0242a0f2d5eed50e116ea2d16c8fa9efe86bddce59e1265239a09e887416c",
+  "status": "completed"
+}

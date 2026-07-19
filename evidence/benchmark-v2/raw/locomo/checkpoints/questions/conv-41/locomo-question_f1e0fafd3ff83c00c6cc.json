@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009003,
+    "cost_usd": null,
+    "input_tokens": 2627,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 187,
+    "reasoning_tokens": 149,
+    "text": "On 16 June 2023, Maria shared that she joined a gym last week, and that she's sticking to her workout routine, finding the people awesome and the atmosphere welcoming.",
+    "uncached_input_tokens": 2627
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001701,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 208,
+      "reasoning_tokens": 200,
+      "response_chars": 20,
+      "uncached_input_tokens": 151,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 307,
+      "reasoning_tokens": 299,
+      "response_chars": 20,
+      "uncached_input_tokens": 23,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009242,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 151,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 142,
+      "reasoning_tokens": 134,
+      "response_chars": 20,
+      "uncached_input_tokens": 23,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f1e0fafd3ff83c00c6cc",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "8c58d9dffded9cf72796582771dfa978a422219550937da657fb07b32e7a8cc5",
+  "status": "completed"
+}

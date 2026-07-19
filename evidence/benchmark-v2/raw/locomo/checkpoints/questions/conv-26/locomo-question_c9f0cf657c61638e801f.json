@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008976,
+    "cost_usd": null,
+    "input_tokens": 2686,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 153,
+    "reasoning_tokens": 115,
+    "text": "Caroline found a cool rainbow sidewalk for Pride Month during her walk (memory_61fafa42492bc0e8ddf9, 2023-08-25).",
+    "uncached_input_tokens": 2686
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00171,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 20,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012992000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 206,
+      "reasoning_tokens": 198,
+      "response_chars": 20,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 221,
+      "reasoning_tokens": 213,
+      "response_chars": 20,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c9f0cf657c61638e801f",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ef3d27f2db98009f78bab49be701fd6724cba84a2aa3729b817210b9aff8a3e6",
+  "status": "completed"
+}

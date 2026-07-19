@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011736,
+    "cost_usd": null,
+    "input_tokens": 2556,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 678,
+    "reasoning_tokens": 611,
+    "text": "The provided memory context does not specify any particular video games that Nate plays. While he frequently mentions gaming as a hobby and references winning tournaments or a gaming career, no specific game titles are named. The only game mentioned is Chess (after a gaming party), but it is ambiguous whether it was a video game or a board game.",
+    "uncached_input_tokens": 2556
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00129,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 194,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012632000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 177,
+      "reasoning_tokens": 169,
+      "response_chars": 18,
+      "uncached_input_tokens": 66,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 122,
+      "reasoning_tokens": 114,
+      "response_chars": 18,
+      "uncached_input_tokens": 66,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_72f3dfe3d8a9bde70a2d",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "ff8d31a4c900a40d219c5576fd2322aae519ce732aad8e366d5a8f98c5ee3546",
+  "status": "completed"
+}

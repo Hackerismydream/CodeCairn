@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010764,
+    "cost_usd": null,
+    "input_tokens": 2902,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 343,
+    "reasoning_tokens": 297,
+    "text": "Jolene plans to involve local engineers by inviting them as guest speakers to show kids their career options, as mentioned in session_5 (2023-02-09T21:07:00+00:00).",
+    "uncached_input_tokens": 2902
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 125,
+      "response_chars": 24,
+      "uncached_input_tokens": 168,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015572000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 239,
+      "reasoning_tokens": 231,
+      "response_chars": 20,
+      "uncached_input_tokens": 40,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 213,
+      "reasoning_tokens": 205,
+      "response_chars": 20,
+      "uncached_input_tokens": 40,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6fb003c4b15cde8142c7",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "7985c76cbbb7f5f2ee0973ec4f0d7e9f99836d95141e10baf007c5d123261625",
+  "status": "completed"
+}

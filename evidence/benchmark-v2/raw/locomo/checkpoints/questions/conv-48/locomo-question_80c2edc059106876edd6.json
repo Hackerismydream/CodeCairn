@@ -1,0 +1,86 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008694,
+    "cost_usd": null,
+    "input_tokens": 2708,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 95,
+    "reasoning_tokens": 76,
+    "text": "Jolene designed notebooks with galaxies and circuitry inspired by her love for space and engines.",
+    "uncached_input_tokens": 2708
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 2,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003264,
+      "cost_usd": null,
+      "failed_attempts": [
+        {
+          "attempt_index": 1,
+          "cached_input_tokens": 0,
+          "cost_cny": 0.001863,
+          "error_type": "JSONDecodeError",
+          "input_tokens": 131,
+          "model": "deepseek-v4-pro",
+          "output_tokens": 245,
+          "reasoning_tokens": 245,
+          "response_chars": 0,
+          "uncached_input_tokens": 131
+        }
+      ],
+      "input_tokens": 262,
+      "known_cost_cny_count": 2,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 413,
+      "reasoning_tokens": 405,
+      "response_chars": 20,
+      "uncached_input_tokens": 262,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012122,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 200,
+      "reasoning_tokens": 192,
+      "response_chars": 20,
+      "uncached_input_tokens": 3,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013322,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 131,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 20,
+      "uncached_input_tokens": 3,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_80c2edc059106876edd6",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "d02a538b753288107963f1e3c8941571c83e1ef22ae46a8a2d551d09359d9ec7",
+  "status": "completed"
+}

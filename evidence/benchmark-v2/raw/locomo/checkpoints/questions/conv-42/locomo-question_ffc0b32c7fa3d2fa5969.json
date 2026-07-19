@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010053,
+    "cost_usd": null,
+    "input_tokens": 2841,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 255,
+    "reasoning_tokens": 208,
+    "text": "Joanna felt touched and awesome. She said, \"Their words touched me; they said my story had brought them comfort. It was awesome to realize my words had that kind of power. It reminded me why I love writing.\"",
+    "uncached_input_tokens": 2841
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002286,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 300,
+      "reasoning_tokens": 292,
+      "response_chars": 20,
+      "uncached_input_tokens": 162,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 174,
+      "reasoning_tokens": 166,
+      "response_chars": 20,
+      "uncached_input_tokens": 34,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0047012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 766,
+      "reasoning_tokens": 758,
+      "response_chars": 18,
+      "uncached_input_tokens": 34,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ffc0b32c7fa3d2fa5969",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "cf3b267079814603de384f94984834d79f2a2a224fb015b6df0bf9a8cab722b7",
+  "status": "completed"
+}

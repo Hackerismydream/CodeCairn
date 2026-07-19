@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.017511,
+    "cost_usd": null,
+    "input_tokens": 2699,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1569,
+    "reasoning_tokens": 1470,
+    "text": "Andrew has a German Shepherd named Toby who loves cute sweaters, suggesting he dresses him in sweaters. He has a doggy daycare near his home that he seems to use. He relaxed on the couch with his dog (based on a shared photo). Additionally, his question about park games implies he plays with Toby at the park. He also went volunteering with animals, though it’s unclear if his own dog was involved. Overall, these are the main activities he’s mentioned.",
+    "uncached_input_tokens": 2699
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 206,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 259,
+      "reasoning_tokens": 251,
+      "response_chars": 18,
+      "uncached_input_tokens": 206,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010352,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 206,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 18,
+      "uncached_input_tokens": 78,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 206,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 157,
+      "reasoning_tokens": 149,
+      "response_chars": 18,
+      "uncached_input_tokens": 78,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_88fa511c5568249916c0",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "a409d7769ce7051be29fe4a601c853b959b12aac69edb88856134edf45880eba",
+  "status": "completed"
+}

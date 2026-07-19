@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009234,
+    "cost_usd": null,
+    "input_tokens": 2612,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 233,
+    "reasoning_tokens": 207,
+    "text": "The provided memory context does not contain any information about Evan wanting to share something specifically with his work friends. Insufficient context.",
+    "uncached_input_tokens": 2612
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001374,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 162,
+      "reasoning_tokens": 154,
+      "response_chars": 18,
+      "uncached_input_tokens": 134,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012272000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 193,
+      "response_chars": 18,
+      "uncached_input_tokens": 6,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 160,
+      "reasoning_tokens": 152,
+      "response_chars": 18,
+      "uncached_input_tokens": 6,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_edfbb1496433f5631e2b",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "ce9471edd93c6cb8a4a12f4300fbd7f9ca7fd91f301db22013259fd5fd0e31c8",
+  "status": "completed"
+}

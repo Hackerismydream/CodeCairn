@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010974,
+    "cost_usd": null,
+    "input_tokens": 2676,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 491,
+    "reasoning_tokens": 423,
+    "text": "Nate described the stuffed animal as a \"new pup\" (on 2022-05-25T15:04:00+00:00) and as \"a stuffed animal to remind you of the good vibes\" (on 2022-05-25T15:05:00+00:00).",
+    "uncached_input_tokens": 2676
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003705,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 524,
+      "reasoning_tokens": 516,
+      "response_chars": 20,
+      "uncached_input_tokens": 187,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0065162,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1056,
+      "reasoning_tokens": 1048,
+      "response_chars": 20,
+      "uncached_input_tokens": 59,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027481999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 428,
+      "reasoning_tokens": 420,
+      "response_chars": 20,
+      "uncached_input_tokens": 59,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_483daba8fefbf2f9e54a",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "b72bfab93c65bd62e11056b59b150d91f90d26d07c874cf9a2b3d97602a22656",
+  "status": "completed"
+}

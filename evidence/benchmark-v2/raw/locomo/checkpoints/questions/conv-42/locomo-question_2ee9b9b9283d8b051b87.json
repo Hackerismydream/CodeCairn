@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011541,
+    "cost_usd": null,
+    "input_tokens": 2877,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 485,
+    "reasoning_tokens": 419,
+    "text": "Nate thought highly of the coconut milk ice cream he made. He described it as smooth, creamy, with a tropical coconut twist, and placed it at the top of his list (2022-09-14). He also found it pretty good and felt proud after his first attempt (2022-02-07).",
+    "uncached_input_tokens": 2877
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002625,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 347,
+      "reasoning_tokens": 339,
+      "response_chars": 20,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0034801999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 553,
+      "reasoning_tokens": 545,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0046321999999999995,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 745,
+      "reasoning_tokens": 737,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2ee9b9b9283d8b051b87",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "03a91ed9c5ddcdc061728ac674e72d85ff54c5ec2956910787e6ee89cd3dae43",
+  "status": "completed"
+}

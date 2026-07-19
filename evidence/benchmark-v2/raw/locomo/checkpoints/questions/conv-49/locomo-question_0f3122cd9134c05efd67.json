@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012747,
+    "cost_usd": null,
+    "input_tokens": 2697,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 776,
+    "reasoning_tokens": 719,
+    "text": "Evan's hobby is fitness, which he describes as his go-to activity that makes him feel healthy and strong. The context does not provide clear evidence of any other hobbies, though a shared image of a painting might hint at an interest in art, it is insufficient to confirm.",
+    "uncached_input_tokens": 2697
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001944,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 18,
+      "uncached_input_tokens": 184,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 18,
+      "uncached_input_tokens": 56,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 56,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0f3122cd9134c05efd67",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "9ce2e58f7467de1962517b435b4acdf115610eddd2c06fd4b07e3a1df5db454a",
+  "status": "completed"
+}

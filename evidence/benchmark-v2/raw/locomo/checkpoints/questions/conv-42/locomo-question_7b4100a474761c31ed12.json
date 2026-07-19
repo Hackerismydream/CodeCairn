@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014475,
+    "cost_usd": null,
+    "input_tokens": 2713,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1056,
+    "reasoning_tokens": 965,
+    "text": "The provided memory context does not contain Nate's direct words of encouragement after Joanna's setback. The closest evidence is Joanna's response in session_27 (2022-11-07T20:16:30+00:00): \"Thanks, Nate! Appreciate the encouragement. I won't give up, I promise!\" This indicates Nate encouraged her, but his exact statement is not included. The context is insufficient to quote his encouragement.",
+    "uncached_input_tokens": 2713
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002289,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 215,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 274,
+      "reasoning_tokens": 266,
+      "response_chars": 18,
+      "uncached_input_tokens": 215,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 215,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 18,
+      "uncached_input_tokens": 87,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 215,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 164,
+      "reasoning_tokens": 156,
+      "response_chars": 18,
+      "uncached_input_tokens": 87,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7b4100a474761c31ed12",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "adc65c41639df30595408dc0b800a0b4942773fd71c375a6ddf0851f84bc1d8f",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0029322,
+    "cost_usd": null,
+    "input_tokens": 2809,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 417,
+    "reasoning_tokens": 325,
+    "text": "Yes, it is likely that Nate has friends besides Joanna. In memory_7 (session_10), Nate directly states he plays Street Fighter \"a lot with my friends.\" Memory_13 and memory_1 show Joanna asking about his friends and Nate confirming they liked the controller accessories, implying he has a social circle beyond their conversations. Memory_9 also mentions a group he considers good friends based on shared love of animals. The context provides sufficient evidence.",
+    "uncached_input_tokens": 121
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002883,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 377,
+      "reasoning_tokens": 369,
+      "response_chars": 20,
+      "uncached_input_tokens": 207,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015542,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 79,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011342000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 20,
+      "uncached_input_tokens": 79,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c3be91c0a8d0422598d6",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "aaad4d32ec53ec8c2affeb31958345d106b4f3929f0ae25e9e67c7754f32dcb6",
+  "status": "completed"
+}

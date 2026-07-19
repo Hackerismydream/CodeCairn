@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3072,
+    "cost_cny": 0.0049278,
+    "cost_usd": null,
+    "input_tokens": 3109,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 790,
+    "reasoning_tokens": 723,
+    "text": "John was in Seattle on July 16, 2023, as indicated by his message in session_3: \"It's Seattle, I'm stoked for my game there next month!\" The game itself was scheduled for the following month (August 2023), but the exact date is not provided in the memory context.",
+    "uncached_input_tokens": 37
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004788,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 709,
+      "reasoning_tokens": 701,
+      "response_chars": 18,
+      "uncached_input_tokens": 178,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0037232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 595,
+      "reasoning_tokens": 587,
+      "response_chars": 18,
+      "uncached_input_tokens": 50,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024571999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 384,
+      "reasoning_tokens": 376,
+      "response_chars": 18,
+      "uncached_input_tokens": 50,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4eabe1d7d7754617d435",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "d8c4deeeaf817cb194e928db246245c524ff853c2ef1067b02064a4797800c29",
+  "status": "completed"
+}

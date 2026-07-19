@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011112,
+    "cost_usd": null,
+    "input_tokens": 3074,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 315,
+    "reasoning_tokens": 261,
+    "text": "Audrey's dogs are the best companions for exploring the great outdoors and spending time in nature, as she stated they're \"definitely the best companions for exploring the great outdoors\" (memory_5ca5495657583ebeff88, session_23).",
+    "uncached_input_tokens": 3074
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.007365,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1144,
+      "reasoning_tokens": 1136,
+      "response_chars": 18,
+      "uncached_input_tokens": 167,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0031682,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 508,
+      "reasoning_tokens": 500,
+      "response_chars": 20,
+      "uncached_input_tokens": 39,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0039002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 630,
+      "reasoning_tokens": 622,
+      "response_chars": 20,
+      "uncached_input_tokens": 39,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ec0fddad32ddccb90843",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "a29b9c3fcc270f4573848dbd01dc6424097006cfb463678400efe5fe5ccb87d3",
+  "status": "completed"
+}

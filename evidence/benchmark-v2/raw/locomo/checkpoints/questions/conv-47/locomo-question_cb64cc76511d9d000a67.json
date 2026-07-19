@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009471,
+    "cost_usd": null,
+    "input_tokens": 2721,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 218,
+    "reasoning_tokens": 190,
+    "text": "James gets his ideas from various sources like books, movies, and dreams (session_24, 2022-09-18).",
+    "uncached_input_tokens": 2721
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001227,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 20,
+      "uncached_input_tokens": 137,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 162,
+      "reasoning_tokens": 154,
+      "response_chars": 20,
+      "uncached_input_tokens": 9,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 115,
+      "reasoning_tokens": 107,
+      "response_chars": 20,
+      "uncached_input_tokens": 9,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cb64cc76511d9d000a67",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "4483001daabf090bad972ba5075b1dcf0c9d8567007ceb0b5fa46255339517ca",
+  "status": "completed"
+}

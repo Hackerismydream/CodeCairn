@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009924,
+    "cost_usd": null,
+    "input_tokens": 2696,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 306,
+    "reasoning_tokens": 269,
+    "text": "The provided memory context mentions Nate organizing a gaming party in June 2022, but it does not specify who he planned to invite. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2696
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00171,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 207,
+      "reasoning_tokens": 199,
+      "response_chars": 18,
+      "uncached_input_tokens": 156,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004352,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 58,
+      "reasoning_tokens": 50,
+      "response_chars": 18,
+      "uncached_input_tokens": 28,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014672,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 230,
+      "reasoning_tokens": 222,
+      "response_chars": 18,
+      "uncached_input_tokens": 28,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_46b81087a7da28ce5dda",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "f9c5420e231e1418482f3e2530a24883de7420515fa1c5e0ae20f428a397eb71",
+  "status": "completed"
+}

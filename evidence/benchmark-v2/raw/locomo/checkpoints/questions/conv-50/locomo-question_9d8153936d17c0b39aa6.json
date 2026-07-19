@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010164,
+    "cost_usd": null,
+    "input_tokens": 2760,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 314,
+    "reasoning_tokens": 231,
+    "text": "Calvin stays motivated by reminding himself of his passion for his goals, relying on supportive people, and recharging with favorite activities. He also finds motivation in staying connected to world events, receiving appreciation from fans, experimenting with new sounds, and reflecting on his journey and relationships. (Source: Calvin in sessions 23, 25, 29, 28, 12, 29, and others.)",
+    "uncached_input_tokens": 2760
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003039,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 209,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 402,
+      "reasoning_tokens": 394,
+      "response_chars": 20,
+      "uncached_input_tokens": 209,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0029641999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 209,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 453,
+      "reasoning_tokens": 445,
+      "response_chars": 20,
+      "uncached_input_tokens": 81,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 209,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 170,
+      "reasoning_tokens": 162,
+      "response_chars": 20,
+      "uncached_input_tokens": 81,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9d8153936d17c0b39aa6",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "daca0d2e159e25c5e2291cd7d11206dc66a9e51251472530b66798832fb2b321",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0027102,
+    "cost_usd": null,
+    "input_tokens": 2731,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 419,
+    "reasoning_tokens": 365,
+    "text": "Based on the memory context, Melanie mentioned in a session on May 25, 2023, that she ran a charity race for mental health \"last Saturday.\" Calculating from the date of that message, the race occurred on May 20, 2023.",
+    "uncached_input_tokens": 43
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 313,
+      "reasoning_tokens": 305,
+      "response_chars": 18,
+      "uncached_input_tokens": 168,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0031531999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 505,
+      "reasoning_tokens": 497,
+      "response_chars": 18,
+      "uncached_input_tokens": 40,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 18,
+      "uncached_input_tokens": 40,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_802a0b14ecb10b27b535",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "6d0cc867ac41b33d3462b3395a2865cf34c316b73db1bcc896c3a9b1b9c79de4",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0023652,
+    "cost_usd": null,
+    "input_tokens": 2746,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 354,
+    "reasoning_tokens": 318,
+    "text": "Tim has been to London and the UK (based on his mention of a place in London and experiences in the UK). No other specific locations visited are indicated in the context.",
+    "uncached_input_tokens": 58
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001881,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 240,
+      "reasoning_tokens": 232,
+      "response_chars": 18,
+      "uncached_input_tokens": 147,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 18,
+      "uncached_input_tokens": 19,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012122,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 147,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 192,
+      "reasoning_tokens": 184,
+      "response_chars": 18,
+      "uncached_input_tokens": 19,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_db4715d1f0276b5c2be4",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "841e431e16e20108f5ef9b86d284756fae062a5ff1b993a71d37eeff6c290fc0",
+  "status": "completed"
+}

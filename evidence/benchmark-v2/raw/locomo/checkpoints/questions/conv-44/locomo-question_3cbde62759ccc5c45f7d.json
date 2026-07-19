@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011463,
+    "cost_usd": null,
+    "input_tokens": 2999,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 411,
+    "reasoning_tokens": 349,
+    "text": "Audrey mentioned in a message on October 24, 2023, that she “had an accident while playing with my pups at the park” the previous week. So, the accident occurred sometime during the week before October 24, 2023 (roughly mid‑October 2023).",
+    "uncached_input_tokens": 2999
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.005094,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 759,
+      "reasoning_tokens": 751,
+      "response_chars": 18,
+      "uncached_input_tokens": 180,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0035551999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 566,
+      "reasoning_tokens": 558,
+      "response_chars": 18,
+      "uncached_input_tokens": 52,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.005265199999999999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 851,
+      "reasoning_tokens": 843,
+      "response_chars": 18,
+      "uncached_input_tokens": 52,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3cbde62759ccc5c45f7d",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "fd8ccab0731242f8a342f7e619d8e7a3c8aa127307b98e282677d0129b2f106e",
+  "status": "completed"
+}

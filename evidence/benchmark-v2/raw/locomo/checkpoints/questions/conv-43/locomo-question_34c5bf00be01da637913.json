@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014601,
+    "cost_usd": null,
+    "input_tokens": 2893,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 987,
+    "reasoning_tokens": 874,
+    "text": "Tim stays motivated during difficult study sessions by remembering his love for writing and reading (2023-11-21, session_19). He also balances studying with relaxing through books (2023-10-17, session_14) and turns setbacks into learning experiences to recognize his resilience (2023-12-01, session_20). Additionally, he tries to juggle study with his fantasy reading hobby and stays positive and hardworking (2023-08-26, session_9; 2023-11-16, session_18).",
+    "uncached_input_tokens": 2893
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001458,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 224,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 123,
+      "response_chars": 18,
+      "uncached_input_tokens": 224,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009452000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 224,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 109,
+      "reasoning_tokens": 101,
+      "response_chars": 18,
+      "uncached_input_tokens": 96,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016472000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 224,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 226,
+      "reasoning_tokens": 218,
+      "response_chars": 18,
+      "uncached_input_tokens": 96,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_34c5bf00be01da637913",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "a3cb9b3526782ac44da927de5290d8fc24dfa98a337447730e0948abf83b279a",
+  "status": "completed"
+}

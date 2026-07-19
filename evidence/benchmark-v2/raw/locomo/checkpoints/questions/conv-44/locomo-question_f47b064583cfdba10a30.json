@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3072,
+    "cost_cny": 0.0031518,
+    "cost_usd": null,
+    "input_tokens": 3157,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 470,
+    "reasoning_tokens": 406,
+    "text": "Both Audrey and Andrew share the frustration of finding pet-friendly spots. Audrey says, \"I get how frustrating it can be not to find pet-friendly spots\" (2023-07-03), and Andrew notes, \"it's tough to find a place\" that allows dogs (2023-07-08).",
+    "uncached_input_tokens": 85
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001617,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 179,
+      "reasoning_tokens": 171,
+      "response_chars": 20,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013742000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 202,
+      "reasoning_tokens": 194,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f47b064583cfdba10a30",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "3e3ae9bce6357c3e60f83fe80294a2d9e96f3ba2592f44cfe9af88dc0a5d2041",
+  "status": "completed"
+}

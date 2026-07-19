@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009546,
+    "cost_usd": null,
+    "input_tokens": 2738,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 222,
+    "reasoning_tokens": 163,
+    "text": "John finds the game immersive because of the ability to make choices that shape the world. He mentions being \"totally hooked, trying to make the right choices to shape the world\" and that it's \"really immersive\" (from session_19 on 2022-08-10).",
+    "uncached_input_tokens": 2738
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001074,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 91,
+      "reasoning_tokens": 83,
+      "response_chars": 20,
+      "uncached_input_tokens": 176,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015452,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 233,
+      "reasoning_tokens": 225,
+      "response_chars": 20,
+      "uncached_input_tokens": 48,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 246,
+      "reasoning_tokens": 238,
+      "response_chars": 20,
+      "uncached_input_tokens": 48,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b86489d2fd52f1d17dc8",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "8e5dd4c1823eece4e7c702d5f9a847eca332ecdfcce4cf8c9ba9383f67a896e5",
+  "status": "completed"
+}

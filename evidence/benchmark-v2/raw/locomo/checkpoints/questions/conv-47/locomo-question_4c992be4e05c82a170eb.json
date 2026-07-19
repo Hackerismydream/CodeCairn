@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01008,
+    "cost_usd": null,
+    "input_tokens": 2530,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 415,
+    "reasoning_tokens": 331,
+    "text": "The provided memory context does not contain information about James working on a project in a game design course. The snippets mention various activities, such as building a website and creating game mods (memory #12), working on a football simulator (memory #18), and improving game dev skills (memory #4), but none are explicitly tied to a game design course. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2530
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001116,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 85,
+      "reasoning_tokens": 77,
+      "response_chars": 18,
+      "uncached_input_tokens": 202,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 326,
+      "reasoning_tokens": 318,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009452000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4c992be4e05c82a170eb",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "e0fb616cfc340693f9a95539ab5541e2538cf8fd1f778d942d2b99bb26a62c9c",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008925,
+    "cost_usd": null,
+    "input_tokens": 2683,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 146,
+    "reasoning_tokens": 125,
+    "text": "McGee's bar serves stout, as mentioned by James on 2022-08-26.",
+    "uncached_input_tokens": 2683
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00117,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 129,
+      "reasoning_tokens": 121,
+      "response_chars": 18,
+      "uncached_input_tokens": 132,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 90,
+      "reasoning_tokens": 82,
+      "response_chars": 18,
+      "uncached_input_tokens": 4,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009452000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 155,
+      "reasoning_tokens": 147,
+      "response_chars": 18,
+      "uncached_input_tokens": 4,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_15214af5025a124b031a",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "782705468b1016982a37b378750ec451d59d456d0d8595fe336bf1e61761d4f5",
+  "status": "completed"
+}

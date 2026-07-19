@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.007909,
+    "cost_usd": null,
+    "input_tokens": 2635,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1270,
+    "reasoning_tokens": 1170,
+    "text": "Calvin first traveled to Tokyo shortly before April 20, 2023. In a message timestamped 2023-04-20T16:15:00+00:00, he says he \"just went to an awesome music thingy in Tokyo,\" and at 2023-04-20T16:16:00+00:00 he calls it a festival, indicating the trip had recently occurred. No earlier mentions of a Tokyo visit exist in the provided context.",
+    "uncached_input_tokens": 75
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003813,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 215,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 528,
+      "reasoning_tokens": 520,
+      "response_chars": 18,
+      "uncached_input_tokens": 215,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0035762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 215,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 552,
+      "reasoning_tokens": 544,
+      "response_chars": 18,
+      "uncached_input_tokens": 87,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0029942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 215,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 455,
+      "reasoning_tokens": 447,
+      "response_chars": 18,
+      "uncached_input_tokens": 87,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9d79d9bbad48895a98fe",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "1f4f45c9f7040d0a697808ebddc58a0a7a2296beba1c9924492aa3c67727962f",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010851,
+    "cost_usd": null,
+    "input_tokens": 2717,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 450,
+    "reasoning_tokens": 388,
+    "text": "Sam planned to start working out at the gym on July 28, 2023, as he stated on July 27, 2023, that he would begin \"tomorrow.\" The context does not provide explicit confirmation that he followed through, but it is the only indication of a start date.",
+    "uncached_input_tokens": 2717
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.005757,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 872,
+      "reasoning_tokens": 864,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 231,
+      "reasoning_tokens": 223,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 399,
+      "reasoning_tokens": 391,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a59721a4d786532bd0d5",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "2523cceabf518f63078cef03eb19d8e00735ffd41033bb542765f6e56df938a5",
+  "status": "completed"
+}

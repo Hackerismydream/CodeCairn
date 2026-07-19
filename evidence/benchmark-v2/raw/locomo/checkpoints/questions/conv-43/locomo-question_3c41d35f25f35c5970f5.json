@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010932,
+    "cost_usd": null,
+    "input_tokens": 2980,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 332,
+    "reasoning_tokens": 259,
+    "text": "Tim's motivation to keep pushing himself to get better in writing and reading came from remembering why he loved them. He said, \"For me, it's writing and reading. That's what helps me stay motivated and push myself to get better\" (2023-11-21T10:26:00+00:00). The context is sufficient.",
+    "uncached_input_tokens": 2980
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002082,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 253,
+      "reasoning_tokens": 245,
+      "response_chars": 20,
+      "uncached_input_tokens": 188,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016712,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 248,
+      "reasoning_tokens": 240,
+      "response_chars": 20,
+      "uncached_input_tokens": 60,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013172000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 20,
+      "uncached_input_tokens": 60,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3c41d35f25f35c5970f5",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "840c293ad70107299b7f9eda05d30e4ce7864e2924871a861bf94d6c8f13c886",
+  "status": "completed"
+}

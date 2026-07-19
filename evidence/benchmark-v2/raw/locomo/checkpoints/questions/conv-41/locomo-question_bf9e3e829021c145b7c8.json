@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.002659,
+    "cost_usd": null,
+    "input_tokens": 2613,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 406,
+    "reasoning_tokens": 344,
+    "text": "The provided context does not mention any specific damages to John's car. Maria references a damaged car on a flatbed in session_21, but it's unclear whose car it is. John discusses potholes damaging cars in general, but no personal incident is attributed to him. The context is insufficient.",
+    "uncached_input_tokens": 53
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001659,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 190,
+      "reasoning_tokens": 182,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013802,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 207,
+      "reasoning_tokens": 199,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 271,
+      "reasoning_tokens": 263,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bf9e3e829021c145b7c8",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "b4fb826779ed5b8e940def44fbfcb2335f4f20b6e254e779974193d9e4299a39",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011415,
+    "cost_usd": null,
+    "input_tokens": 2783,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 511,
+    "reasoning_tokens": 500,
+    "text": "Audrey got a tattoo of her four dogs.",
+    "uncached_input_tokens": 2783
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001089,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 121,
+      "reasoning_tokens": 113,
+      "response_chars": 18,
+      "uncached_input_tokens": 121,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001119,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 18,
+      "uncached_input_tokens": 121,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001077,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 121,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 18,
+      "uncached_input_tokens": 121,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1c2de7066c885f1e243b",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "539d47f2001b84171d5933df6368ebc876c0d71e40dba22ea86c5ed948ae0613",
+  "status": "completed"
+}

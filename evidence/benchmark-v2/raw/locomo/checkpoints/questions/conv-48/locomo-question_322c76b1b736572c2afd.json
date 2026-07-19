@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012612,
+    "cost_usd": null,
+    "input_tokens": 2732,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 736,
+    "reasoning_tokens": 683,
+    "text": "The bench is special because it holds a lot of memories of Deborah and her mom sitting there, chatting about dreams and life. It’s full of good moments and helps her stay connected to her mother. (From memories in sessions 19 and 1)",
+    "uncached_input_tokens": 2732
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001461,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 158,
+      "reasoning_tokens": 150,
+      "response_chars": 20,
+      "uncached_input_tokens": 171,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015362000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 234,
+      "reasoning_tokens": 226,
+      "response_chars": 20,
+      "uncached_input_tokens": 43,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013802,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 208,
+      "reasoning_tokens": 200,
+      "response_chars": 20,
+      "uncached_input_tokens": 43,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_322c76b1b736572c2afd",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "4f7eed971936f8a185705505e316558a7c5d6415ea3a1053f71b4c06a5d3213b",
+  "status": "completed"
+}

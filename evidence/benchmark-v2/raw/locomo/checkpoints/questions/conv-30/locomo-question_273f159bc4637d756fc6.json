@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009312,
+    "cost_usd": null,
+    "input_tokens": 2672,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 216,
+    "reasoning_tokens": 170,
+    "text": "Gina stays confident by reminding herself of her successes and progress, relying on a good support system, focusing on her love for the business, and having faith in herself (as stated on 2023-04-25).",
+    "uncached_input_tokens": 2672
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003819,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 551,
+      "reasoning_tokens": 543,
+      "response_chars": 20,
+      "uncached_input_tokens": 171,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0031682,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 506,
+      "reasoning_tokens": 498,
+      "response_chars": 20,
+      "uncached_input_tokens": 43,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 348,
+      "reasoning_tokens": 340,
+      "response_chars": 20,
+      "uncached_input_tokens": 43,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_273f159bc4637d756fc6",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "d5e6528eaff6d6859881f03ef6c611f721a852806edf65ba62c926631c85f75c",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009405,
+    "cost_usd": null,
+    "input_tokens": 2707,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 214,
+    "reasoning_tokens": 156,
+    "text": "Based on the provided memory context, Joanna mentions going on a hike only once: she references taking a photo on a hike last summer near Fort Wayne (memory #10 from session_28). No other hikes are mentioned. Thus, the context indicates she has been on **one hike**.",
+    "uncached_input_tokens": 2707
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000855,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 61,
+      "reasoning_tokens": 53,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bbb52249421bae1ca6fb",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "3ddfaf6f43679e6cb9fca96ace53f5749b2514a097666f1be4a96378785cec7c",
+  "status": "completed"
+}

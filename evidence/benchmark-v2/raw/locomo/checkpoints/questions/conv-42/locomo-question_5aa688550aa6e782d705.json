@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009534,
+    "cost_usd": null,
+    "input_tokens": 2720,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 229,
+    "reasoning_tokens": 195,
+    "text": "Nate mentioned taking time off to chill with his pets on August 22, 2022, saying it would be \"this weekend\" (the upcoming weekend).",
+    "uncached_input_tokens": 2720
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.011706,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1875,
+      "reasoning_tokens": 1867,
+      "response_chars": 18,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0078092,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1289,
+      "reasoning_tokens": 1281,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0100412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1661,
+      "reasoning_tokens": 1650,
+      "response_chars": 24,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5aa688550aa6e782d705",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "d4c511a3c3180c0520826fa74b859f3d46b3f95d0038f275f2d2d1daf7c7116c",
+  "status": "completed"
+}

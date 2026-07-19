@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011445,
+    "cost_usd": null,
+    "input_tokens": 2943,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 436,
+    "reasoning_tokens": 387,
+    "text": "The provided memory context does not contain any information about when Calvin recorded a podcast with his friends. The only podcast-related mention is Calvin stating he would notify Dave when a podcast is uploaded (session_15), but no recording date is given.",
+    "uncached_input_tokens": 2943
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002292,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 302,
+      "reasoning_tokens": 294,
+      "response_chars": 18,
+      "uncached_input_tokens": 160,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009512,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 142,
+      "reasoning_tokens": 134,
+      "response_chars": 18,
+      "uncached_input_tokens": 32,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010292,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 155,
+      "reasoning_tokens": 147,
+      "response_chars": 18,
+      "uncached_input_tokens": 32,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4edd27dd1a2e1bfc9115",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "cb2636cd9d3a7186bdb4fbef572b341153e7d7b2640336d87b9b17866c632517",
+  "status": "completed"
+}

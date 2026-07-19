@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0041684,
+    "cost_usd": null,
+    "input_tokens": 2890,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 646,
+    "reasoning_tokens": 539,
+    "text": "John has expressed career goals beyond his basketball performance: he is interested in collaborating with sports brands like Nike and Under Armour, and is open to other brands that align with his values (from session_2 on 2023-06-15). He also prioritizes supporting youth sports and advocating for fair access to sports programs for underserved communities by partnering with organizations to create opportunities for young athletes (from session_26 on 2023-12-26). The provided memory context does not include additional non-skills career goals.",
+    "uncached_input_tokens": 74
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00144,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 230,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 20,
+      "uncached_input_tokens": 230,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.006435199999999999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 230,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1021,
+      "reasoning_tokens": 1013,
+      "response_chars": 18,
+      "uncached_input_tokens": 102,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019832,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 230,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 279,
+      "reasoning_tokens": 271,
+      "response_chars": 20,
+      "uncached_input_tokens": 102,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_250bba3bba9752d3b1a2",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "3b2bedfb7bb7839cc050f92b27d1e544686e43967878d89a82394edd238e8e6c",
+  "status": "completed"
+}

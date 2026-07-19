@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015303,
+    "cost_usd": null,
+    "input_tokens": 3157,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 972,
+    "reasoning_tokens": 901,
+    "text": "Based on the provided context, Joanna has had at least **1** of her scripts make it to the big screen. In a message from October 25, 2022, she states that \"another movie script that I contributed to was shown on the big screen last Sunday for the first time.\" No other memories confirm additional scripts reaching that stage.",
+    "uncached_input_tokens": 3157
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000912,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 61,
+      "reasoning_tokens": 53,
+      "response_chars": 18,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022711999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 351,
+      "reasoning_tokens": 343,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 257,
+      "reasoning_tokens": 249,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_083a770488ccdd0856dc",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "0c171aae24a5df4efe80a169ea4a799f8c1385a1f3c1e682a216ef33e70affaa",
+  "status": "completed"
+}

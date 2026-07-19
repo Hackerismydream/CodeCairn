@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01125,
+    "cost_usd": null,
+    "input_tokens": 2990,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 380,
+    "reasoning_tokens": 322,
+    "text": "The roadtrip took place on the weekend before October 20, 2023 (i.e., around October 14–15, 2023), as described in session_18 on 2023-10-20T18:55:00+00:00.",
+    "uncached_input_tokens": 2990
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001524,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 167,
+      "reasoning_tokens": 159,
+      "response_chars": 20,
+      "uncached_input_tokens": 174,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012812000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 190,
+      "reasoning_tokens": 182,
+      "response_chars": 20,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024511999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 385,
+      "reasoning_tokens": 377,
+      "response_chars": 20,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_aa888040e75ed245ff33",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "bec41445f98bdeff621b19875f46619e046b163ca00b55ff48a0431f4148480d",
+  "status": "completed"
+}

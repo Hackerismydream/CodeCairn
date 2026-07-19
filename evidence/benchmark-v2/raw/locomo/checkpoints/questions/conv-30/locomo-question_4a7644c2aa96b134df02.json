@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0023446,
+    "cost_usd": null,
+    "input_tokens": 2945,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 378,
+    "reasoning_tokens": 311,
+    "text": "The provided memory context does not indicate that both Jean and John (or even Gina and Jon, the only speakers present) have visited the same city. Gina mentions having been only to Rome, while Jon brings up Paris, but there is no record of any city they have both visited. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 1
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00135,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 139,
+      "reasoning_tokens": 131,
+      "response_chars": 18,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 110,
+      "reasoning_tokens": 102,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009392000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 134,
+      "reasoning_tokens": 126,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4a7644c2aa96b134df02",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "562012e44113d28de8dea3a19ab12ad68d5169d83389d8cde3f7817d11d48f24",
+  "status": "completed"
+}

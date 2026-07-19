@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012897,
+    "cost_usd": null,
+    "input_tokens": 2993,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 653,
+    "reasoning_tokens": 565,
+    "text": "The context does not specify how often John takes his kids to the park. He mentions going to the park for family outings (e.g., \"It was an awesome day at the park with my family\") and, when asked if he goes often, he says he tries to find fun activities like walks or picnics in the park, but he does not give a frequency. The information is insufficient to answer the question precisely.",
+    "uncached_input_tokens": 2993
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 18,
+      "uncached_input_tokens": 200,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009752000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 207,
+      "reasoning_tokens": 199,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7ade887de40271c2d613",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "dd50952ecd385e464983e9c7265a5c9ab98ac5981d2d68be79e2a72578654ef6",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010848,
+    "cost_usd": null,
+    "input_tokens": 2968,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 324,
+    "reasoning_tokens": 253,
+    "text": "Caroline advises doing your research to find an adoption agency or lawyer who can guide you through the process, gathering necessary documents such as references, financial information, and medical checks, and preparing emotionally because the wait can be difficult. (Source: session_17, 2023-10-13T10:34:00+00:00)",
+    "uncached_input_tokens": 2968
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 225,
+      "reasoning_tokens": 217,
+      "response_chars": 20,
+      "uncached_input_tokens": 194,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017012000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 20,
+      "uncached_input_tokens": 66,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016472000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 241,
+      "reasoning_tokens": 233,
+      "response_chars": 20,
+      "uncached_input_tokens": 66,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e7ca56e83c0e579f735d",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ec23684704c6f1a0856608d6dced72ba9bcb4a89997a5b0da7d1b9f6107d4600",
+  "status": "completed"
+}

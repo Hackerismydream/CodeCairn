@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012807,
+    "cost_usd": null,
+    "input_tokens": 3157,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 556,
+    "reasoning_tokens": 480,
+    "text": "Based on the attributed memory context, Dave has explicitly shared a sunset photo he captured, saying, \"Look at this magnificent sunset I captured on camera.\" While he mentions his new vintage camera in a later session (session_30), there is no direct connection to the type of photos he takes with it. The evidence from session_27 indicates his preference is for sunset photography.",
+    "uncached_input_tokens": 3157
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004158,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 596,
+      "reasoning_tokens": 588,
+      "response_chars": 18,
+      "uncached_input_tokens": 194,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020491999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 308,
+      "reasoning_tokens": 300,
+      "response_chars": 18,
+      "uncached_input_tokens": 66,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 390,
+      "reasoning_tokens": 382,
+      "response_chars": 18,
+      "uncached_input_tokens": 66,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f8e9cbc41845d84b537b",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "c8bd3e033513f4eb26a163ca650cb1e7129820de19a50419d3b2bc73c8cb10f6",
+  "status": "completed"
+}

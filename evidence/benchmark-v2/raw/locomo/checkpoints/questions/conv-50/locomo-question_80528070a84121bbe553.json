@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010665,
+    "cost_usd": null,
+    "input_tokens": 2751,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 402,
+    "reasoning_tokens": 326,
+    "text": "The provided memory context includes only one mention of a gift from an artist friend. In session_4 on May 1, 2023, Calvin thanks Dave and says he \"got it from another artist as a gift,\" but the specific item is not identified. No other gifts are referenced. The context is insufficient to determine what gifts Calvin has received from his artist friends.",
+    "uncached_input_tokens": 2751
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00201,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 238,
+      "reasoning_tokens": 230,
+      "response_chars": 18,
+      "uncached_input_tokens": 194,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009212000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 18,
+      "uncached_input_tokens": 66,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 18,
+      "uncached_input_tokens": 66,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_80528070a84121bbe553",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "30b9eb3239126dd6ab1e313e964642a7f26c37334df44dfa704a26194fc26775",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009633,
+    "cost_usd": null,
+    "input_tokens": 2657,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 277,
+    "reasoning_tokens": 228,
+    "text": "According to the memory context, James has joined cooking courses. In session_23, John asks about the cost and what else James cooked there, implying James discussed his participation in cooking classes. No other types of classes James joined are mentioned.",
+    "uncached_input_tokens": 2657
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001524,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 18,
+      "uncached_input_tokens": 158,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009212000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 138,
+      "reasoning_tokens": 130,
+      "response_chars": 18,
+      "uncached_input_tokens": 30,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 176,
+      "reasoning_tokens": 168,
+      "response_chars": 18,
+      "uncached_input_tokens": 30,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cbe7c6a65e1e46ed4731",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "8bfb2765919be94527e2c5e8286c9fe71775fb42851e366934b18fb412b8a81a",
+  "status": "completed"
+}

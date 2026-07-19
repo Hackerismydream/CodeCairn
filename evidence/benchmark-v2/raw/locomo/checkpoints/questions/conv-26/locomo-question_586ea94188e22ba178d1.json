@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01143,
+    "cost_usd": null,
+    "input_tokens": 2628,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 591,
+    "reasoning_tokens": 465,
+    "text": "The provided memory context does not contain a direct answer from Caroline about what a specific drawing symbolizes for her. The closest relevant statement is her general reflection on art: \"Painting and drawing have helped me express my feelings and explore my gender identity. Creating art was really important to me during my transition - it helped me understand and accept myself.\" There is also a question from Melanie asking what a drawing means to Caroline, but no recorded response. Thus, the context is insufficient to answer what a specific drawing symbolizes, though it indicates that drawing in general helped Caroline with self-expression, gender identity exploration, and self-acceptance.",
+    "uncached_input_tokens": 2628
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001677,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 237,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 161,
+      "reasoning_tokens": 153,
+      "response_chars": 18,
+      "uncached_input_tokens": 237,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018362,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 237,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 251,
+      "reasoning_tokens": 243,
+      "response_chars": 18,
+      "uncached_input_tokens": 109,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 237,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 70,
+      "reasoning_tokens": 62,
+      "response_chars": 18,
+      "uncached_input_tokens": 109,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_586ea94188e22ba178d1",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "1b648c6a0576add732d8e341edcf5f2f0bb6686ccfaee20eed52959c66ace921",
+  "status": "completed"
+}

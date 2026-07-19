@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0016996,
+    "cost_usd": null,
+    "input_tokens": 2990,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 248,
+    "reasoning_tokens": 181,
+    "text": "Jolene and her partner plan to play “Walking Dead” next Saturday, which, given her statement on January 27, 2023, would be **February 4, 2023**. (The provided memory context does not specify when they plan to *complete* the game, only when they plan to play.)",
+    "uncached_input_tokens": 46
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.005517,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 825,
+      "reasoning_tokens": 817,
+      "response_chars": 18,
+      "uncached_input_tokens": 189,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025681999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 397,
+      "reasoning_tokens": 389,
+      "response_chars": 20,
+      "uncached_input_tokens": 61,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023461999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 360,
+      "reasoning_tokens": 352,
+      "response_chars": 20,
+      "uncached_input_tokens": 61,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_31c0640ab65ee5117520",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "19e38dd2c65aad2b6af76274c9b7600244d8384ce40cfc8243b1169786e091c0",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013179,
+    "cost_usd": null,
+    "input_tokens": 2949,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 722,
+    "reasoning_tokens": 670,
+    "text": "The provided memory context does not explicitly state whether Evan lives close to a beach or mountains. He mentions a peaceful place near his home but doesn't identify it, and references driving to the mountains and enjoying beach sunsets, but no clear proximity is indicated.",
+    "uncached_input_tokens": 2949
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001515,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 173,
+      "reasoning_tokens": 165,
+      "response_chars": 18,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016082,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 252,
+      "reasoning_tokens": 244,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c3642b30cb74f5e59d5a",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "24e53f04f1388bd2c477f562ee3f0c3360cc5b9dd754e96542bb8a2531c3464a",
+  "status": "completed"
+}

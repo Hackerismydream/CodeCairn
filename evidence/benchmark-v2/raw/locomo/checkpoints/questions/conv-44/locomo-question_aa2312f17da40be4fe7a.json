@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013533,
+    "cost_usd": null,
+    "input_tokens": 2899,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 806,
+    "reasoning_tokens": 715,
+    "text": "Based on the memory context, the biggest stressor in Andrew's life besides not being able to hike frequently is his difficulty finding dog-friendly places to rent. In session_10 (2023-07-03), he explicitly says, “Life's thrown me a few curveballs lately. Still can't seem to find any dog-friendly spots to rent. That's a bummer.” This is a distinct source of stress separate from his hiking challenges.",
+    "uncached_input_tokens": 2899
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002193,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 263,
+      "reasoning_tokens": 255,
+      "response_chars": 18,
+      "uncached_input_tokens": 205,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008822000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 18,
+      "uncached_input_tokens": 77,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006002000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 61,
+      "reasoning_tokens": 53,
+      "response_chars": 18,
+      "uncached_input_tokens": 77,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_aa2312f17da40be4fe7a",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "d1da8c23807ffaf44bf1d4e48a34f1cafefbd0ecd69bc46eaa1aa10e8f4255c7",
+  "status": "completed"
+}

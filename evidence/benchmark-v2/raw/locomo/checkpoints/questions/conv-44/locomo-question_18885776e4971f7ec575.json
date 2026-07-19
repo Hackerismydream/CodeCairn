@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014367,
+    "cost_usd": null,
+    "input_tokens": 3145,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 822,
+    "reasoning_tokens": 727,
+    "text": "Based on the memory context, Audrey learned to soothe her dogs by petting, hugging, speaking calmly, and walking them slowly to help them relax. This skill was demonstrated when she comforted one of her dogs (session_19, timestamp 2023-09-24T17:54:30+00:00). The context does not explicitly state she learned this from a specific workshop, but it is a clear skill she used in caring for her dogs.",
+    "uncached_input_tokens": 3145
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002193,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 262,
+      "reasoning_tokens": 254,
+      "response_chars": 18,
+      "uncached_input_tokens": 207,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012182,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 155,
+      "response_chars": 18,
+      "uncached_input_tokens": 79,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015002000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 18,
+      "uncached_input_tokens": 79,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_18885776e4971f7ec575",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "a91a82d948bbab01728b5f16ddaa4e9ba7a356eece038f0e192656db6da13b49",
+  "status": "completed"
+}

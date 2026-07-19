@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010482,
+    "cost_usd": null,
+    "input_tokens": 2810,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 342,
+    "reasoning_tokens": 300,
+    "text": "John decided to run for office again because he couldn't let go of his dream to make a difference in his community (2023-05-06T17:04:00+00:00).",
+    "uncached_input_tokens": 2810
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00207,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 265,
+      "reasoning_tokens": 257,
+      "response_chars": 20,
+      "uncached_input_tokens": 160,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 330,
+      "reasoning_tokens": 322,
+      "response_chars": 20,
+      "uncached_input_tokens": 32,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012272000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 188,
+      "reasoning_tokens": 180,
+      "response_chars": 20,
+      "uncached_input_tokens": 32,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_577d2ead54d69b9ffe13",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "6ddff9d9792de870d3b78636e5a20bd61e0b7a76e645e95e90b2397fdcad958b",
+  "status": "completed"
+}

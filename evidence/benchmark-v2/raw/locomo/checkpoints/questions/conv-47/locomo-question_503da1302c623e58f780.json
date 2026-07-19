@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009447,
+    "cost_usd": null,
+    "input_tokens": 2779,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 185,
+    "reasoning_tokens": 146,
+    "text": "James' mother and her army friend visited him on **October 19, 2022**, as he mentioned on October 21, 2022 that they had come two days earlier.",
+    "uncached_input_tokens": 2779
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001446,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 165,
+      "reasoning_tokens": 157,
+      "response_chars": 20,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 79,
+      "reasoning_tokens": 68,
+      "response_chars": 24,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 109,
+      "response_chars": 20,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_503da1302c623e58f780",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "af2e93d9d3abf23eeecefa74053423ee002a11a3ad81cf9b144b666ca8f7af4c",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.016788,
+    "cost_usd": null,
+    "input_tokens": 2938,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1329,
+    "reasoning_tokens": 1236,
+    "text": "The provided memory context does not contain a direct, explicit statement from Calvin about attending a specific event in Boston. While Dave mentions \"gala attendance\" and congratulates Calvin on it, the location of that gala is not specified. Calvin's own memories describe planning to perform in Boston, planning to visit, and later a meeting with artists in the city, but no completed attendance at a named event. Thus, the context is insufficient to answer definitively.",
+    "uncached_input_tokens": 2938
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001368,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 18,
+      "uncached_input_tokens": 200,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 254,
+      "reasoning_tokens": 246,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 75,
+      "reasoning_tokens": 67,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0f0418c6e9c3999aa9e5",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "25b26bfc0511d9d59b04d1403867c104530ec9bb1a1eeb0247f8f32093adb6ec",
+  "status": "completed"
+}

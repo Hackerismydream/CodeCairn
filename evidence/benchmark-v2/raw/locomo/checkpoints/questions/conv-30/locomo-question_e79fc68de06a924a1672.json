@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013473,
+    "cost_usd": null,
+    "input_tokens": 2829,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 831,
+    "reasoning_tokens": 786,
+    "text": "Jon uses the clipboard with a notepad to stay organized and motivated, setting goals, tracking his achievements, and identifying areas to improve (2023-06-13T20:34:00+00:00).",
+    "uncached_input_tokens": 2829
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002049,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 258,
+      "reasoning_tokens": 250,
+      "response_chars": 20,
+      "uncached_input_tokens": 167,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010742,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 159,
+      "reasoning_tokens": 151,
+      "response_chars": 20,
+      "uncached_input_tokens": 39,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015902,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 245,
+      "reasoning_tokens": 237,
+      "response_chars": 20,
+      "uncached_input_tokens": 39,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e79fc68de06a924a1672",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "1722bb5da1ff6ea16266f32eaa211adab8e8f781fadd6f7979fe2216901fe12c",
+  "status": "completed"
+}

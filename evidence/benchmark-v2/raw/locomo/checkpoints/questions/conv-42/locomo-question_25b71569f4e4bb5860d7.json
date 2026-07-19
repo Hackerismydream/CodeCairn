@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010059,
+    "cost_usd": null,
+    "input_tokens": 2811,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 271,
+    "reasoning_tokens": 223,
+    "text": "The provided memory context does not contain any book recommendations from Joanna to Nate. The entries show Nate asking for recommendations and Joanna asking for recommendations or thanking Nate for one, but no instance of Joanna giving a book recommendation to Nate is recorded.",
+    "uncached_input_tokens": 2811
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 109,
+      "response_chars": 18,
+      "uncached_input_tokens": 166,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 164,
+      "reasoning_tokens": 156,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012632000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_25b71569f4e4bb5860d7",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "02530ba03c0434d97a5b0fc668309c30df33a4a102a11e531e059e418609bb4f",
+  "status": "completed"
+}

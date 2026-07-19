@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014256,
+    "cost_usd": null,
+    "input_tokens": 2982,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 885,
+    "reasoning_tokens": 827,
+    "text": "Dave finds fulfillment in working on cars, an activity he describes as therapeutic and a passion he shares through a car mods blog. This is similar to Calvin's passion for music festivals, as both represent their respective fulfilling personal interests. (Evidence: session_7, session_28)",
+    "uncached_input_tokens": 2982
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.007404,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1148,
+      "reasoning_tokens": 1140,
+      "response_chars": 18,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 247,
+      "reasoning_tokens": 239,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0070592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1154,
+      "reasoning_tokens": 1146,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bc0f2b72c8149086b3e0",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "b4aaf6762928ae904f936dcd3111d06195adcf4dec86d0cdc1130b3a5275c0e8",
+  "status": "completed"
+}

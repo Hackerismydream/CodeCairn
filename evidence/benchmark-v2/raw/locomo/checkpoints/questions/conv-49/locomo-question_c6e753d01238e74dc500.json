@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010809,
+    "cost_usd": null,
+    "input_tokens": 2765,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 419,
+    "reasoning_tokens": 363,
+    "text": "Sam and his friend decided to try kayaking on 2023-10-14 at 16:11:30 UTC, when Sam said, \"my mate and I are just around the corner from kayaking on the lake, we're going to try that now!\"",
+    "uncached_input_tokens": 2765
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00195,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 239,
+      "reasoning_tokens": 231,
+      "response_chars": 20,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 251,
+      "reasoning_tokens": 243,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015632,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 238,
+      "reasoning_tokens": 230,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c6e753d01238e74dc500",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "9ccdb578731ffefe631ee3ca98fd8180010ab974019b27c64180c1c6d1b47c98",
+  "status": "completed"
+}

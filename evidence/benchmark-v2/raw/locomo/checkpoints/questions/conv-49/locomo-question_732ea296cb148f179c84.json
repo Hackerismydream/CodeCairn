@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01395,
+    "cost_usd": null,
+    "input_tokens": 2762,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 944,
+    "reasoning_tokens": 905,
+    "text": "Evan and Sam had decided to paint together by 2023-09-11, when Sam said, “Sounds good, Evan! Can't wait to paint with you next Saturday.”",
+    "uncached_input_tokens": 2762
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00321,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 458,
+      "reasoning_tokens": 450,
+      "response_chars": 18,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 306,
+      "reasoning_tokens": 298,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0047552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 779,
+      "reasoning_tokens": 771,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_732ea296cb148f179c84",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "c9962dd33290f129d34822fa43e8d53713aad1f2528e49ddab9c6f69d3f9d117",
+  "status": "completed"
+}

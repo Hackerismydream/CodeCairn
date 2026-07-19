@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011097,
+    "cost_usd": null,
+    "input_tokens": 2995,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 352,
+    "reasoning_tokens": 296,
+    "text": "The provided memory context does not mention any sports activity Calvin plans to try after the tour with Frank Ocean. The memories reference travel plans (Boston, Tokyo), music collaborations, and personal reflections, but no sports-related activities. Therefore, the context is insufficient to answer this question.",
+    "uncached_input_tokens": 2995
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000873,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 61,
+      "reasoning_tokens": 53,
+      "response_chars": 18,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007082000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 97,
+      "reasoning_tokens": 89,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1886351ba2ea9c2a8319",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "b6b70258724d4813b93dedff47b618ee579ea50fbf88279b7a79ff51de6c66b0",
+  "status": "completed"
+}

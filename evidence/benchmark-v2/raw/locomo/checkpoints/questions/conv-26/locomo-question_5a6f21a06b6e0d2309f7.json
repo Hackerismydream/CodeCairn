@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014049,
+    "cost_usd": null,
+    "input_tokens": 3087,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 798,
+    "reasoning_tokens": 717,
+    "text": "Caroline mentioned the negative hike experience on August 17, 2023 (session_12) and again on August 25, 2023 (session_14), where she specified the hike happened \"last week.\" This places the encounter around mid-August 2023, likely between August 11 and August 17, 2023. The context does not provide an exact date.",
+    "uncached_input_tokens": 3087
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003948,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 558,
+      "reasoning_tokens": 550,
+      "response_chars": 18,
+      "uncached_input_tokens": 200,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0072872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1178,
+      "reasoning_tokens": 1170,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.004749199999999999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 755,
+      "reasoning_tokens": 747,
+      "response_chars": 18,
+      "uncached_input_tokens": 72,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5a6f21a06b6e0d2309f7",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "e3819ce7a135ed302a5f95577f1386bcbd158d7bb315babf2ccb2a9ae2579b4c",
+  "status": "completed"
+}

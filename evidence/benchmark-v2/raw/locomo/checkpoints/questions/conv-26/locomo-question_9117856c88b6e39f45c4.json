@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012459,
+    "cost_usd": null,
+    "input_tokens": 2651,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 751,
+    "reasoning_tokens": 670,
+    "text": "Based on the provided memory context, Caroline expresses that art (specifically painting and drawing) was important to her during her transition, helping her express feelings and explore her gender identity. She also describes a pride parade as a powerful symbol reminding her of the importance of standing up for equality. The context does not mention any specific physical objects (such as a necklace or flag) as important symbols to her.",
+    "uncached_input_tokens": 2651
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001725,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 18,
+      "uncached_input_tokens": 189,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 123,
+      "response_chars": 18,
+      "uncached_input_tokens": 61,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017402000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 259,
+      "reasoning_tokens": 251,
+      "response_chars": 18,
+      "uncached_input_tokens": 61,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9117856c88b6e39f45c4",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "b6f360fb748208af00cb6827a59f90d535b44cdc90371dad5b8bd48ea326103b",
+  "status": "completed"
+}

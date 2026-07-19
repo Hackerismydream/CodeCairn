@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011139,
+    "cost_usd": null,
+    "input_tokens": 2657,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 528,
+    "reasoning_tokens": 454,
+    "text": "Maria mentioned adopting a puppy (likely Shadow) in session_31 on **2023-08-13**, saying she \"just adopted this cute pup from a shelter last week.\" That places the adoption approximately in early August 2023 (around August 6–12). The memory context does not provide an exact date, but this is the only relevant evidence.",
+    "uncached_input_tokens": 2657
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002667,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 352,
+      "reasoning_tokens": 344,
+      "response_chars": 20,
+      "uncached_input_tokens": 185,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 57,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011882000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 20,
+      "uncached_input_tokens": 57,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_32c397e4ab30ef6e1194",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "8d798f6439358c8e1fc1e5b40b9aef4769224e2be775d9d1dd05ad9c45e67aea",
+  "status": "completed"
+}

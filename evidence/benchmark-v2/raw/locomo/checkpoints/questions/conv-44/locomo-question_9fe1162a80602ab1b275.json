@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010032,
+    "cost_usd": null,
+    "input_tokens": 3030,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 157,
+    "reasoning_tokens": 137,
+    "text": "Andrew expressed missing the peaceful moments out in nature while exploring nature trails with his family's dog.",
+    "uncached_input_tokens": 3030
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004401,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 667,
+      "reasoning_tokens": 659,
+      "response_chars": 20,
+      "uncached_input_tokens": 133,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017582000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 290,
+      "reasoning_tokens": 282,
+      "response_chars": 20,
+      "uncached_input_tokens": 5,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 133,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 396,
+      "reasoning_tokens": 388,
+      "response_chars": 20,
+      "uncached_input_tokens": 5,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9fe1162a80602ab1b275",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "dd954acbb64537aaf5cd9f541f6d42bd4bf8629bfdaccfa85f12e307308971e3",
+  "status": "completed"
+}

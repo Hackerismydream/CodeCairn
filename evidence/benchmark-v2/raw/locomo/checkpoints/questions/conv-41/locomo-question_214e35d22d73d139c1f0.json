@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0016722,
+    "cost_usd": null,
+    "input_tokens": 2699,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 262,
+    "reasoning_tokens": 234,
+    "text": "The provided memory context does not contain information about John taking any test multiple times. It only mentions him failing the military aptitude test once.",
+    "uncached_input_tokens": 11
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001071,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 111,
+      "reasoning_tokens": 103,
+      "response_chars": 18,
+      "uncached_input_tokens": 135,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 247,
+      "reasoning_tokens": 239,
+      "response_chars": 18,
+      "uncached_input_tokens": 7,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010922,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 18,
+      "uncached_input_tokens": 7,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_214e35d22d73d139c1f0",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "c148747140617dc9748b44743376be47cd69065f8bad8c9df4e8808ead35266c",
+  "status": "completed"
+}

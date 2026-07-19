@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011193,
+    "cost_usd": null,
+    "input_tokens": 2857,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 437,
+    "reasoning_tokens": 309,
+    "text": "Based on the provided memories, Dave supports Calvin in tough times.\n\n- Calvin explicitly thanks Dave for his support in session_25 (2023-10-23) and session_11 (2023-07-21) [memory_d7f7861e2db4a9b1ad64, memory_b4e607313f34556e62f1].\n- Dave offers encouragement, motivation, and acknowledges Calvin’s need for support in several conversations, and Calvin appreciates having supportive people like Dave in the tough music industry [memory_4e307448c9e97a9a159a].",
+    "uncached_input_tokens": 2857
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003138,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 238,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 404,
+      "reasoning_tokens": 396,
+      "response_chars": 18,
+      "uncached_input_tokens": 238,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020851999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 238,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 292,
+      "reasoning_tokens": 284,
+      "response_chars": 18,
+      "uncached_input_tokens": 110,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017012000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 238,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 18,
+      "uncached_input_tokens": 110,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_81fbf267a4f817d05301",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "e734da26a078d32b098e3e499d8f33440ec08bb139975089c679c2465070ba3b",
+  "status": "completed"
+}

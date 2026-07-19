@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00987,
+    "cost_usd": null,
+    "input_tokens": 2854,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 218,
+    "reasoning_tokens": 161,
+    "text": "Jolene mentioned taking Seraphim to the park on \"last Sunday\" relative to March 2, 2023, meaning **Sunday, February 26, 2023**. (Source: memory_9eba2cbf48dd406f5a82)",
+    "uncached_input_tokens": 2854
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001125,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 101,
+      "reasoning_tokens": 93,
+      "response_chars": 20,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013922000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 209,
+      "reasoning_tokens": 201,
+      "response_chars": 20,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 158,
+      "reasoning_tokens": 150,
+      "response_chars": 20,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_58bc745c23db040f60e0",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "1e2b38f3383c1475b07e77f0f3c8d33b7855fdbddd511bc355f2645a02c9c1d9",
+  "status": "completed"
+}

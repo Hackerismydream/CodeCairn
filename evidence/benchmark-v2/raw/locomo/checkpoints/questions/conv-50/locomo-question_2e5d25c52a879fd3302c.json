@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009837,
+    "cost_usd": null,
+    "input_tokens": 2673,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 303,
+    "reasoning_tokens": 250,
+    "text": "Calvin relaxes by going on long drives in his car, as he told Dave on May 3, 2023: \"long drives in [this car] really help me relax. The feeling of the wind and the open road is so freeing.\"",
+    "uncached_input_tokens": 2673
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001683,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 196,
+      "reasoning_tokens": 188,
+      "response_chars": 18,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022021999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 346,
+      "reasoning_tokens": 338,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 124,
+      "reasoning_tokens": 116,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2e5d25c52a879fd3302c",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "2d678110f9ee2a551f7a7a28213591c54e085b10d9ddf93aa27186e506ddaf29",
+  "status": "completed"
+}

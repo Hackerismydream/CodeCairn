@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011715,
+    "cost_usd": null,
+    "input_tokens": 2759,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 573,
+    "reasoning_tokens": 516,
+    "text": "Dave relaxes on weekends by exploring parks and attending music festivals. (From 2023-06-09: \"exploring some parks on the weekends to relax\"; 2023-03-26: \"Last weekend, I went to a music festival in Boston\".)",
+    "uncached_input_tokens": 2759
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003462,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 494,
+      "reasoning_tokens": 486,
+      "response_chars": 20,
+      "uncached_input_tokens": 166,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0059672,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 975,
+      "reasoning_tokens": 967,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0044132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 716,
+      "reasoning_tokens": 708,
+      "response_chars": 18,
+      "uncached_input_tokens": 38,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e859900e319d645ff598",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "cdd9d9793db23da47a7a16070bb7af0a1154669720afd2f177bcabeef3146a85",
+  "status": "completed"
+}

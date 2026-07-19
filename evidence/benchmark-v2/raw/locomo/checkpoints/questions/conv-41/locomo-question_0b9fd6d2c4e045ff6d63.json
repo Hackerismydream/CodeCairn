@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010668,
+    "cost_usd": null,
+    "input_tokens": 2830,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 363,
+    "reasoning_tokens": 316,
+    "text": "John thinks it's a great idea. He finds that the variety of classes (yoga, kickboxing, circuit training) keeps things interesting and sees trying new stuff as a way to push yourself and mix up your routine.",
+    "uncached_input_tokens": 2830
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001821,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 190,
+      "reasoning_tokens": 182,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015122,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 231,
+      "reasoning_tokens": 223,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0b9fd6d2c4e045ff6d63",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "217024dfa2f3649070364b580b1a77f5b08c8dbe9785baf5dadd5393e0d7f1d1",
+  "status": "completed"
+}

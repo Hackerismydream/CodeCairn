@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010347,
+    "cost_usd": null,
+    "input_tokens": 2723,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 363,
+    "reasoning_tokens": 290,
+    "text": "Dave started working on cars at age ten, after becoming fascinated with how machines work. He found an old car in a neighbor’s garage, asked to fix it, and the satisfaction of restoring it got him hooked ever since (source: Dave in session_25, 2023-10-23T14:24:00+00:00).",
+    "uncached_input_tokens": 2723
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0015,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 158,
+      "reasoning_tokens": 150,
+      "response_chars": 20,
+      "uncached_input_tokens": 184,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 253,
+      "reasoning_tokens": 245,
+      "response_chars": 20,
+      "uncached_input_tokens": 56,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015752000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 234,
+      "reasoning_tokens": 226,
+      "response_chars": 20,
+      "uncached_input_tokens": 56,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_024fa08cd8f7c9fb5bda",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "58ed407ef38997c27a97a6f8aca764efd8c322af99b5f5cdba92b6b81531f826",
+  "status": "completed"
+}

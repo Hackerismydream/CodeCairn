@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011055,
+    "cost_usd": null,
+    "input_tokens": 3153,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 266,
+    "reasoning_tokens": 230,
+    "text": "Based on the provided memory context, Nate explicitly mentions taking his turtles for a walk once, on October 25, 2022. No other mentions of walking turtles appear.",
+    "uncached_input_tokens": 3153
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001077,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 107,
+      "reasoning_tokens": 99,
+      "response_chars": 18,
+      "uncached_input_tokens": 145,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008342,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 17,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012182,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 194,
+      "reasoning_tokens": 186,
+      "response_chars": 18,
+      "uncached_input_tokens": 17,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ee70ddb8635c740c48c1",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "c83070d93956e3149e28257a561237e98b8e35aa858b2cfbefb3d9f35317c6c5",
+  "status": "completed"
+}

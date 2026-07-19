@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008988,
+    "cost_usd": null,
+    "input_tokens": 2808,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 94,
+    "reasoning_tokens": 66,
+    "text": "Deborah recommends the album **'Sleep'** for meditation and deep relaxation, as mentioned on 2023-03-28.",
+    "uncached_input_tokens": 2808
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002328,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 320,
+      "reasoning_tokens": 312,
+      "response_chars": 20,
+      "uncached_input_tokens": 136,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 222,
+      "reasoning_tokens": 214,
+      "response_chars": 20,
+      "uncached_input_tokens": 8,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005912000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 136,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 94,
+      "reasoning_tokens": 86,
+      "response_chars": 20,
+      "uncached_input_tokens": 8,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5ba7980b06c8304ded97",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "43a14850b36d355a5a023b082c093c0d79dfd8919db31e74665bc8fcdfdf9573",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009825,
+    "cost_usd": null,
+    "input_tokens": 2801,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 237,
+    "reasoning_tokens": 194,
+    "text": "John says that facing tough opponents drives his team to get better, they back each other up, and they won't quit (2023-10-13T13:52:30+00:00).",
+    "uncached_input_tokens": 2801
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003051,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 430,
+      "reasoning_tokens": 422,
+      "response_chars": 20,
+      "uncached_input_tokens": 157,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 218,
+      "reasoning_tokens": 210,
+      "response_chars": 20,
+      "uncached_input_tokens": 29,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012842,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 199,
+      "reasoning_tokens": 191,
+      "response_chars": 20,
+      "uncached_input_tokens": 29,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f89353035fd8c4838dc6",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "6b436b785efea3bf19b7fd43485afe615921d05ea7d44a11093e8644057b947f",
+  "status": "completed"
+}

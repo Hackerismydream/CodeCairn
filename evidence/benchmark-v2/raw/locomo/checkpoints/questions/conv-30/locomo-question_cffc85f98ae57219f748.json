@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010179,
+    "cost_usd": null,
+    "input_tokens": 2991,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 201,
+    "reasoning_tokens": 190,
+    "text": "Gina received a trophy from a dance contest.",
+    "uncached_input_tokens": 2991
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001365,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000915,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 94,
+      "reasoning_tokens": 86,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001509,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cffc85f98ae57219f748",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "4201d2e893e8e5621825fd74fe5bd07d5c184d1318d3b7bfabe9dcd9557ed738",
+  "status": "completed"
+}

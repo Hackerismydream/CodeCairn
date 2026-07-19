@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009426,
+    "cost_usd": null,
+    "input_tokens": 2864,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 139,
+    "reasoning_tokens": 120,
+    "text": "The provided memory context does not contain any information about Melanie's favorite book from her childhood.",
+    "uncached_input_tokens": 2864
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001209,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 18,
+      "uncached_input_tokens": 129,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 18,
+      "uncached_input_tokens": 1,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008402,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 129,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 139,
+      "reasoning_tokens": 131,
+      "response_chars": 18,
+      "uncached_input_tokens": 1,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1fcdb5d4f841fe9f0922",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "de894b4ba1061f83ad3c2edf8017d9def27efdd1970a4602adbdb0532ee0916d",
+  "status": "completed"
+}

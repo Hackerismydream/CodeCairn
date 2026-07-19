@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011154,
+    "cost_usd": null,
+    "input_tokens": 2738,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 490,
+    "reasoning_tokens": 376,
+    "text": "Caroline was motivated to pursue counseling primarily by her own mental health struggles and the helpful support she received. She realized the importance of having a support system and wanted to use her experience to help others going through similar challenges, especially by making counseling available to those in need. (Sources: Caroline in session_7, 2023-07-12; Caroline in session_5, 2023-07-03; Caroline in session_1, 2023-05-08; Caroline in session_4, 2023-06-27)",
+    "uncached_input_tokens": 2738
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002439,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 231,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 291,
+      "reasoning_tokens": 283,
+      "response_chars": 20,
+      "uncached_input_tokens": 231,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021601999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 231,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 308,
+      "reasoning_tokens": 300,
+      "response_chars": 20,
+      "uncached_input_tokens": 103,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0091202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 231,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1468,
+      "reasoning_tokens": 1460,
+      "response_chars": 20,
+      "uncached_input_tokens": 103,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fe811c0420c751dfbeed",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "f692e211827814eee03c3ef24b2fa52f95518cda423458845e0a2b93336cd72c",
+  "status": "completed"
+}

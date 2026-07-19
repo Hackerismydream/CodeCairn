@@ -1,0 +1,86 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009102,
+    "cost_usd": null,
+    "input_tokens": 2700,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 167,
+    "reasoning_tokens": 128,
+    "text": "James took his three dogs to the beach on August 9, 2022 (based on his message on August 10 saying \"Yesterday I took my three dogs to a beach outing\").",
+    "uncached_input_tokens": 2700
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001893,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 238,
+      "reasoning_tokens": 230,
+      "response_chars": 20,
+      "uncached_input_tokens": 155,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 2,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021212,
+      "cost_usd": null,
+      "failed_attempts": [
+        {
+          "attempt_index": 1,
+          "cached_input_tokens": 128,
+          "cost_cny": 0.0009302000000000001,
+          "error_type": "JSONDecodeError",
+          "input_tokens": 155,
+          "model": "deepseek-v4-pro",
+          "output_tokens": 141,
+          "reasoning_tokens": 141,
+          "response_chars": 0,
+          "uncached_input_tokens": 27
+        }
+      ],
+      "input_tokens": 310,
+      "known_cost_cny_count": 2,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 262,
+      "reasoning_tokens": 254,
+      "response_chars": 20,
+      "uncached_input_tokens": 182,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009482000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 144,
+      "reasoning_tokens": 136,
+      "response_chars": 20,
+      "uncached_input_tokens": 27,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0ec92897dd909e80a427",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "7331b00a7a883033c42f2028a865c71f59971dbe626de4f39a0069f4e9fc675c",
+  "status": "completed"
+}

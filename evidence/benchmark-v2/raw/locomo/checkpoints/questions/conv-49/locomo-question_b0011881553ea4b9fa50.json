@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01554,
+    "cost_usd": null,
+    "input_tokens": 2994,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1093,
+    "reasoning_tokens": 913,
+    "text": "Evan’s approach to stress and challenges is shaped by his health scare and subsequent proactive lifestyle changes: he uses creative outlets like painting for peace (sessions 2, 8), incorporates exercise and yoga for stress relief (sessions 14, 24), tracks progress with a smartwatch, leans on family motivation (session 5), and maintains a resilient outlook (“I struggled… but stuck with it,” session 4). Sam, while finding health changes challenging and often struggling with stress (sessions 5, 13, 20), remains willing to try small steps (session 3) and recognizes the need to look after health (session 7). His openness to change and witnessing Evan’s progress suggest he may increasingly adopt similar coping strategies, such as creative or physical outlets. Their shared experiences in health struggles foster mutual empathy and a supportive dynamic when facing challenges.",
+    "uncached_input_tokens": 2994
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003498,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 326,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 420,
+      "reasoning_tokens": 412,
+      "response_chars": 20,
+      "uncached_input_tokens": 326,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0077583999999999995,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 326,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1257,
+      "reasoning_tokens": 1249,
+      "response_chars": 18,
+      "uncached_input_tokens": 70,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0031804,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 326,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 494,
+      "reasoning_tokens": 486,
+      "response_chars": 20,
+      "uncached_input_tokens": 70,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b0011881553ea4b9fa50",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "0c71b46da0988815ec066aa10d2301666c180b32f01255c74c8d84d3f78eeda7",
+  "status": "completed"
+}

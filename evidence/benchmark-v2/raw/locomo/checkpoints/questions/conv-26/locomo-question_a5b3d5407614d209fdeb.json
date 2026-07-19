@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.0132,
+    "cost_usd": null,
+    "input_tokens": 2938,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 731,
+    "reasoning_tokens": 622,
+    "text": "After the accident, Melanie felt that her family was incredibly important to her; she realized how much she needed them, said they meant the world to her, and expressed deep gratitude for having them. This is based on her statement in session_18 on 2023-10-20T18:57:00+00:00: \"Family's super important to me. Especially after the accident, I've thought a lot about how much I need them. They mean the world to me and I'm so thankful to have them.\"",
+    "uncached_input_tokens": 2938
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002496,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 226,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 303,
+      "reasoning_tokens": 295,
+      "response_chars": 20,
+      "uncached_input_tokens": 226,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018872000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 226,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 265,
+      "reasoning_tokens": 257,
+      "response_chars": 20,
+      "uncached_input_tokens": 98,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018692000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 226,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 262,
+      "reasoning_tokens": 254,
+      "response_chars": 20,
+      "uncached_input_tokens": 98,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a5b3d5407614d209fdeb",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "f893c91f5659cf1cc2fccebd4629d245f14f9fa9e5cd019cf4f050d6fc9183a7",
+  "status": "completed"
+}

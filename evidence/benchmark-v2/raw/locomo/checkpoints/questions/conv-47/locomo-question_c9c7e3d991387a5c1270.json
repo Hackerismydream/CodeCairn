@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.001366,
+    "cost_usd": null,
+    "input_tokens": 2688,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 153,
+    "reasoning_tokens": 98,
+    "text": "The provided memory context does not contain any information about James’ activities on March 16, 2022. The timestamps in the context range from May to November 2022, with no mention of March. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 128
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002229,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 288,
+      "reasoning_tokens": 280,
+      "response_chars": 18,
+      "uncached_input_tokens": 167,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 18,
+      "uncached_input_tokens": 39,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011162000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 18,
+      "uncached_input_tokens": 39,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c9c7e3d991387a5c1270",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "01677adb2b6a67d387221dcddf14ac6b6ad984c9fc66d4e8bfc90fabab384cc3",
+  "status": "completed"
+}

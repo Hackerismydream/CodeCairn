@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010545,
+    "cost_usd": null,
+    "input_tokens": 2719,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 398,
+    "reasoning_tokens": 359,
+    "text": "The provided memory context does not contain any recommendations given by Joanna to Nate. Joanna thanks Nate for a recommendation (session_9), but there is no instance of her offering one to him.",
+    "uncached_input_tokens": 2719
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002169,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 269,
+      "reasoning_tokens": 261,
+      "response_chars": 18,
+      "uncached_input_tokens": 185,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 204,
+      "reasoning_tokens": 196,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018122000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 273,
+      "reasoning_tokens": 265,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2cd2ab8a389015cbd09c",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "2553ff421365347e49f530a621efd77f370ec00a8bc1580f472ce3ca1a3ce3ee",
+  "status": "completed"
+}

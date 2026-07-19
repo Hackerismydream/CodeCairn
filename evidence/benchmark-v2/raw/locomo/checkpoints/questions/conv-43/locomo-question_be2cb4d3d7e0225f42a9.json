@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010044,
+    "cost_usd": null,
+    "input_tokens": 2728,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 310,
+    "reasoning_tokens": 259,
+    "text": "The provided memories show that Tim is a Star Wars fan and wants to visit the Cliffs of Moher in Ireland. However, no Star Wars-related locations in Ireland are mentioned. The context is insufficient to answer which specific Star Wars locations Tim would enjoy.",
+    "uncached_input_tokens": 2728
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001575,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 18,
+      "uncached_input_tokens": 187,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017162,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 256,
+      "reasoning_tokens": 248,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 151,
+      "reasoning_tokens": 143,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_be2cb4d3d7e0225f42a9",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "d00dd9105d873034d64514ccf02315cc71443206501cfe0a4a5745aec68bc5a0",
+  "status": "completed"
+}

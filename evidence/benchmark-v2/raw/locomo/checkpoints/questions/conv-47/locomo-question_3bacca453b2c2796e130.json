@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011307,
+    "cost_usd": null,
+    "input_tokens": 2749,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 510,
+    "reasoning_tokens": 462,
+    "text": "James and Samantha chose an apartment near McGee's bar because they love the place; James stated that proximity to the bar was one of their key criteria for selecting the apartment (session_29, 2022-10-31).",
+    "uncached_input_tokens": 2749
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 166,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026731999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 426,
+      "reasoning_tokens": 418,
+      "response_chars": 20,
+      "uncached_input_tokens": 38,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 203,
+      "reasoning_tokens": 195,
+      "response_chars": 20,
+      "uncached_input_tokens": 38,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3bacca453b2c2796e130",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "5ef3b2e5de2fc0c761ebe3077c1c38b4ac967119eae16f73ce1f92e4ab618978",
+  "status": "completed"
+}

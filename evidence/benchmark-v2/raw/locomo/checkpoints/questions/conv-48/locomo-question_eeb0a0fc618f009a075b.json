@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.016812,
+    "cost_usd": null,
+    "input_tokens": 3012,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1296,
+    "reasoning_tokens": 1222,
+    "text": "Jolene mentioned on 2023-02-09 that she did a mini-retreat “last Wednesday” to assess where she’s at in life. Based on that timestamp, “last Wednesday” most likely refers to February 1, 2023. The context does not explicitly mention her career, but this is the only mini-retreat noted.",
+    "uncached_input_tokens": 3012
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001299,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 20,
+      "uncached_input_tokens": 193,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026041999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 401,
+      "reasoning_tokens": 393,
+      "response_chars": 20,
+      "uncached_input_tokens": 65,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 20,
+      "uncached_input_tokens": 65,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_eeb0a0fc618f009a075b",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "693802e4fb143fc92dae3b04abfcdf3a640ac1f5c709e377f58a9c57324a9a06",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010932,
+    "cost_usd": null,
+    "input_tokens": 2776,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 434,
+    "reasoning_tokens": 356,
+    "text": "The provided memory context does not include James's response to John's question about what kind of games he is excited to play with his new video card. While James mentions getting the card (session_26) and earlier expressed interest in trying RPGs or MOBAs (session_4), there is no direct link between that interest and the new card. Insufficient context to answer.",
+    "uncached_input_tokens": 2776
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002019,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 241,
+      "reasoning_tokens": 233,
+      "response_chars": 18,
+      "uncached_input_tokens": 191,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026401999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 408,
+      "reasoning_tokens": 400,
+      "response_chars": 18,
+      "uncached_input_tokens": 63,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018662000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 279,
+      "reasoning_tokens": 271,
+      "response_chars": 18,
+      "uncached_input_tokens": 63,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9b277321bd2dbcd5f9e4",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "99aff9a820eb7abf1f38d944fef377df5b3d7eaff2bdbfb198e7b1a140af39cc",
+  "status": "completed"
+}

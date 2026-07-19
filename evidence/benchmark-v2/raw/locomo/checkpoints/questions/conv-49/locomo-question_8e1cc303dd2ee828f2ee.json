@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.003577,
+    "cost_usd": null,
+    "input_tokens": 2583,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 574,
+    "reasoning_tokens": 549,
+    "text": "The provided memory context does not contain any information about Evan having broken things. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 23
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 153,
+      "reasoning_tokens": 145,
+      "response_chars": 18,
+      "uncached_input_tokens": 138,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007172000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 114,
+      "reasoning_tokens": 106,
+      "response_chars": 18,
+      "uncached_input_tokens": 10,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013712000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 223,
+      "reasoning_tokens": 215,
+      "response_chars": 18,
+      "uncached_input_tokens": 10,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8e1cc303dd2ee828f2ee",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "f2c0551535bab907fcc9469da8801af84cc76465c5b8b6bc1274dbb986dbbccc",
+  "status": "completed"
+}

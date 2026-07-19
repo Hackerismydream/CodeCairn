@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01128,
+    "cost_usd": null,
+    "input_tokens": 2960,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 400,
+    "reasoning_tokens": 327,
+    "text": "The provided memory context does not explicitly state how many Ferraris Calvin owns. He mentions taking his Ferrari for a service (session_12) and later says he got a new Ferrari (session_23), but it's unclear if these refer to the same vehicle or multiple. The context suggests he owns at least one, but no evidence indicates more than one.",
+    "uncached_input_tokens": 2960
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001545,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 18,
+      "uncached_input_tokens": 177,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005702000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 70,
+      "reasoning_tokens": 62,
+      "response_chars": 18,
+      "uncached_input_tokens": 49,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 208,
+      "reasoning_tokens": 200,
+      "response_chars": 18,
+      "uncached_input_tokens": 49,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1b63090bed13288eb72a",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "968064be2fb057287f10e7d861c3c68449676cc1dcaf9ff8d511f8567527ab5f",
+  "status": "completed"
+}

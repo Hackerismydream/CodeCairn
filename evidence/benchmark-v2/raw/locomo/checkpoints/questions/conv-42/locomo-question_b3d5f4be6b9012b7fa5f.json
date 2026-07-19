@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012492,
+    "cost_usd": null,
+    "input_tokens": 2738,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 713,
+    "reasoning_tokens": 686,
+    "text": "The provided memory context does not include any information about how Joanna celebrated after sharing her book with her writers group. Context is insufficient.",
+    "uncached_input_tokens": 2738
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001107,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 115,
+      "reasoning_tokens": 104,
+      "response_chars": 22,
+      "uncached_input_tokens": 139,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 18,
+      "uncached_input_tokens": 11,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005702000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 18,
+      "uncached_input_tokens": 11,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b3d5f4be6b9012b7fa5f",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "d1d96125c4ee71b27d4ee64bfa50dd632b3d54ff3ec9472e61565bf6a61f2033",
+  "status": "completed"
+}

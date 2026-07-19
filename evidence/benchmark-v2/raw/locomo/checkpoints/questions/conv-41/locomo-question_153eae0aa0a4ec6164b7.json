@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014967,
+    "cost_usd": null,
+    "input_tokens": 2959,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1015,
+    "reasoning_tokens": 991,
+    "text": "John and his family made pizza together, as mentioned in the conversation where John shared a photo of them at dinner.",
+    "uncached_input_tokens": 2959
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001137,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 20,
+      "uncached_input_tokens": 139,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011702000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 20,
+      "uncached_input_tokens": 11,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0003782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 57,
+      "reasoning_tokens": 49,
+      "response_chars": 20,
+      "uncached_input_tokens": 11,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_153eae0aa0a4ec6164b7",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "69b2113b680ec8e7c4057a8e51b771d89abe24ed9c74fc2dacd2e817b5da307a",
+  "status": "completed"
+}

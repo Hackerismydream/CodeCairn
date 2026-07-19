@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011928,
+    "cost_usd": null,
+    "input_tokens": 2766,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 605,
+    "reasoning_tokens": 552,
+    "text": "The context is insufficient to determine which country Tim has visited most frequently. It mentions only one visit to the UK (London) and one visit to the USA (Smoky Mountains), with no other recorded trips, so there is no country with a higher frequency.",
+    "uncached_input_tokens": 2766
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001266,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 120,
+      "response_chars": 22,
+      "uncached_input_tokens": 160,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009272000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 138,
+      "reasoning_tokens": 130,
+      "response_chars": 18,
+      "uncached_input_tokens": 32,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 84,
+      "reasoning_tokens": 76,
+      "response_chars": 18,
+      "uncached_input_tokens": 32,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7677d9e655fc3a3a8fd2",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "bdcce4d87b05c4199928f7799769f994ad112d5b96c4533a3eabd3264295da73",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009651,
+    "cost_usd": null,
+    "input_tokens": 2749,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 234,
+    "reasoning_tokens": 164,
+    "text": "Nate was inspired to start making gaming videos because he's a big fan of them and thought it would be a fun idea to make his own. He also hopes to share his love of gaming and connect with others who enjoy it (session_28, 2022-11-09T18:01:00+00:00).",
+    "uncached_input_tokens": 2749
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00228,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 287,
+      "reasoning_tokens": 279,
+      "response_chars": 20,
+      "uncached_input_tokens": 186,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 206,
+      "reasoning_tokens": 198,
+      "response_chars": 20,
+      "uncached_input_tokens": 58,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 252,
+      "reasoning_tokens": 244,
+      "response_chars": 20,
+      "uncached_input_tokens": 58,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bdbd103dc1774a80c6e5",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "1812228499c7631dc5bfdb32078b1e7775b72f58734319b86560b00a4e43bd43",
+  "status": "completed"
+}

@@ -1,0 +1,86 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009627,
+    "cost_usd": null,
+    "input_tokens": 2477,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 366,
+    "reasoning_tokens": 321,
+    "text": "The memory context does not provide the specific color Nate chose for his hair. Nate mentioned dying his hair and described it as \"bright and bold,\" but no explicit color (e.g., blue, green) is stated.",
+    "uncached_input_tokens": 2477
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001134,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 18,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 2,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014912,
+      "cost_usd": null,
+      "failed_attempts": [
+        {
+          "attempt_index": 1,
+          "cached_input_tokens": 128,
+          "cost_cny": 0.0003992,
+          "error_type": "JSONDecodeError",
+          "input_tokens": 152,
+          "model": "deepseek-v4-pro",
+          "output_tokens": 54,
+          "reasoning_tokens": 54,
+          "response_chars": 0,
+          "uncached_input_tokens": 24
+        }
+      ],
+      "input_tokens": 304,
+      "known_cost_cny_count": 2,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 160,
+      "reasoning_tokens": 152,
+      "response_chars": 18,
+      "uncached_input_tokens": 176,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 143,
+      "reasoning_tokens": 135,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bf7fd588b85a6d351203",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "d4e7cbef7732903b201237d3cd11dfd4ec70b61dac18ffb2d5eb7fe12c0428cd",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009669,
+    "cost_usd": null,
+    "input_tokens": 2757,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 233,
+    "reasoning_tokens": 219,
+    "text": "Sam and his mate planned to try kayaking on the lake.",
+    "uncached_input_tokens": 2757
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00153,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 18,
+      "uncached_input_tokens": 124,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001296,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 18,
+      "uncached_input_tokens": 124,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001074,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 109,
+      "response_chars": 18,
+      "uncached_input_tokens": 124,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4533fa86e075eb10a7cc",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "d93c6eee2da122fbd99dc54e2904c6d85f7ed33db998976225faf7f4035f1f9d",
+  "status": "completed"
+}

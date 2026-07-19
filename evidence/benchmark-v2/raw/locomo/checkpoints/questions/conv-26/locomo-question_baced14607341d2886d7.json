@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013512,
+    "cost_usd": null,
+    "input_tokens": 2942,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 781,
+    "reasoning_tokens": 663,
+    "text": "Melanie and her kids made pots and a cup with a dog face.  \n- On 2023-07-15, Melanie took her kids to a pottery workshop where they all made \"our own pots\" ([source](codecairn://memory/memory_1db6704f9907596dc2e2)).  \n- In the same workshop, the kids also made \"a cup with a dog face on it\" ([source](codecairn://memory/memory_f33759e8d2f7b7f71e5b)).",
+    "uncached_input_tokens": 2942
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002361,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 233,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 277,
+      "reasoning_tokens": 269,
+      "response_chars": 18,
+      "uncached_input_tokens": 233,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018302000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 233,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 252,
+      "reasoning_tokens": 244,
+      "response_chars": 18,
+      "uncached_input_tokens": 105,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 233,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 18,
+      "uncached_input_tokens": 105,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_baced14607341d2886d7",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "03b1b489496b81ecd3e2052af8aab02ea7ee1fbc1bc0a97542dd9e215d0d1caa",
+  "status": "completed"
+}

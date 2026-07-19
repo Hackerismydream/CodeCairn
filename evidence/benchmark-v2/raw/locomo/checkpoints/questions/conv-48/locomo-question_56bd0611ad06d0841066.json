@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0010122,
+    "cost_usd": null,
+    "input_tokens": 2815,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 94,
+    "reasoning_tokens": 81,
+    "text": "Deborah's parents' wedding was in 1993.",
+    "uncached_input_tokens": 127
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000918,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 93,
+      "reasoning_tokens": 85,
+      "response_chars": 20,
+      "uncached_input_tokens": 120,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001176,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 136,
+      "reasoning_tokens": 128,
+      "response_chars": 20,
+      "uncached_input_tokens": 120,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00108,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 20,
+      "uncached_input_tokens": 120,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_56bd0611ad06d0841066",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "d329c40d1dc060773fc83fb6faa6cc341c15dda7af56cb42b950d223c0cab7f6",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01257,
+    "cost_usd": null,
+    "input_tokens": 2870,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 660,
+    "reasoning_tokens": 613,
+    "text": "Based on the provided context, Deborah states that after going for a morning jog in a nearby park for the first time, she will now incorporate that jog into her daily routine. Therefore, the activity she incorporates is the morning jog.",
+    "uncached_input_tokens": 2870
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001101,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 100,
+      "reasoning_tokens": 92,
+      "response_chars": 18,
+      "uncached_input_tokens": 167,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 56,
+      "reasoning_tokens": 48,
+      "response_chars": 18,
+      "uncached_input_tokens": 39,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 280,
+      "reasoning_tokens": 272,
+      "response_chars": 18,
+      "uncached_input_tokens": 39,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_faab1a5995603d06653b",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "16fe78da63391f4418166021cb41303d54861e055e051f181f7934504bf984b6",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010632,
+    "cost_usd": null,
+    "input_tokens": 2766,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 389,
+    "reasoning_tokens": 325,
+    "text": "The provided memory context does not explicitly name the Disney movie Dave referred to as one of his favorites. He only describes its lesson about following your dreams, but the title is not stated. Calvin later mentions *Ratatouille*, but that is Calvin's own favorite. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2766
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001809,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 214,
+      "reasoning_tokens": 206,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0d188a04354d325baacb",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "5a9ce422e9405e0ebc4a88849fe64b2a52f376c5ef160e62907dc4dc78c1923f",
+  "status": "completed"
+}

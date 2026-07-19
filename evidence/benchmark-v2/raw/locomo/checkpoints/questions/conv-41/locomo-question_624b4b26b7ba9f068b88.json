@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009324,
+    "cost_usd": null,
+    "input_tokens": 2826,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 141,
+    "reasoning_tokens": 115,
+    "text": "John has been blogging about politics and the government, as mentioned in session_12 on April 18, 2023.",
+    "uncached_input_tokens": 2826
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001473,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 20,
+      "uncached_input_tokens": 135,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 20,
+      "uncached_input_tokens": 7,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 290,
+      "reasoning_tokens": 282,
+      "response_chars": 20,
+      "uncached_input_tokens": 7,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_624b4b26b7ba9f068b88",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "5b49275b782929acf859139a918d885913071d57368f1ecdd296b72c15bd681d",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011274,
+    "cost_usd": null,
+    "input_tokens": 2558,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 600,
+    "reasoning_tokens": 525,
+    "text": "According to the memory context, on May 8, 2022, John mentioned that he had been organizing something with his friends the day before (May 7), but he did not specify what it was. He only provided a hint in the form of a photo of a wooden table with a game controller. The context is insufficient to determine exactly what he organized.",
+    "uncached_input_tokens": 2558
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001674,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 183,
+      "reasoning_tokens": 175,
+      "response_chars": 18,
+      "uncached_input_tokens": 192,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009752000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 64,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009392000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 124,
+      "reasoning_tokens": 116,
+      "response_chars": 18,
+      "uncached_input_tokens": 64,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4881db504d384a591b18",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "7ee5f765168a9cee219241e906102706c6bfeb8722fd075d6196d51b99bfe734",
+  "status": "completed"
+}

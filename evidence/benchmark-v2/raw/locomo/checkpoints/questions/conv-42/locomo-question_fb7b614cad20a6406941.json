@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013578,
+    "cost_usd": null,
+    "input_tokens": 2688,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 919,
+    "reasoning_tokens": 854,
+    "text": "The provided memory context does not contain any evidence or specific mention of movies that both Joanna and Nate have seen together or individually in a shared context. The only movie title referenced is \"Inception\" by Nate, but there is no indication that Joanna has seen it. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2688
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002559,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 337,
+      "reasoning_tokens": 329,
+      "response_chars": 18,
+      "uncached_input_tokens": 179,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008162,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 110,
+      "reasoning_tokens": 102,
+      "response_chars": 18,
+      "uncached_input_tokens": 51,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009362000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 51,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fb7b614cad20a6406941",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "e88b5f5f7b59170dac9a3ccdf9a275ee5baa3dd9569636a7ad14f06933c32f74",
+  "status": "completed"
+}

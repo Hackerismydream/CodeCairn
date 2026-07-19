@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011388,
+    "cost_usd": null,
+    "input_tokens": 3010,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 393,
+    "reasoning_tokens": 333,
+    "text": "Dave aims to share his passion for cars by running his own car maintenance shop, helping people keep their vehicles in good condition and making them happy (as mentioned in sessions on 2023-05-01, 2023-05-16, and 2023-09-15).",
+    "uncached_input_tokens": 3010
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002019,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 248,
+      "reasoning_tokens": 240,
+      "response_chars": 18,
+      "uncached_input_tokens": 177,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 18,
+      "uncached_input_tokens": 49,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 287,
+      "reasoning_tokens": 279,
+      "response_chars": 18,
+      "uncached_input_tokens": 49,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3700032c9a8c6ce69eee",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "7a09f062eeb905743790153617440be3ed6be56e84a3ad18cf5e125fb2c2bcb6",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009282,
+    "cost_usd": null,
+    "input_tokens": 2648,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 223,
+    "reasoning_tokens": 199,
+    "text": "Jolene finished an electrical engineering project (mentioned on 23 January 2023 as completed the previous week).",
+    "uncached_input_tokens": 2648
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001191,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 20,
+      "uncached_input_tokens": 141,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012362,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 199,
+      "reasoning_tokens": 191,
+      "response_chars": 20,
+      "uncached_input_tokens": 13,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018842,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 141,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 307,
+      "reasoning_tokens": 299,
+      "response_chars": 20,
+      "uncached_input_tokens": 13,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_88517ff5765edb6d0c7f",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "306964fa590abc63ef984b5f7903bffe23ee894c91f5e24812703d8a69d18471",
+  "status": "completed"
+}

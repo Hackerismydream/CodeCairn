@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013029,
+    "cost_usd": null,
+    "input_tokens": 3031,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 656,
+    "reasoning_tokens": 607,
+    "text": "The provided memory context does not include specific details about the kind of healthy meals Sam started eating after his health scare. Sam mentioned adopting a more nutritious diet and later made a meal plan, but the exact foods or meal types are not described.",
+    "uncached_input_tokens": 3031
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001206,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 18,
+      "uncached_input_tokens": 186,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006092000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 72,
+      "reasoning_tokens": 64,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_89912f12f67c8993cbb1",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "4411c15d5b3d30ce02e457541bf643aebe2f5f4317ae42720943a7ef5a6579c6",
+  "status": "completed"
+}

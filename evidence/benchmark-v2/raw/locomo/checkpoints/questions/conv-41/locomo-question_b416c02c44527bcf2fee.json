@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.007525,
+    "cost_usd": null,
+    "input_tokens": 2583,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1232,
+    "reasoning_tokens": 1128,
+    "text": "Based on the provided memory context, John appears to have a stable financial status. Maria congratulates him on a promotion in session_19 (2023-06-16), and he is running for office again according to Maria's comment in session_7 (2023-02-25). These suggest he likely has a professional role with a reliable income and possibly some financial comfort. However, no specific details about his wealth, salary, or expenses are mentioned, so the context is insufficient to determine more precisely.",
+    "uncached_input_tokens": 23
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001749,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 211,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 186,
+      "reasoning_tokens": 178,
+      "response_chars": 20,
+      "uncached_input_tokens": 211,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028201999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 211,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 428,
+      "reasoning_tokens": 420,
+      "response_chars": 20,
+      "uncached_input_tokens": 83,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016082,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 211,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 226,
+      "reasoning_tokens": 218,
+      "response_chars": 20,
+      "uncached_input_tokens": 83,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b416c02c44527bcf2fee",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "549672ff9e294b020a514194d9481215721c11e48fae04b969d6c66b189e3083",
+  "status": "completed"
+}

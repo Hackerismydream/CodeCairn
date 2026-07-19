@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011364,
+    "cost_usd": null,
+    "input_tokens": 2820,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 484,
+    "reasoning_tokens": 424,
+    "text": "According to the memory, someone wrote Joanna a touching letter around early August 2022. She mentions it on August 14, 2022, saying “Last week, someone wrote me a letter…” which would place the letter in the week of approximately August 7, 2022.",
+    "uncached_input_tokens": 2820
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001866,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 224,
+      "reasoning_tokens": 216,
+      "response_chars": 20,
+      "uncached_input_tokens": 174,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 413,
+      "reasoning_tokens": 405,
+      "response_chars": 20,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018992,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 293,
+      "reasoning_tokens": 285,
+      "response_chars": 20,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_432256323b526737343e",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "cce0661c30c82b242bf5ad79461f818a98844017ee5e3ce1dd2a76a64e9c184a",
+  "status": "completed"
+}

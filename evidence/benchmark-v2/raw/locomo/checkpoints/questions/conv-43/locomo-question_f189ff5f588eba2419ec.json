@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015027,
+    "cost_usd": null,
+    "input_tokens": 2439,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1285,
+    "reasoning_tokens": 1204,
+    "text": "The provided memory context does not contain enough information to determine what outdoor activities John enjoys. The closest hint is a comment he made about a pair of shoes symbolizing “a love for the game” and his journey, but the nature of the game or whether it is outdoors is not specified. Other referenced interests—such as yoga poses, reading, and cooking—are either indoor or not explicitly outdoor.",
+    "uncached_input_tokens": 2439
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001827,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 18,
+      "uncached_input_tokens": 187,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 280,
+      "reasoning_tokens": 272,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 177,
+      "reasoning_tokens": 169,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f189ff5f588eba2419ec",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "7011762bf48f094a03da663aad82f3bf0ad22ed03000328edaa72b6a068a92ab",
+  "status": "completed"
+}

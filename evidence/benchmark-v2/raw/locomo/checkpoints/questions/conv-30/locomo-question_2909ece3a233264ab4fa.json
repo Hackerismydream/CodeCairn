@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010932,
+    "cost_usd": null,
+    "input_tokens": 2572,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 536,
+    "reasoning_tokens": 460,
+    "text": "The provided memory context does not contain direct statements from Jon about cities he has visited. The only potential reference is an indirect one: in session_2, Gina asks, \"Paris?! That is really great Jon!\" but Jon's original utterance is not included, so it cannot be confirmed as a visit. Therefore, the context is insufficient to answer which cities Jon has visited.",
+    "uncached_input_tokens": 2572
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001587,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 174,
+      "reasoning_tokens": 166,
+      "response_chars": 18,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 230,
+      "reasoning_tokens": 222,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2909ece3a233264ab4fa",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "6a8ac272844b460c7a6b667ec5dd1d5cafe30785ca92f0a92500faaa22677df1",
+  "status": "completed"
+}

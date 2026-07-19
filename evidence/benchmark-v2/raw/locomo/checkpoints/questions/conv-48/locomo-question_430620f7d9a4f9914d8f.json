@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008157,
+    "cost_usd": null,
+    "input_tokens": 2517,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 101,
+    "reasoning_tokens": 80,
+    "text": "Max is 8 years old, as stated by Deborah on August 26, 2023.",
+    "uncached_input_tokens": 2517
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000864,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 82,
+      "reasoning_tokens": 74,
+      "response_chars": 20,
+      "uncached_input_tokens": 124,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00084,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 20,
+      "uncached_input_tokens": 124,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001092,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 20,
+      "uncached_input_tokens": 124,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_430620f7d9a4f9914d8f",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "98555ab77c665d1ec5a21de391b5d6b1d14b1609b6ed32241534bfba84eaf31c",
+  "status": "completed"
+}

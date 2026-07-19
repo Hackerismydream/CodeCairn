@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009765,
+    "cost_usd": null,
+    "input_tokens": 2877,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 189,
+    "reasoning_tokens": 172,
+    "text": "John writes motivational quotes and strategies on the whiteboard to help him stay motivated.",
+    "uncached_input_tokens": 2877
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001806,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 235,
+      "reasoning_tokens": 227,
+      "response_chars": 20,
+      "uncached_input_tokens": 132,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010652,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 20,
+      "uncached_input_tokens": 4,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012392,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 132,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 204,
+      "reasoning_tokens": 196,
+      "response_chars": 20,
+      "uncached_input_tokens": 4,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cdb80dedcfd2730dd0b0",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "c0ecc3114551fa307520c610765f8ad0cb53afc0e50296c813956c4437bab63e",
+  "status": "completed"
+}

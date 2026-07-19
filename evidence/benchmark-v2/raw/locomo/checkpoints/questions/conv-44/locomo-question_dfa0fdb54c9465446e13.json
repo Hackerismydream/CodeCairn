@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010944,
+    "cost_usd": null,
+    "input_tokens": 2694,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 477,
+    "reasoning_tokens": 383,
+    "text": "Based on the provided context, Andrew’s feelings about his current work appear to be negative or stressful. A memory from September 2023 shows Audrey consoling him, saying “Sorry to hear about work being tough.” Earlier, in March 2023, he only described his new Financial Analyst role as “quite a change.” No direct, recent statement from Andrew about his current work is available, so the context is insufficient for a complete picture of his feelings.",
+    "uncached_input_tokens": 2694
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002766,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 361,
+      "reasoning_tokens": 353,
+      "response_chars": 20,
+      "uncached_input_tokens": 200,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 245,
+      "reasoning_tokens": 237,
+      "response_chars": 20,
+      "uncached_input_tokens": 72,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023312,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 200,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 352,
+      "reasoning_tokens": 344,
+      "response_chars": 20,
+      "uncached_input_tokens": 72,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_dfa0fdb54c9465446e13",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "81f2508f785b9275982e584c893bd0c70424244219569ce9d2aa5a8f32fc1153",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014376,
+    "cost_usd": null,
+    "input_tokens": 2800,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 996,
+    "reasoning_tokens": 938,
+    "text": "Dave plans to show Calvin around Boston and attend his performances (2023-04-20, session_3). Calvin plans to perform in Boston and visit Dave’s garage (2023-05-31 session_7; 2023-09-13 session_18).",
+    "uncached_input_tokens": 2800
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.005616,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 846,
+      "reasoning_tokens": 838,
+      "response_chars": 18,
+      "uncached_input_tokens": 180,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0033932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 539,
+      "reasoning_tokens": 531,
+      "response_chars": 20,
+      "uncached_input_tokens": 52,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0041432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 664,
+      "reasoning_tokens": 656,
+      "response_chars": 20,
+      "uncached_input_tokens": 52,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ba119c8b643aa05d2c4c",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "913641a578c253c8a3a1674db9f3054318a3bc3ec54e68e0d5d2befcbc7a818f",
+  "status": "completed"
+}

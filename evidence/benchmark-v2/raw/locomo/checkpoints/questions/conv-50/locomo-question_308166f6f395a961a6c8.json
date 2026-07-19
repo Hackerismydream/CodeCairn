@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0067453999999999995,
+    "cost_usd": null,
+    "input_tokens": 2921,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1060,
+    "reasoning_tokens": 1000,
+    "text": "Based on the memory context, Calvin has attended a music festival in Tokyo and performed there with Frank Ocean. He also took in the Tokyo skyline and visited streets reminiscent of a busy shopping area, but no specific place names (e.g., Shibuya, Shinjuku) are mentioned.",
+    "uncached_input_tokens": 105
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001275,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 18,
+      "uncached_input_tokens": 179,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 345,
+      "reasoning_tokens": 337,
+      "response_chars": 18,
+      "uncached_input_tokens": 51,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016922,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 256,
+      "reasoning_tokens": 248,
+      "response_chars": 18,
+      "uncached_input_tokens": 51,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_308166f6f395a961a6c8",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "b3df21218ae18a9c098b4463316a7325e26b67c4617e22463751907824eaa776",
+  "status": "completed"
+}

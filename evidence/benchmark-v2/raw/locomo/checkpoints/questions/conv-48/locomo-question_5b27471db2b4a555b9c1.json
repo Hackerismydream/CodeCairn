@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009345,
+    "cost_usd": null,
+    "input_tokens": 2759,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 178,
+    "reasoning_tokens": 169,
+    "text": "Deborah took Luna from a shelter.",
+    "uncached_input_tokens": 2759
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 118,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 20,
+      "uncached_input_tokens": 118,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001092,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 118,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 20,
+      "uncached_input_tokens": 118,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002322,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 118,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 328,
+      "reasoning_tokens": 320,
+      "response_chars": 20,
+      "uncached_input_tokens": 118,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5b27471db2b4a555b9c1",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "a742a30420aa7583372c8c26b51dcdc1bf0751854017059fa1b13078e1f9e11c",
+  "status": "completed"
+}

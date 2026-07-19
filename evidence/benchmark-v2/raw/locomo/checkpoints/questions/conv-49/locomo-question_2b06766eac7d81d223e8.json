@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011559,
+    "cost_usd": null,
+    "input_tokens": 2975,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 439,
+    "reasoning_tokens": 376,
+    "text": "The provided context does not contain information about how long Evan and his partner dated before getting married. It only indicates that Evan got married around December 19, 2023 (from his message on December 26, 2023: \"got married last week\"). No dating start date or duration is mentioned.",
+    "uncached_input_tokens": 2975
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002055,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 256,
+      "reasoning_tokens": 248,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006542000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 86,
+      "reasoning_tokens": 78,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014642000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 221,
+      "reasoning_tokens": 213,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2b06766eac7d81d223e8",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "2174ad76bcfbf35eae1ab531ef9306a794b8f9572cbb885a9c9dd3246afc430e",
+  "status": "completed"
+}

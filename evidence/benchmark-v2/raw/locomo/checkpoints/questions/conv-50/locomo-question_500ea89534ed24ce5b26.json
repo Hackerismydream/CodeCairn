@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011496,
+    "cost_usd": null,
+    "input_tokens": 2864,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 484,
+    "reasoning_tokens": 376,
+    "text": "Yes, based on the provided memories, Dave can work with engines. Multiple timestamped entries show he is actively involved in car repair and engine work. For example, he mentions fixing a neighbor’s engine (2023-05-31), working on a vintage Mustang engine (2023-09-22), and growing up fixing cars with his dad (2023-08-03). He also describes car repair as therapeutic and a long‑standing passion, and is pursuing auto engineering and a dream of building custom cars.",
+    "uncached_input_tokens": 2864
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001098,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 210,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 20,
+      "uncached_input_tokens": 210,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006992000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 210,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 75,
+      "reasoning_tokens": 67,
+      "response_chars": 20,
+      "uncached_input_tokens": 82,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 210,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 20,
+      "uncached_input_tokens": 82,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_500ea89534ed24ce5b26",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "85acb2b7f449c6f2091d4bc59c041a9082ac2df9aee718490edef0cdc7b93ac4",
+  "status": "completed"
+}

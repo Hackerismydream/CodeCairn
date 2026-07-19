@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012042,
+    "cost_usd": null,
+    "input_tokens": 2966,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 524,
+    "reasoning_tokens": 521,
+    "text": "1 month",
+    "uncached_input_tokens": 2966
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000867,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 111,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 20,
+      "uncached_input_tokens": 111,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000867,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 111,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 20,
+      "uncached_input_tokens": 111,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000933,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 111,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 100,
+      "reasoning_tokens": 92,
+      "response_chars": 20,
+      "uncached_input_tokens": 111,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4e2d9da5bb55ef371224",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "3c51d975ca99470521363db83adb51b69ddd96e627d35d1e3b28e0b674605e20",
+  "status": "completed"
+}

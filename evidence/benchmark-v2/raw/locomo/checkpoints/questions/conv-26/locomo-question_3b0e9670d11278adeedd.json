@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008538,
+    "cost_usd": null,
+    "input_tokens": 2626,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 110,
+    "reasoning_tokens": 100,
+    "text": "The charity race raised awareness for mental health.",
+    "uncached_input_tokens": 2626
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00135,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 116,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 167,
+      "reasoning_tokens": 159,
+      "response_chars": 20,
+      "uncached_input_tokens": 116,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001044,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 116,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 20,
+      "uncached_input_tokens": 116,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001134,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 116,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 123,
+      "response_chars": 20,
+      "uncached_input_tokens": 116,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3b0e9670d11278adeedd",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "3be8cb9ff0fe700b5e216179a3c9179b9af2fd69f14b1d8655f0c66654ff1ebd",
+  "status": "completed"
+}

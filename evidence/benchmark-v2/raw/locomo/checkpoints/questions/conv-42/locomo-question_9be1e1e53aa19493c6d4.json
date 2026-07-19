@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2432,
+    "cost_cny": 0.0017408,
+    "cost_usd": null,
+    "input_tokens": 2536,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 228,
+    "reasoning_tokens": 193,
+    "text": "The provided memory context does not specify when Nate adopted Max. The entries only mention Max in passing (e.g., walks, joy), but no adoption date is given.",
+    "uncached_input_tokens": 104
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 18,
+      "uncached_input_tokens": 140,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006512,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 18,
+      "uncached_input_tokens": 12,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 140,
+      "reasoning_tokens": 132,
+      "response_chars": 18,
+      "uncached_input_tokens": 12,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9be1e1e53aa19493c6d4",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "f946c8a9800d3386806df22db7e19c0f25c65084e1677e4f3105c950054f9479",
+  "status": "completed"
+}

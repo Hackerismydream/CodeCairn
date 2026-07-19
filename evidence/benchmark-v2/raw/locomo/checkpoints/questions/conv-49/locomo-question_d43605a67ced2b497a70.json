@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009555,
+    "cost_usd": null,
+    "input_tokens": 2855,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 165,
+    "reasoning_tokens": 112,
+    "text": "The provided memory context does not specify the name of the close friend who helped Evan. Evan simply says, \"That's a close friend of mine who helped me get this painting published in the exhibition!\" (session_20), but the friend is not identified.",
+    "uncached_input_tokens": 2855
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001593,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 184,
+      "reasoning_tokens": 176,
+      "response_chars": 20,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017822,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 279,
+      "reasoning_tokens": 271,
+      "response_chars": 20,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020102,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 317,
+      "reasoning_tokens": 309,
+      "response_chars": 20,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d43605a67ced2b497a70",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "3aaf92a1fb553d4bd6bb5ced0ed3fbcf389f860932724132cabd15aada7a52b8",
+  "status": "completed"
+}

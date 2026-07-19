@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014544,
+    "cost_usd": null,
+    "input_tokens": 3094,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 877,
+    "reasoning_tokens": 815,
+    "text": "Based on the memory context, Calvin explicitly states, “Last week, I got a new Ferrari!” in session_23. While earlier entries show pride in a red sports car (sessions 2, 5, 12), its brand is not named. The only brand directly attributed is Ferrari.",
+    "uncached_input_tokens": 3094
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00126,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 124,
+      "reasoning_tokens": 116,
+      "response_chars": 20,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022291999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 349,
+      "reasoning_tokens": 341,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 147,
+      "reasoning_tokens": 139,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e3d9b89cb7296f709740",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "7e0c2c52dcb052bc9c6831c7a2b839e7381d1ca056dac2d3d2761ba426f5dd2d",
+  "status": "completed"
+}

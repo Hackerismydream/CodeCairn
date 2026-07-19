@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009816,
+    "cost_usd": null,
+    "input_tokens": 2758,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 257,
+    "reasoning_tokens": 235,
+    "text": "John's teammates signed the basketball to show their friendship and appreciation, serving as a reminder of their bond.",
+    "uncached_input_tokens": 2758
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002451,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 341,
+      "reasoning_tokens": 333,
+      "response_chars": 20,
+      "uncached_input_tokens": 135,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 20,
+      "uncached_input_tokens": 7,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028442,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 135,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 470,
+      "reasoning_tokens": 462,
+      "response_chars": 20,
+      "uncached_input_tokens": 7,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fa5ad73fa733df4e83c6",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "d073416d3aabd327d8e320eaadf9da25971e0c9d9c1a38603f259e90ea2cc87b",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0032294,
+    "cost_usd": null,
+    "input_tokens": 2859,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 505,
+    "reasoning_tokens": 450,
+    "text": "Jon decided to start his dance studio because he is passionate about dancing and wanted to share that joy with others. Losing his job gave him the push to finally pursue his dream business, allowing him to teach others and create a space where people can express themselves through dance.",
+    "uncached_input_tokens": 43
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001893,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 20,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 196,
+      "reasoning_tokens": 188,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 207,
+      "reasoning_tokens": 196,
+      "response_chars": 24,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d561d23297c646e9c3b3",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "1e94958d75fa8b1feda43d3c167f2f2af754302dcb685c21db3d71d0cb1c367a",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009891,
+    "cost_usd": null,
+    "input_tokens": 2771,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 263,
+    "reasoning_tokens": 245,
+    "text": "The provided memory context does not contain any information about Dave buying a new item recently.",
+    "uncached_input_tokens": 2771
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000786,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 69,
+      "reasoning_tokens": 61,
+      "response_chars": 18,
+      "uncached_input_tokens": 124,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000906,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 18,
+      "uncached_input_tokens": 124,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001044,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 112,
+      "reasoning_tokens": 104,
+      "response_chars": 18,
+      "uncached_input_tokens": 124,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_17ab5df91ac78d1c07d3",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "41b0b51afbbb6fdfd062a0913382d64eae34c8663c132b06c0bc3daf9d4494f1",
+  "status": "completed"
+}

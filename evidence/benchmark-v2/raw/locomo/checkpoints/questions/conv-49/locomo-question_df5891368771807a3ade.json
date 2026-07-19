@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010857,
+    "cost_usd": null,
+    "input_tokens": 2825,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 397,
+    "reasoning_tokens": 340,
+    "text": "The provided memory context contains no information about any dish Sam made on 18 August 2023. The closest reference is to a grilled salmon dish mentioned on 15 August 2023 (made the night before), but there is no mention of a dish on the specified date.",
+    "uncached_input_tokens": 2825
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001815,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 214,
+      "reasoning_tokens": 206,
+      "response_chars": 18,
+      "uncached_input_tokens": 177,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 109,
+      "reasoning_tokens": 101,
+      "response_chars": 18,
+      "uncached_input_tokens": 49,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 177,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 186,
+      "reasoning_tokens": 178,
+      "response_chars": 18,
+      "uncached_input_tokens": 49,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_df5891368771807a3ade",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "2bf7e297f894ee267d62a63ee43149f1b7f879f4d27786668410650b10d92df9",
+  "status": "completed"
+}

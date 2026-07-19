@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011685,
+    "cost_usd": null,
+    "input_tokens": 2995,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 450,
+    "reasoning_tokens": 253,
+    "text": "Based on the provided memory context, when Caroline has a negative experience, she is supported by her friends, family, and mentors.\n\n**Context**:\n- Caroline explicitly stated that \"the help I got from friends, family and people I looked up to was invaluable\" during tough times (source: memory_d6c4167ef69c6f0f64ea).\n- She also referred to her \"friends, family and mentors\" as her \"rocks\" who motivate her and give her strength (source: memory_30c7f8f637b0755d6e14).\n- During a specifically negative experience on a hike, she noted it was \"helpful to have people around me who accept and support me\" (source: memory_fcd55c3603943f5402dc).\n- A supportive community is also mentioned as being very meaningful to her (source: memory_6677a302ed9dcd48acf3).",
+    "uncached_input_tokens": 2995
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001815,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 319,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 143,
+      "reasoning_tokens": 135,
+      "response_chars": 20,
+      "uncached_input_tokens": 319,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0010714000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 319,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0012214,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 319,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ce121a12c22972e96e69",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "7aef7bc4dce1675a75d5cb3c5da806d2c4754d1e77f044f067de7b3f3a31eb78",
+  "status": "completed"
+}

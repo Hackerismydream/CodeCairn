@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012402,
+    "cost_usd": null,
+    "input_tokens": 2654,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 740,
+    "reasoning_tokens": 682,
+    "text": "Based on the memory context, Maria’s new puppy (Coco) is adjusting well. She said it’s definitely been an adjustment to take care of her, but it’s totally worth it and she brings joy to her life, always greeting her when she comes home.",
+    "uncached_input_tokens": 2654
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002679,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 360,
+      "reasoning_tokens": 352,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024541999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 386,
+      "reasoning_tokens": 378,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 458,
+      "reasoning_tokens": 450,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b24898d52094a43bd203",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "579c00d58477d50d3cc182068c32b72a5440c584a1f96976bc983d60a99d2244",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009897,
+    "cost_usd": null,
+    "input_tokens": 2523,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 388,
+    "reasoning_tokens": 331,
+    "text": "Deborah recommends a mindful breathing routine for yoga: set aside a few minutes daily to sit with eyes closed, take deep breaths, and focus on the sensation of air entering and leaving the body. (Source: Deborah in session_13 on 2023-06-06)",
+    "uncached_input_tokens": 2523
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001965,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 241,
+      "reasoning_tokens": 233,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 275,
+      "reasoning_tokens": 267,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019922,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 309,
+      "reasoning_tokens": 301,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2333188d73f045ecc7c4",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "4e71fd43fbf121a713c6e5091f4daba61f6a66492781ad1cd5183e1c73c25c10",
+  "status": "completed"
+}

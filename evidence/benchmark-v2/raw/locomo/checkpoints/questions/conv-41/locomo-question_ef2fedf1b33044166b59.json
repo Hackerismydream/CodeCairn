@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008739,
+    "cost_usd": null,
+    "input_tokens": 2663,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 125,
+    "reasoning_tokens": 109,
+    "text": "The provided memory context does not contain any information about Maria getting Coco.",
+    "uncached_input_tokens": 2663
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001335,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 159,
+      "reasoning_tokens": 151,
+      "response_chars": 18,
+      "uncached_input_tokens": 127,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000939,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 93,
+      "reasoning_tokens": 85,
+      "response_chars": 18,
+      "uncached_input_tokens": 127,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000903,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 87,
+      "reasoning_tokens": 76,
+      "response_chars": 22,
+      "uncached_input_tokens": 127,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ef2fedf1b33044166b59",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "9f5f58393e210334d1e9e99666a395c6ced7d21f025cc0a6a4afb57e169efb21",
+  "status": "completed"
+}

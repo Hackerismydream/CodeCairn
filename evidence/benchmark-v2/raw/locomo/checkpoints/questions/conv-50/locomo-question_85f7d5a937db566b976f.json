@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01341,
+    "cost_usd": null,
+    "input_tokens": 3000,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 735,
+    "reasoning_tokens": 664,
+    "text": "After the tour, Calvin is excited about going to Tokyo next month and exploring/growing his brand. This is based on his statements on 2023-09-13 (“After that, I'm off to explore and grow my brand”) and 2023-10-19 (“I'm actually going to Tokyo next month after the tour ends”).",
+    "uncached_input_tokens": 3000
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0066,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1009,
+      "reasoning_tokens": 1001,
+      "response_chars": 18,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0052112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 841,
+      "reasoning_tokens": 833,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0066632,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1083,
+      "reasoning_tokens": 1075,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_85f7d5a937db566b976f",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "d593460ce4f8a290c20cac1ce19b983d4753018e3e29f69854983a1a2d64bc4a",
+  "status": "completed"
+}

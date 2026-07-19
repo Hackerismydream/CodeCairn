@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2432,
+    "cost_cny": 0.0033698,
+    "cost_usd": null,
+    "input_tokens": 2559,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 488,
+    "reasoning_tokens": 422,
+    "text": "The context does not contain a specific date or statement from Gina about when she got her tattoo. Jon asks \"Love the tattoo, did you just get it?\" on 2023-02-08, but there is no response from Gina indicating when the tattoo was done. Thus, the exact date is insufficiently provided.",
+    "uncached_input_tokens": 127
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001785,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019082,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 295,
+      "reasoning_tokens": 287,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_999a346dfbaf8be621f3",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "5991f483e4495a861a082d0e003d10cae3eae807430d622f9e4c33f0384c1af0",
+  "status": "completed"
+}

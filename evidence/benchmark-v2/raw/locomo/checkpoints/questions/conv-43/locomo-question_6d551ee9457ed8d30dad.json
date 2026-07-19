@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014148,
+    "cost_usd": null,
+    "input_tokens": 3000,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 858,
+    "reasoning_tokens": 766,
+    "text": "Based on the provided memories, Tim already engages in several hobbies related to his travel dreams, including learning Spanish (session_27), researching visa requirements (sessions 26, 29), joining a travel club (session 21), and reading travelers' stories (session 26). These activities directly support his travel aspirations. The context does not offer any explicit suggestion for a new hobby, but deepening his language learning or travel planning would be natural fits.",
+    "uncached_input_tokens": 3000
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001758,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 208,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 18,
+      "uncached_input_tokens": 80,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 18,
+      "uncached_input_tokens": 80,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6d551ee9457ed8d30dad",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "b954b38e2f90fa0f26f48fd6e1ffad0fdb58f6226f237b0d561a4b512cea121a",
+  "status": "completed"
+}

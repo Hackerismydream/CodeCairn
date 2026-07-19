@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0049902,
+    "cost_usd": null,
+    "input_tokens": 2693,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 818,
+    "reasoning_tokens": 755,
+    "text": "The provided memory context does not specify the type of volunteering John and Maria have both done. It mentions John helping veterans and Maria volunteering at a homeless shelter, which are different types. There is a reference to them having volunteered together in the past, but no specific type is given, making it insufficient to answer.",
+    "uncached_input_tokens": 5
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001878,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 225,
+      "reasoning_tokens": 217,
+      "response_chars": 18,
+      "uncached_input_tokens": 176,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 18,
+      "uncached_input_tokens": 48,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 225,
+      "reasoning_tokens": 217,
+      "response_chars": 18,
+      "uncached_input_tokens": 48,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_739fd00d9fb509ede533",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "5e7ae52a8939cda4f06e0efc950911bd9573a8cde1bdbfa739d6cea5b381d5c3",
+  "status": "completed"
+}

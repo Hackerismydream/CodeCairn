@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009015,
+    "cost_usd": null,
+    "input_tokens": 2695,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 155,
+    "reasoning_tokens": 145,
+    "text": "Audrey made cookies to thank her neighbors.",
+    "uncached_input_tokens": 2695
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002436,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 116,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 348,
+      "reasoning_tokens": 340,
+      "response_chars": 18,
+      "uncached_input_tokens": 116,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003336,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 116,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 498,
+      "reasoning_tokens": 490,
+      "response_chars": 18,
+      "uncached_input_tokens": 116,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00711,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 116,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1127,
+      "reasoning_tokens": 1119,
+      "response_chars": 20,
+      "uncached_input_tokens": 116,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bd7b252efd9ffa725a4a",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "a179bffff61fdd775ce6e640d15a5acc53884da25c1594517d3bef46672f5275",
+  "status": "completed"
+}

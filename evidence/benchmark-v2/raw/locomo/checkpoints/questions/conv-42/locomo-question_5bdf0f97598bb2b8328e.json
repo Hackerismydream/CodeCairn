@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013302,
+    "cost_usd": null,
+    "input_tokens": 2826,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 804,
+    "reasoning_tokens": 770,
+    "text": "Joanna received one letter, specifically a rejection letter from a major company regarding her screenplay (as mentioned in session_14 on 2022-06-03).",
+    "uncached_input_tokens": 2826
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000936,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 86,
+      "reasoning_tokens": 78,
+      "response_chars": 18,
+      "uncached_input_tokens": 140,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.00042919999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 65,
+      "reasoning_tokens": 57,
+      "response_chars": 18,
+      "uncached_input_tokens": 12,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004052,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 140,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 61,
+      "reasoning_tokens": 53,
+      "response_chars": 18,
+      "uncached_input_tokens": 12,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5bdf0f97598bb2b8328e",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "844b45654faa22e1bb7e27d6150a3daee69347d4203576a0ecf85c251763755e",
+  "status": "completed"
+}

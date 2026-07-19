@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011283,
+    "cost_usd": null,
+    "input_tokens": 2829,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 466,
+    "reasoning_tokens": 439,
+    "text": "Evan described being out on the water while kayaking and watching the sunset as \"so peaceful\" and \"truly unforgettable.\"",
+    "uncached_input_tokens": 2829
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002475,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 341,
+      "reasoning_tokens": 333,
+      "response_chars": 20,
+      "uncached_input_tokens": 143,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018302000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 297,
+      "reasoning_tokens": 289,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 237,
+      "reasoning_tokens": 229,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7e07f53ac95bd9100951",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "fca1cbb87fb4e240e5a14bfa485cbaf5b375dc6cfd1a9f0ce6b56b30639fb68e",
+  "status": "completed"
+}

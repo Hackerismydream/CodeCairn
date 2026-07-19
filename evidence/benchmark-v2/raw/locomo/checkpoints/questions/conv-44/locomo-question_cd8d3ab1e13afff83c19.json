@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009558,
+    "cost_usd": null,
+    "input_tokens": 2970,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 108,
+    "reasoning_tokens": 89,
+    "text": "Eagles mesmerize Andrew, as he stated on March 27, 2023.",
+    "uncached_input_tokens": 2970
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001065,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 115,
+      "reasoning_tokens": 107,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001647,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 212,
+      "reasoning_tokens": 204,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000963,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cd8d3ab1e13afff83c19",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "93df9554b014eb3508b81388947b284c8e4cd262a4f0b81b354bf2d766602014",
+  "status": "completed"
+}

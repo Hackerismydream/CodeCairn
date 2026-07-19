@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.016167,
+    "cost_usd": null,
+    "input_tokens": 2969,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1210,
+    "reasoning_tokens": 1041,
+    "text": "Deborah enhances her yoga practice with candles and essential oils (2023-03-28, session_11), mindful breathing (2023-06-06, session_13), and community workshops/group practice (2023-07-09, session_15). Jolene uses essential oils and soft, soothing music (2023-09-15, session_28), listens to calming artists like Nils Frahm and Olafur Arnalds (2023-03-28, session_11), plans a meditation retreat with her partner (2023-08-26, session_22), travels to take yoga classes (e.g., Rio de Janeiro, 2023-08-30, session_23), and camps to practice yoga in nature (2023-09-08, session_26).",
+    "uncached_input_tokens": 2969
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004041,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 287,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 530,
+      "reasoning_tokens": 522,
+      "response_chars": 20,
+      "uncached_input_tokens": 287,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0041854,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 287,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 681,
+      "reasoning_tokens": 673,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0048214,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 287,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 787,
+      "reasoning_tokens": 776,
+      "response_chars": 22,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9366669c74ffc5f3cca8",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "e7482572bfe51f5103d694f9787d4b4c57f624a307a2ab8d3ff1d5fce6af645a",
+  "status": "completed"
+}

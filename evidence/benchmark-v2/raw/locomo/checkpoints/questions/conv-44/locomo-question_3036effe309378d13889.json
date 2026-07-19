@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01125,
+    "cost_usd": null,
+    "input_tokens": 2896,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 427,
+    "reasoning_tokens": 381,
+    "text": "Andrew mentioned on August 24, 2023 that he and his girlfriend went fishing \"last weekend,\" so it likely occurred around August 19–20, 2023. The context does not provide a specific date.",
+    "uncached_input_tokens": 2896
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001449,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 161,
+      "reasoning_tokens": 153,
+      "response_chars": 20,
+      "uncached_input_tokens": 161,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022681999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 361,
+      "reasoning_tokens": 353,
+      "response_chars": 20,
+      "uncached_input_tokens": 33,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 20,
+      "uncached_input_tokens": 33,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3036effe309378d13889",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "e7c0e65d05a33081274f2e0cf7878b5b14ca656f88ef0523161df5d93c45e7af",
+  "status": "completed"
+}

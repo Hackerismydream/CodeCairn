@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00894,
+    "cost_usd": null,
+    "input_tokens": 2414,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 283,
+    "reasoning_tokens": 233,
+    "text": "Sam offered to give yoga tips. On 2023-12-05, after Evan mentioned thinking about trying yoga, Sam said, \"Anytime, Evan. If you need any yoga tips or anything else, just let me know.\"",
+    "uncached_input_tokens": 2414
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001542,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 178,
+      "reasoning_tokens": 170,
+      "response_chars": 20,
+      "uncached_input_tokens": 158,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 272,
+      "reasoning_tokens": 264,
+      "response_chars": 20,
+      "uncached_input_tokens": 30,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 20,
+      "uncached_input_tokens": 30,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_39a92fd8d19730c9ea34",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "0839e936e0a9cfcc83cba584cd3c5678c895154b18e089e792f8f9e4a9f1a922",
+  "status": "completed"
+}

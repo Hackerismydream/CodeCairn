@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01059,
+    "cost_usd": null,
+    "input_tokens": 2736,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 397,
+    "reasoning_tokens": 352,
+    "text": "Andrew is struggling to find a dog-friendly place to live in the city, especially one near a park or woods with open space for a dog to run. This challenge is mentioned consistently from April to September 2023.",
+    "uncached_input_tokens": 2736
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00198,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 20,
+      "uncached_input_tokens": 160,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017312,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 272,
+      "reasoning_tokens": 264,
+      "response_chars": 20,
+      "uncached_input_tokens": 32,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 286,
+      "reasoning_tokens": 278,
+      "response_chars": 20,
+      "uncached_input_tokens": 32,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_26a8e170a03b8c829174",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "258b45bfb78965b87b611f9d0b150742b077e6955d99cd97bd2cec3d279e822d",
+  "status": "completed"
+}

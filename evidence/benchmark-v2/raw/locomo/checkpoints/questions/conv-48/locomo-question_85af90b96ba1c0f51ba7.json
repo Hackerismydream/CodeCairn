@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009021,
+    "cost_usd": null,
+    "input_tokens": 2429,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 289,
+    "reasoning_tokens": 252,
+    "text": "Jolene recommended *Zelda BOTW* for Switch and *Animal Crossing: New Horizons* (session 19, August 19, 2023).",
+    "uncached_input_tokens": 2429
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001869,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 230,
+      "reasoning_tokens": 222,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015902,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 247,
+      "reasoning_tokens": 236,
+      "response_chars": 22,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008522,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 124,
+      "reasoning_tokens": 116,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_85af90b96ba1c0f51ba7",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "4765eacfff7dacb56ab4c153760c59731d57d3c353ff1c778fbec24d8ff682f6",
+  "status": "completed"
+}

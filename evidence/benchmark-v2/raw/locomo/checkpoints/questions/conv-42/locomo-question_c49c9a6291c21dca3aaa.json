@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.016146,
+    "cost_usd": null,
+    "input_tokens": 2742,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1320,
+    "reasoning_tokens": 1233,
+    "text": "The memory context shows Nate mentioning several tournament wins, but it does not provide a definitive total number. He explicitly states winning his second tournament in May 2022, then an international tournament in August 2022, a big video game tournament around September 2022, and a Valorant tournament in November 2022. This suggests at least five wins, but the context is insufficient to determine an exact count beyond these mentions.",
+    "uncached_input_tokens": 2742
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001338,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 18,
+      "uncached_input_tokens": 190,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015272,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 223,
+      "reasoning_tokens": 215,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 221,
+      "reasoning_tokens": 213,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c49c9a6291c21dca3aaa",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "dfadf588d22661e69de7e209eba6eb0262715b1f30c651fd3b360f131db822fd",
+  "status": "completed"
+}

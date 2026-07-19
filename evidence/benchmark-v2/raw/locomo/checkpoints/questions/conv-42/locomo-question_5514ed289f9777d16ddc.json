@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009129,
+    "cost_usd": null,
+    "input_tokens": 2703,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 170,
+    "reasoning_tokens": 143,
+    "text": "Joanna described the classic movie as \"awesome\" with a gripping story and great actors, and said it really stuck with her.",
+    "uncached_input_tokens": 2703
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003126,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 452,
+      "reasoning_tokens": 444,
+      "response_chars": 20,
+      "uncached_input_tokens": 138,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013172000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 214,
+      "reasoning_tokens": 206,
+      "response_chars": 20,
+      "uncached_input_tokens": 10,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 394,
+      "reasoning_tokens": 386,
+      "response_chars": 20,
+      "uncached_input_tokens": 10,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5514ed289f9777d16ddc",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "a5858c3c366d321c849a6fa331ad32ba631e5a24ecd9e83270bac8b65602f440",
+  "status": "completed"
+}

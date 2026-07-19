@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011034,
+    "cost_usd": null,
+    "input_tokens": 2564,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 557,
+    "reasoning_tokens": 498,
+    "text": "John planned his next meeting with his siblings on **August 21, 2022**, as indicated when he said, \"I'm organizing one with my siblings next month.\" The meeting itself was scheduled for the following month (September 2022), though a specific date was not mentioned.",
+    "uncached_input_tokens": 2564
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 416,
+      "reasoning_tokens": 408,
+      "response_chars": 18,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0042872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 692,
+      "reasoning_tokens": 684,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 269,
+      "reasoning_tokens": 261,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4d7a443cfed74d8e5615",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "f6e2c2d254f161c2ce9861079f61ebb065c729818705b7ec62bdda929899f610",
+  "status": "completed"
+}

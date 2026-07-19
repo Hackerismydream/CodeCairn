@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011823,
+    "cost_usd": null,
+    "input_tokens": 2813,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 564,
+    "reasoning_tokens": 495,
+    "text": "No. Joanna experienced a work setback on September 14, 2022, when her laptop crashed and she lost all her work, which she described as a “major blow” to her career as a writer. There is no evidence in the memory context of any positive career events for Nate during the first half of September 2022.",
+    "uncached_input_tokens": 2813
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.010701,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 199,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1684,
+      "reasoning_tokens": 1676,
+      "response_chars": 18,
+      "uncached_input_tokens": 199,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0057361999999999995,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 199,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 920,
+      "reasoning_tokens": 912,
+      "response_chars": 18,
+      "uncached_input_tokens": 71,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0044702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 199,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 709,
+      "reasoning_tokens": 701,
+      "response_chars": 18,
+      "uncached_input_tokens": 71,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_63e38f9f075384ee7edd",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "b66f9411fa103370267889d7078f353cf2d62c5543109b6d773ac72cbf64d3ff",
+  "status": "completed"
+}

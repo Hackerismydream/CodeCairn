@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013959,
+    "cost_usd": null,
+    "input_tokens": 2917,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 868,
+    "reasoning_tokens": 810,
+    "text": "Approximately 3 months. Sam mentioned a check-up \"a few days ago\" on May 24, 2023, and then referenced another doctor’s appointment on August 15, 2023, suggesting the first was around late May and the second around early August.",
+    "uncached_input_tokens": 2917
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002214,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 284,
+      "reasoning_tokens": 276,
+      "response_chars": 20,
+      "uncached_input_tokens": 170,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005672,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 73,
+      "reasoning_tokens": 65,
+      "response_chars": 20,
+      "uncached_input_tokens": 42,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 42,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e0067cfd3e5f3f550425",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "1f2359f6facccfb16943ce577f1259f40957793e0f5638b14593b45344d33181",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011622,
+    "cost_usd": null,
+    "input_tokens": 2924,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 475,
+    "reasoning_tokens": 421,
+    "text": "Jon's dance makes him happy. He explicitly states that dancing is his way to express himself and find his \"happy place\" (memory 4 from session_9) and that \"dancing makes me so happy\" (memory 18 from session_9).",
+    "uncached_input_tokens": 2924
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001173,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 105,
+      "response_chars": 24,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0004622,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 61,
+      "reasoning_tokens": 53,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 144,
+      "reasoning_tokens": 136,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5e71f977274ce5fdbace",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "85008417d4f052309b8291d1f0e15d5695bb92f08e93b74ac656947f3332e979",
+  "status": "completed"
+}

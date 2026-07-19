@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012555,
+    "cost_usd": null,
+    "input_tokens": 2939,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 623,
+    "reasoning_tokens": 540,
+    "text": "The provided memory context does not contain any specific significant event in Sam's life towards the end of summer 2023. The only direct mention of Sam during that period is a motivational quote about progress on August 13, 2023, but it describes an ongoing mindset rather than a notable event. Other entries focus on Evan or are from later dates. Thus, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2939
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001545,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 18,
+      "uncached_input_tokens": 203,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 356,
+      "reasoning_tokens": 348,
+      "response_chars": 18,
+      "uncached_input_tokens": 75,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011462,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 153,
+      "reasoning_tokens": 145,
+      "response_chars": 18,
+      "uncached_input_tokens": 75,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c692c105f07b491d0490",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "cf43f88ee4c789a42ab90e94ff7fb30006f5fab75b2f87b4dced03204dd3406b",
+  "status": "completed"
+}

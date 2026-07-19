@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012375,
+    "cost_usd": null,
+    "input_tokens": 2439,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 843,
+    "reasoning_tokens": 817,
+    "text": "The provided memory context does not contain any information about a state that Nate visited. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2439
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.0009,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 86,
+      "reasoning_tokens": 78,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000756,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 62,
+      "reasoning_tokens": 54,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001176,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a90da62ca9efbb7e35aa",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "c49280c8b69e26872c5d37de4b2586d75be0689b35c9ed24dcd85d3842d6bb3f",
+  "status": "completed"
+}

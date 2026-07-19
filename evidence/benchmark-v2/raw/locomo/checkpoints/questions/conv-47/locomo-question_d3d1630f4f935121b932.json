@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0026921999999999996,
+    "cost_usd": null,
+    "input_tokens": 2693,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 435,
+    "reasoning_tokens": 362,
+    "text": "No, both James and John do not have pets. While James mentions having pets (e.g., \"furry friends,\" and a pet named Max according to John's comment), John explicitly states in session 17: \"It’s a pity that I don’t have pets, I’ll definitely get one someday.\" So only James has pets.",
+    "uncached_input_tokens": 5
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001833,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 20,
+      "uncached_input_tokens": 179,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 51,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.012474200000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 2053,
+      "reasoning_tokens": 2045,
+      "response_chars": 20,
+      "uncached_input_tokens": 51,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d3d1630f4f935121b932",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "f57cbb49e82c539774655482450442c787867d41e37c20588f70ec449faca4df",
+  "status": "completed"
+}

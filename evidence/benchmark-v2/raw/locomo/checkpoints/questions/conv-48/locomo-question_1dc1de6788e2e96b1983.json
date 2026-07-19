@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012531,
+    "cost_usd": null,
+    "input_tokens": 2759,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 709,
+    "reasoning_tokens": 647,
+    "text": "Jolene mentioned finishing an **electrical engineering project** on 2023-01-23. She also referred to other engineering projects (e.g., \"my engineering project,\" \"a major milestone,\" \"a breakthrough\") without specifying their type. The context does not provide further details on those.",
+    "uncached_input_tokens": 2759
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 183,
+      "reasoning_tokens": 175,
+      "response_chars": 18,
+      "uncached_input_tokens": 188,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 18,
+      "uncached_input_tokens": 60,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015212000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 223,
+      "reasoning_tokens": 215,
+      "response_chars": 18,
+      "uncached_input_tokens": 60,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1dc1de6788e2e96b1983",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "c9c1b533cd9bfa453726a43f6375e74b462df5120141f610374042864917b65b",
+  "status": "completed"
+}

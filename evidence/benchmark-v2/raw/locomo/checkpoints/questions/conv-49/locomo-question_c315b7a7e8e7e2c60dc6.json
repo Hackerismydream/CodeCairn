@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015024,
+    "cost_usd": null,
+    "input_tokens": 3094,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 957,
+    "reasoning_tokens": 788,
+    "text": "Nature and the outdoors provide peace, tranquility, and refreshment for both Evan and Sam, supporting their mental well‑being.  \n- Evan says nature’s beauty “captivates me and brings me peace” and aims to “convey the peacefulness of being outdoors” through his paintings (2023‑08‑19). He also values hiking as a way to “bond with nature and push ourselves” (2023‑10‑17) and enjoys exploring the outdoors on vacation (2023‑08‑13).  \n- Sam states, “I love being surrounded by nature. It’s so tranquil and refreshing” and expresses a desire to hike more once healthier (2023‑08‑27).  \n\nThus, for both, nature and outdoor activities contribute to a sense of calm, enjoyment, and positive mental states.",
+    "uncached_input_tokens": 3094
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003297,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 319,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 390,
+      "reasoning_tokens": 382,
+      "response_chars": 20,
+      "uncached_input_tokens": 319,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0028714,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 319,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 446,
+      "reasoning_tokens": 438,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0029674000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 319,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 462,
+      "reasoning_tokens": 454,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c315b7a7e8e7e2c60dc6",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "273302c749164463f86eab253945f53bf89901a5be97efb16324a8a409f9a81c",
+  "status": "completed"
+}

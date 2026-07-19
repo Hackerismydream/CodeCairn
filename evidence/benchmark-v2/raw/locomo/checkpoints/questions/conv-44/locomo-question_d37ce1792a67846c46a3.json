@@ -1,0 +1,86 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013317,
+    "cost_usd": null,
+    "input_tokens": 3159,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 640,
+    "reasoning_tokens": 539,
+    "text": "Yes, both Audrey and Andrew grew up with a pet dog.\n\n- Andrew mentions Audrey’s “childhood pup” in session_13 (2023-07-27) [memory_ab1b09285ded0badfc6a].\n- Andrew refers to hiking with his “family’s dog” in session_2 (2023-04-02) [memory_7bc46358ac6073871ecb], indicating he had a family dog during his youth.",
+    "uncached_input_tokens": 3159
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001266,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 212,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 105,
+      "reasoning_tokens": 97,
+      "response_chars": 20,
+      "uncached_input_tokens": 212,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 2,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021692,
+      "cost_usd": null,
+      "failed_attempts": [
+        {
+          "attempt_index": 1,
+          "cached_input_tokens": 128,
+          "cost_cny": 0.0008432,
+          "error_type": "JSONDecodeError",
+          "input_tokens": 212,
+          "model": "deepseek-v4-pro",
+          "output_tokens": 98,
+          "reasoning_tokens": 98,
+          "response_chars": 0,
+          "uncached_input_tokens": 84
+        }
+      ],
+      "input_tokens": 424,
+      "known_cost_cny_count": 2,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 213,
+      "reasoning_tokens": 205,
+      "response_chars": 20,
+      "uncached_input_tokens": 296,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 212,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 101,
+      "reasoning_tokens": 93,
+      "response_chars": 20,
+      "uncached_input_tokens": 84,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d37ce1792a67846c46a3",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "e411c48466c852e1d731ef480b68472246b4f692db0b71d5d5c836ae34e664d1",
+  "status": "completed"
+}

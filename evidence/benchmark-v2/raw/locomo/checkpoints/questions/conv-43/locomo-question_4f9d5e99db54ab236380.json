@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009558,
+    "cost_usd": null,
+    "input_tokens": 2934,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 126,
+    "reasoning_tokens": 105,
+    "text": "Tim just finished reading \"A Dance with Dragons\" on 8th December, 2023.",
+    "uncached_input_tokens": 2934
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001569,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 192,
+      "reasoning_tokens": 184,
+      "response_chars": 20,
+      "uncached_input_tokens": 139,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 320,
+      "reasoning_tokens": 312,
+      "response_chars": 20,
+      "uncached_input_tokens": 11,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 438,
+      "reasoning_tokens": 430,
+      "response_chars": 20,
+      "uncached_input_tokens": 11,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4f9d5e99db54ab236380",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "d4ae9d156fda95271f2cdfc80c6af4ba83a83885f42cdf05a78e9c174cd331f1",
+  "status": "completed"
+}

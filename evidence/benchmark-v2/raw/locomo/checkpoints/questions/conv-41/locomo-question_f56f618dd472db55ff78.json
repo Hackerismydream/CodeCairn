@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009762,
+    "cost_usd": null,
+    "input_tokens": 2778,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 238,
+    "reasoning_tokens": 177,
+    "text": "John's interest was sparked by his personal experience growing up: he saw how a lack of education and crumbling infrastructure negatively affected his neighborhood, and he didn't want future generations to endure the same. (Source: session_1, 2022-12-17T11:05:30)",
+    "uncached_input_tokens": 2778
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001776,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 204,
+      "reasoning_tokens": 196,
+      "response_chars": 20,
+      "uncached_input_tokens": 184,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 262,
+      "reasoning_tokens": 254,
+      "response_chars": 20,
+      "uncached_input_tokens": 56,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013352000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 194,
+      "reasoning_tokens": 186,
+      "response_chars": 20,
+      "uncached_input_tokens": 56,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f56f618dd472db55ff78",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "71301a25da3fa4a8e6ba208b161d3824c6007d6670c468a4ca5629534709ac94",
+  "status": "completed"
+}

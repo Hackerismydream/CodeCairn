@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010434,
+    "cost_usd": null,
+    "input_tokens": 2790,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 344,
+    "reasoning_tokens": 303,
+    "text": "John made a butternut squash soup recently, as indicated by the photo showing a bowl of soup with a butternut on a cutting board (entry #17). No specific recipe was provided.",
+    "uncached_input_tokens": 2790
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004212,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 627,
+      "reasoning_tokens": 619,
+      "response_chars": 18,
+      "uncached_input_tokens": 150,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015512,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 247,
+      "reasoning_tokens": 239,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019712,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 317,
+      "reasoning_tokens": 309,
+      "response_chars": 18,
+      "uncached_input_tokens": 22,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_19459a15c1ed97ea1b16",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "809e147f5d000ad87ca41d07faf79943a6c430a8a32f19abbe557c11efc6a32b",
+  "status": "completed"
+}

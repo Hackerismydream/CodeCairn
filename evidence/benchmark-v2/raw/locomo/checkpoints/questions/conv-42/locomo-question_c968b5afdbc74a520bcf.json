@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011202,
+    "cost_usd": null,
+    "input_tokens": 2736,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 499,
+    "reasoning_tokens": 453,
+    "text": "The context does not include the specific movie title. Joanna refers to a romantic drama about memory and relationships as \"such a good one\" and later says \"it's one of my favorites,\" but the title is never stated.",
+    "uncached_input_tokens": 2736
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002361,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 313,
+      "reasoning_tokens": 305,
+      "response_chars": 18,
+      "uncached_input_tokens": 161,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013922000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 215,
+      "reasoning_tokens": 207,
+      "response_chars": 18,
+      "uncached_input_tokens": 33,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 161,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 143,
+      "reasoning_tokens": 135,
+      "response_chars": 18,
+      "uncached_input_tokens": 33,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c968b5afdbc74a520bcf",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "407a9aeefdf6a61f9b4686b28461658d01d88fa76eb8914bee108e94a04ffd3e",
+  "status": "completed"
+}

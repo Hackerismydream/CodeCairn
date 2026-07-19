@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011208,
+    "cost_usd": null,
+    "input_tokens": 2886,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 425,
+    "reasoning_tokens": 346,
+    "text": "The provided context does not contain a timestamped event where Caroline (Melanie's friend) confirmed that she adopted a child. The latest mention is on 2023-10-22, where Melanie congratulates Caroline on adoption, but Caroline's reply only expresses hope and plans for building a family, not a completed adoption. Thus, the context is insufficient to answer when the adoption occurred.",
+    "uncached_input_tokens": 2886
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001533,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 155,
+      "response_chars": 18,
+      "uncached_input_tokens": 185,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 185,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 272,
+      "reasoning_tokens": 264,
+      "response_chars": 18,
+      "uncached_input_tokens": 57,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_73c4591323dc3cff7d9a",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "726b6bb84550157fc06f84fd39af33baa2b4f8c20d830a35a4799a3e5677c7ce",
+  "status": "completed"
+}

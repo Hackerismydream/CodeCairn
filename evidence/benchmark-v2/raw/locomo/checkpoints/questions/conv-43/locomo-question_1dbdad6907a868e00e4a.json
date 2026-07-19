@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010614,
+    "cost_usd": null,
+    "input_tokens": 3062,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 238,
+    "reasoning_tokens": 190,
+    "text": "John overcame the mistake by not dwelling on it; instead, he worked hard to improve. He said resilience and owning up to mistakes are key, and he focused on growing as a player and teammate (2023-11-21).",
+    "uncached_input_tokens": 3062
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002541,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 339,
+      "reasoning_tokens": 331,
+      "response_chars": 20,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0032941999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 528,
+      "reasoning_tokens": 520,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010922,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 161,
+      "reasoning_tokens": 153,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1dbdad6907a868e00e4a",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "50b02067427f1e0d99c988d600bfccab7905bbcd9577c0300a6d626c784af7c5",
+  "status": "completed"
+}

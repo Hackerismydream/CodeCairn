@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01302,
+    "cost_usd": null,
+    "input_tokens": 3036,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 652,
+    "reasoning_tokens": 588,
+    "text": "Gina describes the feeling that dance brings as \"joy and thrill\" and says \"it's magical\" (session_15, 2023-06-19). She also refers to dance as a source of happiness and a \"happy place\" (session_9, 2023-04-09).",
+    "uncached_input_tokens": 3036
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00363,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 519,
+      "reasoning_tokens": 511,
+      "response_chars": 20,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 265,
+      "reasoning_tokens": 257,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018692000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 289,
+      "reasoning_tokens": 281,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f8af91ea22e615cbd256",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "4169063e59a2b2b5eeb50d153c5a5d506202e002fa03660ff4f7069f938ba95e",
+  "status": "completed"
+}

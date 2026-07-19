@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013434,
+    "cost_usd": null,
+    "input_tokens": 3006,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 736,
+    "reasoning_tokens": 695,
+    "text": "Nate shared a photo of his homemade coconut ice cream (specifically, a person scooping a scoop of ice cream into a pan) as part of his cooking experimentation in November 2022.",
+    "uncached_input_tokens": 3006
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002739,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 375,
+      "reasoning_tokens": 367,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 358,
+      "reasoning_tokens": 350,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024901999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 397,
+      "reasoning_tokens": 389,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7b67e772f9a57aeb4b2a",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "4143ca75e398a7f53527280e12400ccd2326fb6ab5c7de9f882355d9173ecb17",
+  "status": "completed"
+}

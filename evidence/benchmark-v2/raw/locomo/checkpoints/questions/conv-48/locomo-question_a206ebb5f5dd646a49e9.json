@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013932,
+    "cost_usd": null,
+    "input_tokens": 3134,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 755,
+    "reasoning_tokens": 584,
+    "text": "Jolene describes her time with her snakes as valuable and teaching her to be in tune with herself (memory_8619e6209f39df1cd62d, session 12). She also recalls a “snake adventure” that filled her with love and gratitude (memory_6fc897a08acd214af9f8, session 15). With her partner, she finds playing video games relaxing after a long day (memory_8619e6209f39df1cd62d, session 12), enjoys festivals as a way to express herself and escape stress (memory_1d3ff57171a048abf17f, session 30), and felt inner peace during a meditation retreat they took together (memory_fd82cf216df5e46aaa33, session 27).",
+    "uncached_input_tokens": 3134
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003723,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 285,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 478,
+      "reasoning_tokens": 470,
+      "response_chars": 20,
+      "uncached_input_tokens": 285,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0012994,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 285,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 193,
+      "response_chars": 20,
+      "uncached_input_tokens": 29,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0028234,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 285,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 455,
+      "reasoning_tokens": 447,
+      "response_chars": 20,
+      "uncached_input_tokens": 29,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a206ebb5f5dd646a49e9",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "b7a6c7deb0166e376c6b9ee1fd50a9ea31eb5cb36465ef8781dda9b22bf81668",
+  "status": "completed"
+}

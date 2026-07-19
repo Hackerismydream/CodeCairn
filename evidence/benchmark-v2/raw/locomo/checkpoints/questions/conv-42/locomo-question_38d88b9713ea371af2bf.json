@@ -1,0 +1,86 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012096,
+    "cost_usd": null,
+    "input_tokens": 2818,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 607,
+    "reasoning_tokens": 519,
+    "text": "Nate has three turtles. On January 23, 2022, he mentioned both of his turtles had big personalities (memory_1dcb320477ee970bf0c8), and on November 9, 2022, he said he saw another turtle at a pet store and had to get him because the tank was big enough for three (memory_12822c617f54bb25b5ef).",
+    "uncached_input_tokens": 2818
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001668,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 20,
+      "uncached_input_tokens": 192,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 2,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016232,
+      "cost_usd": null,
+      "failed_attempts": [
+        {
+          "attempt_index": 1,
+          "cached_input_tokens": 128,
+          "cost_cny": 0.0006152,
+          "error_type": "JSONDecodeError",
+          "input_tokens": 192,
+          "model": "deepseek-v4-pro",
+          "output_tokens": 70,
+          "reasoning_tokens": 70,
+          "response_chars": 0,
+          "uncached_input_tokens": 64
+        }
+      ],
+      "input_tokens": 384,
+      "known_cost_cny_count": 2,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 142,
+      "reasoning_tokens": 134,
+      "response_chars": 20,
+      "uncached_input_tokens": 256,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 167,
+      "reasoning_tokens": 159,
+      "response_chars": 20,
+      "uncached_input_tokens": 64,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_38d88b9713ea371af2bf",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "1fca07b35cd2bf87fc6a0b1edd250b2347f2afea618d782cfb2a223961ccbb83",
+  "status": "completed"
+}

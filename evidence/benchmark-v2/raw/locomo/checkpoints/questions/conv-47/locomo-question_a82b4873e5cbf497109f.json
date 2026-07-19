@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0044621999999999995,
+    "cost_usd": null,
+    "input_tokens": 2797,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 678,
+    "reasoning_tokens": 594,
+    "text": "John first organized a charity tournament with his friends on **May 7, 2022**, as he mentioned in a conversation on May 8, 2022, that he had organized it the day before (session_10, 2022-05-08T00:45:30+00:00 and 2022-05-08T00:46:30+00:00).",
+    "uncached_input_tokens": 109
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001041,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 199,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 74,
+      "reasoning_tokens": 66,
+      "response_chars": 20,
+      "uncached_input_tokens": 199,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 199,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 97,
+      "reasoning_tokens": 89,
+      "response_chars": 20,
+      "uncached_input_tokens": 71,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014342,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 199,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 203,
+      "reasoning_tokens": 195,
+      "response_chars": 20,
+      "uncached_input_tokens": 71,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a82b4873e5cbf497109f",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "419d50e1090f240e01024c47b464d5cc3c0695f3cd30a661b5bec0664076c8a0",
+  "status": "completed"
+}

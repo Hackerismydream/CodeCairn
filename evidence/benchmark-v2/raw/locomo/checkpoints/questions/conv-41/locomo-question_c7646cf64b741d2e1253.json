@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014874,
+    "cost_usd": null,
+    "input_tokens": 2782,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1088,
+    "reasoning_tokens": 1014,
+    "text": "The memory context does not contain any explicit statement from John about moving to another country. His conversations show strong ties to serving his local community and his country (e.g., joining a fire brigade, running for local office, feeling drawn to national service), but there is no direct indication of his openness to relocating internationally. The context is insufficient to answer definitively.",
+    "uncached_input_tokens": 2782
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001566,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 162,
+      "reasoning_tokens": 154,
+      "response_chars": 18,
+      "uncached_input_tokens": 198,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 283,
+      "reasoning_tokens": 275,
+      "response_chars": 18,
+      "uncached_input_tokens": 70,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 296,
+      "reasoning_tokens": 288,
+      "response_chars": 18,
+      "uncached_input_tokens": 70,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c7646cf64b741d2e1253",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "77f2bb48a51658f5b1947682b4607ffb0ee64154153ac3cd93a0e58c8808c591",
+  "status": "completed"
+}

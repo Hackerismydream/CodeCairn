@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010716,
+    "cost_usd": null,
+    "input_tokens": 3094,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 239,
+    "reasoning_tokens": 205,
+    "text": "Jon is offering dance classes, workshops, and one-on-one mentoring and training to help dancers reach their full potential (mentioned on 2023-06-13).",
+    "uncached_input_tokens": 3094
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002256,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 302,
+      "reasoning_tokens": 294,
+      "response_chars": 18,
+      "uncached_input_tokens": 148,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 272,
+      "reasoning_tokens": 264,
+      "response_chars": 18,
+      "uncached_input_tokens": 20,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0033031999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 148,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 540,
+      "reasoning_tokens": 532,
+      "response_chars": 20,
+      "uncached_input_tokens": 20,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c3f2e9dab14dc69a8cf7",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "eec11bcb1446768899e847be4bdb2d3b12c0d6e4d1ad3805c0db2f9a34e81f19",
+  "status": "completed"
+}

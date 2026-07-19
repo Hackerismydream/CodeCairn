@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0019512,
+    "cost_usd": null,
+    "input_tokens": 2798,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 259,
+    "reasoning_tokens": 205,
+    "text": "According to the memory context, Gina mentioned she \"just got accepted for a fashion internship\" on May 27, 2023, at 19:18:00 UTC. The exact date of acceptance isn't specified, but it occurred shortly before that timestamp.",
+    "uncached_input_tokens": 110
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002289,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 299,
+      "reasoning_tokens": 291,
+      "response_chars": 18,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015842,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 245,
+      "reasoning_tokens": 237,
+      "response_chars": 18,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 281,
+      "reasoning_tokens": 273,
+      "response_chars": 18,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e47acf236a85fd3dd61b",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "59cbc1f1011582604944ce76b621af17259b365dc155ace9d765f52c2225c15e",
+  "status": "completed"
+}

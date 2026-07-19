@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012816,
+    "cost_usd": null,
+    "input_tokens": 2900,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 686,
+    "reasoning_tokens": 585,
+    "text": "The provided context does not contain an explicit answer to how long Tim has been playing the piano as of December 2023. The only relevant information is Tim's statement on August 21, 2023, that he had \"started learning how to play the piano,\" implying he was a beginner at that time. John later asks him in December 2023 how long he's been playing, but Tim's response is not included. Therefore, the context is insufficient to give a precise duration.",
+    "uncached_input_tokens": 2900
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001701,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 217,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 18,
+      "uncached_input_tokens": 217,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009482000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 217,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 18,
+      "uncached_input_tokens": 89,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 217,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 86,
+      "reasoning_tokens": 78,
+      "response_chars": 18,
+      "uncached_input_tokens": 89,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_57933cfb0d6fbc33f3fb",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "4e10c3cd1c7844fb3c9dd8042d6b10b985333bbac3ce67eba68024080afb54ed",
+  "status": "completed"
+}

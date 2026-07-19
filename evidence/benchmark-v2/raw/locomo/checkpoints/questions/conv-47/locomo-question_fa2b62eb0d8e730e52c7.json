@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.007869,
+    "cost_usd": null,
+    "input_tokens": 2387,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 118,
+    "reasoning_tokens": 113,
+    "text": "James supports Liverpool.",
+    "uncached_input_tokens": 2387
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001206,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 110,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 20,
+      "uncached_input_tokens": 110,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000798,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 110,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 78,
+      "reasoning_tokens": 70,
+      "response_chars": 20,
+      "uncached_input_tokens": 110,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001158,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 110,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 138,
+      "reasoning_tokens": 130,
+      "response_chars": 20,
+      "uncached_input_tokens": 110,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fa2b62eb0d8e730e52c7",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "9e2a99b580bdb1ee8ef28ab0c99ab1f40b1d597a4d0fb6273bbd8573c3138144",
+  "status": "completed"
+}

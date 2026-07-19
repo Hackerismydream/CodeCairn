@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014217,
+    "cost_usd": null,
+    "input_tokens": 2835,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 952,
+    "reasoning_tokens": 801,
+    "text": "The memory context does not contain a specific date for when Dave found the car he repaired and later shared in his blog. The earliest mention of the restoration is Calvin's comment on August 14, 2023 (2023-08-14T00:40:30+00:00) referring to the car, and Dave says on September 2, 2023 that he is \"tied up with car stuff\" and had insights on modification. The blog is first mentioned on November 2, 2023 (2023-11-02T17:49:30+00:00), when Dave says he \"recently started a blog on car mods.\" No direct statement about finding the car is provided.",
+    "uncached_input_tokens": 2835
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001725,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 269,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 153,
+      "reasoning_tokens": 145,
+      "response_chars": 18,
+      "uncached_input_tokens": 269,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0010534000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 269,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0016294,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 269,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 264,
+      "reasoning_tokens": 256,
+      "response_chars": 18,
+      "uncached_input_tokens": 13,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2835369d3a4af658860b",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "c01a170986e3adf900b76a863381248fd66c74d3caa47c2193275dfecfbd3da2",
+  "status": "completed"
+}

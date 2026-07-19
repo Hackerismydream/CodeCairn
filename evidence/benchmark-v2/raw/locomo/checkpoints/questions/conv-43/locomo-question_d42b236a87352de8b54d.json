@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008685,
+    "cost_usd": null,
+    "input_tokens": 2553,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 171,
+    "reasoning_tokens": 165,
+    "text": "Tim plays the violin.",
+    "uncached_input_tokens": 2553
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000837,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 111,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 84,
+      "reasoning_tokens": 76,
+      "response_chars": 18,
+      "uncached_input_tokens": 111,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000927,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 111,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 99,
+      "reasoning_tokens": 91,
+      "response_chars": 18,
+      "uncached_input_tokens": 111,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001245,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 111,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 18,
+      "uncached_input_tokens": 111,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d42b236a87352de8b54d",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "c4c36a5c08cb2aadc52ab097190835e365bd621c220ee7a051e6ddc80ad4fdd3",
+  "status": "completed"
+}

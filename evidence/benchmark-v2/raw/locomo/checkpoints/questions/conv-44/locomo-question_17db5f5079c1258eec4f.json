@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013248,
+    "cost_usd": null,
+    "input_tokens": 2894,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 761,
+    "reasoning_tokens": 663,
+    "text": "The provided memory context does not indicate that Andrew has moved into a new apartment for his dogs. While he mentions hoping for an apartment and a dog in April 2023, and later has a dog named Toby, there is no direct evidence of him moving to a new apartment specifically for his dogs. A reference to a \"new home\" in a later session appears to relate to a new pet adjusting, not to Andrew's own move. The context is insufficient to answer affirmatively.",
+    "uncached_input_tokens": 2894
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001179,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 94,
+      "reasoning_tokens": 86,
+      "response_chars": 20,
+      "uncached_input_tokens": 205,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016442,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 235,
+      "reasoning_tokens": 227,
+      "response_chars": 20,
+      "uncached_input_tokens": 77,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012842,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 20,
+      "uncached_input_tokens": 77,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_17db5f5079c1258eec4f",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "e350fd6b2570db11c21cf2354accdf535ab533fb7c3d3067cb4f13b149082013",
+  "status": "completed"
+}

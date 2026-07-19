@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.00271,
+    "cost_usd": null,
+    "input_tokens": 2628,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 407,
+    "reasoning_tokens": 316,
+    "text": "Based on the memory context, Tim has a strong preference for fantasy books (e.g., he mentions his “fantasy reading hobby,” a “Storm of Swords” book, and recommends magical castles). C. S. Lewis, author of fantasy like *The Chronicles of Narnia*, aligns with that interest, while John Green writes contemporary young adult fiction, not fantasy. Thus, Tim would likely enjoy reading C. S. Lewis more.",
+    "uncached_input_tokens": 68
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002343,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 287,
+      "reasoning_tokens": 279,
+      "response_chars": 20,
+      "uncached_input_tokens": 207,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 177,
+      "reasoning_tokens": 169,
+      "response_chars": 20,
+      "uncached_input_tokens": 79,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 20,
+      "uncached_input_tokens": 79,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c2228553e1f470608566",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "816806d70b45df2c97f12bbc31ae34e497290ce5f9e3005b3d76114405af012c",
+  "status": "completed"
+}

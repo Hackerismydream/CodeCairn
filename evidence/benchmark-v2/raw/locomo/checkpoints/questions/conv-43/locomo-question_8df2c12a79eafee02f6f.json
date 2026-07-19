@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010737,
+    "cost_usd": null,
+    "input_tokens": 2819,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 380,
+    "reasoning_tokens": 315,
+    "text": "John described the team bond as \"awesome\" and said it makes all the hard work worth it (2023-08-09). He later noted that the team saw the most growth in communication and bonding, which helped performances by allowing them to understand each other's strengths and weaknesses (2023-12-19).",
+    "uncached_input_tokens": 2819
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002598,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 348,
+      "reasoning_tokens": 340,
+      "response_chars": 20,
+      "uncached_input_tokens": 170,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015212000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 20,
+      "uncached_input_tokens": 42,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 170,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 258,
+      "reasoning_tokens": 250,
+      "response_chars": 20,
+      "uncached_input_tokens": 42,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8df2c12a79eafee02f6f",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "988ae5ecb2b74476e1ce1b3bde03f0948e88cc01d5c8f8fddb7a9cecd8fed30e",
+  "status": "completed"
+}

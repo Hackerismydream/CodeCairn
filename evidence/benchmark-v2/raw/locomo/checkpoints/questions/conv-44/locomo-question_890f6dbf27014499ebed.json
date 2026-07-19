@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011424,
+    "cost_usd": null,
+    "input_tokens": 2636,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 586,
+    "reasoning_tokens": 542,
+    "text": "The provided context does not specify the exact date when Andrew adopted Scout. The earliest mention of Scout is on 2023-11-22, indicating the adoption happened before then, but no specific date is given.",
+    "uncached_input_tokens": 2636
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001986,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 255,
+      "reasoning_tokens": 247,
+      "response_chars": 18,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0060092,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 989,
+      "reasoning_tokens": 981,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0031592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 514,
+      "reasoning_tokens": 506,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_890f6dbf27014499ebed",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "94c10bf727bacd2aa00f0aedbf3e60d56f764f593f4e5837235da767379c27d7",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2432,
+    "cost_cny": 0.0017888,
+    "cost_usd": null,
+    "input_tokens": 2502,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 253,
+    "reasoning_tokens": 219,
+    "text": "Jolene was in Bogota in the summer of 2022, based on her message on February 4, 2023, mentioning \"last summer.\"",
+    "uncached_input_tokens": 70
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00141,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 155,
+      "response_chars": 20,
+      "uncached_input_tokens": 144,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 84,
+      "reasoning_tokens": 76,
+      "response_chars": 20,
+      "uncached_input_tokens": 16,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011732000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 187,
+      "reasoning_tokens": 179,
+      "response_chars": 20,
+      "uncached_input_tokens": 16,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8a48ac55950dfb978c0e",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "b90af0ed2895ce999955229e039c20a7364f1633a780940911e7122cce7ae9f6",
+  "status": "completed"
+}

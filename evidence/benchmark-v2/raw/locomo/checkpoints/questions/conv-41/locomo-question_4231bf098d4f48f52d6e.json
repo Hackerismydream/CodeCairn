@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0023025999999999997,
+    "cost_usd": null,
+    "input_tokens": 3043,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 322,
+    "reasoning_tokens": 270,
+    "text": "Based on the provided memory context, Maria mentioned in session_6 that when she was younger, her family had money problems and they relied on outside help from their auntie. So, it was her auntie who gave them money during those tough times.",
+    "uncached_input_tokens": 99
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001608,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 184,
+      "reasoning_tokens": 176,
+      "response_chars": 20,
+      "uncached_input_tokens": 168,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006812000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 93,
+      "reasoning_tokens": 85,
+      "response_chars": 20,
+      "uncached_input_tokens": 40,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 168,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 20,
+      "uncached_input_tokens": 40,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4231bf098d4f48f52d6e",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "9922079352f10c79caacec76ab1cfefcbcf36bd5dc9110f9d0466727f8a6900b",
+  "status": "completed"
+}

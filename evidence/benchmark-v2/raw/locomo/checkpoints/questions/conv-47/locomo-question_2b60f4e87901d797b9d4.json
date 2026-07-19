@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009159,
+    "cost_usd": null,
+    "input_tokens": 2611,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 221,
+    "reasoning_tokens": 167,
+    "text": "The name of the pup adopted by James is **Ned**. This is confirmed in messages from James on 2022-04-12 (\"I adopted a pup ... I named it Ned\") and 2022-08-26 (\"His name's Ned\").",
+    "uncached_input_tokens": 2611
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000867,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 60,
+      "reasoning_tokens": 52,
+      "response_chars": 20,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010622000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 20,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2b60f4e87901d797b9d4",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "bbf0db3252921672dd85f8239ce427ff14b9449a23b678ab3271aab1b579e872",
+  "status": "completed"
+}

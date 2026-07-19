@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011106,
+    "cost_usd": null,
+    "input_tokens": 2548,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 577,
+    "reasoning_tokens": 553,
+    "text": "The provided memory context does not contain any information about John attending an event with his colleagues in March 2023.",
+    "uncached_input_tokens": 2548
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001305,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 18,
+      "uncached_input_tokens": 137,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009542,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 18,
+      "uncached_input_tokens": 9,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007442000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 18,
+      "uncached_input_tokens": 9,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0761d079b56601916312",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "6dbd4d903c6b8e590f35f9cc58f0b1081b93ee2a3ccf9297e0ca4d3f0e0aae98",
+  "status": "completed"
+}

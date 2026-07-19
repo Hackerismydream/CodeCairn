@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01062,
+    "cost_usd": null,
+    "input_tokens": 2674,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 433,
+    "reasoning_tokens": 412,
+    "text": "Joanna's cork board displays inspiring quotes and pictures (including family photos) for motivation and creativity.",
+    "uncached_input_tokens": 2674
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001821,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 234,
+      "reasoning_tokens": 226,
+      "response_chars": 18,
+      "uncached_input_tokens": 139,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016862000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 275,
+      "reasoning_tokens": 267,
+      "response_chars": 18,
+      "uncached_input_tokens": 11,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 139,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 255,
+      "reasoning_tokens": 247,
+      "response_chars": 18,
+      "uncached_input_tokens": 11,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1f5a9a8cffef83449632",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "ac4ff6fc832ff0e3b251ca836d5dc920defa20b16ce22de1bf5f09dd0725a5e6",
+  "status": "completed"
+}

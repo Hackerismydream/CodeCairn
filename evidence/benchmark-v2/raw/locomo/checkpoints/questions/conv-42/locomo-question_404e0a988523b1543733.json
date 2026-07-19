@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010239,
+    "cost_usd": null,
+    "input_tokens": 3031,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 191,
+    "reasoning_tokens": 164,
+    "text": "Based on the provided memory context, Joanna hopes that her writing can \"make a difference\" (2022-08-14).",
+    "uncached_input_tokens": 3031
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004536,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 684,
+      "reasoning_tokens": 676,
+      "response_chars": 20,
+      "uncached_input_tokens": 144,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011912000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 190,
+      "reasoning_tokens": 182,
+      "response_chars": 20,
+      "uncached_input_tokens": 16,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 144,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 317,
+      "reasoning_tokens": 309,
+      "response_chars": 18,
+      "uncached_input_tokens": 16,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_404e0a988523b1543733",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "417163798289863d2d2bd847b0fa4456018c368b376b699656a8a90a0032edb7",
+  "status": "completed"
+}

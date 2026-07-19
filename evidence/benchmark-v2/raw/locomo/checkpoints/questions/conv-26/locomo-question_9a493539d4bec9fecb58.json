@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015573,
+    "cost_usd": null,
+    "input_tokens": 2907,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1142,
+    "reasoning_tokens": 1043,
+    "text": "Caroline has described several changes during her transition, including: finding a supportive and accepting community (2023-08-25), experiencing personal growth since coming out (2023-06-09), gaining the courage to express herself authentically (2023-07-15), navigating shifts in friendships where some could not accept her while now enjoying more genuine relationships (2023-09-13), and feeling she has made meaningful progress on her path (2023-08-28).",
+    "uncached_input_tokens": 2907
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002613,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 217,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 327,
+      "reasoning_tokens": 319,
+      "response_chars": 18,
+      "uncached_input_tokens": 217,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 217,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 18,
+      "uncached_input_tokens": 89,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022741999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 217,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 334,
+      "reasoning_tokens": 326,
+      "response_chars": 18,
+      "uncached_input_tokens": 89,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9a493539d4bec9fecb58",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "94d1a61e373aa6827270a0c589c412478caf6d43bd23e723332ab26294adb77d",
+  "status": "completed"
+}

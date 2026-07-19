@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008631,
+    "cost_usd": null,
+    "input_tokens": 2573,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 152,
+    "reasoning_tokens": 135,
+    "text": "Deborah found it freeing to dance and bop around at the music festival.",
+    "uncached_input_tokens": 2573
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001434,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 20,
+      "uncached_input_tokens": 128,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002076,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 282,
+      "reasoning_tokens": 274,
+      "response_chars": 20,
+      "uncached_input_tokens": 128,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 128,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 203,
+      "reasoning_tokens": 195,
+      "response_chars": 20,
+      "uncached_input_tokens": 128,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_31d0010b79e5e9dc7d10",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "2572c9c0bca437fbbc738263ac9e84a9a60f4ec57d84a3f23826e54346320c2c",
+  "status": "completed"
+}

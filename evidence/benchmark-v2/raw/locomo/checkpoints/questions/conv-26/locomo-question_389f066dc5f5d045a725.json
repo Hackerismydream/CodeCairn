@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0041112,
+    "cost_usd": null,
+    "input_tokens": 2698,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 669,
+    "reasoning_tokens": 622,
+    "text": "Based on the memory context, Melanie directly asks Caroline what motivated her to pursue counseling (session_4), indicating that Caroline is already involved or interested in counseling. Therefore, counseling is a field Caroline would likely pursue in her education.",
+    "uncached_input_tokens": 10
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002337,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 310,
+      "reasoning_tokens": 299,
+      "response_chars": 22,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 278,
+      "reasoning_tokens": 270,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 200,
+      "reasoning_tokens": 192,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_389f066dc5f5d045a725",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "fb0945d873dde1351e27b47932738a6c556b8e827dee5d667082e94adf4828f3",
+  "status": "completed"
+}

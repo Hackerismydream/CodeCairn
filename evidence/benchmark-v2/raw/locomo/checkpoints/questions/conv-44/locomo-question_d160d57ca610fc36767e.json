@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009339,
+    "cost_usd": null,
+    "input_tokens": 2717,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 198,
+    "reasoning_tokens": 190,
+    "text": "Andrew finds the autumn colors beautiful.",
+    "uncached_input_tokens": 2717
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001527,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 115,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 197,
+      "reasoning_tokens": 189,
+      "response_chars": 20,
+      "uncached_input_tokens": 115,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000933,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 115,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 20,
+      "uncached_input_tokens": 115,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001323,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 115,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 155,
+      "response_chars": 20,
+      "uncached_input_tokens": 115,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d160d57ca610fc36767e",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "0d91e8914f4ed79e77a06be59d8abfd5e9656468eb56d5da137c9482791a990f",
+  "status": "completed"
+}

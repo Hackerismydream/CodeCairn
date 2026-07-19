@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010353,
+    "cost_usd": null,
+    "input_tokens": 2757,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 347,
+    "reasoning_tokens": 335,
+    "text": "Calvin was visiting Tokyo in August 2023.",
+    "uncached_input_tokens": 2757
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000924,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 94,
+      "reasoning_tokens": 86,
+      "response_chars": 18,
+      "uncached_input_tokens": 120,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000906,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 91,
+      "reasoning_tokens": 83,
+      "response_chars": 18,
+      "uncached_input_tokens": 120,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000906,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 91,
+      "reasoning_tokens": 83,
+      "response_chars": 18,
+      "uncached_input_tokens": 120,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_16d6f3aaef437229f204",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "6f3e11dad08bd385fdfee6c9f1f3a54ecfec86738c96b73d80d47ffe511bb9cc",
+  "status": "completed"
+}

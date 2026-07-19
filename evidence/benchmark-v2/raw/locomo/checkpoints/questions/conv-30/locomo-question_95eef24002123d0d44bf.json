@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011664,
+    "cost_usd": null,
+    "input_tokens": 2890,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 499,
+    "reasoning_tokens": 448,
+    "text": "Jon's dance studio offers workshops and classes to local schools and centers, hosts dance competitions to showcase local talent, and provides a place for people to express themselves through dance (memory from 2023-04-03, Jon, session_8).",
+    "uncached_input_tokens": 2890
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 445,
+      "reasoning_tokens": 437,
+      "response_chars": 18,
+      "uncached_input_tokens": 174,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020911999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 325,
+      "reasoning_tokens": 317,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 174,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 406,
+      "reasoning_tokens": 398,
+      "response_chars": 18,
+      "uncached_input_tokens": 46,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_95eef24002123d0d44bf",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "779398503bb78f66be694cabb4d9c27958cdef6d4d5533ea18ac030a66db6129",
+  "status": "completed"
+}

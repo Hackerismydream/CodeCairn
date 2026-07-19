@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011559,
+    "cost_usd": null,
+    "input_tokens": 3079,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 387,
+    "reasoning_tokens": 322,
+    "text": "According to the memory context, John mentions organizing a basketball camp for kids \"last summer\" during a conversation on 2023-12-26 (memory `94c214e33e8801debfaa`). This implies the camp took place in summer 2023, but no exact date is provided.",
+    "uncached_input_tokens": 3079
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001791,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 20,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 243,
+      "reasoning_tokens": 235,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_784264ef473161d8a97b",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "58ec6635c95bdd73c51b0c5bbaadfff7390b5a51229dbff99d071fd4ef4f80f3",
+  "status": "completed"
+}

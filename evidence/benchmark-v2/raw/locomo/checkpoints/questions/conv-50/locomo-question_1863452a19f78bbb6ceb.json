@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011151,
+    "cost_usd": null,
+    "input_tokens": 3001,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 358,
+    "reasoning_tokens": 303,
+    "text": "Calvin mentioned that the struggles people go through recently inspired him to dig deeper into his music and capture those feelings. Additionally, he stays connected to world events to incorporate unique perspectives and keep motivated. (Source: 2023-10-23, session_25)",
+    "uncached_input_tokens": 3001
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002529,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 339,
+      "reasoning_tokens": 331,
+      "response_chars": 20,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016682,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 259,
+      "reasoning_tokens": 251,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018122000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 283,
+      "reasoning_tokens": 275,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1863452a19f78bbb6ceb",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "0716d6df93830aed8eca72ff3b5df505512d423fb66e592d4f19f34f575b93ac",
+  "status": "completed"
+}

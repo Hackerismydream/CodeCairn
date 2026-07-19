@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011211,
+    "cost_usd": null,
+    "input_tokens": 2725,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 506,
+    "reasoning_tokens": 441,
+    "text": "The provided memory context does not explicitly state John’s plans after his basketball career, but it shows he has been mentoring younger players and finds it fulfilling (memory_ecdbdbfa962abaf2f034, session_14). This suggests coaching or mentoring could be a path for him post-career.",
+    "uncached_input_tokens": 2725
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001233,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 115,
+      "reasoning_tokens": 107,
+      "response_chars": 20,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 433,
+      "reasoning_tokens": 425,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020702,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 318,
+      "reasoning_tokens": 310,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_14f4b61726edfb20bd2a",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "4171c4013fd8d125f0d6b2a713fb58499a35cedffbeb4b43187dd2e18285bf97",
+  "status": "completed"
+}

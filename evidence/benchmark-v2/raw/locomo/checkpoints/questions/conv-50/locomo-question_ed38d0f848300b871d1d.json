@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010281,
+    "cost_usd": null,
+    "input_tokens": 2737,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 345,
+    "reasoning_tokens": 275,
+    "text": "The provided memory context does not contain Calvin’s direct response to Dave’s question about balancing his job and personal life. While some later messages hint at valuing personal connections (e.g., inviting an old friend to a show), there is no explicit statement from Calvin describing how he manages the balance. Therefore, the context is insufficient to answer.",
+    "uncached_input_tokens": 2737
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001833,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 214,
+      "reasoning_tokens": 206,
+      "response_chars": 18,
+      "uncached_input_tokens": 183,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 134,
+      "reasoning_tokens": 126,
+      "response_chars": 18,
+      "uncached_input_tokens": 55,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007262000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 93,
+      "reasoning_tokens": 85,
+      "response_chars": 18,
+      "uncached_input_tokens": 55,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ed38d0f848300b871d1d",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "4c10c3b75f5af27265fe483df4ce810729392fe4961c2447fb42533cea3d8971",
+  "status": "completed"
+}

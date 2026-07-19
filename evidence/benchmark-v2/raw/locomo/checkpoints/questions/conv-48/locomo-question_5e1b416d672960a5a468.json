@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01068,
+    "cost_usd": null,
+    "input_tokens": 3018,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 271,
+    "reasoning_tokens": 235,
+    "text": "The main focus of the session that stood out to Jolene was releasing expectations and judgments and savoring the present, along with appreciating the journey rather than just the finish line.",
+    "uncached_input_tokens": 3018
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004815,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 723,
+      "reasoning_tokens": 715,
+      "response_chars": 18,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 410,
+      "reasoning_tokens": 402,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0031382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 507,
+      "reasoning_tokens": 499,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5e1b416d672960a5a468",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "083fad2eb98775f46bbf1628efa4fac30d1503c4ba69b5c18de2b3365f2f4882",
+  "status": "completed"
+}

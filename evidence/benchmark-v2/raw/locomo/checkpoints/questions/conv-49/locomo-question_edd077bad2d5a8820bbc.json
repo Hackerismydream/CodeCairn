@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010512,
+    "cost_usd": null,
+    "input_tokens": 2744,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 380,
+    "reasoning_tokens": 308,
+    "text": "Based on the context, Evan states he loves painting landscapes (August 19, 2023). The only specific example of a landscape he explicitly mentions alongside that statement is a sunset over the ocean. However, the context is insufficient to definitively determine which *type* of landscape he loves painting the most, as that superlative preference is never stated.",
+    "uncached_input_tokens": 2744
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001548,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 18,
+      "uncached_input_tokens": 184,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020551999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 314,
+      "reasoning_tokens": 306,
+      "response_chars": 18,
+      "uncached_input_tokens": 56,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009572000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 131,
+      "reasoning_tokens": 123,
+      "response_chars": 18,
+      "uncached_input_tokens": 56,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_edd077bad2d5a8820bbc",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "b1d93e281f1644e75d5debcd3d38b57c18c95d0f2c8dbe34333f12e6ff229477",
+  "status": "completed"
+}

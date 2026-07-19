@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009207,
+    "cost_usd": null,
+    "input_tokens": 2739,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 165,
+    "reasoning_tokens": 151,
+    "text": "Maria says the upside-down poses make her feel free and light.",
+    "uncached_input_tokens": 2739
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001617,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 207,
+      "reasoning_tokens": 199,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001107,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 122,
+      "reasoning_tokens": 114,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000771,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 66,
+      "reasoning_tokens": 58,
+      "response_chars": 20,
+      "uncached_input_tokens": 125,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d4592053a80fb7bd2280",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "486630cf0388c0c0758e24903469cc8d1b1b37ad1d7932ea6c221637a9455d45",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010359,
+    "cost_usd": null,
+    "input_tokens": 2813,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 320,
+    "reasoning_tokens": 248,
+    "text": "Maria started volunteering at the homeless shelter about a year before August 2023, after she witnessed a family struggling on the streets. This motivated her to help, so she reached out to the shelter to ask if they needed volunteers. They said yes, and she began volunteering there. (Source: memory 10, 2023-08-03)",
+    "uncached_input_tokens": 2813
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00213,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 259,
+      "reasoning_tokens": 251,
+      "response_chars": 20,
+      "uncached_input_tokens": 192,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010652,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 145,
+      "reasoning_tokens": 137,
+      "response_chars": 20,
+      "uncached_input_tokens": 64,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 20,
+      "uncached_input_tokens": 64,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4e2db90bd4b8dd072d3f",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "a351d067468148eb14bbc0774484dbfe99a4bda1186efa351acff041ffdee745",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009936,
+    "cost_usd": null,
+    "input_tokens": 2764,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 274,
+    "reasoning_tokens": 242,
+    "text": "Maria joined a gym \"last week\" as of her message on June 16, 2023, indicating around June 9, 2023.",
+    "uncached_input_tokens": 2764
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002211,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 297,
+      "reasoning_tokens": 289,
+      "response_chars": 20,
+      "uncached_input_tokens": 143,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0059282,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 980,
+      "reasoning_tokens": 972,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 143,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 325,
+      "reasoning_tokens": 317,
+      "response_chars": 20,
+      "uncached_input_tokens": 15,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_13ae2aa0bca8f49702eb",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "9a9d6c9c5e954968d3fb53e5276815c7f54bd2cedafd56770965839d81590d7e",
+  "status": "completed"
+}

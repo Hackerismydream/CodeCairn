@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012945,
+    "cost_usd": null,
+    "input_tokens": 2951,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 682,
+    "reasoning_tokens": 621,
+    "text": "Caroline attended a council meeting for adoption (around 2023-07-14, as noted in session_8 on 2023-07-15) — an event focused on creating loving homes for children in need. No other specific events for helping children are mentioned in the provided context.",
+    "uncached_input_tokens": 2951
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001347,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 138,
+      "reasoning_tokens": 130,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020881999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 325,
+      "reasoning_tokens": 317,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020042000000000003,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 311,
+      "reasoning_tokens": 303,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d09ebf8952e4f1ca5c58",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ec8c0ada1361001f68e9e08410780f68ae11e511dcfefd0cf6eeef91877a11ab",
+  "status": "completed"
+}

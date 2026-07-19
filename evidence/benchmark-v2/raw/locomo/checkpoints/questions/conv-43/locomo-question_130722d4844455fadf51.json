@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00987,
+    "cost_usd": null,
+    "input_tokens": 2768,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 261,
+    "reasoning_tokens": 195,
+    "text": "According to the memory context, John wants to make a difference away from the court after his basketball career, such as through charity or inspiring people, because he feels basketball has given him a lot and he wants to give back. This comes from John’s statement in session_6 on 2023-08-11.",
+    "uncached_input_tokens": 2768
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001824,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 20,
+      "uncached_input_tokens": 188,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 270,
+      "reasoning_tokens": 262,
+      "response_chars": 20,
+      "uncached_input_tokens": 60,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 188,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 345,
+      "reasoning_tokens": 337,
+      "response_chars": 20,
+      "uncached_input_tokens": 60,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_130722d4844455fadf51",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "999ef6ba0377ada5c32a3ab76dc72361a0ab3b947df7fd8d7b78f03f57753044",
+  "status": "completed"
+}

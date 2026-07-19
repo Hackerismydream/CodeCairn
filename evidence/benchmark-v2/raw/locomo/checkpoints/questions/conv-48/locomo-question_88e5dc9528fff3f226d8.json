@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015582,
+    "cost_usd": null,
+    "input_tokens": 2836,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1179,
+    "reasoning_tokens": 1107,
+    "text": "Based on the provided memory context, the only community activity that Deborah and Anna are explicitly mentioned as having participated in together is a yoga class. Deborah taught yoga and bonded with Anna during that class (source: memory_17f9c369ae1c44f7dfaa). No other community activities involving both of them are evident from these records.",
+    "uncached_input_tokens": 2836
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002199,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 276,
+      "reasoning_tokens": 268,
+      "response_chars": 18,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007082000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 91,
+      "reasoning_tokens": 83,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015902,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 238,
+      "reasoning_tokens": 230,
+      "response_chars": 18,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_88e5dc9528fff3f226d8",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "fc787bc7c555f4ae30a7c2af9d81fca4296f7cc12953efdd3d4b96d992fab680",
+  "status": "completed"
+}

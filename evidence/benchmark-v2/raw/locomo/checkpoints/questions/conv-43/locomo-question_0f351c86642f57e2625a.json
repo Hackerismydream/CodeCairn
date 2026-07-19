@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012129,
+    "cost_usd": null,
+    "input_tokens": 2723,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 660,
+    "reasoning_tokens": 596,
+    "text": "The provided memory context does not specify where John was between August 11 and August 15, 2023. While Tim asks \"Where did you go?\" on August 11, no answer is recorded, and no other memory within that date range indicates a location. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2723
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001038,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 85,
+      "reasoning_tokens": 77,
+      "response_chars": 18,
+      "uncached_input_tokens": 176,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006212,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 79,
+      "reasoning_tokens": 68,
+      "response_chars": 22,
+      "uncached_input_tokens": 48,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 18,
+      "uncached_input_tokens": 48,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0f351c86642f57e2625a",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "f4fe2fa5387166fed9e5805aa1be7efc9cbb3f4feeb09b07864826c36c70f4df",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010191,
+    "cost_usd": null,
+    "input_tokens": 3017,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 190,
+    "reasoning_tokens": 137,
+    "text": "According to the memory context, Jolene mentioned that she enjoys listening to Nils Frahm and Olafur Arnalds during her yoga practice (session_11, 2023-03-28T16:07:00+00:00).",
+    "uncached_input_tokens": 3017
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001566,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 172,
+      "reasoning_tokens": 164,
+      "response_chars": 20,
+      "uncached_input_tokens": 178,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016052,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 242,
+      "reasoning_tokens": 234,
+      "response_chars": 20,
+      "uncached_input_tokens": 50,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008132,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 110,
+      "reasoning_tokens": 102,
+      "response_chars": 20,
+      "uncached_input_tokens": 50,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_64a1521750f510e6fb68",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "c6f9aa2f1f29435b4127c4757a0614240ce18833299ed5786641d05639a32bb8",
+  "status": "completed"
+}

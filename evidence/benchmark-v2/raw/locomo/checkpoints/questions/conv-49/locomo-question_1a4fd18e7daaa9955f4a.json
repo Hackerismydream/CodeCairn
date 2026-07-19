@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010425,
+    "cost_usd": null,
+    "input_tokens": 2785,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 345,
+    "reasoning_tokens": 324,
+    "text": "Evan started lifting weights one year ago, as mentioned on 2023-10-08.",
+    "uncached_input_tokens": 2785
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001221,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 140,
+      "reasoning_tokens": 132,
+      "response_chars": 20,
+      "uncached_input_tokens": 127,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001761,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 230,
+      "reasoning_tokens": 222,
+      "response_chars": 20,
+      "uncached_input_tokens": 127,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001641,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 127,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 20,
+      "uncached_input_tokens": 127,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1a4fd18e7daaa9955f4a",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "59f5f1849e8f26714d7d22e0431c3a866e644892ca6cc68974f5ca1fb53fcda5",
+  "status": "completed"
+}

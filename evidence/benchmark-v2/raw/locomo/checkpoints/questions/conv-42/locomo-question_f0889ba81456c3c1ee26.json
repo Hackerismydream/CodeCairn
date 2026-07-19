@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011664,
+    "cost_usd": null,
+    "input_tokens": 2790,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 549,
+    "reasoning_tokens": 477,
+    "text": "Joanna mentioned making a dessert with almond milk \"last Friday\" during a conversation on 2022-09-14, and she immediately followed up with a photo of a chocolate raspberry tart, describing it as her favorite dairy-free treat. The context indicates that the tart was the dessert she made on Friday, September 9, 2022.",
+    "uncached_input_tokens": 2790
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001014,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 69,
+      "response_chars": 18,
+      "uncached_input_tokens": 184,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 248,
+      "reasoning_tokens": 240,
+      "response_chars": 18,
+      "uncached_input_tokens": 56,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 184,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 224,
+      "reasoning_tokens": 216,
+      "response_chars": 18,
+      "uncached_input_tokens": 56,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f0889ba81456c3c1ee26",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "da850af6476e1e2dbd42f2ae5202847fdd344cc1e9f6217d4657e0574377a7c1",
+  "status": "completed"
+}

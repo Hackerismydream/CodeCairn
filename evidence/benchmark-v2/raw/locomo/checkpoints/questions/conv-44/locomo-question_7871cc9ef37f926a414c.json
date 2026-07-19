@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0020775999999999998,
+    "cost_usd": null,
+    "input_tokens": 3008,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 302,
+    "reasoning_tokens": 259,
+    "text": "Audrey took agility classes for her dogs (started in August 2023) and signed up for a positive reinforcement training class/workshop about bonding with her pet (mentioned in May 2023).",
+    "uncached_input_tokens": 64
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00297,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 413,
+      "reasoning_tokens": 405,
+      "response_chars": 18,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0029731999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 477,
+      "reasoning_tokens": 469,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021392,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 338,
+      "reasoning_tokens": 330,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7871cc9ef37f926a414c",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "ed64626faf24b574280187e7c4235b40aa270d9fd6859ce5992ecc5ae57e7512",
+  "status": "completed"
+}

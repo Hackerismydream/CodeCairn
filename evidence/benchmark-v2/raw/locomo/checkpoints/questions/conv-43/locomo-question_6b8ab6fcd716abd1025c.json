@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.0099,
+    "cost_usd": null,
+    "input_tokens": 2846,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 227,
+    "reasoning_tokens": 201,
+    "text": "John feels the experience is \"unreal\" — an awesome, incredible sensation, as he described it directly in a session.",
+    "uncached_input_tokens": 2846
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 530,
+      "reasoning_tokens": 522,
+      "response_chars": 18,
+      "uncached_input_tokens": 134,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015452,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 254,
+      "reasoning_tokens": 246,
+      "response_chars": 18,
+      "uncached_input_tokens": 6,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 134,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 267,
+      "reasoning_tokens": 259,
+      "response_chars": 18,
+      "uncached_input_tokens": 6,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6b8ab6fcd716abd1025c",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "91cd5fbaf5502a1048030ca29e6598e80c508f28e3ec1c7f6bf55dfb32242d74",
+  "status": "completed"
+}

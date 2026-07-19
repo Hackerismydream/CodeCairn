@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014181,
+    "cost_usd": null,
+    "input_tokens": 2791,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 968,
+    "reasoning_tokens": 887,
+    "text": "The context doesn't contain any record of an activity by John involving his kids specifically during the week before August 3, 2023. The only relevant mention near that date is a comment by Maria on August 3, 2023, praising John for teaching kids about veterans. However, the memory does not specify when that teaching occurred, so it cannot be confirmed as happening the prior week.",
+    "uncached_input_tokens": 2791
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 18,
+      "uncached_input_tokens": 202,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 209,
+      "reasoning_tokens": 201,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 204,
+      "reasoning_tokens": 196,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_740506a658b3ac1e517b",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "5741c29357924ccf1a7ecf99db7bd2a5f20438df92bcf8e29b90a053f2fe7628",
+  "status": "completed"
+}

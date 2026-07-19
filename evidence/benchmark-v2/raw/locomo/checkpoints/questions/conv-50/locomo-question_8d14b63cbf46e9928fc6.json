@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012687,
+    "cost_usd": null,
+    "input_tokens": 2935,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 647,
+    "reasoning_tokens": 580,
+    "text": "No, not all of Dave's car restoration projects go smoothly. In a conversation on 2023-05-03 (session_5), Dave described a project as \"a bit challenging,\" implying difficulties even though it was still enjoyable. Other mentions show hard work and satisfaction but no claim that every project is free of challenges.",
+    "uncached_input_tokens": 2935
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001713,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 198,
+      "reasoning_tokens": 190,
+      "response_chars": 20,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 196,
+      "reasoning_tokens": 188,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014342,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 215,
+      "reasoning_tokens": 207,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8d14b63cbf46e9928fc6",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "da12d8feb158bf1bf4016b1c3fc6ffbd4e6d69fedb2d9e7235aa84556e88a7d6",
+  "status": "completed"
+}

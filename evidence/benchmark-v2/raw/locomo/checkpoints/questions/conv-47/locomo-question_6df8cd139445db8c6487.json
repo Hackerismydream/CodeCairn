@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015156,
+    "cost_usd": null,
+    "input_tokens": 2622,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1215,
+    "reasoning_tokens": 1125,
+    "text": "The provided memory context does not contain information about John playing the drums. There is a conversation on 27 March 2022 where James mentions he is learning the drums and asks John, “Wow, looking good! How long have you been playing?” However, there is no response from John or any other evidence indicating that John plays the drums, nor how long he has been doing so. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2622
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001371,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 126,
+      "reasoning_tokens": 118,
+      "response_chars": 18,
+      "uncached_input_tokens": 205,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 18,
+      "uncached_input_tokens": 77,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007442000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 85,
+      "reasoning_tokens": 77,
+      "response_chars": 18,
+      "uncached_input_tokens": 77,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6df8cd139445db8c6487",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "e22d28f18b90a8b0f82bf9b588d17dff1feae34bcb530dfee7803b8ec915d7a3",
+  "status": "completed"
+}

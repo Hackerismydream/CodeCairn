@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009891,
+    "cost_usd": null,
+    "input_tokens": 2591,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 353,
+    "reasoning_tokens": 343,
+    "text": "Running has been great for her headspace.",
+    "uncached_input_tokens": 2591
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00144,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 118,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 20,
+      "uncached_input_tokens": 118,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 118,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 20,
+      "uncached_input_tokens": 118,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001368,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 118,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 20,
+      "uncached_input_tokens": 118,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_105056fb4e206ae40e5f",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "043d3b6fa6bcf9271f25023a60fa275f5ea5a543e783e312221eedafb62aaef3",
+  "status": "completed"
+}

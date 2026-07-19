@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009072,
+    "cost_usd": null,
+    "input_tokens": 2750,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 137,
+    "reasoning_tokens": 128,
+    "text": "Nate hosted his own cooking show.",
+    "uncached_input_tokens": 2750
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001296,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 155,
+      "reasoning_tokens": 147,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001158,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 132,
+      "reasoning_tokens": 124,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001356,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 165,
+      "reasoning_tokens": 157,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a3550746b92309719f1e",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "3f8adf394588c820b52c4dd818ccd8cab5eeac4c0967845346adcc4112a49d09",
+  "status": "completed"
+}

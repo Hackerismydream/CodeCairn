@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010692,
+    "cost_usd": null,
+    "input_tokens": 2834,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 365,
+    "reasoning_tokens": 302,
+    "text": "The provided context does not specify the location of Gina's fashion internship. It only states that the internship is a part-time position in the fashion department of an international company (timestamp: 2023-05-27T19:19:00+00:00). No city or specific place is mentioned.",
+    "uncached_input_tokens": 2834
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 281,
+      "reasoning_tokens": 273,
+      "response_chars": 20,
+      "uncached_input_tokens": 172,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0029492,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 469,
+      "reasoning_tokens": 461,
+      "response_chars": 18,
+      "uncached_input_tokens": 44,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018092,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 172,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 279,
+      "reasoning_tokens": 271,
+      "response_chars": 20,
+      "uncached_input_tokens": 44,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2be9878ac313fd0eb2bb",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "f5ffc5df8ec512524754846c752fdc2803fed8c289c852bc2e664b9e85e7dae2",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010521,
+    "cost_usd": null,
+    "input_tokens": 2985,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 261,
+    "reasoning_tokens": 215,
+    "text": "Evan described the process as painting \"with a sense of joy and freedom,\" using spontaneous strokes and bold colors to reflect a playful, liberated mood, and embracing the creative process without restraint (2023-12-26).",
+    "uncached_input_tokens": 2985
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001833,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 222,
+      "reasoning_tokens": 214,
+      "response_chars": 20,
+      "uncached_input_tokens": 167,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 278,
+      "reasoning_tokens": 270,
+      "response_chars": 20,
+      "uncached_input_tokens": 39,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 167,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 324,
+      "reasoning_tokens": 316,
+      "response_chars": 20,
+      "uncached_input_tokens": 39,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4e1c8899f0d95f1a66ce",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "512bbaaee3aa18398cabd7bfc207fed1efed625707660a4ec9387d71a0f6c912",
+  "status": "completed"
+}

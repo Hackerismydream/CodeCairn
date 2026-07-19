@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010134,
+    "cost_usd": null,
+    "input_tokens": 2964,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 207,
+    "reasoning_tokens": 158,
+    "text": "The poetry reading was a transgender poetry reading where transgender people shared their stories through poetry, providing a safe space for self-expression and celebrating identities. (2023-10-13T10:40:00+00:00, Caroline)",
+    "uncached_input_tokens": 2964
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001698,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 200,
+      "reasoning_tokens": 192,
+      "response_chars": 20,
+      "uncached_input_tokens": 166,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 344,
+      "reasoning_tokens": 336,
+      "response_chars": 20,
+      "uncached_input_tokens": 38,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016472000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 166,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 255,
+      "reasoning_tokens": 247,
+      "response_chars": 20,
+      "uncached_input_tokens": 38,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_655e6f4bd705aa69c539",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "d926a6d357f5c8479821e33fdfbafe3abdddc95b7fbaea8ab0d0402ccea1c954",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011451,
+    "cost_usd": null,
+    "input_tokens": 2759,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 529,
+    "reasoning_tokens": 468,
+    "text": "The only specific text mentioned from the poetry reading is a sign that said \"trans lives matter\" (from Caroline's image caption on 2023-10-13T10:40:00+00:00). Other references describe the posters as great and empowering but do not quote their wording.",
+    "uncached_input_tokens": 2759
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001755,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 207,
+      "reasoning_tokens": 199,
+      "response_chars": 20,
+      "uncached_input_tokens": 171,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019322,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 300,
+      "reasoning_tokens": 292,
+      "response_chars": 20,
+      "uncached_input_tokens": 43,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 171,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 445,
+      "reasoning_tokens": 437,
+      "response_chars": 18,
+      "uncached_input_tokens": 43,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_be805146a1ab76f193ae",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "cf45707292d85664844c3f62fdc887c218a76fa61d1f90add7fbd4fd976c73a5",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009765,
+    "cost_usd": null,
+    "input_tokens": 2795,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 230,
+    "reasoning_tokens": 216,
+    "text": "Gina's team performed a contemporary piece called \"Finding Freedom.\"",
+    "uncached_input_tokens": 2795
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003342,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 492,
+      "reasoning_tokens": 484,
+      "response_chars": 20,
+      "uncached_input_tokens": 130,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 190,
+      "response_chars": 24,
+      "uncached_input_tokens": 2,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0058172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 130,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 968,
+      "reasoning_tokens": 960,
+      "response_chars": 20,
+      "uncached_input_tokens": 2,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5eebfced5f927770ddb4",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "381d85f48c75bc26b7878f74d9bb94277aba4c072f0b1563cbe38deb83f1dba6",
+  "status": "completed"
+}

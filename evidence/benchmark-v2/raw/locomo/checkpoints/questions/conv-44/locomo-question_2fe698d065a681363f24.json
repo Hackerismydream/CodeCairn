@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010266,
+    "cost_usd": null,
+    "input_tokens": 3082,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 170,
+    "reasoning_tokens": 133,
+    "text": "Audrey described the dog she met at the pet store as \"so friendly and playful\" (2023-05-11T14:04:30+00:00).",
+    "uncached_input_tokens": 3082
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002754,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 384,
+      "reasoning_tokens": 376,
+      "response_chars": 20,
+      "uncached_input_tokens": 150,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011852,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 186,
+      "reasoning_tokens": 175,
+      "response_chars": 24,
+      "uncached_input_tokens": 22,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.005409199999999999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 150,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 890,
+      "reasoning_tokens": 882,
+      "response_chars": 20,
+      "uncached_input_tokens": 22,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2fe698d065a681363f24",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "e518022bfba1567a1e80e9e9634cf0e2832c4a07a1e6c84ff764485907890360",
+  "status": "completed"
+}

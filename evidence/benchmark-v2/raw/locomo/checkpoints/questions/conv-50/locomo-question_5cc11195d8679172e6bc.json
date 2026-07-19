@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012555,
+    "cost_usd": null,
+    "input_tokens": 2959,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 613,
+    "reasoning_tokens": 547,
+    "text": "The provided memory context does not contain Calvin's own plan for jumpstarting his inspiration. The only explicit mention of jumpstarting inspiration comes from Dave's advice (memory_02de3b273b29d370d96f), where he suggests immersing oneself in something one loves. No memory from Calvin states his personal approach.",
+    "uncached_input_tokens": 2959
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001587,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 18,
+      "uncached_input_tokens": 179,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 281,
+      "reasoning_tokens": 273,
+      "response_chars": 18,
+      "uncached_input_tokens": 51,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 245,
+      "reasoning_tokens": 237,
+      "response_chars": 18,
+      "uncached_input_tokens": 51,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5cc11195d8679172e6bc",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "add55bfeb5b7e999c4eb57966f909aa9e2f88090f95adb57cae7d570fb2691b6",
+  "status": "completed"
+}

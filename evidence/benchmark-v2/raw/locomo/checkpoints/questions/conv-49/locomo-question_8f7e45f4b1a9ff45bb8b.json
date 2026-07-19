@@ -1,0 +1,86 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009012,
+    "cost_usd": null,
+    "input_tokens": 2710,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 147,
+    "reasoning_tokens": 123,
+    "text": "Sam watched *The Godfather*, which he mentioned in session_24 on 2024-01-10.",
+    "uncached_input_tokens": 2710
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001563,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 192,
+      "reasoning_tokens": 184,
+      "response_chars": 20,
+      "uncached_input_tokens": 137,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 137,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 371,
+      "reasoning_tokens": 363,
+      "response_chars": 20,
+      "uncached_input_tokens": 9,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 2,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018632000000000002,
+      "cost_usd": null,
+      "failed_attempts": [
+        {
+          "attempt_index": 1,
+          "cached_input_tokens": 128,
+          "cost_cny": 0.0006062000000000001,
+          "error_type": "JSONDecodeError",
+          "input_tokens": 137,
+          "model": "deepseek-v4-pro",
+          "output_tokens": 96,
+          "reasoning_tokens": 96,
+          "response_chars": 0,
+          "uncached_input_tokens": 9
+        }
+      ],
+      "input_tokens": 274,
+      "known_cost_cny_count": 2,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 237,
+      "reasoning_tokens": 229,
+      "response_chars": 20,
+      "uncached_input_tokens": 146,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8f7e45f4b1a9ff45bb8b",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "dbf624b616754b3b1db0334c7e6665080918682de5b02f6c0bf7d6c4b0209af0",
+  "status": "completed"
+}

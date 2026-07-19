@@ -1,0 +1,86 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.0105,
+    "cost_usd": null,
+    "input_tokens": 3086,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 207,
+    "reasoning_tokens": 134,
+    "text": "The provided memory context does not include details about the individual personalities of Audrey's four dogs. The entries mention them collectively (e.g., as \"fur babies,\" \"doggies,\" \"pups\") and describe activities like park visits, vet trips, and Audrey's love for them, but there is no breakdown of each dog’s temperament or behavior.",
+    "uncached_input_tokens": 3086
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002079,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 209,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 242,
+      "reasoning_tokens": 234,
+      "response_chars": 18,
+      "uncached_input_tokens": 209,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 209,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 409,
+      "reasoning_tokens": 401,
+      "response_chars": 18,
+      "uncached_input_tokens": 81,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 2,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027632000000000004,
+      "cost_usd": null,
+      "failed_attempts": [
+        {
+          "attempt_index": 1,
+          "cached_input_tokens": 128,
+          "cost_cny": 0.0010622000000000001,
+          "error_type": "JSONDecodeError",
+          "input_tokens": 209,
+          "model": "deepseek-v4-pro",
+          "output_tokens": 136,
+          "reasoning_tokens": 136,
+          "response_chars": 0,
+          "uncached_input_tokens": 81
+        }
+      ],
+      "input_tokens": 418,
+      "known_cost_cny_count": 2,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 315,
+      "reasoning_tokens": 304,
+      "response_chars": 22,
+      "uncached_input_tokens": 290,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_737fd71d2ae3c1c37860",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "c7824d12609e50102d25846e223c0fd1b02ce5c2e21f074534a34aa46db3521a",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013992,
+    "cost_usd": null,
+    "input_tokens": 3190,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 737,
+    "reasoning_tokens": 634,
+    "text": "Evan had been through a series of tough events recently. He lost his job in the past month (as of November 2023), had a health scare requiring a hospital visit in late November, and injured his knee playing basketball in October. Earlier, his son had a soccer accident in August. These setbacks caused him significant stress. (Context from 2023-08-15, 2023-10-06, 2023-11-09, 2023-11-21.)",
+    "uncached_input_tokens": 3190
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002889,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 217,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 373,
+      "reasoning_tokens": 365,
+      "response_chars": 18,
+      "uncached_input_tokens": 217,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0030242,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 217,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 459,
+      "reasoning_tokens": 451,
+      "response_chars": 18,
+      "uncached_input_tokens": 89,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0085622,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 217,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1382,
+      "reasoning_tokens": 1374,
+      "response_chars": 20,
+      "uncached_input_tokens": 89,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2e6e0c1f9abab27b3f9f",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "6339b4b79828c1d01935e431ec2834fedf7708848045c926cb6ede89bdb97ba0",
+  "status": "completed"
+}

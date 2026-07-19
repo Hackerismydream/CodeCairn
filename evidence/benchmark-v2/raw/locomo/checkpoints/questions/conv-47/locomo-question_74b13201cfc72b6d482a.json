@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01056,
+    "cost_usd": null,
+    "input_tokens": 2492,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 514,
+    "reasoning_tokens": 503,
+    "text": "John is organizing a gaming marathon with his siblings.",
+    "uncached_input_tokens": 2492
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001935,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 264,
+      "reasoning_tokens": 256,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002427,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 346,
+      "reasoning_tokens": 338,
+      "response_chars": 18,
+      "uncached_input_tokens": 117,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003747,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 566,
+      "reasoning_tokens": 558,
+      "response_chars": 18,
+      "uncached_input_tokens": 117,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_74b13201cfc72b6d482a",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "040fcbc869de2cfb70b3247e7c5427220eceadab93c2d8aa0edffec8404c3391",
+  "status": "completed"
+}

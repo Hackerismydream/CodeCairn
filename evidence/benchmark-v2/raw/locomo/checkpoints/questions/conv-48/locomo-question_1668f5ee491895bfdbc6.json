@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010455,
+    "cost_usd": null,
+    "input_tokens": 2889,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 298,
+    "reasoning_tokens": 221,
+    "text": "Based on the provided memories, Deborah takes her cats out for a run in the park every day because exercise and nature are important to her.\n\n> \"Exercise and nature are really important to me, so I make sure to take them out for a run in the park every morning and evening.\" (2023-07-09T19:50:00+00:00)",
+    "uncached_input_tokens": 2889
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00204,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 241,
+      "reasoning_tokens": 233,
+      "response_chars": 20,
+      "uncached_input_tokens": 198,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007952,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 97,
+      "reasoning_tokens": 89,
+      "response_chars": 20,
+      "uncached_input_tokens": 70,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 20,
+      "uncached_input_tokens": 70,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1668f5ee491895bfdbc6",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "5d777c2d6d5cd93f2e2f4099c7364525d964dad88ef430eec1c1d3b2c47bf6bf",
+  "status": "completed"
+}

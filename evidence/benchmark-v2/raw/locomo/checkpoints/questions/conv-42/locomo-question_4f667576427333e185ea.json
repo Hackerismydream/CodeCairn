@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013626,
+    "cost_usd": null,
+    "input_tokens": 2840,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 851,
+    "reasoning_tokens": 772,
+    "text": "The provided memory context does not contain explicit themes from Joanna's new book. The only themes mentioned in the recalled conversations—loss, redemption, and forgiveness—appear in reference to a page from an old book she discovered, not her own writing (session_17, 2022-07-10). No other memory discusses the content or themes of her recently finished or upcoming book.",
+    "uncached_input_tokens": 2840
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002673,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 350,
+      "reasoning_tokens": 342,
+      "response_chars": 18,
+      "uncached_input_tokens": 191,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014042,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 202,
+      "reasoning_tokens": 194,
+      "response_chars": 18,
+      "uncached_input_tokens": 63,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012122,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 170,
+      "reasoning_tokens": 162,
+      "response_chars": 18,
+      "uncached_input_tokens": 63,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4f667576427333e185ea",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "4e4ec05675393de27f43ab54b5d5b4710f2a78125154b043f289613353423bb7",
+  "status": "completed"
+}

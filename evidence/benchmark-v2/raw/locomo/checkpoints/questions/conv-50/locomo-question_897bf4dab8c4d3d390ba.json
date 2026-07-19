@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013284,
+    "cost_usd": null,
+    "input_tokens": 2848,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 790,
+    "reasoning_tokens": 697,
+    "text": "The provided memory context does not contain an explicit statement from Calvin about his biggest current goal. The closest relevant moment is when Dave asks directly in session_12, “What's the biggest goal you're working towards, music-wise or something else?”, but Calvin’s reply is not included in the context. Other memories show Calvin expressing general motivation and a desire to create things that connect with and bring joy to people, but none definitively identify his biggest goal.",
+    "uncached_input_tokens": 2848
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001317,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 106,
+      "response_chars": 22,
+      "uncached_input_tokens": 205,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 127,
+      "reasoning_tokens": 119,
+      "response_chars": 18,
+      "uncached_input_tokens": 77,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017582000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 254,
+      "reasoning_tokens": 246,
+      "response_chars": 18,
+      "uncached_input_tokens": 77,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_897bf4dab8c4d3d390ba",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "3446e0c78b790ebd1906b0188a6c4380e57ac7c033cc6f5a524ddce2e8991f54",
+  "status": "completed"
+}

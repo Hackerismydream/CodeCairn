@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009906,
+    "cost_usd": null,
+    "input_tokens": 2816,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 243,
+    "reasoning_tokens": 197,
+    "text": "Sam enjoys writing in his journal and doing creative writing as a form of expression (source: memory_96cdf53d92abdb7de0df, session_11 on 2023-10-06).",
+    "uncached_input_tokens": 2816
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001965,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 249,
+      "reasoning_tokens": 241,
+      "response_chars": 20,
+      "uncached_input_tokens": 157,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0029762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 481,
+      "reasoning_tokens": 473,
+      "response_chars": 20,
+      "uncached_input_tokens": 29,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0035941999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 584,
+      "reasoning_tokens": 576,
+      "response_chars": 18,
+      "uncached_input_tokens": 29,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_54b63fc4382f659dd4b6",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "fbc5a7829e59a6909f4880f01c02087682edfdad477bcad8ee2198e0dca5a1e0",
+  "status": "completed"
+}

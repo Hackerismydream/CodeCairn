@@ -1,0 +1,11 @@
+{
+  "duration_ms": 21.34945895522833,
+  "executed_in_workspace": true,
+  "exit_code": 1,
+  "output_sha256": "19447566a3d3ffa82ab8d566a32f8fdeb2f8dc756677c42935e8feaa3a5ba9f2",
+  "passed": false,
+  "schema_version": 1,
+  "source_artifact_sha256": "fddf12ccc3db05498a55f25433f56f554c0906bdd5dbcc8e59418e8c8f9fa7d1",
+  "status": "completed",
+  "verifier_source_sha256": "1ff638268459bcaa76edcccf7e10cd6bd206a977ee501f46b76bd0fa3791c892"
+}

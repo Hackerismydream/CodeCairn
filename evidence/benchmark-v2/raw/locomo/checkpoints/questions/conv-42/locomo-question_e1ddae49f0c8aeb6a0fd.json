@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012483,
+    "cost_usd": null,
+    "input_tokens": 3141,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 510,
+    "reasoning_tokens": 426,
+    "text": "According to the provided memory context, Nate mentioned on October 6, 2022 (session_22) that he had won a very big video game tournament \"last week\" and made a lot of money from it. This implies the tournament occurred in the week before October 6, 2022, so approximately between September 26 and October 2, 2022. No exact date is given.",
+    "uncached_input_tokens": 3141
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.008355,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1294,
+      "reasoning_tokens": 1286,
+      "response_chars": 18,
+      "uncached_input_tokens": 197,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014582,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 208,
+      "reasoning_tokens": 200,
+      "response_chars": 20,
+      "uncached_input_tokens": 69,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 20,
+      "uncached_input_tokens": 69,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e1ddae49f0c8aeb6a0fd",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "2c1d6002b2162236182343ad0580e0085c2e36080a924386956c0b0dcd274a5b",
+  "status": "completed"
+}

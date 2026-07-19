@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013506,
+    "cost_usd": null,
+    "input_tokens": 3092,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 705,
+    "reasoning_tokens": 641,
+    "text": "Deborah shared a photo of two new yoga poses on June 26, 2023: **Dancer Pose (Natarajasana)** at 09:18 (with a beach photo) and **Tree Pose** at 09:24 (with a photo of three people in front of a statue).",
+    "uncached_input_tokens": 3092
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003099,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 430,
+      "reasoning_tokens": 422,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0050761999999999995,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 823,
+      "reasoning_tokens": 815,
+      "response_chars": 20,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027901999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 442,
+      "reasoning_tokens": 434,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c44d7f7aeb0bda3718d6",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "2ea2174bc3b0994fe4bcb7eced38382498733aa4547391542f49e5510babc12d",
+  "status": "completed"
+}

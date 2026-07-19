@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0021165999999999997,
+    "cost_usd": null,
+    "input_tokens": 2953,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 336,
+    "reasoning_tokens": 289,
+    "text": "Audrey mentioned on May 3, 2023, that she saw a hummingbird \"last week\" during a hike. The exact date is not specified, but it would have been sometime around late April 2023.",
+    "uncached_input_tokens": 9
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002115,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 274,
+      "reasoning_tokens": 266,
+      "response_chars": 18,
+      "uncached_input_tokens": 157,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 184,
+      "reasoning_tokens": 176,
+      "response_chars": 18,
+      "uncached_input_tokens": 29,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013622,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 212,
+      "reasoning_tokens": 204,
+      "response_chars": 18,
+      "uncached_input_tokens": 29,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_590d26ca85bd2ed59d64",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "24ffee88cc44a6a318829ae4f4227dc6973b7ff0c9722f12a1e338440dac85da",
+  "status": "completed"
+}

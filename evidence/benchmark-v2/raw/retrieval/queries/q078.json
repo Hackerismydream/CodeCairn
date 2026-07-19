@@ -1,0 +1,156 @@
+{
+  "latency_ms": 7.684,
+  "lexical_candidate_count": 1,
+  "query_id": "q078",
+  "rankings": [
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "c30f8fef98eeccc0e20f108fba5ad0913e0143c3f6537ce7f59a0651b2316487",
+      "final_score": 0.032786885246,
+      "key": "fe-unit",
+      "lexical_rank": 1,
+      "lexical_score": 3.303856372833,
+      "memory_id": "memory_f369b5f9e0287ad0d43c",
+      "rank": 1,
+      "vector_rank": 1,
+      "vector_score": 0.378818859043
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "500cf519aac1cbc0da846a374972d02757638add9850d513eddb3f92828e3172",
+      "final_score": 0.016129032258,
+      "key": "fe-errors",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_aa8a5ff5b3348d146856",
+      "rank": 2,
+      "vector_rank": 2,
+      "vector_score": 0.365681779038
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "e2c39892315aff383df72f29d8315b5aa0228770062402c920da5e0cda20380c",
+      "final_score": 0.015873015873,
+      "key": "fe-client",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_92ba54e3657adcea6b85",
+      "rank": 3,
+      "vector_rank": 3,
+      "vector_score": 0.360004926749
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "2cac99d14ce9c3c410fa2280dc4a21c7d382b05f6782ff5ede3a76b621a7c2ba",
+      "final_score": 0.015625,
+      "key": "fe-e2e",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_ba664fd532f935ae49a1",
+      "rank": 4,
+      "vector_rank": 4,
+      "vector_score": 0.356614639194
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "ae67041573f79d1bd417317fb483c50dbd55d8876ffbf45c3b44945a9207f985",
+      "final_score": 0.015384615385,
+      "key": "fe-tests",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_ceea0aa90355a54283ec",
+      "rank": 5,
+      "vector_rank": 5,
+      "vector_score": 0.354513081273
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "45fa6d819726934b4d5509be96ea124e8a1730aecab67b547ef1003b0b553b87",
+      "final_score": 0.015151515152,
+      "key": "fe-state",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_45c980c253dba6ce44e1",
+      "rank": 6,
+      "vector_rank": 6,
+      "vector_score": 0.35203767957
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "4beb18c57530a7c9f41fdd46c7661f89ebc54fe9b22350af41c40fff4c9d19d8",
+      "final_score": 0.014925373134,
+      "key": "fe-flags",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_1e8b7c30c3731d216c44",
+      "rank": 7,
+      "vector_rank": 7,
+      "vector_score": 0.351620552299
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "7e1fbd2530c843ba23adbe9ae6a3590e7112a17c8d4a5af032eca16665693d19",
+      "final_score": 0.014705882353,
+      "key": "fe-server-state",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_aaad51df8068c45eb244",
+      "rank": 8,
+      "vector_rank": 8,
+      "vector_score": 0.3469825584
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "c175aa4a2a29a8cbfb4d6509248c5b19f564a89ee21fc48d8abf62ea944da0c9",
+      "final_score": 0.014492753623,
+      "key": "fe-style",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_61c7998c43dfaf31d3cb",
+      "rank": 9,
+      "vector_rank": 9,
+      "vector_score": 0.346414917095
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "edb67943464fa686bf339d6058c3f377b9e9520700f5528230121ab54a90d8df",
+      "final_score": 0.014285714286,
+      "key": "fe-format",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_b8e75e096efa2077710d",
+      "rank": 10,
+      "vector_rank": 10,
+      "vector_score": 0.342310274265
+    }
+  ],
+  "relevant_keys": [
+    "fe-unit"
+  ],
+  "repo_key": "acme/frontend",
+  "repository_isolation_violation": false,
+  "schema_version": 1,
+  "text": "Find the Testing Library convention for components.",
+  "vector_candidate_count": 10
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010113,
+    "cost_usd": null,
+    "input_tokens": 2753,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 309,
+    "reasoning_tokens": 230,
+    "text": "Caroline is interested in pursuing counseling and mental health services focused on working with transgender people, helping them with self-acceptance and mental health support (2023-06-27T10:43:00+00:00). She also more generally wants to help those who have faced similar struggles (2023-06-27T10:42:00+00:00).",
+    "uncached_input_tokens": 2753
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002547,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 323,
+      "reasoning_tokens": 315,
+      "response_chars": 20,
+      "uncached_input_tokens": 203,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019442,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 286,
+      "reasoning_tokens": 278,
+      "response_chars": 20,
+      "uncached_input_tokens": 75,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0047642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 756,
+      "reasoning_tokens": 748,
+      "response_chars": 20,
+      "uncached_input_tokens": 75,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f123a13934cf982482a5",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "1ddfa8b916234a37087d1a3d0d68eca08723d04db4fac99bcd14150dcf743779",
+  "status": "completed"
+}

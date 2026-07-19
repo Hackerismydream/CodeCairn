@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.001699,
+    "cost_usd": null,
+    "input_tokens": 2599,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 253,
+    "reasoning_tokens": 197,
+    "text": "The provided memories indicate that Joanna has pet allergies and hasn't identified any pets that would not trigger them. She mentioned being too lazy to research alternatives, so no specific pets are known to be suitable. The context is insufficient to name any pets that wouldn't cause her discomfort.",
+    "uncached_input_tokens": 39
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001578,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 170,
+      "reasoning_tokens": 162,
+      "response_chars": 18,
+      "uncached_input_tokens": 186,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 263,
+      "reasoning_tokens": 255,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012632000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ba225293016bcc9571a7",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "ee40614f998e943d2b3aa83bea0158cf5ea97c507543a3bc4b8595cd3b241a6d",
+  "status": "completed"
+}

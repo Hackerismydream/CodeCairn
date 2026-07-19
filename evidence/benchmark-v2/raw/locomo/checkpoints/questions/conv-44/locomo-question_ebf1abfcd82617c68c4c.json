@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011553,
+    "cost_usd": null,
+    "input_tokens": 2905,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 473,
+    "reasoning_tokens": 454,
+    "text": "The provided memory context does not contain any information about how Audrey's dogs react to snow.",
+    "uncached_input_tokens": 2905
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001587,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 202,
+      "reasoning_tokens": 194,
+      "response_chars": 18,
+      "uncached_input_tokens": 125,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001251,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 18,
+      "uncached_input_tokens": 125,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001155,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 125,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 125,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ebf1abfcd82617c68c4c",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "748e1c6f8d4fd663d400c1acd6284edc03596d481c1f502355cd2666b1acc314",
+  "status": "completed"
+}

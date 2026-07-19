@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0011322,
+    "cost_usd": null,
+    "input_tokens": 2705,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 169,
+    "reasoning_tokens": 129,
+    "text": "Nate said on January 21, 2022, that he won his first video game tournament \"last week,\" placing the win around the week of January 14, 2022.",
+    "uncached_input_tokens": 17
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002253,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 297,
+      "reasoning_tokens": 289,
+      "response_chars": 20,
+      "uncached_input_tokens": 157,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 292,
+      "reasoning_tokens": 284,
+      "response_chars": 20,
+      "uncached_input_tokens": 29,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 193,
+      "response_chars": 20,
+      "uncached_input_tokens": 29,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_65945f60d51974b45624",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "99537f67478182145f8e9d2a5c4e67d82418c12c1754e312e7d68883145d69dc",
+  "status": "completed"
+}

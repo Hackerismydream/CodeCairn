@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01032,
+    "cost_usd": null,
+    "input_tokens": 2770,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 335,
+    "reasoning_tokens": 281,
+    "text": "Joanna said she was going to make the ice cream for her family \"this weekend\" on June 24, 2022, which was a Friday. Therefore, she planned to make it that weekend, on June 25–26, 2022.",
+    "uncached_input_tokens": 2770
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003237,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 453,
+      "reasoning_tokens": 445,
+      "response_chars": 20,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0040501999999999995,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 652,
+      "reasoning_tokens": 644,
+      "response_chars": 20,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018122000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 279,
+      "reasoning_tokens": 271,
+      "response_chars": 20,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ff7f6a8c2632f12edec2",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "766324832547c63d0fa0b5d5a208003cf0e788c0daf8fc55d9a2c79f0afa5b73",
+  "status": "completed"
+}

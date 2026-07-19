@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013116,
+    "cost_usd": null,
+    "input_tokens": 2744,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 814,
+    "reasoning_tokens": 740,
+    "text": "The context shows that in session_29, Nate sends Joanna pictures of \"colorful bowls of coconut milk ice cream\" that he made, and Joanna replies, \"That ice cream looks mouthwatering.\" This implies she finds his coconut milk ice cream delicious. She does not explicitly name the type, but the ice cream she is referring to is coconut milk ice cream.",
+    "uncached_input_tokens": 2744
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001992,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 237,
+      "reasoning_tokens": 229,
+      "response_chars": 20,
+      "uncached_input_tokens": 190,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 203,
+      "reasoning_tokens": 195,
+      "response_chars": 20,
+      "uncached_input_tokens": 62,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019832,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 299,
+      "reasoning_tokens": 291,
+      "response_chars": 20,
+      "uncached_input_tokens": 62,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_22731156c94d66fbc379",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "c3d776f23ef1fe51109f1b9baa072a30bf1fd61538bba51c6d972b42fb2722dd",
+  "status": "completed"
+}

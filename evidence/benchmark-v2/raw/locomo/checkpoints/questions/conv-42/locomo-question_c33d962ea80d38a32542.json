@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013494,
+    "cost_usd": null,
+    "input_tokens": 3012,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 743,
+    "reasoning_tokens": 657,
+    "text": "Joanna's second movie script was shown on the big screens on Sunday, October 23, 2022. This is based on her message from October 25, 2022, where she says \"another movie script that I contributed to was shown on the big screen last Sunday for the first time\" (memory 1). The earlier script shown was on June 4, 2022 (memory 6).",
+    "uncached_input_tokens": 3012
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001821,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 193,
+      "response_chars": 20,
+      "uncached_input_tokens": 205,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016862000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 242,
+      "reasoning_tokens": 234,
+      "response_chars": 20,
+      "uncached_input_tokens": 77,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019682000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 205,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 289,
+      "reasoning_tokens": 281,
+      "response_chars": 20,
+      "uncached_input_tokens": 77,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c33d962ea80d38a32542",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "ed89c2a1c11b0da544ddcb8953e2d40c1fb5d895d4753d0552423c07265de4b9",
+  "status": "completed"
+}

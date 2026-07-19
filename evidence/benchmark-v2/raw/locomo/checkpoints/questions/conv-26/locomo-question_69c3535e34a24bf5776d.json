@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010272,
+    "cost_usd": null,
+    "input_tokens": 2672,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 376,
+    "reasoning_tokens": 308,
+    "text": "The provided memory context does not contain any explicit statements or clear indicators about Caroline's political views. While some of her interests (e.g., celebrating differences, a rainbow-themed painting symbolizing togetherness, and wanting to help others with mental health) might hint at progressive values, there is insufficient direct evidence to reliably determine her political leaning.",
+    "uncached_input_tokens": 2672
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001239,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 120,
+      "reasoning_tokens": 112,
+      "response_chars": 18,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 102,
+      "reasoning_tokens": 94,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 150,
+      "reasoning_tokens": 142,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_69c3535e34a24bf5776d",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "7a1ae6f024b30f498bddfa4298d8a6c40e9055aab6c2c9a8f28bd0354e0c6d70",
+  "status": "completed"
+}

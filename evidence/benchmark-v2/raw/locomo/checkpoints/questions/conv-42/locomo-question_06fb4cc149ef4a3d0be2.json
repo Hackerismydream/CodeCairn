@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0027641999999999996,
+    "cost_usd": null,
+    "input_tokens": 2697,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 445,
+    "reasoning_tokens": 351,
+    "text": "The provided memory context does not contain a direct statement or timestamp indicating when Nate got purple hair. The only mention of hair dyeing is from Nate in session_7 (2022-04-15), where he says he dyed his hair \"last week,\" but no color is specified. An unrelated image caption in session_10 mentions a woman with purple hair, but this is not linked to Nate. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 9
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001989,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 18,
+      "uncached_input_tokens": 207,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007022,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 69,
+      "response_chars": 18,
+      "uncached_input_tokens": 79,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 185,
+      "reasoning_tokens": 177,
+      "response_chars": 18,
+      "uncached_input_tokens": 79,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_06fb4cc149ef4a3d0be2",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "2a63e0a8b26179246154d8b0675caba8282c6df10309592af590e058d5fc75ef",
+  "status": "completed"
+}

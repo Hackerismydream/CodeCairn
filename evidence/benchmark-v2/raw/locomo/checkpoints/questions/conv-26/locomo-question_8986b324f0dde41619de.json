@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.018567,
+    "cost_usd": null,
+    "input_tokens": 2901,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1644,
+    "reasoning_tokens": 1314,
+    "text": "Caroline participates in the LGBTQ community in several ways, as indicated by her own statements and corroborated by Melanie:\n\n- **Creating LGBTQ-themed art**: She uses her paintings to represent inclusivity, diversity, and her trans experience, pushing for acceptance (memory_9ed62a09, memory_d3d9bce1, 2023-08-14).\n- **Hosting an LGBTQ art show**: She organized an art show featuring her paintings to provide a platform for the community (memories _29a2baae, _897238d9, 2023-07-17; 2023-08-25).\n- **Giving awareness talks**: She spoke publicly about her transition journey to inspire allies and amplify trans voices (memory_17a8adef, 2023-06-09; supported by memory_e03ab079).\n- **Volunteering at an LGBTQ+ youth center**: She actively volunteers, connecting with and supporting young people (memories _b1e560cf, _af2323ff, 2023-08-28).\n- **Attending an LGBTQ parade**: Implied by Melanie’s reference to “the parade” (memory_d55bfa64, 2023-07-03, source event likely from Caroline).\n- **Pursuing LGBTQ counseling**: She attended a counseling workshop and aspires to help trans individuals with mental health (memory_9d79e823, 2023-06-27; memory_7e5ef204, 2023-07-03).\n\nThe context sufficiently captures her multifaceted engagement.",
+    "uncached_input_tokens": 2901
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.006795,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 469,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 898,
+      "reasoning_tokens": 890,
+      "response_chars": 18,
+      "uncached_input_tokens": 469,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 384,
+      "cost_cny": 0.0070326,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 469,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1128,
+      "reasoning_tokens": 1120,
+      "response_chars": 18,
+      "uncached_input_tokens": 85,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 384,
+      "cost_cny": 0.0030545999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 469,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 465,
+      "reasoning_tokens": 457,
+      "response_chars": 18,
+      "uncached_input_tokens": 85,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8986b324f0dde41619de",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "0c92003c3a94674699bd339af1a9c898da32c9819b97a6281b10d5213b58cb1b",
+  "status": "completed"
+}

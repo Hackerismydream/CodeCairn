@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010482,
+    "cost_usd": null,
+    "input_tokens": 2572,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 461,
+    "reasoning_tokens": 389,
+    "text": "John began playing professionally in late 2022 or early 2023. In a conversation on December 6, 2023, he mentioned he had been playing professionally for \"just under a year.\" Earlier, on May 21, 2023, he expressed excitement about joining the Minnesota Wolves, suggesting he had not yet started at that point.",
+    "uncached_input_tokens": 2572
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003828,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 548,
+      "reasoning_tokens": 540,
+      "response_chars": 18,
+      "uncached_input_tokens": 180,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0038732,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 619,
+      "reasoning_tokens": 611,
+      "response_chars": 18,
+      "uncached_input_tokens": 52,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028651999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 451,
+      "reasoning_tokens": 443,
+      "response_chars": 18,
+      "uncached_input_tokens": 52,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7bc01c980da7449d06f8",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "9af719d81d169713de38ca7a33b62bb5dbfca7263fdb4af8de4b5878b2cec536",
+  "status": "completed"
+}

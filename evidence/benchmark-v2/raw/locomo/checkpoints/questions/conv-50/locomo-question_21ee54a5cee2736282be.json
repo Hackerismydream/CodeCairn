@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0080144,
+    "cost_usd": null,
+    "input_tokens": 2856,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1304,
+    "reasoning_tokens": 1199,
+    "text": "Calvin's concert in Tokyo is not given an exact date in the memory context, but it can be inferred to have occurred in late May 2023. On May 16, 2023, he mentioned an upcoming performance in Tokyo that month (session_6). On May 31, 2023, he recalled touring with Frank Ocean the previous week and described the Tokyo crowd as \"insane,\" indicating the concert had already happened by then (session_7). No precise day or venue is specified.",
+    "uncached_input_tokens": 40
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003204,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 216,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 426,
+      "reasoning_tokens": 418,
+      "response_chars": 20,
+      "uncached_input_tokens": 216,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 216,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 435,
+      "reasoning_tokens": 427,
+      "response_chars": 20,
+      "uncached_input_tokens": 88,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0029251999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 216,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 443,
+      "reasoning_tokens": 435,
+      "response_chars": 20,
+      "uncached_input_tokens": 88,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_21ee54a5cee2736282be",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "6470df3cfc9b90a96d9893088f63886fc67ca90138bb8d1d1d30315aa3e41902",
+  "status": "completed"
+}

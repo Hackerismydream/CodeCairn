@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0036794,
+    "cost_usd": null,
+    "input_tokens": 2913,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 553,
+    "reasoning_tokens": 474,
+    "text": "Based on the provided memories, Maria has specifically mentioned meeting and helping the following while volunteering:\n\n- **Jean**, a resilient and optimistic woman she met while volunteering (2023-02-25).\n- An unnamed **homeless man** she talked to and connected with a local organization for housing and support (2023-02-05).\n\nNo other named individuals were mentioned in the context.",
+    "uncached_input_tokens": 97
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001794,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 200,
+      "reasoning_tokens": 192,
+      "response_chars": 18,
+      "uncached_input_tokens": 198,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 108,
+      "reasoning_tokens": 100,
+      "response_chars": 18,
+      "uncached_input_tokens": 70,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 158,
+      "reasoning_tokens": 150,
+      "response_chars": 18,
+      "uncached_input_tokens": 70,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_92fb80e7ee3d005e8997",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "5c34ec60771a587957a8cf11f5f2a2cd7f7afa30d127c68a9badaa38499a9795",
+  "status": "completed"
+}

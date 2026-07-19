@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010662,
+    "cost_usd": null,
+    "input_tokens": 2944,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 305,
+    "reasoning_tokens": 242,
+    "text": "John worked with a game developer over a weekend, mentioned on 2022-11-07 at 20:57:30 UTC (and again at 20:58:30 UTC), indicating the collaboration happened just before that date (likely the weekend of November 5–6, 2022).",
+    "uncached_input_tokens": 2944
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001596,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 176,
+      "reasoning_tokens": 168,
+      "response_chars": 20,
+      "uncached_input_tokens": 180,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016352,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 246,
+      "reasoning_tokens": 238,
+      "response_chars": 20,
+      "uncached_input_tokens": 52,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010592,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 180,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 150,
+      "reasoning_tokens": 142,
+      "response_chars": 20,
+      "uncached_input_tokens": 52,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_127b7fea523738a2558b",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "690e17e987e9f06e7233a454e3a568a8f4366acf651c23879ae4c60f241f8b4f",
+  "status": "completed"
+}

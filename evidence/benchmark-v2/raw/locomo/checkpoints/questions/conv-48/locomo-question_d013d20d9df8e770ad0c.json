@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010155,
+    "cost_usd": null,
+    "input_tokens": 2823,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 281,
+    "reasoning_tokens": 194,
+    "text": "Yes, the friend who wrote Deborah the motivational quote is no longer alive. On August 30, 2023, Deborah stated: “This was written to me by a friend who, unfortunately, will never be able to support me. I miss him here.” This statement, combined with her mention on February 22, 2023, that she had lost a friend the previous week, indicates the friend has passed away.",
+    "uncached_input_tokens": 2823
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001329,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 123,
+      "reasoning_tokens": 115,
+      "response_chars": 20,
+      "uncached_input_tokens": 197,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006722000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 69,
+      "response_chars": 20,
+      "uncached_input_tokens": 69,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0030481999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 473,
+      "reasoning_tokens": 465,
+      "response_chars": 18,
+      "uncached_input_tokens": 69,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d013d20d9df8e770ad0c",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "48dcf1559fe0fb7afbd5c0ac51925fd4ceb8267fb60763cdf33941453fbd3cb3",
+  "status": "completed"
+}

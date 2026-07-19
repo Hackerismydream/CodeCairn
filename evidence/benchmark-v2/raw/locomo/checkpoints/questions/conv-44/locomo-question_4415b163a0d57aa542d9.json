@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01203,
+    "cost_usd": null,
+    "input_tokens": 2704,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 653,
+    "reasoning_tokens": 596,
+    "text": "The provided memory context does not contain any suggestion or example of how Andrew could specifically fit birdwatching into his city schedule. The conversations mention birdwatching only as a future plan to go together with Audrey, but no advice is given on incorporating the hobby into daily city life.",
+    "uncached_input_tokens": 2704
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00198,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 237,
+      "reasoning_tokens": 229,
+      "response_chars": 18,
+      "uncached_input_tokens": 186,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011672,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 165,
+      "reasoning_tokens": 157,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 205,
+      "reasoning_tokens": 197,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4415b163a0d57aa542d9",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "29210c32868fb703742899a0a8f3b1ef6417e23b730f00f67ea98246c00f6138",
+  "status": "completed"
+}

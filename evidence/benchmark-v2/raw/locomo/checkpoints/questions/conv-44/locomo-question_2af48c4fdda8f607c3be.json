@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009327,
+    "cost_usd": null,
+    "input_tokens": 2519,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 295,
+    "reasoning_tokens": 231,
+    "text": "The context does not explicitly state what Audrey ate for dinner on October 24, 2023. At 10:15 AM that day, she commented that sushi looked phenomenal and said she knew what to get for dinner, implying she intended to have sushi. However, no later memory confirms what she actually ate.",
+    "uncached_input_tokens": 2519
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002172,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 274,
+      "reasoning_tokens": 266,
+      "response_chars": 18,
+      "uncached_input_tokens": 176,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020851999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 323,
+      "reasoning_tokens": 315,
+      "response_chars": 18,
+      "uncached_input_tokens": 48,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020252,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 176,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 313,
+      "reasoning_tokens": 305,
+      "response_chars": 18,
+      "uncached_input_tokens": 48,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2af48c4fdda8f607c3be",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "bb23b3d25c9cfb6b64b44883362e1553edcc70d803fc297a2b13d1e488524d17",
+  "status": "completed"
+}

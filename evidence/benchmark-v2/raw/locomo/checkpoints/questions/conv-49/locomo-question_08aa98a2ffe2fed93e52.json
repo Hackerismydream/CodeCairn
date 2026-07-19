@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013617,
+    "cost_usd": null,
+    "input_tokens": 2809,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 865,
+    "reasoning_tokens": 802,
+    "text": "The provided memory context does not specify a particular diet habit Sam is trying to change. While it mentions Sam is on a diet and trying to live healthier, no specific habit (like reducing soda, candy, etc.) is identified from Sam's own statements. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2809
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001989,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 244,
+      "reasoning_tokens": 236,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006182000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 79,
+      "reasoning_tokens": 71,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 83,
+      "reasoning_tokens": 75,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_08aa98a2ffe2fed93e52",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "a26962ac1c6b3d5fbda356b6ba56573cb700bca3cca4faf91132b0a7e58473cc",
+  "status": "completed"
+}

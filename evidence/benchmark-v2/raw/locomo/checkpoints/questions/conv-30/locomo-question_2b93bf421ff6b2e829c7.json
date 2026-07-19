@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0020984000000000003,
+    "cost_usd": null,
+    "input_tokens": 2830,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 331,
+    "reasoning_tokens": 292,
+    "text": "Jon and Gina both share a strong passion for dance and are entrepreneurs running their own businesses (Jon owns a dance studio, Gina runs an online fashion store). They also frequently encourage each other.",
+    "uncached_input_tokens": 14
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002475,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 335,
+      "reasoning_tokens": 327,
+      "response_chars": 18,
+      "uncached_input_tokens": 155,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 311,
+      "reasoning_tokens": 303,
+      "response_chars": 18,
+      "uncached_input_tokens": 27,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 306,
+      "reasoning_tokens": 298,
+      "response_chars": 18,
+      "uncached_input_tokens": 27,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2b93bf421ff6b2e829c7",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "9418a726dc5479adb60aae8b4f3a25a4881edc6760357eb0d75a3f479cffc23b",
+  "status": "completed"
+}

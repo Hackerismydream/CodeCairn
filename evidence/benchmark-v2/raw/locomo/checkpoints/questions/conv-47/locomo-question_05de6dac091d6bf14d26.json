@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010173,
+    "cost_usd": null,
+    "input_tokens": 2729,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 331,
+    "reasoning_tokens": 237,
+    "text": "No, they are fans of different teams. James supports Liverpool, and John supports Manchester City.  \n- On 2022-06-13T16:35:30, James said: \"no club better than Liverpool! I don't miss a single match of theirs!\"  \n- Immediately after, on 2022-06-13T16:37:00, John replied: \"As a Manchester City fan, I can't agree with you.\"",
+    "uncached_input_tokens": 2729
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002079,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 221,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 236,
+      "reasoning_tokens": 228,
+      "response_chars": 20,
+      "uncached_input_tokens": 221,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 221,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 272,
+      "reasoning_tokens": 264,
+      "response_chars": 20,
+      "uncached_input_tokens": 93,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016742,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 221,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 20,
+      "uncached_input_tokens": 93,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_05de6dac091d6bf14d26",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "7967b37c1c820ebb2cd7826112e9401be2c6ef6bb7189788566a06249f35af1f",
+  "status": "completed"
+}

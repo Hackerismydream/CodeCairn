@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.003409,
+    "cost_usd": null,
+    "input_tokens": 2609,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 533,
+    "reasoning_tokens": 357,
+    "text": "According to the provided memory context, Calvin has encountered two mishaps:\n\n- **Flood at his place**: On 2023-05-16, he told Dave that his place got flooded the week before, but he managed to save his music gear and favorite microphone ([memory_d9ab96fd426ebf7ed23b](codecairn://memory/memory_d9ab96fd426ebf7ed23b)).\n- **Car trouble**: On 2023-06-21, he referred to a mechanic who is “doing his best to get my car running again,” indicating a vehicle breakdown ([memory_767dfc7e976b3a238ab6](codecairn://memory/memory_767dfc7e976b3a238ab6)).\n\nNo other mishaps are mentioned in the available context.",
+    "uncached_input_tokens": 49
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002829,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 295,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 324,
+      "reasoning_tokens": 313,
+      "response_chars": 22,
+      "uncached_input_tokens": 295,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0028414,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 295,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 453,
+      "reasoning_tokens": 445,
+      "response_chars": 20,
+      "uncached_input_tokens": 39,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0023014,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 295,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 363,
+      "reasoning_tokens": 355,
+      "response_chars": 18,
+      "uncached_input_tokens": 39,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_eae14f18fc6e700cc99f",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "0114424ed35eb644209feb7a7f78d65497a91851de47869110b4aa6bf99c1981",
+  "status": "completed"
+}

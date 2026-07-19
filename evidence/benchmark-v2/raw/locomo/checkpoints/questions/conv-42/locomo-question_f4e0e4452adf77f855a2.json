@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009525,
+    "cost_usd": null,
+    "input_tokens": 2585,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 295,
+    "reasoning_tokens": 248,
+    "text": "According to Joanna's statement on 2022-10-21, Tilly (a stuffed animal) helps her stay focused and brings her joy (memory_4a7f76aa1917dee0821b).",
+    "uncached_input_tokens": 2585
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.005706,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 871,
+      "reasoning_tokens": 863,
+      "response_chars": 20,
+      "uncached_input_tokens": 160,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0116792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1930,
+      "reasoning_tokens": 1922,
+      "response_chars": 20,
+      "uncached_input_tokens": 32,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0036571999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 160,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 593,
+      "reasoning_tokens": 585,
+      "response_chars": 18,
+      "uncached_input_tokens": 32,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f4e0e4452adf77f855a2",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "da0009b172d3d6f25a749ba3fab6d9b4aedeb89c46bdea4ddf6f19eaf42beed1",
+  "status": "completed"
+}

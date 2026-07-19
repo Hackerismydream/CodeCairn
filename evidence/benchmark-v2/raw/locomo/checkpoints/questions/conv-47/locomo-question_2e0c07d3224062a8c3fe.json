@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00867,
+    "cost_usd": null,
+    "input_tokens": 2586,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 152,
+    "reasoning_tokens": 143,
+    "text": "James pays $10 per cooking class.",
+    "uncached_input_tokens": 2586
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001704,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 114,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 227,
+      "reasoning_tokens": 219,
+      "response_chars": 20,
+      "uncached_input_tokens": 114,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00123,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 114,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 20,
+      "uncached_input_tokens": 114,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 114,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 109,
+      "reasoning_tokens": 101,
+      "response_chars": 20,
+      "uncached_input_tokens": 114,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2e0c07d3224062a8c3fe",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "9b9a406d2a7d0015e7d6ed5d7b6a92fdb8bd3ef789191c30c116b7242a89d88f",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012249,
+    "cost_usd": null,
+    "input_tokens": 2879,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 602,
+    "reasoning_tokens": 545,
+    "text": "Joanna's scripts have been rejected at least twice, based on two distinct memories: she mentions receiving a generic rejection letter in session_14 (June 3, 2022) and experiencing \"another rejection\" in session_24 (October 21, 2022).",
+    "uncached_input_tokens": 2879
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002235,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 290,
+      "reasoning_tokens": 282,
+      "response_chars": 18,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 193,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 343,
+      "reasoning_tokens": 335,
+      "response_chars": 18,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ba816187ad1e16ed1f66",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "101a73bc6e5148c33e23a1b984d58056706600fc3d646ef4535402e1e584193f",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010935,
+    "cost_usd": null,
+    "input_tokens": 2799,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 423,
+    "reasoning_tokens": 362,
+    "text": "John's first firefighter call‑out was on the Sunday before July 31, 2023 (July 30, 2023), as he mentioned “Last Sunday we had our first call‑out” in a message timestamped 2023‑07‑31.",
+    "uncached_input_tokens": 2799
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001938,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 234,
+      "reasoning_tokens": 226,
+      "response_chars": 20,
+      "uncached_input_tokens": 178,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027992,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 441,
+      "reasoning_tokens": 433,
+      "response_chars": 18,
+      "uncached_input_tokens": 50,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024272,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 379,
+      "reasoning_tokens": 371,
+      "response_chars": 20,
+      "uncached_input_tokens": 50,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_808e5e36d4011ea6302c",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "b1033af694b64a2dae7278ce6d9c009ad7104c9e94507689f9f173f8ec8bd3a0",
+  "status": "completed"
+}

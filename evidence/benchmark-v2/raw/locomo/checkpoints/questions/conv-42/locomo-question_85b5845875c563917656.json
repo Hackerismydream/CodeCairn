@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013941,
+    "cost_usd": null,
+    "input_tokens": 2677,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 985,
+    "reasoning_tokens": 715,
+    "text": "Nate likes turtles because they are unique, low-maintenance, calming, and their slow pace offers a relaxing change from everyday stress. They bring him peace and joy, have big personalities, and he finds them cute—especially when eating fruit.\n\n- “They're unique and their slow pace is a nice change from the rush of life. They're also low-maintenance and calming.” (2022-03-18T19:01:30)\n- “Turtles really bring me joy and peace.” (2022-11-09T18:06:00)\n- “They always bring me peace in the craziness of life.” (2022-11-11T00:08:30)\n- “I'm not sure I'll ever understand why watching my turtles slowly walk around makes me so happy. But I'm very glad it does.” (2022-10-21T14:05:00)\n- “The turtles might be small, but both sure have big personalities. I really reccomend having something like these little guys for times of stress.” (2022-01-23T14:07:30)\n- “I love seeing them eat fruit - they get so hyped and it's so cute!” (2022-10-25T20:26:00)",
+    "uncached_input_tokens": 2677
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002838,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 386,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 280,
+      "reasoning_tokens": 272,
+      "response_chars": 20,
+      "uncached_input_tokens": 386,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 384,
+      "cost_cny": 0.0016656,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 386,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 275,
+      "reasoning_tokens": 267,
+      "response_chars": 20,
+      "uncached_input_tokens": 2,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 384,
+      "cost_cny": 0.0017736,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 386,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 293,
+      "reasoning_tokens": 285,
+      "response_chars": 20,
+      "uncached_input_tokens": 2,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_85b5845875c563917656",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "6430ebaa5ba6265c54b10380de0cf335edcb9a4214dae7db7f321f2137147aa1",
+  "status": "completed"
+}

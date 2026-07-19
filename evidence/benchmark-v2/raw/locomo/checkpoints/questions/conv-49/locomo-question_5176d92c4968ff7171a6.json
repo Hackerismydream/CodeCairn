@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0068594,
+    "cost_usd": null,
+    "input_tokens": 2841,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1119,
+    "reasoning_tokens": 1061,
+    "text": "Based on the memory, Evan gave the following healthy food suggestions to Sam:\n- Focus on healthy swaps and taking small steps (session_4).\n- Find little ways to make smarter choices in your diet (session_2).\n\nNo specific recipes or food items were suggested directly by Evan.",
+    "uncached_input_tokens": 25
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002103,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 247,
+      "reasoning_tokens": 239,
+      "response_chars": 18,
+      "uncached_input_tokens": 207,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015722,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 222,
+      "reasoning_tokens": 214,
+      "response_chars": 18,
+      "uncached_input_tokens": 79,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 280,
+      "reasoning_tokens": 272,
+      "response_chars": 18,
+      "uncached_input_tokens": 79,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5176d92c4968ff7171a6",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "6ff1b25896b8a2e6a98336f992da4983d21d0a5a1f3f3fc7eb3a18d30cb577e8",
+  "status": "completed"
+}

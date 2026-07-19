@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011064,
+    "cost_usd": null,
+    "input_tokens": 2880,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 404,
+    "reasoning_tokens": 333,
+    "text": "Based on the provided memory context, Melanie reacts positively to Caroline's adoption plans. In session_19, she says it's \"awesome to see how passionate you are about helping these kids\" (memory_6f966e08f9663ba678a8). No negative or dissenting opinion is recorded. Thus, Melanie supports the decision.",
+    "uncached_input_tokens": 2880
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004158,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 598,
+      "reasoning_tokens": 590,
+      "response_chars": 20,
+      "uncached_input_tokens": 190,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 305,
+      "reasoning_tokens": 297,
+      "response_chars": 20,
+      "uncached_input_tokens": 62,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028951999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 451,
+      "reasoning_tokens": 443,
+      "response_chars": 20,
+      "uncached_input_tokens": 62,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d7a2903774aa8032a9aa",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "a995e7d0bb463b90b1094f8262cb6a54f6e715be43b29fe306b23bcb49374281",
+  "status": "completed"
+}

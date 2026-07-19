@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008757,
+    "cost_usd": null,
+    "input_tokens": 2521,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 199,
+    "reasoning_tokens": 134,
+    "text": "Based on the provided memory context, Tim knows French besides German. He mentioned on 2024-01-02 that German is easier because he took French in high school (source: memory_d9da0d1844e4ec5bfa22). No other languages are attributed to him in the context.",
+    "uncached_input_tokens": 2521
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000921,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 69,
+      "reasoning_tokens": 61,
+      "response_chars": 18,
+      "uncached_input_tokens": 169,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.00042019999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 49,
+      "reasoning_tokens": 41,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005882000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 169,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 77,
+      "reasoning_tokens": 66,
+      "response_chars": 22,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d05bbedff7508e94f9b1",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "34255b29e8c67678035e7b8a5ca334927de0a93df867db4274daf26d80c9b3d2",
+  "status": "completed"
+}

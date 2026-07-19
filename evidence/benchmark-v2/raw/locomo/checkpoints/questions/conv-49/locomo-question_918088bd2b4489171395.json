@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015102,
+    "cost_usd": null,
+    "input_tokens": 2972,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1031,
+    "reasoning_tokens": 962,
+    "text": "The provided memory context does not contain any statement by Sam that directly mentions an adventurous theme in Evan's life. The theme is only explicitly expressed by Evan himself (e.g., in session_14: \"Seems like helping tourists is becoming a recurring theme in my life!\"). Thus, the context is insufficient to answer what Sam mentioned.",
+    "uncached_input_tokens": 2972
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002346,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 300,
+      "reasoning_tokens": 292,
+      "response_chars": 18,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010412,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011672,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 167,
+      "reasoning_tokens": 159,
+      "response_chars": 18,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_918088bd2b4489171395",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "699de78bec67b82c35713e074e532d84e68036ddc80925a58673e6edffc7ec0a",
+  "status": "completed"
+}

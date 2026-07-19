@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01074,
+    "cost_usd": null,
+    "input_tokens": 2898,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 341,
+    "reasoning_tokens": 288,
+    "text": "The provided memory context does not include a specific date for when John got married at a greenhouse. The only mention is a statement from John on 2023-10-02 saying they were lucky to find a greenhouse venue, but no wedding date is given.",
+    "uncached_input_tokens": 2898
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001794,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 217,
+      "reasoning_tokens": 209,
+      "response_chars": 18,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017732,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 277,
+      "reasoning_tokens": 269,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 196,
+      "reasoning_tokens": 188,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2481fa87aebd4be35b4d",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "4ba1e1c5ad9340e4746e7bc21bce12d8ca18e62b130025038f5ebd4ec4983eb7",
+  "status": "completed"
+}

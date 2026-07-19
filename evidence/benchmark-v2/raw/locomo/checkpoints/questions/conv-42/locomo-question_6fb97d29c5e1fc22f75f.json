@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010386,
+    "cost_usd": null,
+    "input_tokens": 2690,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 386,
+    "reasoning_tokens": 315,
+    "text": "Joanna uses the name \"Tilly\" to remember her dog from Michigan. In memory #1, she says, \"The name helps me remember her,\" referring to her former dog that she had to give up due to allergies. She also mentioned in memory #4 that she named a stuffed animal dog Tilly, which she keeps with her.",
+    "uncached_input_tokens": 2690
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00195,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 232,
+      "reasoning_tokens": 224,
+      "response_chars": 20,
+      "uncached_input_tokens": 186,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015632,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 231,
+      "reasoning_tokens": 223,
+      "response_chars": 20,
+      "uncached_input_tokens": 58,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 267,
+      "reasoning_tokens": 259,
+      "response_chars": 20,
+      "uncached_input_tokens": 58,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6fb97d29c5e1fc22f75f",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "298f02efd459d3f00e6567fec68a021d0283e172f5bcd8b991cbe7307e070ac3",
+  "status": "completed"
+}

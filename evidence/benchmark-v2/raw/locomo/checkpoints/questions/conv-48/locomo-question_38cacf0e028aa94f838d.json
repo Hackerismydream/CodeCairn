@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012462,
+    "cost_usd": null,
+    "input_tokens": 2790,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 682,
+    "reasoning_tokens": 619,
+    "text": "Jolene uses the Pomodoro Technique (25-minute work intervals with 5-minute breaks) and a bullet journal for task tracking and organization. Deborah recommends breaking tasks into smaller pieces, setting goals, using planners or schedulers, making a schedule with dedicated time for study and hobbies, and prioritizing effectively.",
+    "uncached_input_tokens": 2790
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003579,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 498,
+      "reasoning_tokens": 487,
+      "response_chars": 22,
+      "uncached_input_tokens": 197,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 265,
+      "reasoning_tokens": 257,
+      "response_chars": 18,
+      "uncached_input_tokens": 69,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0030061999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 466,
+      "reasoning_tokens": 458,
+      "response_chars": 18,
+      "uncached_input_tokens": 69,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_38cacf0e028aa94f838d",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "1c7c2f1b7ef185d8074663e11e98118c75bfbfd3f44782829b273dc2549eb4f7",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.001897,
+    "cost_usd": null,
+    "input_tokens": 2643,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 264,
+    "reasoning_tokens": 210,
+    "text": "Based on the memory context, John mentions considering going into policymaking because of his degree and his passion for making a positive impact. His degree might be in public policy, political science, public administration, or a related field, but the exact subject is not specified.",
+    "uncached_input_tokens": 83
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004833,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 723,
+      "reasoning_tokens": 715,
+      "response_chars": 18,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0042602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 691,
+      "reasoning_tokens": 683,
+      "response_chars": 18,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0042062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 682,
+      "reasoning_tokens": 674,
+      "response_chars": 18,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c150d637e394639a716e",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "48057b0fdf74534b7796c182d51cecdcdd7d0e3cb5394a92831465b963e7b2c6",
+  "status": "completed"
+}

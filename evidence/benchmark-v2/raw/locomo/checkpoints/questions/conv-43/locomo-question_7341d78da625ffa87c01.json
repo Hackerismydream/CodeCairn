@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010959,
+    "cost_usd": null,
+    "input_tokens": 2767,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 443,
+    "reasoning_tokens": 398,
+    "text": "Based on the provided memory context, John organized a game (likely basketball, given his interests) in early January 2024 that raised money for charity. The specific name or details of the charity event are not mentioned.",
+    "uncached_input_tokens": 2767
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002418,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 325,
+      "reasoning_tokens": 317,
+      "response_chars": 20,
+      "uncached_input_tokens": 156,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016112000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 254,
+      "reasoning_tokens": 246,
+      "response_chars": 20,
+      "uncached_input_tokens": 28,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025351999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 408,
+      "reasoning_tokens": 400,
+      "response_chars": 18,
+      "uncached_input_tokens": 28,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7341d78da625ffa87c01",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "a7addd788e7097f03d33ba8c7be2abf1d064d992cbaa42a48ae7c8c3dfa7808a",
+  "status": "completed"
+}

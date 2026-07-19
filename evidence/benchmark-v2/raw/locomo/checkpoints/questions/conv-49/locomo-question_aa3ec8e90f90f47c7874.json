@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0028906,
+    "cost_usd": null,
+    "input_tokens": 2989,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 447,
+    "reasoning_tokens": 354,
+    "text": "Based on the provided memory context, Evan would prefer a camping trip in the outdoors with his family.\n\nThe context includes a specific memory of Evan enjoying a \"rad vacay\" in Canada where he and his significant other loved exploring the outdoors through activities like hiking and biking (memory_0abb963d55f10403a690, 2023-08-13). There is no context indicating a preference for walking tours in metropolitan cities with his family.",
+    "uncached_input_tokens": 45
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001218,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 218,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 94,
+      "reasoning_tokens": 86,
+      "response_chars": 20,
+      "uncached_input_tokens": 218,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 218,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 20,
+      "uncached_input_tokens": 90,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015632,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 218,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 215,
+      "reasoning_tokens": 207,
+      "response_chars": 20,
+      "uncached_input_tokens": 90,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_aa3ec8e90f90f47c7874",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "a9697353dc16aca8ff826aa0f968ff493d0a79434714bad125694e127f0af1b4",
+  "status": "completed"
+}

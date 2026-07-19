@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.003655,
+    "cost_usd": null,
+    "input_tokens": 2575,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 591,
+    "reasoning_tokens": 505,
+    "text": "Based on the memory context, Deborah mentions two specific places that give her peace:\n\n- **Bali** – described as a gorgeous island that gave her peace and was great for yoga (2023-02-22).\n- **A yoga retreat near her mother's place** – a nature-immersed setting (depicted as a forest trail) that she found life-changing and peaceful (2023-08-24).",
+    "uncached_input_tokens": 15
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002385,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 219,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 288,
+      "reasoning_tokens": 280,
+      "response_chars": 18,
+      "uncached_input_tokens": 219,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 219,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 223,
+      "reasoning_tokens": 215,
+      "response_chars": 18,
+      "uncached_input_tokens": 91,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0039422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 219,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 611,
+      "reasoning_tokens": 603,
+      "response_chars": 18,
+      "uncached_input_tokens": 91,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_32522afc38dbf174908d",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "b5331baa216c5183cbeb14cbb01d268d1902abad0ef859e6c9335f7b64eee4c5",
+  "status": "completed"
+}

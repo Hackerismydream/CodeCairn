@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2688,
+    "cost_cny": 0.0037332,
+    "cost_usd": null,
+    "input_tokens": 2748,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 581,
+    "reasoning_tokens": 518,
+    "text": "Based on the memory context, Tim writes articles (he mentions combining his love for reading and sharing stories) and also does fantasy writing (John asks about it directly). Evidence is from Tim's own statement in session_6 about writing articles, and John's question in session_15 referencing Tim's fantasy writing.",
+    "uncached_input_tokens": 60
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003741,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 526,
+      "reasoning_tokens": 518,
+      "response_chars": 18,
+      "uncached_input_tokens": 195,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027962,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 432,
+      "reasoning_tokens": 424,
+      "response_chars": 18,
+      "uncached_input_tokens": 67,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0036122,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 568,
+      "reasoning_tokens": 560,
+      "response_chars": 18,
+      "uncached_input_tokens": 67,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7b222d88e2b48ecdc8d3",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "51945ae4de873a085b73f6b1d506b854dcd86a109f8ff0a4599e98893028066d",
+  "status": "completed"
+}

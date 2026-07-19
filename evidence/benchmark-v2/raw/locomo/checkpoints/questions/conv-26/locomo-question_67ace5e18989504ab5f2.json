@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012195,
+    "cost_usd": null,
+    "input_tokens": 2751,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 657,
+    "reasoning_tokens": 569,
+    "text": "Based on a memory from October 20, 2023, Melanie described a recent roadtrip as “insane” and “a real scary experience” because her son had an accident (source: session_18, memory_ad8c1018b4c9daebf1e5). No further context indicates whether she would go on another roadtrip soon. The available information is insufficient to confirm her intent.",
+    "uncached_input_tokens": 2751
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002328,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 287,
+      "reasoning_tokens": 279,
+      "response_chars": 18,
+      "uncached_input_tokens": 202,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017672,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 257,
+      "reasoning_tokens": 249,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013052,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 180,
+      "reasoning_tokens": 172,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_67ace5e18989504ab5f2",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "c3575c8cbd3dd01b9ebadba5b3449eef3e861bad7fd7ee712446ab1fd0123e5f",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010647,
+    "cost_usd": null,
+    "input_tokens": 2941,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 304,
+    "reasoning_tokens": 226,
+    "text": "Based on the provided memory context, flowers are important to Melanie because they bring her joy, symbolize growth and beauty, and serve as a reminder to appreciate small moments. They were also a significant part of her wedding decor and always remind her of that day (July 15, 2023 - From memory_a98dc00a6c0f7aa31e4e).",
+    "uncached_input_tokens": 2941
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003801,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 535,
+      "reasoning_tokens": 527,
+      "response_chars": 20,
+      "uncached_input_tokens": 197,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021661999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 326,
+      "reasoning_tokens": 318,
+      "response_chars": 20,
+      "uncached_input_tokens": 69,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016982,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 197,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 248,
+      "reasoning_tokens": 240,
+      "response_chars": 20,
+      "uncached_input_tokens": 69,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_15723b5cfc2a800b1b22",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "1234a20189bf91c4adcc490a22c44742d3b1000bc73a6df83e2c5bb7975ed54c",
+  "status": "completed"
+}

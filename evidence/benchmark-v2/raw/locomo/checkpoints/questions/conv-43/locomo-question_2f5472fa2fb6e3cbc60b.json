@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011202,
+    "cost_usd": null,
+    "input_tokens": 3006,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 364,
+    "reasoning_tokens": 264,
+    "text": "Based on the provided memory context:\n\n*   **Schools attended**: John specifically mentions playing basketball in middle school, high school, and then college on a scholarship before being drafted (source: memory from session_6 on 2023-08-11). The names of the schools are not provided.\n*   **Years in high school**: John states he and his teammate were together for four years in high school (source: memory from session_9 on 2023-08-26).",
+    "uncached_input_tokens": 3006
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001881,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 239,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 194,
+      "reasoning_tokens": 186,
+      "response_chars": 20,
+      "uncached_input_tokens": 239,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026102,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 239,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 379,
+      "reasoning_tokens": 371,
+      "response_chars": 20,
+      "uncached_input_tokens": 111,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 239,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 325,
+      "reasoning_tokens": 317,
+      "response_chars": 20,
+      "uncached_input_tokens": 111,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2f5472fa2fb6e3cbc60b",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "bfff5d8f23ac6cfa86662f755a4064a61bf793052d8a751cb2cde5454579fe06",
+  "status": "completed"
+}

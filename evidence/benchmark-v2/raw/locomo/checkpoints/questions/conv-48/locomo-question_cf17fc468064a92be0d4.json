@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012642,
+    "cost_usd": null,
+    "input_tokens": 2784,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 715,
+    "reasoning_tokens": 618,
+    "text": "Based on the provided memory context, Seraphim appears to be another name for Jolene’s pet snake, Susie (Deborah asks “that's Susie or Seraphim?”). When talking about Susie, Jolene says that finding her under the bed made her “feel so much love and gratitude” and that “Susie really helps when times get tough.” So, spending time with Seraphim makes Jolene feel love, gratitude, and comfort.",
+    "uncached_input_tokens": 2784
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002685,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 344,
+      "reasoning_tokens": 336,
+      "response_chars": 20,
+      "uncached_input_tokens": 207,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0039002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 610,
+      "reasoning_tokens": 602,
+      "response_chars": 20,
+      "uncached_input_tokens": 79,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0079862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 207,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1291,
+      "reasoning_tokens": 1283,
+      "response_chars": 18,
+      "uncached_input_tokens": 79,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_cf17fc468064a92be0d4",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "956ea9bf2e77cd6c9dcc4a1f960dd9270adb25a95ddb969ac848d313b33231ab",
+  "status": "completed"
+}

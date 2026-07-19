@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011463,
+    "cost_usd": null,
+    "input_tokens": 2713,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 554,
+    "reasoning_tokens": 490,
+    "text": "According to the memory context from 2022-09-14, Nate mentioned that his favorite dishes from the cooking show include coconut milk ice cream and dairy-free chocolate mousse. He specifically said, \"Coconut milk ice cream is one of my favorites... but I also love a dairy-free chocolate mousse.\"",
+    "uncached_input_tokens": 2713
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002151,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 269,
+      "reasoning_tokens": 261,
+      "response_chars": 18,
+      "uncached_input_tokens": 179,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0038942,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 623,
+      "reasoning_tokens": 615,
+      "response_chars": 18,
+      "uncached_input_tokens": 51,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0052622,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 179,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 851,
+      "reasoning_tokens": 843,
+      "response_chars": 18,
+      "uncached_input_tokens": 51,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4a5ff6594069bc12e75d",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "51063397f9fd6b8f214250729dd7f964138f74b4e1f219c06c3d15325ce24a0f",
+  "status": "completed"
+}

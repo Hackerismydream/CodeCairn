@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015096,
+    "cost_usd": null,
+    "input_tokens": 3072,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 980,
+    "reasoning_tokens": 856,
+    "text": "The provided memory context does not contain any events directly dated to December 2023 that explicitly involve Evan's partner. The memories from December (session_18 on Dec 5 and session_20 on Dec 17) relate to car trouble and a son's injury, not the partner. Later references in January 2024 (sessions 23 and 24) hint at a recent wedding and honeymoon, but those memories are timestamped outside December and do not confirm the specific December dates. Therefore, the context is insufficient to identify two significant life events occurring in December 2023 with Evan's partner.",
+    "uncached_input_tokens": 3072
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001218,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 246,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 80,
+      "reasoning_tokens": 72,
+      "response_chars": 18,
+      "uncached_input_tokens": 246,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 246,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 161,
+      "reasoning_tokens": 150,
+      "response_chars": 22,
+      "uncached_input_tokens": 118,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010712,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 246,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 18,
+      "uncached_input_tokens": 118,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9e7230863d067b51c316",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "cb47e3ab84d4d98d19a42f12ce68f96df5f50b048a29c2e0e325702c9eebfe46",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009444,
+    "cost_usd": null,
+    "input_tokens": 2690,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 229,
+    "reasoning_tokens": 197,
+    "text": "Joanna said on September 14, 2022, that her laptop crashed \"last week,\" meaning roughly the first week of September 2022.",
+    "uncached_input_tokens": 2690
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004197,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 627,
+      "reasoning_tokens": 619,
+      "response_chars": 20,
+      "uncached_input_tokens": 145,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027362,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 447,
+      "reasoning_tokens": 439,
+      "response_chars": 18,
+      "uncached_input_tokens": 17,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0050222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 145,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 828,
+      "reasoning_tokens": 820,
+      "response_chars": 18,
+      "uncached_input_tokens": 17,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_81280c521f5b1b9ffaef",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "04cea87096f6acb7559a428ef6368bc9fd72eabe0a06dd1acc429249f4af3101",
+  "status": "completed"
+}

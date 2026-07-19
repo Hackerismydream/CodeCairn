@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011697,
+    "cost_usd": null,
+    "input_tokens": 3093,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 403,
+    "reasoning_tokens": 362,
+    "text": "John helped the younger players achieve growth, improvement, and confidence, according to his statement on 2023-10-17 (memory_ecdbdbfa962abaf2f034).",
+    "uncached_input_tokens": 3093
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002316,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 310,
+      "reasoning_tokens": 302,
+      "response_chars": 18,
+      "uncached_input_tokens": 152,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 406,
+      "reasoning_tokens": 398,
+      "response_chars": 18,
+      "uncached_input_tokens": 24,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014792,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 152,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 234,
+      "reasoning_tokens": 227,
+      "response_chars": 17,
+      "uncached_input_tokens": 24,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_94337f9a69c6b66efba5",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "1eefacfe132b2ceb2cda5faa424432de113b7bc1277b05490231d187d13498b4",
+  "status": "completed"
+}

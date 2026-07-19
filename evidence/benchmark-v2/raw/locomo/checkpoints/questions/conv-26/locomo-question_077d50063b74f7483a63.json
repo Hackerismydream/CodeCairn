@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012747,
+    "cost_usd": null,
+    "input_tokens": 2983,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 633,
+    "reasoning_tokens": 507,
+    "text": "Melanie and Caroline describe their journey together as one of mutual support, motivation, and shared purpose. Melanie explicitly thanks Caroline for letting her join her journey and says they should “keep motivating and helping each other out as we journey through life,” emphasizing that together they can make a real impact. Caroline echoes this by saying they can “tackle life's challenges together” and spread love and understanding, and she tells Melanie that she is part of her effort to use her voice to create change and lift others up. Their descriptions center on facing life side by side, uplifting each other, and working toward a more inclusive world.",
+    "uncached_input_tokens": 2983
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002766,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 240,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 341,
+      "reasoning_tokens": 333,
+      "response_chars": 18,
+      "uncached_input_tokens": 240,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 240,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 393,
+      "reasoning_tokens": 385,
+      "response_chars": 18,
+      "uncached_input_tokens": 112,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 240,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 109,
+      "reasoning_tokens": 101,
+      "response_chars": 18,
+      "uncached_input_tokens": 112,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_077d50063b74f7483a63",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "2ed79e3d001c9cf5c915845dc4b881f9b39e9c8d70a0fb6e2959f37c78a884ed",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010125,
+    "cost_usd": null,
+    "input_tokens": 2813,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 281,
+    "reasoning_tokens": 238,
+    "text": "Caroline is excited about passing the adoption agency interviews, as she sees it as a big step toward her goal of having a family (Caroline, session_19, 2023-10-22).",
+    "uncached_input_tokens": 2813
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004035,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 594,
+      "reasoning_tokens": 586,
+      "response_chars": 18,
+      "uncached_input_tokens": 157,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 354,
+      "reasoning_tokens": 346,
+      "response_chars": 18,
+      "uncached_input_tokens": 29,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0043622,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 157,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 712,
+      "reasoning_tokens": 704,
+      "response_chars": 18,
+      "uncached_input_tokens": 29,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ed86e8d5df0447068844",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "9596e74d3826e94077ec0c84cff7f7ed75600501474a3b109401b6899d75907f",
+  "status": "completed"
+}

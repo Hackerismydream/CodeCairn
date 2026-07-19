@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012843,
+    "cost_usd": null,
+    "input_tokens": 2959,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 661,
+    "reasoning_tokens": 591,
+    "text": "The provided memory context contains no events dated 7 July, 2023. The most relevant entries (from 21 June 2023) show Calvin was excited to drive his car again and show it off, but there is no information about his excitement or actions on or after that specific date. The context is insufficient to answer the question.",
+    "uncached_input_tokens": 2959
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001944,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 229,
+      "reasoning_tokens": 221,
+      "response_chars": 18,
+      "uncached_input_tokens": 190,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 261,
+      "reasoning_tokens": 253,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013232,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 189,
+      "reasoning_tokens": 181,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0c1175fd934e431049ab",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "bab582082f178142e3457b9fb5f233adcb618eb4067ccd51f3a50a1aa3cfe49d",
+  "status": "completed"
+}

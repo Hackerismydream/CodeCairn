@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013782,
+    "cost_usd": null,
+    "input_tokens": 2772,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 911,
+    "reasoning_tokens": 859,
+    "text": "The provided memory context does not show Nate explicitly recommending specific things to Joanna. He offers general advice, such as finding and cherishing little things in life (sessions 8 and 13), but no concrete recommendations like products, movies, or activities.",
+    "uncached_input_tokens": 2772
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001716,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 187,
+      "reasoning_tokens": 179,
+      "response_chars": 18,
+      "uncached_input_tokens": 198,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017312,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 253,
+      "reasoning_tokens": 245,
+      "response_chars": 18,
+      "uncached_input_tokens": 70,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 198,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 220,
+      "reasoning_tokens": 212,
+      "response_chars": 18,
+      "uncached_input_tokens": 70,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5502e904fddc86d4a32e",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "d578a1ae4826b4c84499c0162781146aeccddf36ced9be42b10754eb3cfabc78",
+  "status": "completed"
+}

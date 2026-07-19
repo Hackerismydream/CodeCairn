@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00969,
+    "cost_usd": null,
+    "input_tokens": 2416,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 407,
+    "reasoning_tokens": 339,
+    "text": "Joanna is inspired by personal experiences, her own journey of self-discovery, and stories about finding courage and taking risks. She mentions these influences in sessions 4 and 26, noting that childhood stories about bravery still shape her writing today (e.g., February 25, 2022 and November 4, 2022).",
+    "uncached_input_tokens": 2416
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002658,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 206,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 340,
+      "reasoning_tokens": 332,
+      "response_chars": 18,
+      "uncached_input_tokens": 206,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021571999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 206,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 320,
+      "reasoning_tokens": 312,
+      "response_chars": 18,
+      "uncached_input_tokens": 78,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028292,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 206,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 432,
+      "reasoning_tokens": 424,
+      "response_chars": 18,
+      "uncached_input_tokens": 78,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bcb189bf7558c89c8913",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "12dd456ae7cb9cd1f290045a4dfd160b54f9f0ead65be1c7ae22c86ca4a8d142",
+  "status": "completed"
+}

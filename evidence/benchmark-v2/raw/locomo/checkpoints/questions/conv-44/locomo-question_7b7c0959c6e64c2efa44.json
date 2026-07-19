@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0042616,
+    "cost_usd": null,
+    "input_tokens": 2974,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 683,
+    "reasoning_tokens": 595,
+    "text": "Based on the provided memories, Andrew and his girlfriend have checked out:\n\n- A picnic spot (likely a park) – mentioned during a picnic in session_11 (2023-07-08).\n- A cool park outside of town – discovered on a bike ride in session_27 (2023-11-04).\n\nNo other types of places around the city are mentioned for them together. The context is insufficient for further details.",
+    "uncached_input_tokens": 30
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002427,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 291,
+      "reasoning_tokens": 283,
+      "response_chars": 18,
+      "uncached_input_tokens": 227,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023162,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 336,
+      "reasoning_tokens": 328,
+      "response_chars": 18,
+      "uncached_input_tokens": 99,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0030781999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 463,
+      "reasoning_tokens": 455,
+      "response_chars": 18,
+      "uncached_input_tokens": 99,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7b7c0959c6e64c2efa44",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "ff210bf73d8fc36159acd9116956615e32387205d360c89a84cac4f7bcc64782",
+  "status": "completed"
+}

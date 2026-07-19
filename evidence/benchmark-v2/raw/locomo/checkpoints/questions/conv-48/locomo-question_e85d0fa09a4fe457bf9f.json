@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2432,
+    "cost_cny": 0.0015668,
+    "cost_usd": null,
+    "input_tokens": 2544,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 195,
+    "reasoning_tokens": 181,
+    "text": "The provided memory context does not mention Deborah's mother's hobbies.",
+    "uncached_input_tokens": 112
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000954,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 97,
+      "reasoning_tokens": 89,
+      "response_chars": 18,
+      "uncached_input_tokens": 124,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001074,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 109,
+      "response_chars": 18,
+      "uncached_input_tokens": 124,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001152,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 18,
+      "uncached_input_tokens": 124,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e85d0fa09a4fe457bf9f",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "dd630817e6444568e1613d688f5cf2aef2fa55d40befd641a00b89d61695d98e",
+  "status": "completed"
+}

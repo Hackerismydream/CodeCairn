@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0063284,
+    "cost_usd": null,
+    "input_tokens": 2876,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1013,
+    "reasoning_tokens": 891,
+    "text": "Based on the memory context, Tim has read books from the following authors:\n\n- **Patrick Rothfuss** (explicitly mentioned in session_5: \"It's a book by Patrick Rothfuss\")\n- **J.K. Rowling** (via Harry Potter references and images of Harry Potter books in sessions_3, _11, _27)\n- **J.R.R. Tolkien** (via LOTR reference in session_27)\n- **George R.R. Martin** (via image caption of \"a book with a picture of a storm of swords\" in session_17)",
+    "uncached_input_tokens": 60
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001467,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 259,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 115,
+      "reasoning_tokens": 107,
+      "response_chars": 18,
+      "uncached_input_tokens": 259,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0012034,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 259,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 198,
+      "reasoning_tokens": 190,
+      "response_chars": 18,
+      "uncached_input_tokens": 3,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0007294,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 259,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 18,
+      "uncached_input_tokens": 3,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_60666e6b560b90d329bb",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "51fc3113468b762078395db16f571e2caf1814395dcf30b35547c018412a0239",
+  "status": "completed"
+}

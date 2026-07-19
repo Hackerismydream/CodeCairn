@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010338,
+    "cost_usd": null,
+    "input_tokens": 2796,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 325,
+    "reasoning_tokens": 266,
+    "text": "John overcame his ankle injury by taking time off, undergoing physical therapy, staying focused on his recovery, and working hard to strengthen his body. He noted that the process taught him patience and perseverance. (Based on his own account from session_19 on 2023-11-21.)",
+    "uncached_input_tokens": 2796
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 308,
+      "reasoning_tokens": 300,
+      "response_chars": 20,
+      "uncached_input_tokens": 178,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022892,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 356,
+      "reasoning_tokens": 348,
+      "response_chars": 20,
+      "uncached_input_tokens": 50,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 167,
+      "reasoning_tokens": 159,
+      "response_chars": 20,
+      "uncached_input_tokens": 50,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0ca15e2183f4e1029c69",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "1f96151f43f58feb45692c262ef4a43881e1cbf8dcc6fef03a5d9497be83864b",
+  "status": "completed"
+}

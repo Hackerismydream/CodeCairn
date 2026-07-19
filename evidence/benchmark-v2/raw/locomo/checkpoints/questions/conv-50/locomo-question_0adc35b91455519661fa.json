@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3072,
+    "cost_cny": 0.0022968000000000003,
+    "cost_usd": null,
+    "input_tokens": 3190,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 311,
+    "reasoning_tokens": 250,
+    "text": "The mishap likely occurred around early to mid May 2023. On May 16, 2023 (session_6), Calvin mentioned that his place got flooded \"last week,\" but he managed to save his music gear and favorite microphone. No precise date is given beyond that relative timeframe.",
+    "uncached_input_tokens": 118
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002235,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 281,
+      "reasoning_tokens": 273,
+      "response_chars": 20,
+      "uncached_input_tokens": 183,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027901999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 437,
+      "reasoning_tokens": 429,
+      "response_chars": 20,
+      "uncached_input_tokens": 55,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015842,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 236,
+      "reasoning_tokens": 228,
+      "response_chars": 20,
+      "uncached_input_tokens": 55,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0adc35b91455519661fa",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "42621ff1067db0eb197356fb088c28915287f3bfe66ac0eb21b573f444762f8d",
+  "status": "completed"
+}

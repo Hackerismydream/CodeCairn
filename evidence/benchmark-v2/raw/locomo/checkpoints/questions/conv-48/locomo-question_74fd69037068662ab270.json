@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012261,
+    "cost_usd": null,
+    "input_tokens": 2909,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 589,
+    "reasoning_tokens": 515,
+    "text": "The provided memory context does not contain any information about Jolene and Anna discussing anything while watching the sunset by the sea. The only related memory is from Deborah, who said she and Anna watched the sunset and talked about each other, realizing they inspire each other (2023-03-22). There is no record of Jolene and Anna having such a conversation.",
+    "uncached_input_tokens": 2909
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 327,
+      "reasoning_tokens": 319,
+      "response_chars": 18,
+      "uncached_input_tokens": 190,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020491999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 310,
+      "reasoning_tokens": 302,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 181,
+      "reasoning_tokens": 173,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_74fd69037068662ab270",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "3593cf62a879d6e9b6709f25285469a5edd4bf71451fa60eea2b2a4277d2d1f1",
+  "status": "completed"
+}

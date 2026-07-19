@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013044,
+    "cost_usd": null,
+    "input_tokens": 2716,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 816,
+    "reasoning_tokens": 762,
+    "text": "Besides studying, Jolene has been focusing on her relationship with her partner, taking little trips to the beach (session_24, 2023-09-03), and reading a self-discovery book (session_29, 2023-09-17).",
+    "uncached_input_tokens": 2716
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002721,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 371,
+      "reasoning_tokens": 363,
+      "response_chars": 20,
+      "uncached_input_tokens": 165,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025382,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 404,
+      "reasoning_tokens": 396,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0033361999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 165,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 537,
+      "reasoning_tokens": 529,
+      "response_chars": 20,
+      "uncached_input_tokens": 37,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_c17fa90e8b8a8a9a50f9",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "cbd0e565e28c14e54875172ca0310281c919e318f932e2ac53cfcb3924cd4069",
+  "status": "completed"
+}

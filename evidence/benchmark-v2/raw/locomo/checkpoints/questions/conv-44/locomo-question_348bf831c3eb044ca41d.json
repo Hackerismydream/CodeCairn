@@ -1,0 +1,86 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01032,
+    "cost_usd": null,
+    "input_tokens": 2910,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 265,
+    "reasoning_tokens": 233,
+    "text": "In November 2023, Audrey joined a dog owners group to learn how to better take care of her dogs. (2023-11-04)",
+    "uncached_input_tokens": 2910
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001335,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 20,
+      "uncached_input_tokens": 149,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 2,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026552,
+      "cost_usd": null,
+      "failed_attempts": [
+        {
+          "attempt_index": 1,
+          "cached_input_tokens": 128,
+          "cost_cny": 0.0009662000000000001,
+          "error_type": "JSONDecodeError",
+          "input_tokens": 149,
+          "model": "deepseek-v4-pro",
+          "output_tokens": 150,
+          "reasoning_tokens": 150,
+          "response_chars": 0,
+          "uncached_input_tokens": 21
+        }
+      ],
+      "input_tokens": 298,
+      "known_cost_cny_count": 2,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 357,
+      "reasoning_tokens": 349,
+      "response_chars": 20,
+      "uncached_input_tokens": 170,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010442000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 163,
+      "reasoning_tokens": 155,
+      "response_chars": 20,
+      "uncached_input_tokens": 21,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_348bf831c3eb044ca41d",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "3732bfc5f94994dc3fc7010d0ac54b1fa937d256edc36eafb041d592f92928bb",
+  "status": "completed"
+}

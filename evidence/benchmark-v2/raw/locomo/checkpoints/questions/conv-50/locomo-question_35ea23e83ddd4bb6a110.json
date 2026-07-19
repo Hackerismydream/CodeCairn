@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00996,
+    "cost_usd": null,
+    "input_tokens": 3034,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 143,
+    "reasoning_tokens": 134,
+    "text": "In the studio at Calvin's mansion.",
+    "uncached_input_tokens": 3034
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000894,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 88,
+      "reasoning_tokens": 80,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000822,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 76,
+      "reasoning_tokens": 68,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001362,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_35ea23e83ddd4bb6a110",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "d56c0e6569d4b426edcdc8c3736e02479fe5c90ad5bfdbb154f125c9967206b3",
+  "status": "completed"
+}

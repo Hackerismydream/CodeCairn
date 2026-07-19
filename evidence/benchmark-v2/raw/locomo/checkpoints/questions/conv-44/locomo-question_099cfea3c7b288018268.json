@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011157,
+    "cost_usd": null,
+    "input_tokens": 2837,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 441,
+    "reasoning_tokens": 409,
+    "text": "Audrey's dogs love socializing with other pups and getting lots of exercise in the dog park, as stated on 2023-10-13.",
+    "uncached_input_tokens": 2837
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002751,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 381,
+      "reasoning_tokens": 373,
+      "response_chars": 18,
+      "uncached_input_tokens": 155,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0031501999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 511,
+      "reasoning_tokens": 503,
+      "response_chars": 18,
+      "uncached_input_tokens": 27,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023521999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 155,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 378,
+      "reasoning_tokens": 370,
+      "response_chars": 18,
+      "uncached_input_tokens": 27,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_099cfea3c7b288018268",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "4646f7f0b20765fbe4fa24078692c73ee98b0fd87eb00c0f08882e85cd2dd820",
+  "status": "completed"
+}

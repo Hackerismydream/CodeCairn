@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011868,
+    "cost_usd": null,
+    "input_tokens": 2942,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 507,
+    "reasoning_tokens": 428,
+    "text": "The provided memory context does not explicitly state where Dave was during the last two weeks of August 2023. The closest timestamped evidence shows he attended a car workshop in San Francisco on August 14, 2023, and mentioned a card night with friends on August 22, 2023 (without specifying a location). Therefore, there is insufficient information to answer the question precisely.",
+    "uncached_input_tokens": 2942
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003528,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 493,
+      "reasoning_tokens": 485,
+      "response_chars": 18,
+      "uncached_input_tokens": 190,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010352,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 141,
+      "reasoning_tokens": 133,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010112,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_265e205a1233077a9375",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "50f70f01b961473d7308bfe0ab7b559a8710ea7d4410645450c1af6c392053e3",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010539,
+    "cost_usd": null,
+    "input_tokens": 2589,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 462,
+    "reasoning_tokens": 386,
+    "text": "The provided memory context does not contain any picture shared by Jolene that is directly related to feeling overwhelmed. The only mention of \"overwhelming\" is in session_10, where she says, \"It can often feel overwhelming and difficult to figure out where to start,\" but no image is attached to that message. The context is therefore insufficient to answer the question.",
+    "uncached_input_tokens": 2589
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001635,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 18,
+      "uncached_input_tokens": 195,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007622000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 93,
+      "reasoning_tokens": 82,
+      "response_chars": 22,
+      "uncached_input_tokens": 67,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020521999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 308,
+      "reasoning_tokens": 297,
+      "response_chars": 22,
+      "uncached_input_tokens": 67,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3369df9e44d7ff96154f",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "d51e02f02a5e2e7eb2442ec534a64b0eeb24eb9c5e0e7156a70c678460a12e99",
+  "status": "completed"
+}

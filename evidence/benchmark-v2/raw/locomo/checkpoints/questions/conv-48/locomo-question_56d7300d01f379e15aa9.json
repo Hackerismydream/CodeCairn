@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.003067,
+    "cost_usd": null,
+    "input_tokens": 2673,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 444,
+    "reasoning_tokens": 380,
+    "text": "The provided memory context does not specify an exact date. It only indicates that Deborah's mother passed away sometime before January 23, 2023, with Deborah describing it as \"a few years ago\" and mentioning she took in her mother's cat \"when my mother passed away.\" No precise date is given.",
+    "uncached_input_tokens": 113
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002547,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 337,
+      "reasoning_tokens": 329,
+      "response_chars": 20,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021241999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 330,
+      "reasoning_tokens": 322,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 197,
+      "reasoning_tokens": 189,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_56d7300d01f379e15aa9",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "0d40d5aace4ff426e034543a4fe7577ba32129eb212ce57e1f31bb9c72877ca8",
+  "status": "completed"
+}

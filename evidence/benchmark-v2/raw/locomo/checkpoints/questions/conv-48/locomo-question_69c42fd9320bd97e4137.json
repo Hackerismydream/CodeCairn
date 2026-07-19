@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011121,
+    "cost_usd": null,
+    "input_tokens": 2861,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 423,
+    "reasoning_tokens": 340,
+    "text": "Yes, Jolene taught herself how to play the console. She explicitly stated, \"I taught myself\" in session_24 (2023-09-03T14:17:30+00:00), and also mentioned in session_2 (2023-01-27T10:02:30+00:00) that \"Even as a child I learned to play on my own.\"",
+    "uncached_input_tokens": 2861
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001572,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 192,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 243,
+      "reasoning_tokens": 235,
+      "response_chars": 20,
+      "uncached_input_tokens": 64,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006992000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 192,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 84,
+      "reasoning_tokens": 76,
+      "response_chars": 20,
+      "uncached_input_tokens": 64,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_69c42fd9320bd97e4137",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "2b193f84d9ca8b34435307f54b506771bdc16a6b78a55b500e9b4784a867d5b0",
+  "status": "completed"
+}

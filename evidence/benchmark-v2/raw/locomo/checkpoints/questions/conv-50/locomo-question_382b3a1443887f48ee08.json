@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0026504000000000002,
+    "cost_usd": null,
+    "input_tokens": 2914,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 381,
+    "reasoning_tokens": 275,
+    "text": "Yes, Calvin wants to expand his brand. He explicitly stated in August 2023 that his plan is to \"expand my brand worldwide and grow my fanbase\" (session_12), and in September 2023 he mentioned he is \"off to explore and grow my brand\" (session_18). Earlier, in March 2023, he expressed excitement to \"get a chance to expand\" (session_1), and in May 2023 he hoped to \"expand my following\" (session_6).",
+    "uncached_input_tokens": 98
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001659,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 211,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 171,
+      "reasoning_tokens": 163,
+      "response_chars": 20,
+      "uncached_input_tokens": 211,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010202,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 211,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 20,
+      "uncached_input_tokens": 83,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 211,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 20,
+      "uncached_input_tokens": 83,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_382b3a1443887f48ee08",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "30d85914358d45cbe185207fcf9bcda6bb70c34d3306f29b7c40fcdeb36dc497",
+  "status": "completed"
+}

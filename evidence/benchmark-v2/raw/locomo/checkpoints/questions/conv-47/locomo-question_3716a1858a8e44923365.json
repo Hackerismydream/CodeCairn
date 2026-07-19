@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013044,
+    "cost_usd": null,
+    "input_tokens": 2478,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 935,
+    "reasoning_tokens": 855,
+    "text": "Based on the provided memory context, James planned to visit Canada in July 2022. On 2022-07-09, he mentioned plans to visit Vancouver, and John referenced James visiting Toronto as his \"fourth country.\" James also planned to return on July 20. No other countries in July 2022 are mentioned, and there is no explicit confirmation that the trip occurred.",
+    "uncached_input_tokens": 2478
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001464,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 18,
+      "uncached_input_tokens": 190,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 144,
+      "reasoning_tokens": 136,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3716a1858a8e44923365",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "ecfb9046edbd2beb1806a9fe0fb53f9a0ada3a71a89210b68214b911412ac284",
+  "status": "completed"
+}

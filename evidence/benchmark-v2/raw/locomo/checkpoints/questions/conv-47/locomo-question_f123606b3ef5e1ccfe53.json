@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00903,
+    "cost_usd": null,
+    "input_tokens": 2768,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 121,
+    "reasoning_tokens": 109,
+    "text": "James used to play the guitar when he was younger.",
+    "uncached_input_tokens": 2768
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000852,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 81,
+      "reasoning_tokens": 73,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001134,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 128,
+      "reasoning_tokens": 120,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000924,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 122,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 93,
+      "reasoning_tokens": 85,
+      "response_chars": 20,
+      "uncached_input_tokens": 122,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f123606b3ef5e1ccfe53",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "759bd3070d5b00424296127cf6e2b588aeaa33051d3fcbd51f63f3cd2c5c1a3a",
+  "status": "completed"
+}

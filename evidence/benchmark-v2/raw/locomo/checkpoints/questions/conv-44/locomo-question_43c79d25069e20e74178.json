@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012807,
+    "cost_usd": null,
+    "input_tokens": 3127,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 571,
+    "reasoning_tokens": 469,
+    "text": "Based on the memory context, Andrew’s expressed love for nature and animals suggests potential careers like a park ranger, wildlife rehabilitator, animal shelter caretaker, or outdoor adventure guide focusing on dogs. Memories show he finds inspiration in nature (#2 2023-10-13), enjoys hiking and escaping the city (#3 2023-09-06), and felt rewarded volunteering at a pet shelter (#6 2023-07-27). These interests directly align with those career paths.",
+    "uncached_input_tokens": 3127
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003411,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 455,
+      "reasoning_tokens": 447,
+      "response_chars": 20,
+      "uncached_input_tokens": 227,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012242,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 20,
+      "uncached_input_tokens": 99,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0034441999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 227,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 524,
+      "reasoning_tokens": 516,
+      "response_chars": 20,
+      "uncached_input_tokens": 99,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_43c79d25069e20e74178",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "a11b96c51d01d13a6eac72dac141e0e0e42824fd52c700b9451de1a840b8656a",
+  "status": "completed"
+}

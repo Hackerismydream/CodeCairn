@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009456,
+    "cost_usd": null,
+    "input_tokens": 2752,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 200,
+    "reasoning_tokens": 124,
+    "text": "The provided memory context does not contain any information about Maria starting a workout class in December 2023. The latest dated events are from August 2023, and none mention a new workout class for Maria at that time. The only workout class she mentions is aerial yoga, which she began in December 2022. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2752
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001173,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 101,
+      "reasoning_tokens": 93,
+      "response_chars": 18,
+      "uncached_input_tokens": 189,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027901999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 434,
+      "reasoning_tokens": 426,
+      "response_chars": 18,
+      "uncached_input_tokens": 61,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 189,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 295,
+      "reasoning_tokens": 287,
+      "response_chars": 18,
+      "uncached_input_tokens": 61,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_21d655eae8d1f1a62041",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "0f4e4117de0ad49dcdec7531d4a1380b50f645a448a903b28c55f02857239d44",
+  "status": "completed"
+}

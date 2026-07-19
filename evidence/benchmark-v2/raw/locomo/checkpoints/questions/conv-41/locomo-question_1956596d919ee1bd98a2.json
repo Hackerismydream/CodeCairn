@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.016788,
+    "cost_usd": null,
+    "input_tokens": 2546,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1525,
+    "reasoning_tokens": 1475,
+    "text": "Based on the provided memory context, John is described as compassionate, helpful, family-oriented, empathetic, curious, supportive, reflective, growth-minded, patriotic (he teaches kids about veterans), and a runner. Maria also finds him inspiring and encouraging.",
+    "uncached_input_tokens": 2546
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002661,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 364,
+      "reasoning_tokens": 356,
+      "response_chars": 18,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016442,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 258,
+      "reasoning_tokens": 250,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027781999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 447,
+      "reasoning_tokens": 439,
+      "response_chars": 18,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1956596d919ee1bd98a2",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "c30f26fe14ff11c306e2d6f8c9067efa1e804bed14c644a1a7c7b8b4a6836e76",
+  "status": "completed"
+}

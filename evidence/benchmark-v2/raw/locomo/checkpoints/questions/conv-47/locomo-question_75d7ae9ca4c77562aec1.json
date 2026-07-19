@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.002824,
+    "cost_usd": null,
+    "input_tokens": 2596,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 442,
+    "reasoning_tokens": 388,
+    "text": "Based on the memory context, James mentioned on April 12, 2022, that he had adopted a pup named Ned \"last week.\" Therefore, the adoption occurred in the week before April 12, 2022, but no exact date is provided.",
+    "uncached_input_tokens": 36
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002931,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 407,
+      "reasoning_tokens": 399,
+      "response_chars": 18,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0052981999999999994,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 865,
+      "reasoning_tokens": 857,
+      "response_chars": 20,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.013182200000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 2179,
+      "reasoning_tokens": 2171,
+      "response_chars": 18,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_75d7ae9ca4c77562aec1",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "a52cb8ed0cdababbfb0d2d13eacb096c83f64097394ed9b5f5bb10d766676656",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0026474000000000003,
+    "cost_usd": null,
+    "input_tokens": 2937,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 369,
+    "reasoning_tokens": 318,
+    "text": "According to a message from Jon on 2023-03-16, he said he \"Started hitting the gym last week.\" This implies he began around the week of March 9, 2023, but the exact date is not given.",
+    "uncached_input_tokens": 121
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 162,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019412000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 306,
+      "reasoning_tokens": 298,
+      "response_chars": 20,
+      "uncached_input_tokens": 34,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022532,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 162,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 358,
+      "reasoning_tokens": 350,
+      "response_chars": 20,
+      "uncached_input_tokens": 34,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_58cc57adcf9876e8b7eb",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "530a8d7cef4196bc04400315e348590f6e7acbb092b164bc3b68fb99f4ca0b77",
+  "status": "completed"
+}

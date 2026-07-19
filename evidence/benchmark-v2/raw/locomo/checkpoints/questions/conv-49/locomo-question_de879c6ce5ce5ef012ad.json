@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014571,
+    "cost_usd": null,
+    "input_tokens": 2777,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1040,
+    "reasoning_tokens": 976,
+    "text": "The provided memory context does not specify who Evan met on his trip to Canada or who he came back with. It only mentions that he planned a honeymoon trip to Canada with his partner, and Sam referred to Evan's partner as \"the woman from Canada.\" No other details about encounters or return companions are included.",
+    "uncached_input_tokens": 2777
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002514,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 322,
+      "reasoning_tokens": 314,
+      "response_chars": 18,
+      "uncached_input_tokens": 194,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 272,
+      "reasoning_tokens": 264,
+      "response_chars": 18,
+      "uncached_input_tokens": 66,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014672,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 194,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 18,
+      "uncached_input_tokens": 66,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_de879c6ce5ce5ef012ad",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "2dccd77794e98d5cb88fd31435a779440fd850cc2c1fd055b1d80e0aaba23115",
+  "status": "completed"
+}

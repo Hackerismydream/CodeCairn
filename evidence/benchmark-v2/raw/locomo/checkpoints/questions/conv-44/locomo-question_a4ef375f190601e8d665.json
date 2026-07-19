@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011994,
+    "cost_usd": null,
+    "input_tokens": 2824,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 587,
+    "reasoning_tokens": 483,
+    "text": "Audrey believes positive reinforcement training is important because she thinks punishment is never the proper way for pets and she doesn’t want to cause them any pain. She stated: “Punishment is never the proper way for pets ya know?” and “I don't want to hurt any of my dogs. Just by thinking of it gives me pain.” (memory_3ce96fe9deaf7d8164bc, memory_5bdd4d703a0bd92cba5a)",
+    "uncached_input_tokens": 2824
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003612,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 222,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 491,
+      "reasoning_tokens": 483,
+      "response_chars": 20,
+      "uncached_input_tokens": 222,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0053732,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 222,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 848,
+      "reasoning_tokens": 837,
+      "response_chars": 22,
+      "uncached_input_tokens": 94,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0023011999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 222,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 336,
+      "reasoning_tokens": 328,
+      "response_chars": 18,
+      "uncached_input_tokens": 94,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a4ef375f190601e8d665",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "fd15e228d0a558c5b73f090fe6086aa2a38e45978c1452519d4457e703dbb4ef",
+  "status": "completed"
+}

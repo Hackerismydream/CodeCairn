@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011436,
+    "cost_usd": null,
+    "input_tokens": 2772,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 520,
+    "reasoning_tokens": 487,
+    "text": "Nate hangs out with his turtles, gives them baths, takes them to the beach, feeds them fruit and watches them eat, and watches them walk around.",
+    "uncached_input_tokens": 2772
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004494,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 670,
+      "reasoning_tokens": 662,
+      "response_chars": 18,
+      "uncached_input_tokens": 158,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0031891999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 516,
+      "reasoning_tokens": 508,
+      "response_chars": 18,
+      "uncached_input_tokens": 30,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024332,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 158,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 390,
+      "reasoning_tokens": 382,
+      "response_chars": 18,
+      "uncached_input_tokens": 30,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f08547b6c52d7392bf44",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "95ae5ab2578fed8968197a29952cde0187dc6196825cd585a72c6387e71856eb",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.002983,
+    "cost_usd": null,
+    "input_tokens": 2685,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 424,
+    "reasoning_tokens": 334,
+    "text": "The memory context shows only one reference to a possible meetup: in session_21 (2022-08-26), John responded to a suggestion from James by saying, \"I don't mind meeting up, but why Starbucks? Maybe we can have a beer somewhere?\" No definitive plans, locations, or events are recorded beyond this tentative exchange. Therefore, the context is insufficient to answer which places or events they actually planned to meet at.",
+    "uncached_input_tokens": 125
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002166,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 257,
+      "reasoning_tokens": 249,
+      "response_chars": 18,
+      "uncached_input_tokens": 208,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013652,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 187,
+      "reasoning_tokens": 179,
+      "response_chars": 18,
+      "uncached_input_tokens": 80,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 208,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 100,
+      "reasoning_tokens": 92,
+      "response_chars": 18,
+      "uncached_input_tokens": 80,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a688aea513f1263c3a2f",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "58bc64b4988acc01d06468cca4f92451232ce1b2619c4d22e8cb37f57c96c1ae",
+  "status": "completed"
+}

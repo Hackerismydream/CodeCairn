@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01245,
+    "cost_usd": null,
+    "input_tokens": 2872,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 639,
+    "reasoning_tokens": 592,
+    "text": "John signed a basketball shoe and gear deal with Nike. For Gatorade, he mentioned being in talks about a potential sponsorship, though later comments from both John and Tim in the same session refer to it as a done deal.",
+    "uncached_input_tokens": 2872
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.005097,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 763,
+      "reasoning_tokens": 755,
+      "response_chars": 20,
+      "uncached_input_tokens": 173,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0036062,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 578,
+      "reasoning_tokens": 570,
+      "response_chars": 18,
+      "uncached_input_tokens": 45,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 173,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 271,
+      "reasoning_tokens": 263,
+      "response_chars": 20,
+      "uncached_input_tokens": 45,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_22af1cc2992852faf42e",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "8fa8984637c6d743779b557268ec545d5708d52469c4da40a124aa6c3b2ad44a",
+  "status": "completed"
+}

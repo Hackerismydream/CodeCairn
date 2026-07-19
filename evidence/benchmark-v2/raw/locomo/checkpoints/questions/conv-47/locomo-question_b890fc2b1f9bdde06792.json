@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.0129,
+    "cost_usd": null,
+    "input_tokens": 2556,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 872,
+    "reasoning_tokens": 741,
+    "text": "Based on the provided context, John explicitly mentioned the following:\n\n- **Bought**: new headphones (session_23, 2022-09-04T21:26:30+00:00).\n- **Bought**: some new devices (session_20, 2022-08-21T16:01:00+00:00). The photo shared with the message shows a desk with a computer and a keyboard, suggesting those may be among the purchased devices.\n- **Refurbished**: his gaming desk (session_20, 2022-08-21T16:01:00+00:00).",
+    "uncached_input_tokens": 2556
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00225,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 256,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 247,
+      "reasoning_tokens": 239,
+      "response_chars": 18,
+      "uncached_input_tokens": 256,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014012,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 256,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 169,
+      "reasoning_tokens": 161,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015692,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 256,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 197,
+      "reasoning_tokens": 189,
+      "response_chars": 18,
+      "uncached_input_tokens": 128,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b890fc2b1f9bdde06792",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "7b68daaa4edf5a37404b631afc12ed8e9b188ee03c431a8056c717a83e3290c5",
+  "status": "completed"
+}

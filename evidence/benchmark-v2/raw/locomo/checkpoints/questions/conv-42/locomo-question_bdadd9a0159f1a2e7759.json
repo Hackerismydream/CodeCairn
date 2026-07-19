@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009255,
+    "cost_usd": null,
+    "input_tokens": 2741,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 172,
+    "reasoning_tokens": 145,
+    "text": "Nate is currently playing and recommends \"Xeonoblade Chronicles\" (as stated on November 7, 2022).",
+    "uncached_input_tokens": 2741
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003657,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 535,
+      "reasoning_tokens": 527,
+      "response_chars": 20,
+      "uncached_input_tokens": 149,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0026821999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 436,
+      "reasoning_tokens": 428,
+      "response_chars": 18,
+      "uncached_input_tokens": 21,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024601999999999996,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 149,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 399,
+      "reasoning_tokens": 391,
+      "response_chars": 18,
+      "uncached_input_tokens": 21,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_bdadd9a0159f1a2e7759",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "13d9c482b5efa1e8992cd5114c2a9e3c197b34515936b528ea1253916e850a28",
+  "status": "completed"
+}

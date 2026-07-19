@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014631,
+    "cost_usd": null,
+    "input_tokens": 2667,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1105,
+    "reasoning_tokens": 1016,
+    "text": "Joanna mentioned making a few specific desserts:\n- A dairy-free dessert with almond milk (session 21)\n- A cake with strawberries and chocolate, after revising an old recipe (session 20)\n- A dessert with blueberries, coconut milk, and a gluten-free crust, which she described and shared a photo of (session 21)\n\nShe also mentioned revising a recipe for her family that turned out tasty, but no details were given.",
+    "uncached_input_tokens": 2667
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00336,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 236,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 442,
+      "reasoning_tokens": 434,
+      "response_chars": 18,
+      "uncached_input_tokens": 236,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0034051999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 236,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 513,
+      "reasoning_tokens": 505,
+      "response_chars": 18,
+      "uncached_input_tokens": 108,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 236,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 411,
+      "reasoning_tokens": 403,
+      "response_chars": 18,
+      "uncached_input_tokens": 108,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a9839473793aea557cfa",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "904b2917db80fe5319e5087736ab0c5642a865782030c78738ae7a51de9e9cbb",
+  "status": "completed"
+}

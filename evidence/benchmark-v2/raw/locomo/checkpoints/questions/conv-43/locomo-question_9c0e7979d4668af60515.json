@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010998,
+    "cost_usd": null,
+    "input_tokens": 2976,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 345,
+    "reasoning_tokens": 261,
+    "text": "John and his wife left for their European vacation on November 6, 2023, as stated in a message from John on that date: “my wife and I just left for our European vacation!” (timestamp: 2023-11-06T11:47:30+00:00). A later message on November 11 confirms they were road tripping along the European coastline at that time.",
+    "uncached_input_tokens": 2976
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00216,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 262,
+      "reasoning_tokens": 254,
+      "response_chars": 20,
+      "uncached_input_tokens": 196,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016472000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 240,
+      "reasoning_tokens": 232,
+      "response_chars": 20,
+      "uncached_input_tokens": 68,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009872000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 130,
+      "reasoning_tokens": 122,
+      "response_chars": 20,
+      "uncached_input_tokens": 68,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9c0e7979d4668af60515",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "f2843e20231221456c584997fb3c8928b35d85953fef3569cd1752d730c68773",
+  "status": "completed"
+}

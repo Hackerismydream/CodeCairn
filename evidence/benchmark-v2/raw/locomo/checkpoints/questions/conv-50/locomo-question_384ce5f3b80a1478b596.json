@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014901,
+    "cost_usd": null,
+    "input_tokens": 2707,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1130,
+    "reasoning_tokens": 1024,
+    "text": "Based on the provided memory context, the most recent explicit mention of Calvin's personal activity is from session_25 on 2023-10-23, where he says: \"Recently, I've been really inspired by some of the struggles that people go through. It's made me dig deeper into my music to try to capture those feelings.\" This indicates his hobby is music (likely creating or playing music), and he has recently been more focused on it. The context does not mention him taking up any other new hobby.",
+    "uncached_input_tokens": 2707
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001782,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 212,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 191,
+      "reasoning_tokens": 183,
+      "response_chars": 18,
+      "uncached_input_tokens": 212,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006992000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 212,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 74,
+      "reasoning_tokens": 66,
+      "response_chars": 18,
+      "uncached_input_tokens": 84,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017192,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 212,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 244,
+      "reasoning_tokens": 236,
+      "response_chars": 18,
+      "uncached_input_tokens": 84,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_384ce5f3b80a1478b596",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "1d99dbb94eea7d352ae2a964aafaa2c2104a3fd1a6a147700adf69131a647ef4",
+  "status": "completed"
+}

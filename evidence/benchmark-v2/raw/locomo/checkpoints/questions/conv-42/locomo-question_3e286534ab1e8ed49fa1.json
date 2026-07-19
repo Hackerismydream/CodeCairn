@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2432,
+    "cost_cny": 0.008583799999999999,
+    "cost_usd": null,
+    "input_tokens": 2531,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1371,
+    "reasoning_tokens": 1118,
+    "text": "Joanna's hobbies include:\n- **Script writing**: On 2022-03-18, she mentioned she had just finished a second script and felt a mix of relief and excitement about it possibly hitting the big screen (*memory_35a59a3458b502415062*). On 2022-04-21, she said she was going to keep writing (*memory_bee39ccbd737fad3bf67*).\n- **Drawing / character creation**: On 2022-10-25, she described how she turns ideas into characters with their own wants and wishes (*memory_281736de8ea50c8c16b2*). Nate later commented on her “really incredible” drawings and asked about a character in a photo (*memory_ddbf4a62f8ba5e3caf51* and *memory_27e701aebffa352eb06c*).\n- **Cooking / recipe development**: On 2022-10-21, she mentioned revising and perfecting a recipe for her family that turned out tasty (*memory_14793410a6ba00a6e2f9*).\n\nThe context is sufficient to list these as her hobbies.",
+    "uncached_input_tokens": 99
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00183,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 372,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 18,
+      "uncached_input_tokens": 372,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0010684000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 372,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 119,
+      "reasoning_tokens": 111,
+      "response_chars": 18,
+      "uncached_input_tokens": 116,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0012484,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 372,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 149,
+      "reasoning_tokens": 141,
+      "response_chars": 18,
+      "uncached_input_tokens": 116,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_3e286534ab1e8ed49fa1",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "8ff4dcbe65b1d060dfd01d55690cf37a15aac0b5ea361817008712f27f43fac7",
+  "status": "completed"
+}

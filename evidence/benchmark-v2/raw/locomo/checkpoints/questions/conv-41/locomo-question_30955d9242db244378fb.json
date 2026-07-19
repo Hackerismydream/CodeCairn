@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009585,
+    "cost_usd": null,
+    "input_tokens": 2619,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 288,
+    "reasoning_tokens": 281,
+    "text": "John has done weight training.",
+    "uncached_input_tokens": 2619
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001179,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 119,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 18,
+      "uncached_input_tokens": 119,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001803,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 119,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 241,
+      "reasoning_tokens": 233,
+      "response_chars": 18,
+      "uncached_input_tokens": 119,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000867,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 119,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 85,
+      "reasoning_tokens": 77,
+      "response_chars": 18,
+      "uncached_input_tokens": 119,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_30955d9242db244378fb",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "21cc44bfd4efdb54b33d3ab60caab6e7d7c7998998c66c33504a51178a56b9e7",
+  "status": "completed"
+}

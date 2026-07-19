@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01038,
+    "cost_usd": null,
+    "input_tokens": 3004,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 228,
+    "reasoning_tokens": 213,
+    "text": "Calvin attended a music festival in Tokyo in April 2023.",
+    "uncached_input_tokens": 3004
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001356,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 164,
+      "reasoning_tokens": 156,
+      "response_chars": 20,
+      "uncached_input_tokens": 124,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001014,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 107,
+      "reasoning_tokens": 99,
+      "response_chars": 20,
+      "uncached_input_tokens": 124,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 124,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 175,
+      "reasoning_tokens": 167,
+      "response_chars": 20,
+      "uncached_input_tokens": 124,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0b776c94ed4a7c25b44f",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "3fbe75ebc320d01271d1bba74aeea29e90d7368c9e948cc50c497d9e99ad4bb2",
+  "status": "completed"
+}

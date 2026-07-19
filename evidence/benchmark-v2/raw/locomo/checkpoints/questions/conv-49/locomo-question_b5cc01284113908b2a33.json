@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0017235999999999998,
+    "cost_usd": null,
+    "input_tokens": 2966,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 264,
+    "reasoning_tokens": 222,
+    "text": "Evan has been on a road trip to Jasper with his family, specifically driving through the Icefields Parkway to see glaciers and lakes. (From session_2 on 2023-05-24.)",
+    "uncached_input_tokens": 22
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00264,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 363,
+      "reasoning_tokens": 355,
+      "response_chars": 20,
+      "uncached_input_tokens": 154,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0028891999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 468,
+      "reasoning_tokens": 460,
+      "response_chars": 20,
+      "uncached_input_tokens": 26,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0043472,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 154,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 711,
+      "reasoning_tokens": 703,
+      "response_chars": 18,
+      "uncached_input_tokens": 26,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b5cc01284113908b2a33",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "27f4d7a2140bf2dbc75239a0a3275d42fd6b2a65b315b8f0d44b32be425c7a76",
+  "status": "completed"
+}

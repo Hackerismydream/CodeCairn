@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.016296,
+    "cost_usd": null,
+    "input_tokens": 2780,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1326,
+    "reasoning_tokens": 1244,
+    "text": "The provided memory context is insufficient to specify exactly what activity Melanie did to relax after the road trip. The only relevant entry (session_18, 2023-10-20T19:03:00+00:00) states she did something “yesterday” that the kids loved and which was a relaxing way to unwind after the trip, but the nature of that activity is not described.",
+    "uncached_input_tokens": 2780
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001938,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 225,
+      "reasoning_tokens": 217,
+      "response_chars": 18,
+      "uncached_input_tokens": 196,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 215,
+      "reasoning_tokens": 207,
+      "response_chars": 18,
+      "uncached_input_tokens": 68,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010832,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 196,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 146,
+      "reasoning_tokens": 138,
+      "response_chars": 18,
+      "uncached_input_tokens": 68,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_05290b3864c5984dac59",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "f2c5d964b18697b9e863c86260dc07267c4ac7edc1194e15c8713941da6ca449",
+  "status": "completed"
+}

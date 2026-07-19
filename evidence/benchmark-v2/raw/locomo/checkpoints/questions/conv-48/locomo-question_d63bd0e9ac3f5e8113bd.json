@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011403,
+    "cost_usd": null,
+    "input_tokens": 2877,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 462,
+    "reasoning_tokens": 379,
+    "text": "The provided context does not include a direct statement from Jolene explaining why she decided to get a snake. Deborah asked the question in session_15, but Jolene's reply is not captured. The closest insight is in session_2, where Jolene says snakes calm her down and make her happy, but this is not explicitly linked to her decision. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2877
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002679,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 345,
+      "reasoning_tokens": 337,
+      "response_chars": 18,
+      "uncached_input_tokens": 203,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021362,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 318,
+      "reasoning_tokens": 310,
+      "response_chars": 18,
+      "uncached_input_tokens": 75,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017522,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 254,
+      "reasoning_tokens": 246,
+      "response_chars": 18,
+      "uncached_input_tokens": 75,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d63bd0e9ac3f5e8113bd",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "e26aebbdbef80211377b1601e3500190e09dd2ce0830283e3fc05f5913566b61",
+  "status": "completed"
+}

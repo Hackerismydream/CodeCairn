@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012225,
+    "cost_usd": null,
+    "input_tokens": 2721,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 677,
+    "reasoning_tokens": 597,
+    "text": "Nate mentioned watching and enjoying the movie *Inception* around that time, specifically stating on October 9, 2022, that he recently saw it and that it “blew my mind” (memory 7). While the conversation on October 6, 2022, references his enjoyment of movies generally (memory 8), the specific film he named is *Inception*.",
+    "uncached_input_tokens": 2721
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001509,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 18,
+      "uncached_input_tokens": 195,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0005642,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 60,
+      "reasoning_tokens": 52,
+      "response_chars": 18,
+      "uncached_input_tokens": 67,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010922,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 195,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 148,
+      "reasoning_tokens": 140,
+      "response_chars": 18,
+      "uncached_input_tokens": 67,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0eff99d42d06ecfaeea0",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "8080c6d5a57e7fd7c663c65c59a15287ecc185066df066df754aac897d3c6d77",
+  "status": "completed"
+}

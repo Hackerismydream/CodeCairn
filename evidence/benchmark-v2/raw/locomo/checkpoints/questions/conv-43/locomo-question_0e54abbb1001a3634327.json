@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012051,
+    "cost_usd": null,
+    "input_tokens": 2715,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 651,
+    "reasoning_tokens": 581,
+    "text": "Tim finds LeBron inspiring because of his **skills and leadership** (session_12) and his **never‑give‑up attitude**, as shown in a memorable Finals block (session_16). John is inspired by LeBron’s **determination and heart**, which motivate him to enjoy playing and push himself harder (session_16).",
+    "uncached_input_tokens": 2715
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003765,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 531,
+      "reasoning_tokens": 523,
+      "response_chars": 20,
+      "uncached_input_tokens": 193,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0039242,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 621,
+      "reasoning_tokens": 613,
+      "response_chars": 20,
+      "uncached_input_tokens": 65,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0043682,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 695,
+      "reasoning_tokens": 687,
+      "response_chars": 20,
+      "uncached_input_tokens": 65,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0e54abbb1001a3634327",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "2b1b8a9f1f4ad293c21349c6d43abb97466e7b2ad9c1932b9988f08e10e1c437",
+  "status": "completed"
+}

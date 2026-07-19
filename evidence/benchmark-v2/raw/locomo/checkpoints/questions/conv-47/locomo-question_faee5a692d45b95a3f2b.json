@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009099,
+    "cost_usd": null,
+    "input_tokens": 2739,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 147,
+    "reasoning_tokens": 137,
+    "text": "John started playing chess to improve his strategy.",
+    "uncached_input_tokens": 2739
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001083,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 119,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 121,
+      "reasoning_tokens": 113,
+      "response_chars": 20,
+      "uncached_input_tokens": 119,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000939,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 119,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 97,
+      "reasoning_tokens": 89,
+      "response_chars": 20,
+      "uncached_input_tokens": 119,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000999,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 119,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 107,
+      "reasoning_tokens": 99,
+      "response_chars": 20,
+      "uncached_input_tokens": 119,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_faee5a692d45b95a3f2b",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "a11443b4c26b7213dcfc1752b2a6057e29900b85b13d6a69f684ee7ebd8b1490",
+  "status": "completed"
+}

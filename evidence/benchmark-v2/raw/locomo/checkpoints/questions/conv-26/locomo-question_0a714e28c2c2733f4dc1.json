@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.018783,
+    "cost_usd": null,
+    "input_tokens": 3083,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1589,
+    "reasoning_tokens": 1501,
+    "text": "Based on the provided memories, Melanie has mentioned going to the beach at least twice in 2023:\n\n1. A camping trip at the beach (mentioned on 2023-07-06).\n2. A recent beach trip with her kids (mentioned on 2023-07-20).\n\nThe context does not confirm whether these are the same event, but they are described separately and with different details, suggesting two distinct occasions.",
+    "uncached_input_tokens": 3083
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 255,
+      "reasoning_tokens": 247,
+      "response_chars": 20,
+      "uncached_input_tokens": 204,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020851999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 309,
+      "reasoning_tokens": 301,
+      "response_chars": 20,
+      "uncached_input_tokens": 76,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0006872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 76,
+      "reasoning_tokens": 68,
+      "response_chars": 20,
+      "uncached_input_tokens": 76,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0a714e28c2c2733f4dc1",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "889d3166adfe6890cd18a52b9d253935256fb987e0e95964fd1a503dd53ef170",
+  "status": "completed"
+}

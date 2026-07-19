@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.009049399999999999,
+    "cost_usd": null,
+    "input_tokens": 2897,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1456,
+    "reasoning_tokens": 1247,
+    "text": "Based on the memory context, Caroline mentioned meeting up with friends, family, and mentors on these occasions:\n\n- **Around early June 2023**: On June 9, 2023, she said “we met up last week” while sharing a photo of a family gathering, implying a meetup with her support network around the week of May 29–June 4, 2023.  \n- **Around late June–early July 2023**: On July 6, 2023, she mentioned having “a picnic last week” with friends and family helping with her transition, which would fall roughly between June 26 and July 2, 2023.  \n- **June 2023**: On July 17, 2023, she referred to attending an LGBT pride event “last month” with a transgender teen she mentors, pointing to a June 2023 meetup (likely during Pride Month).\n\nNo exact dates are given; these are approximated from the relative time references in the attributed messages.",
+    "uncached_input_tokens": 81
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.006762,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 336,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 959,
+      "reasoning_tokens": 951,
+      "response_chars": 20,
+      "uncached_input_tokens": 336,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0020644,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 336,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 303,
+      "reasoning_tokens": 295,
+      "response_chars": 18,
+      "uncached_input_tokens": 80,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0057604,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 336,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 919,
+      "reasoning_tokens": 911,
+      "response_chars": 20,
+      "uncached_input_tokens": 80,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_921a94ca91f7bd9d833f",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "9b1768f7be7432f5cefb45b58bbd34f8510ef8fdac11cd7f383d28b8d682bf7b",
+  "status": "completed"
+}

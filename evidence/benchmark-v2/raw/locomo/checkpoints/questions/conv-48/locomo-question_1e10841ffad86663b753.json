@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008613,
+    "cost_usd": null,
+    "input_tokens": 2587,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 142,
+    "reasoning_tokens": 132,
+    "text": "Deborah started a running group with Anna.",
+    "uncached_input_tokens": 2587
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001206,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 116,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 143,
+      "reasoning_tokens": 135,
+      "response_chars": 20,
+      "uncached_input_tokens": 116,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00144,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 116,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 20,
+      "uncached_input_tokens": 116,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001098,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 116,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 125,
+      "reasoning_tokens": 117,
+      "response_chars": 20,
+      "uncached_input_tokens": 116,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_1e10841ffad86663b753",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "0a5c5a00034d2f0b0b6ab23bab67a982cc46d96635d72fddb487bc6b3e0b5ee4",
+  "status": "completed"
+}

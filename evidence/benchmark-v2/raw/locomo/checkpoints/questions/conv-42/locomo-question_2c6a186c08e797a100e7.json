@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01179,
+    "cost_usd": null,
+    "input_tokens": 2726,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 602,
+    "reasoning_tokens": 552,
+    "text": "Joanna finds motivation in the knowledge that her writing can make a difference, the support of friends and her writers group, and the intrinsic fulfillment writing provides as a creative outlet and expression of her feelings. These factors help her push through tough days.",
+    "uncached_input_tokens": 2726
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003798,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 551,
+      "reasoning_tokens": 543,
+      "response_chars": 20,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0049352,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 804,
+      "reasoning_tokens": 796,
+      "response_chars": 20,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014072,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 216,
+      "reasoning_tokens": 208,
+      "response_chars": 20,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_2c6a186c08e797a100e7",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "bb605abad4bc138b74dec12044fcb35eb9b800a3881a10e1de85735027796f27",
+  "status": "completed"
+}

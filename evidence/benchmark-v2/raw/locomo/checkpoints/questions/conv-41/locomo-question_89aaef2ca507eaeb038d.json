@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009723,
+    "cost_usd": null,
+    "input_tokens": 2639,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 301,
+    "reasoning_tokens": 227,
+    "text": "According to the provided memory context, John mentioned attending a live music event around late June 2023. In a message dated June 27, 2023, he said, \"Last week, we had a blast at a live music event,\" but no specific name or details of the event are given. No other music event attendance is recorded in the context.",
+    "uncached_input_tokens": 2639
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001797,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 208,
+      "reasoning_tokens": 200,
+      "response_chars": 18,
+      "uncached_input_tokens": 183,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014822000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 18,
+      "uncached_input_tokens": 55,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017102,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 183,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 257,
+      "reasoning_tokens": 249,
+      "response_chars": 18,
+      "uncached_input_tokens": 55,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_89aaef2ca507eaeb038d",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "7179911b120b246acaaa00a0da28e5df2946f7e5c7b423294583e43a4af21eab",
+  "status": "completed"
+}

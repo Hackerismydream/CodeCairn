@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2560,
+    "cost_cny": 0.002614,
+    "cost_usd": null,
+    "input_tokens": 2684,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 363,
+    "reasoning_tokens": 283,
+    "text": "Yes, based on the provided memory context, Calvin clearly wishes to become more popular. He explicitly states his plans to “expand my brand worldwide and grow my fanbase” (memory 4), to “reach more people” (memory 5), and to “build up my fan base” through networking (memory 9). These statements consistently show a desire to increase his audience and recognition.",
+    "uncached_input_tokens": 124
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001941,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 227,
+      "reasoning_tokens": 219,
+      "response_chars": 20,
+      "uncached_input_tokens": 193,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 198,
+      "reasoning_tokens": 190,
+      "response_chars": 20,
+      "uncached_input_tokens": 65,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013562000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 193,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 193,
+      "reasoning_tokens": 185,
+      "response_chars": 20,
+      "uncached_input_tokens": 65,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ab8805d7610371a0a1e1",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "11ccda189aebdcdf07d850185329f372e8480ee61cc7df7b3d67768745daffed",
+  "status": "completed"
+}

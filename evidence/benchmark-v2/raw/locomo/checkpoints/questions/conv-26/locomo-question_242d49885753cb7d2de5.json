@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010209,
+    "cost_usd": null,
+    "input_tokens": 2737,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 333,
+    "reasoning_tokens": 255,
+    "text": "Caroline passed the adoption agency interviews on **Friday, October 20, 2023**. This is based on her message from session_19 (2023-10-22T09:55:00+00:00), where she says she passed them \"last Friday.\" Since October 22, 2023 was a Sunday, the previous Friday was October 20.",
+    "uncached_input_tokens": 2737
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001251,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 113,
+      "reasoning_tokens": 105,
+      "response_chars": 20,
+      "uncached_input_tokens": 191,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007802000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 244,
+      "reasoning_tokens": 236,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_242d49885753cb7d2de5",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "6d74a3936705e0c92e7836e7da3bc7357ff0ce6f643a90d53625345f273134a3",
+  "status": "completed"
+}

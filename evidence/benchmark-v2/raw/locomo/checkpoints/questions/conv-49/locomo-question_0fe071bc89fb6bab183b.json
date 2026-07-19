@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0089356,
+    "cost_usd": null,
+    "input_tokens": 2984,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1457,
+    "reasoning_tokens": 1326,
+    "text": "Based on their shared experiences, Evan and Sam would likely advise someone facing a major life transition or challenge to embrace the journey, try new things, and find what works for you (Evan, 2023-12-26). They’d emphasize leaning on supportive relationships, seeking professional help when needed, and staying positive through personal struggles (Evan, 2023-11-09; Sam, 2024-01-10). Creative outlets, healthy habits, and appreciating nature also emerge as helpful tools for peace and motivation (Evan, 2023-08-19; Sam, 2023-10-17).",
+    "uncached_input_tokens": 40
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.006411,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 297,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 920,
+      "reasoning_tokens": 912,
+      "response_chars": 20,
+      "uncached_input_tokens": 297,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0042634,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 297,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 689,
+      "reasoning_tokens": 681,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0056374,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 297,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 918,
+      "reasoning_tokens": 910,
+      "response_chars": 18,
+      "uncached_input_tokens": 41,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0fe071bc89fb6bab183b",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "02022ae3a765c4641fc67faeb87ea01880eb3233422656deab8cffc6dd5d327e",
+  "status": "completed"
+}

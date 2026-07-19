@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.011952,
+    "cost_usd": null,
+    "input_tokens": 2830,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 577,
+    "reasoning_tokens": 515,
+    "text": "Evan told Sam: \"Keep trying new things, Sam, and you might find your own version of love in the most unexpected places. Embrace the journey — it’s full of surprises!\" (2023-12-26, from memory_7477e206afef49705d08).",
+    "uncached_input_tokens": 2830
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004482,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 658,
+      "reasoning_tokens": 650,
+      "response_chars": 18,
+      "uncached_input_tokens": 178,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0039992,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 641,
+      "reasoning_tokens": 633,
+      "response_chars": 20,
+      "uncached_input_tokens": 50,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0033992,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 178,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 541,
+      "reasoning_tokens": 533,
+      "response_chars": 20,
+      "uncached_input_tokens": 50,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_11d5f2f3402f35f08e3d",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "8bc746c8fc6d7dbac847455d1e7bedb273ac859a8ec304a1f271d5d82a7adf39",
+  "status": "completed"
+}

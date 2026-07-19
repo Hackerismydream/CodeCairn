@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012387,
+    "cost_usd": null,
+    "input_tokens": 2977,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 576,
+    "reasoning_tokens": 499,
+    "text": "Andrew finds the search tough and a bit discouraging, but he remains determined to keep looking. He mentions it’s hard to find a pet‑friendly spot in the city, and he hasn’t had much luck so far (sessions 5, 7, 11). He continues searching and intends to find the perfect place for dogs (session 18).",
+    "uncached_input_tokens": 2977
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001215,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 107,
+      "reasoning_tokens": 99,
+      "response_chars": 20,
+      "uncached_input_tokens": 191,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011162000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008102000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 103,
+      "reasoning_tokens": 92,
+      "response_chars": 24,
+      "uncached_input_tokens": 63,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_5dca680e2a0b0d79817f",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "c27161a92d2567daf9652be0d09ae630739ae8acda05946a2ba470af6f0c6a9d",
+  "status": "completed"
+}

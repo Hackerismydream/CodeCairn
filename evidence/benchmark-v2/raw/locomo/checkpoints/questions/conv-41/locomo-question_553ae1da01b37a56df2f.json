@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013749,
+    "cost_usd": null,
+    "input_tokens": 2881,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 851,
+    "reasoning_tokens": 792,
+    "text": "The extra funding enabled construction or renovation work on the school building. The photo John shared (2022-12-17) shows a group of men working on the building after the school received the funding, indicating it supported physical improvements. The context doesn't provide further details on specific outcomes.",
+    "uncached_input_tokens": 2881
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00522,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 777,
+      "reasoning_tokens": 769,
+      "response_chars": 18,
+      "uncached_input_tokens": 186,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0033932,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 536,
+      "reasoning_tokens": 528,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0038972,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 186,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 620,
+      "reasoning_tokens": 612,
+      "response_chars": 18,
+      "uncached_input_tokens": 58,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_553ae1da01b37a56df2f",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "f9c330931239230e171dc96e2f399669e8e4f1290e7b7659e2b20d5b5d777e3b",
+  "status": "completed"
+}

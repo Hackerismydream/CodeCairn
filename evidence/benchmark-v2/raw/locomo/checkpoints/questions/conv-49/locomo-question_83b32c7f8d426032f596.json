@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012,
+    "cost_usd": null,
+    "input_tokens": 2748,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 626,
+    "reasoning_tokens": 516,
+    "text": "Based on the provided memory context, Evan mentioned that he “struggled with my health a few years ago, but stuck with it,” and showed his gym membership card as a reminder of his commitment (session_4, 2023-07-27). He also said he’s been working on his health for two years (as of August 2023) and that “diet and lifestyle changes also play a big role.” The context does not give a specific starting event or decision beyond this commitment to exercise and healthier habits.",
+    "uncached_input_tokens": 2748
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002307,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 223,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 273,
+      "reasoning_tokens": 265,
+      "response_chars": 18,
+      "uncached_input_tokens": 223,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020462,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 223,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 293,
+      "reasoning_tokens": 285,
+      "response_chars": 18,
+      "uncached_input_tokens": 95,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 223,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 271,
+      "reasoning_tokens": 263,
+      "response_chars": 18,
+      "uncached_input_tokens": 95,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_83b32c7f8d426032f596",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "25bc8a338005b44219ea9690b5f36c5144da1de5d68a1f047a969be18a7dda1e",
+  "status": "completed"
+}

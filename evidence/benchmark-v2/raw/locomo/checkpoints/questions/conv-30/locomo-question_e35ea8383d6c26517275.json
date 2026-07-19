@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2944,
+    "cost_cny": 0.0024886,
+    "cost_usd": null,
+    "input_tokens": 3003,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 373,
+    "reasoning_tokens": 326,
+    "text": "On June 13, 2023, Gina mentioned that she had developed a video presentation to teach how to style her fashion pieces. The exact date she created it is not provided, only that it was done by that time.",
+    "uncached_input_tokens": 59
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003696,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 534,
+      "reasoning_tokens": 526,
+      "response_chars": 18,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0068731999999999994,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1127,
+      "reasoning_tokens": 1119,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 345,
+      "reasoning_tokens": 337,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_e35ea8383d6c26517275",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "76d65f7a4bcb8f3793de31d90a00f203000d30a8ca307ccf3518e2f59f53ec94",
+  "status": "completed"
+}

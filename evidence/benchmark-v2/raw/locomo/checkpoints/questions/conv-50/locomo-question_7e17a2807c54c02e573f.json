@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.01344,
+    "cost_usd": null,
+    "input_tokens": 3060,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 710,
+    "reasoning_tokens": 616,
+    "text": "Based on the provided memories, the event that directly inspired Dave to take up auto engineering was attending a car show. In a message dated April 20, 2023, Dave said: “Last weekend I went to a car show. Classic cars are so charming and the dedication people put into restoring them is amazing. That's why I'm so into auto engineering.” No other event in the context is explicitly identified as the inspiration for initially taking up the field.",
+    "uncached_input_tokens": 3060
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003033,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 235,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 388,
+      "reasoning_tokens": 380,
+      "response_chars": 18,
+      "uncached_input_tokens": 235,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0020521999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 235,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 288,
+      "reasoning_tokens": 280,
+      "response_chars": 18,
+      "uncached_input_tokens": 107,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 235,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 167,
+      "reasoning_tokens": 159,
+      "response_chars": 18,
+      "uncached_input_tokens": 107,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7e17a2807c54c02e573f",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "19cd3a65a9586b03b391ec27a15236ab850170376eb9121861c247f1d2a277b7",
+  "status": "completed"
+}

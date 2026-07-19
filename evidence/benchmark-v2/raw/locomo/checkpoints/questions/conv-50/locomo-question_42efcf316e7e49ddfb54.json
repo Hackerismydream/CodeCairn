@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0053143999999999995,
+    "cost_usd": null,
+    "input_tokens": 2882,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 841,
+    "reasoning_tokens": 745,
+    "text": "Based on the memory context, Dave's dreams include:\n\n- Opening his own car maintenance shop (achieved, as he said \"it's like a dream come true\" on 2023-05-01).\n- Building a custom car from scratch someday (explicitly stated as \"that's the dream\" on 2023-05-03).\n- Seeing his favorite performers live (mentioned as \"always a dream\" on 2023-03-26).",
+    "uncached_input_tokens": 66
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001755,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 221,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 18,
+      "uncached_input_tokens": 221,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 221,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 208,
+      "reasoning_tokens": 200,
+      "response_chars": 18,
+      "uncached_input_tokens": 93,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014462000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 221,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 194,
+      "reasoning_tokens": 186,
+      "response_chars": 18,
+      "uncached_input_tokens": 93,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_42efcf316e7e49ddfb54",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "36e6b644a1680ca64214998b771df821dee20e860398bc2e064fa3361039a1c1",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 3072,
+    "cost_cny": 0.0028218,
+    "cost_usd": null,
+    "input_tokens": 3125,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 431,
+    "reasoning_tokens": 358,
+    "text": "Yes, both Jon and Gina started businesses out of what they love. Jon turned his passion for dance into a business, aiming to open a dance studio (sessions 5 and 9). Gina combined her love for fashion and dance to open a clothing store, as she was passionate about fashion trends and unique pieces (sessions 6 and 8).",
+    "uncached_input_tokens": 53
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001536,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 165,
+      "reasoning_tokens": 157,
+      "response_chars": 20,
+      "uncached_input_tokens": 182,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011552,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 165,
+      "reasoning_tokens": 157,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021752,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 182,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 335,
+      "reasoning_tokens": 327,
+      "response_chars": 20,
+      "uncached_input_tokens": 54,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4888e9fe6f2d46a1a156",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "295f2a27a868695e728595bb583d175534439487708e82a4d08b12c1cde75e6e",
+  "status": "completed"
+}

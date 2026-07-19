@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014169,
+    "cost_usd": null,
+    "input_tokens": 3047,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 838,
+    "reasoning_tokens": 687,
+    "text": "Sam faces challenges like struggling with hiking (2023-08-27, item 1) and a health wake-up call after a tough week and doctor’s appointment (2023-08-15, item 8). He tackles them by starting a diet and exercise routine (2023-08-27, item 13), taking a cooking class for healthier meals (2023-08-15, item 8), adopting yoga and a healthier diet (2024-01-10, item 12), and becoming a coach to stay motivated (2023-11-09, items 4, 16). Later, he successfully leads a hiking trip (2023-12-31, item 6), demonstrating progress.",
+    "uncached_input_tokens": 3047
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004956,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 292,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 680,
+      "reasoning_tokens": 672,
+      "response_chars": 18,
+      "uncached_input_tokens": 292,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0064383999999999995,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 292,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1054,
+      "reasoning_tokens": 1046,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 256,
+      "cost_cny": 0.0058444,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 292,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 955,
+      "reasoning_tokens": 947,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_f806f585d541d522b40e",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "2e11a38b5481c03b954030844dba1e52f6e51113f58449dc4eac937d6f6c1634",
+  "status": "completed"
+}

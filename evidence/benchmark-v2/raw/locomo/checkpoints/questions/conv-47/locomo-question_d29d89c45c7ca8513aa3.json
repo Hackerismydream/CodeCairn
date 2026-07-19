@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012213,
+    "cost_usd": null,
+    "input_tokens": 2701,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 685,
+    "reasoning_tokens": 595,
+    "text": "The context does not provide a confirmed date when John and James actually met at McGee's bar. John proposed meeting at \"McGee's Pub\" the next day (likely August 27, 2022), but no follow-up confirms the meeting. James later mentioned being at McGee's bar with Samantha on September 4, 2022, but that doesn't include John. The context is insufficient to answer when they met there.",
+    "uncached_input_tokens": 2701
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.00105,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 73,
+      "reasoning_tokens": 65,
+      "response_chars": 18,
+      "uncached_input_tokens": 204,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018512000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 270,
+      "reasoning_tokens": 262,
+      "response_chars": 18,
+      "uncached_input_tokens": 76,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009032,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 204,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 112,
+      "reasoning_tokens": 104,
+      "response_chars": 18,
+      "uncached_input_tokens": 76,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d29d89c45c7ca8513aa3",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "21bf2c0fff65b26a68f5d43f5b63478ba78d4110c2e8c665ea9475e8a0aca444",
+  "status": "completed"
+}

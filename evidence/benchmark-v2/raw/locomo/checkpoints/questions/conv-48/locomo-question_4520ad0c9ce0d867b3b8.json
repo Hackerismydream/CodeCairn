@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014418,
+    "cost_usd": null,
+    "input_tokens": 2920,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 943,
+    "reasoning_tokens": 836,
+    "text": "Based on the provided memories, Deborah appears to live close to the beach. She frequently shares photos and experiences related to the beach, such as doing yoga on the beach, watching sunsets by the sea, and describing the ocean, sand, and fresh air as part of her regular surroundings (e.g., memories 1, 2, 7, 11). In contrast, mountain imagery appears only in the context of travel or excursions (memories 14, 16, 19), not as her everyday environment.",
+    "uncached_input_tokens": 2920
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001089,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 215,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 74,
+      "reasoning_tokens": 66,
+      "response_chars": 20,
+      "uncached_input_tokens": 215,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0010862,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 215,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 20,
+      "uncached_input_tokens": 87,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0007142,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 215,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 75,
+      "reasoning_tokens": 67,
+      "response_chars": 20,
+      "uncached_input_tokens": 87,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4520ad0c9ce0d867b3b8",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "442ec402d410da908926e80d61a125e29951dcbfac8c866c60e054a924bf8ddb",
+  "status": "completed"
+}

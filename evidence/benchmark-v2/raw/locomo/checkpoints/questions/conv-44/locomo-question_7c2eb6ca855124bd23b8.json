@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0051194,
+    "cost_usd": null,
+    "input_tokens": 2817,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 841,
+    "reasoning_tokens": 767,
+    "text": "The provided memory context does not specify exact dates for the positive reinforcement training course. Audrey mentioned seeing a flyer for a positive reinforcement class on May 11, 2023, and by July 3, 2023, she said she was currently taking a dog training course. The context is insufficient to determine the precise start or end date of the course.",
+    "uncached_input_tokens": 1
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002061,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 250,
+      "reasoning_tokens": 242,
+      "response_chars": 18,
+      "uncached_input_tokens": 187,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0014222,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 207,
+      "reasoning_tokens": 199,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022321999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 187,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 342,
+      "reasoning_tokens": 334,
+      "response_chars": 18,
+      "uncached_input_tokens": 59,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_7c2eb6ca855124bd23b8",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "08c281c6a1748a2a8ca7c6cb7c1c32bb359c4c8b5c936e97d1a15786737cee6d",
+  "status": "completed"
+}

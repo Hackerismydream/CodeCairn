@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012999,
+    "cost_usd": null,
+    "input_tokens": 2809,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 762,
+    "reasoning_tokens": 673,
+    "text": "Melanie went to the pottery workshop on Friday, July 14, 2023. This is derived from her message on July 15, 2023, where she says, \"Last Fri I finally took my kids to a pottery workshop\" ([memory_1db6704f9907596dc2e2](codecairn://memory/memory_1db6704f9907596dc2e2)).",
+    "uncached_input_tokens": 2809
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001113,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 84,
+      "reasoning_tokens": 76,
+      "response_chars": 20,
+      "uncached_input_tokens": 203,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012242,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 166,
+      "reasoning_tokens": 158,
+      "response_chars": 20,
+      "uncached_input_tokens": 75,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012362,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 203,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 168,
+      "reasoning_tokens": 160,
+      "response_chars": 20,
+      "uncached_input_tokens": 75,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a33ddc472eff89d5b7fb",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "6a55c834944520457572023a6982bca854bbf279f8e340aa41dc54aac9d28bdc",
+  "status": "completed"
+}

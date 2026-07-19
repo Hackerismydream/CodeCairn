@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013557,
+    "cost_usd": null,
+    "input_tokens": 3235,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 642,
+    "reasoning_tokens": 586,
+    "text": "According to the memory context, Deborah mentioned on August 24, 2023, that she went to a yoga retreat near her mom's place \"last week.\" This indicates the retreat took place around mid-August 2023, though an exact date is not specified.",
+    "uncached_input_tokens": 3235
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002835,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 385,
+      "reasoning_tokens": 377,
+      "response_chars": 18,
+      "uncached_input_tokens": 175,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0027302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 431,
+      "reasoning_tokens": 423,
+      "response_chars": 20,
+      "uncached_input_tokens": 47,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0022502,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 175,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 351,
+      "reasoning_tokens": 343,
+      "response_chars": 18,
+      "uncached_input_tokens": 47,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b6b2c4a1532ced743193",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "de92490aba9b602622e97a32c212d9af9da5ab37c2eaef2d4349e4a7988d2cd1",
+  "status": "completed"
+}

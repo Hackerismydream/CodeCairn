@@ -1,0 +1,86 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012063,
+    "cost_usd": null,
+    "input_tokens": 3045,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 488,
+    "reasoning_tokens": 464,
+    "text": "The provided memory context does not include any information about Dave's activities on the first weekend of October 2023.",
+    "uncached_input_tokens": 3045
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001314,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 150,
+      "reasoning_tokens": 142,
+      "response_chars": 18,
+      "uncached_input_tokens": 138,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 2,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017132,
+      "cost_usd": null,
+      "failed_attempts": [
+        {
+          "attempt_index": 1,
+          "cached_input_tokens": 128,
+          "cost_cny": 0.0006332,
+          "error_type": "JSONDecodeError",
+          "input_tokens": 138,
+          "model": "deepseek-v4-pro",
+          "output_tokens": 100,
+          "reasoning_tokens": 100,
+          "response_chars": 0,
+          "uncached_input_tokens": 10
+        }
+      ],
+      "input_tokens": 276,
+      "known_cost_cny_count": 2,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 211,
+      "reasoning_tokens": 203,
+      "response_chars": 18,
+      "uncached_input_tokens": 148,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009452000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 138,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 152,
+      "reasoning_tokens": 144,
+      "response_chars": 18,
+      "uncached_input_tokens": 10,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_fe3b0f5695f3e563e3c7",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "023c784d02d15daaf37fb7df8b686aef37989f58764c21c43101b064e09dfb52",
+  "status": "completed"
+}

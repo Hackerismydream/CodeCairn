@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009189,
+    "cost_usd": null,
+    "input_tokens": 2713,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 175,
+    "reasoning_tokens": 165,
+    "text": "Nate is creating gaming content for YouTube.",
+    "uncached_input_tokens": 2713
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001053,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 117,
+      "reasoning_tokens": 106,
+      "response_chars": 24,
+      "uncached_input_tokens": 117,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001161,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 135,
+      "reasoning_tokens": 127,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001275,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 154,
+      "reasoning_tokens": 146,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_6a41846fbd3d4ce5f302",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "74427bd9ca979e25a0fd105f24a72508ac5bd15b4324f5daddb1f8ada6443f4e",
+  "status": "completed"
+}

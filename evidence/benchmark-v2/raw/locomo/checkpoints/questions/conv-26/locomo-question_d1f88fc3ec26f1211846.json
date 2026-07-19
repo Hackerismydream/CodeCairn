@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010755,
+    "cost_usd": null,
+    "input_tokens": 2891,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 347,
+    "reasoning_tokens": 300,
+    "text": "The context does not specify what Caroline saw at the council meeting for adoption. The only mention is that she found it “inspiring and emotional” and noted many people wanted to create loving homes, but no visual details are provided.",
+    "uncached_input_tokens": 2891
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003672,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 530,
+      "reasoning_tokens": 522,
+      "response_chars": 18,
+      "uncached_input_tokens": 164,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0036271999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 586,
+      "reasoning_tokens": 578,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0087092,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 164,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1433,
+      "reasoning_tokens": 1425,
+      "response_chars": 18,
+      "uncached_input_tokens": 36,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_d1f88fc3ec26f1211846",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "7fdf7f3820acdad5729f1987080041311886dd384b7ede973f1890dc73892647",
+  "status": "completed"
+}

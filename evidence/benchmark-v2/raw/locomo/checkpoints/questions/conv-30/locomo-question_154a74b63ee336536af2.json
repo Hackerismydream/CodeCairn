@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.015198,
+    "cost_usd": null,
+    "input_tokens": 2720,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 1173,
+    "reasoning_tokens": 1089,
+    "text": "Gina's store is doing great. She frequently describes it as “a wild ride” but says she’s enjoying it. She has been actively growing her customer base through offers, promotions, influencer collaborations, and ads. She recently built a new online ordering website and got noticed by fashion editors, though she notes it brings pressure. Overall, the store is progressing and she’s determined to keep building it.",
+    "uncached_input_tokens": 2720
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.003123,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 425,
+      "reasoning_tokens": 417,
+      "response_chars": 20,
+      "uncached_input_tokens": 191,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008882,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 116,
+      "reasoning_tokens": 108,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019562,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 191,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 294,
+      "reasoning_tokens": 286,
+      "response_chars": 20,
+      "uncached_input_tokens": 63,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_154a74b63ee336536af2",
+  "sample_id": "conv-30",
+  "schema_version": 1,
+  "source_artifact_sha256": "e58c5772c93a53aa31bdbca9cc216f2315696efbf76a6ae8cfecf10e86900779",
+  "status": "completed"
+}

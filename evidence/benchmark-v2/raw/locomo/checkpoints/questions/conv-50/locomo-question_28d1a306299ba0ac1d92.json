@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010776,
+    "cost_usd": null,
+    "input_tokens": 2910,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 341,
+    "reasoning_tokens": 265,
+    "text": "Dave posted about a car modification project where he showed how he made a car \"look like a beast,\" which inspired others to start their own DIY projects. This comes from a message on 2023-11-02T17:50:30+00:00 in session_28 (memory_62ebf2b4c016c379f30f).",
+    "uncached_input_tokens": 2910
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002262,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 276,
+      "reasoning_tokens": 268,
+      "response_chars": 20,
+      "uncached_input_tokens": 202,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0018692000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 274,
+      "reasoning_tokens": 266,
+      "response_chars": 20,
+      "uncached_input_tokens": 74,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0015812,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 226,
+      "reasoning_tokens": 218,
+      "response_chars": 20,
+      "uncached_input_tokens": 74,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_28d1a306299ba0ac1d92",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "9c1a4ff213acced5fce06ad6548c2e584059e01924cfab2b6c9bd0ebef069d84",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.020517,
+    "cost_usd": null,
+    "input_tokens": 2787,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 2026,
+    "reasoning_tokens": 1884,
+    "text": "Based on the memories, Dave and Calvin share interests in music and cars.  \n- **Music**: Dave jams with his band and attends rock concerts (session 19), while Calvin works on an album in the studio (session 8).  \n- **Cars**: Dave does car mods, restoration, and runs a blog (sessions 12, 21, 25, 28); Calvin enjoys long drives, got a new ride, and consistently asks about Dave’s car projects (sessions 2, 4, 5, 25, 28).  \nThey also mention working together on projects (session 12), but the specific activity isn’t detailed.",
+    "uncached_input_tokens": 2787
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004275,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 255,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 585,
+      "reasoning_tokens": 577,
+      "response_chars": 18,
+      "uncached_input_tokens": 255,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0042721999999999994,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 255,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 648,
+      "reasoning_tokens": 640,
+      "response_chars": 18,
+      "uncached_input_tokens": 127,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0078902,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 255,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 1251,
+      "reasoning_tokens": 1243,
+      "response_chars": 18,
+      "uncached_input_tokens": 127,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_b217f81d7d35cef19a6d",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "040e3f7c096bd9fc07040dcec2d7980ce37aa00a29c010e453d1abaf0f0d5174",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012339,
+    "cost_usd": null,
+    "input_tokens": 2997,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 558,
+    "reasoning_tokens": 491,
+    "text": "The provided memory context does not state a specific reason why Maria’s cousin needed to find a new place. It mentions only that the cousin “had to leave and find a new place in a hurry” and “had a tough time recently,” but no cause is given. Therefore, the context is insufficient to answer the question.",
+    "uncached_input_tokens": 2997
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002604,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 339,
+      "reasoning_tokens": 331,
+      "response_chars": 18,
+      "uncached_input_tokens": 190,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0017852,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 266,
+      "reasoning_tokens": 258,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0033271999999999998,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 190,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 523,
+      "reasoning_tokens": 515,
+      "response_chars": 18,
+      "uncached_input_tokens": 62,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8a8b00b6bf98b3cde592",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "361d2c1b604715ea7a6d959037d40e3717aef64eebe5ae016bfba805b7e6c832",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014529,
+    "cost_usd": null,
+    "input_tokens": 2891,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 976,
+    "reasoning_tokens": 925,
+    "text": "Evan is reading \"The Great Gatsby\" according to his message on 2023-07-27. He previously mentioned finding a mystery novel gripping, but only explicitly named \"The Great Gatsby\" as the novel he was reading at that time.",
+    "uncached_input_tokens": 2891
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002163,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 281,
+      "reasoning_tokens": 273,
+      "response_chars": 20,
+      "uncached_input_tokens": 159,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0042302,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 689,
+      "reasoning_tokens": 678,
+      "response_chars": 22,
+      "uncached_input_tokens": 31,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0011882000000000002,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 159,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 182,
+      "reasoning_tokens": 174,
+      "response_chars": 20,
+      "uncached_input_tokens": 31,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_9a2cedc298e74ca24614",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "8d9e04a024eca2bc62bd2dfaef5bb52b5ce365a8def520e10069dbe55c135847",
+  "status": "completed"
+}

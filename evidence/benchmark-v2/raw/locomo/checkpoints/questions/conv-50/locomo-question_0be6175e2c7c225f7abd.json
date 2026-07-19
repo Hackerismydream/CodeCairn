@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.008847,
+    "cost_usd": null,
+    "input_tokens": 2699,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 125,
+    "reasoning_tokens": 116,
+    "text": "The Fireworks headlined the festival.",
+    "uncached_input_tokens": 2699
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001065,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 119,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 118,
+      "reasoning_tokens": 110,
+      "response_chars": 20,
+      "uncached_input_tokens": 119,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001671,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 119,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 219,
+      "reasoning_tokens": 211,
+      "response_chars": 20,
+      "uncached_input_tokens": 119,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001707,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 119,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 225,
+      "reasoning_tokens": 217,
+      "response_chars": 20,
+      "uncached_input_tokens": 119,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_0be6175e2c7c225f7abd",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "93c5214755795907ccf427ba1b941eb0528761ec1041ad9784ebda24467c2895",
+  "status": "completed"
+}

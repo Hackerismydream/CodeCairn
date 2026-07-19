@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.00987,
+    "cost_usd": null,
+    "input_tokens": 2756,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 267,
+    "reasoning_tokens": 224,
+    "text": "Evan advised Sam to start with good form and technique, find a trainer to help avoid injuries while building strength, begin with light intensity and increase gradually as strength improves, and stay consistent with the workout routine.",
+    "uncached_input_tokens": 2756
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.004098,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 605,
+      "reasoning_tokens": 597,
+      "response_chars": 20,
+      "uncached_input_tokens": 156,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0036872,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 600,
+      "reasoning_tokens": 592,
+      "response_chars": 20,
+      "uncached_input_tokens": 28,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0025772,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 156,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 415,
+      "reasoning_tokens": 407,
+      "response_chars": 20,
+      "uncached_input_tokens": 28,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_26a4d03843af7c5f7385",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "d2237d7721f66f073ba05fb460ca42f6d1ddcdbd56a719330e708a1711398ce2",
+  "status": "completed"
+}

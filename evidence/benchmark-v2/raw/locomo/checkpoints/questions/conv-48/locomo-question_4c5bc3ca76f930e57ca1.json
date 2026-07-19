@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009534,
+    "cost_usd": null,
+    "input_tokens": 2522,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 328,
+    "reasoning_tokens": 283,
+    "text": "Deborah finds instrumental tracks with mellow melodies and rhythms helpful during her yoga practice, mentioning one favorite track called \"Savana\" (2023-03-28T16:06:30+00:00).",
+    "uncached_input_tokens": 2522
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001863,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 229,
+      "reasoning_tokens": 221,
+      "response_chars": 20,
+      "uncached_input_tokens": 163,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0019622,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 309,
+      "reasoning_tokens": 301,
+      "response_chars": 20,
+      "uncached_input_tokens": 35,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009302000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 163,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 137,
+      "reasoning_tokens": 129,
+      "response_chars": 20,
+      "uncached_input_tokens": 35,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4c5bc3ca76f930e57ca1",
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "source_artifact_sha256": "01d55678d3d8cb8bd4147c6784f8098e34b794611652d542e8292f243ced1dd2",
+  "status": "completed"
+}

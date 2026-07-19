@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.012435,
+    "cost_usd": null,
+    "input_tokens": 2489,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 828,
+    "reasoning_tokens": 724,
+    "text": "Based on the memory context, Melanie might describe Caroline as brave, authentic, and creative. In session_1, Melanie tells Caroline, “You’ve got guts,” pointing to courage. In session_16, she expresses pride in Caroline “being your true self,” suggesting authenticity. Melanie also frequently compliments Caroline’s artwork (e.g., sessions 14, 16, 17), indicating creativity. The memories also show Caroline being supportive and community-minded, but the above traits are directly expressed by Melanie.",
+    "uncached_input_tokens": 2489
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.002226,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 214,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 264,
+      "reasoning_tokens": 256,
+      "response_chars": 18,
+      "uncached_input_tokens": 214,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0024211999999999997,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 214,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 360,
+      "reasoning_tokens": 352,
+      "response_chars": 18,
+      "uncached_input_tokens": 86,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012812000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 214,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 170,
+      "reasoning_tokens": 162,
+      "response_chars": 18,
+      "uncached_input_tokens": 86,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_41c3e6dae04b1d0b52e8",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "03de3de8f61a1476e75a2c7b578f79f7550a7e65334e8338baa9cce07e06c482",
+  "status": "completed"
+}

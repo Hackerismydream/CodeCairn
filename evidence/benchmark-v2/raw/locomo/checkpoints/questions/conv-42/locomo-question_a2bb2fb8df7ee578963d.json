@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 2816,
+    "cost_cny": 0.0009914,
+    "cost_usd": null,
+    "input_tokens": 2901,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 111,
+    "reasoning_tokens": 105,
+    "text": "Max, a dog.",
+    "uncached_input_tokens": 85
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001149,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001557,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 201,
+      "reasoning_tokens": 193,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001731,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 230,
+      "reasoning_tokens": 222,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a2bb2fb8df7ee578963d",
+  "sample_id": "conv-42",
+  "schema_version": 1,
+  "source_artifact_sha256": "c4a4799d7942e9d6c8ad1fdbc580cef95b4bc9999f60c8f3df5f1a1d2f2c3ae4",
+  "status": "completed"
+}

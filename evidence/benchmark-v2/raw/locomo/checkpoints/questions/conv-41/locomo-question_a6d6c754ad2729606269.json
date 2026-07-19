@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.013737,
+    "cost_usd": null,
+    "input_tokens": 3087,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 746,
+    "reasoning_tokens": 658,
+    "text": "The provided memory context does not contain a record of John participating in a 5K charity run. While John mentions setting up a 5K charity run (2023-08-09) and participating in a community fundraising event (also 2023-08-09), none of the memories explicitly state that he participated in the run itself. The only 5K charity run participation mentioned is by Maria in an earlier session.",
+    "uncached_input_tokens": 3087
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001662,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 176,
+      "reasoning_tokens": 168,
+      "response_chars": 18,
+      "uncached_input_tokens": 202,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0008432,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 103,
+      "reasoning_tokens": 95,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0013532000000000001,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 202,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "wrong",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 188,
+      "reasoning_tokens": 180,
+      "response_chars": 18,
+      "uncached_input_tokens": 74,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_a6d6c754ad2729606269",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "61fcc50bf0b9ae67e38de58f0ccff07c70c771fe7fa5c209dff0ec9a99084ae5",
+  "status": "completed"
+}

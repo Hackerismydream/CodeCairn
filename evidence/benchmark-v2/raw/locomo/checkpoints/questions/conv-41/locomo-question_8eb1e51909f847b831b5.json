@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010161,
+    "cost_usd": null,
+    "input_tokens": 2809,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 289,
+    "reasoning_tokens": 222,
+    "text": "Based on the provided memory context, John started blogging about politics and policies because he cares about making a real impact, particularly on education and infrastructure, which he knows firsthand affect neighborhoods. He also hoped to raise awareness, start conversations, and create positive change. (Source: session_12, 2023-04-18)",
+    "uncached_input_tokens": 2809
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001803,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 210,
+      "reasoning_tokens": 202,
+      "response_chars": 20,
+      "uncached_input_tokens": 181,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0021362,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 329,
+      "reasoning_tokens": 321,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0009602,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 181,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 133,
+      "reasoning_tokens": 125,
+      "response_chars": 20,
+      "uncached_input_tokens": 53,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_8eb1e51909f847b831b5",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "d7c64a006f82f20e4a5828d5fb60f76eb14ae3c203ec93f9a993061ceda5e6a8",
+  "status": "completed"
+}

@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.010275,
+    "cost_usd": null,
+    "input_tokens": 2639,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 393,
+    "reasoning_tokens": 381,
+    "text": "The name of John's cousin's dog is Luna.",
+    "uncached_input_tokens": 2639
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000894,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 89,
+      "reasoning_tokens": 81,
+      "response_chars": 20,
+      "uncached_input_tokens": 120,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000948,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 98,
+      "reasoning_tokens": 90,
+      "response_chars": 20,
+      "uncached_input_tokens": 120,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.000768,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 120,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 68,
+      "reasoning_tokens": 60,
+      "response_chars": 20,
+      "uncached_input_tokens": 120,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_ca99d92d77c1c57cb068",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "ea3876c7baad9e0ad82c769ccbabba81f7d5b65ada90afcc4e9962967487a43b",
+  "status": "completed"
+}

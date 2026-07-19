@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.009405,
+    "cost_usd": null,
+    "input_tokens": 2671,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 232,
+    "reasoning_tokens": 223,
+    "text": "John joined a service-focused online group.",
+    "uncached_input_tokens": 2671
+  },
+  "category": 4,
+  "category_name": "temporal",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001515,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 194,
+      "reasoning_tokens": 186,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001293,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 157,
+      "reasoning_tokens": 149,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001023,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 117,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 112,
+      "reasoning_tokens": 104,
+      "response_chars": 20,
+      "uncached_input_tokens": 117,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_60b8cd4d43db1595b6a4",
+  "sample_id": "conv-41",
+  "schema_version": 1,
+  "source_artifact_sha256": "b26becb5dd7e8ab53fe77058d4c761ce73bf27b43cbe5b3488f04be676437e47",
+  "status": "completed"
+}

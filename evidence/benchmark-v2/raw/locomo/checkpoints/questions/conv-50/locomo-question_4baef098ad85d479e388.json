@@ -1,0 +1,73 @@
+{
+  "answer": {
+    "cached_input_tokens": 0,
+    "cost_cny": 0.014766,
+    "cost_usd": null,
+    "input_tokens": 2978,
+    "model": "deepseek-v4-pro",
+    "output_tokens": 972,
+    "reasoning_tokens": 854,
+    "text": "Yes, Calvin loves music tours.  \n- On **2023-09-13**, he said: “Next up, a tour - so excited!” (session_18).  \n- On **2023-05-31**, he recalled: “Touring with Frank Ocean last week was wild … I felt so alive when performing” (session_7).  \n- On **2023-04-20**, he spoke of “dreaming of touring the world” and loving the connection with crowds (session_3).  \n\nHis statements consistently show enthusiasm and passion for touring.",
+    "uncached_input_tokens": 2978
+  },
+  "category": 3,
+  "category_name": "open-domain",
+  "judge_votes": [
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 0,
+      "cost_cny": 0.001527,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 229,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 140,
+      "reasoning_tokens": 132,
+      "response_chars": 20,
+      "uncached_input_tokens": 229,
+      "vote_index": 0
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0016742,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 229,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 228,
+      "reasoning_tokens": 220,
+      "response_chars": 20,
+      "uncached_input_tokens": 101,
+      "vote_index": 1
+    },
+    {
+      "attempt_count": 1,
+      "cached_input_tokens": 128,
+      "cost_cny": 0.0012422,
+      "cost_usd": null,
+      "failed_attempts": [],
+      "input_tokens": 229,
+      "known_cost_cny_count": 1,
+      "known_cost_count": 0,
+      "label": "correct",
+      "model": "deepseek-v4-pro",
+      "output_tokens": 156,
+      "reasoning_tokens": 148,
+      "response_chars": 20,
+      "uncached_input_tokens": 101,
+      "vote_index": 2
+    }
+  ],
+  "question_id": "locomo-question_4baef098ad85d479e388",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source_artifact_sha256": "52df67a1b322e23ea53ce25d3b5cff2f4bd71f74b4dbd565e1a338c22d008e60",
+  "status": "completed"
+}
