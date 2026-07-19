@@ -19,3 +19,14 @@ calls that observe long-running command completion; unrelated function outputs
 cannot author outcomes.
 Patch paths, including absolute or parent-relative paths found in real Codex
 traces, remain exact evidence strings and are never used as filesystem targets.
+
+Claude Code support reads its user and assistant message envelopes, flattens
+text, `tool_use`, and `tool_result` blocks into the same event contract, and
+pairs them by `tool_use_id`. A paired `Bash` result derives command outcome from
+the recorded result envelope. Successful `Write`, `Edit`, and `MultiEdit`
+results derive file-change facts from their structured result without treating
+tool input alone as proof that a change occurred.
+
+The composition root uses a provider router. A new source is detected from its
+JSONL envelope; a resumed source uses the provider persisted in its checkpoint.
+Provider choice never enters extraction, persistence, CLI, or HTTP behavior.

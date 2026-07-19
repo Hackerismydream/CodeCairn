@@ -49,9 +49,11 @@ It hides parsing, stable identity, episode creation, evidence derivation,
 durable writes, and cursor commits. CLI and HTTP call the same interface.
 
 `MemoryRuntime` depends only on importer, Markdown-store, and state-store ports.
-`codecairn.bootstrap` is the single composition root that selects the Codex,
-filesystem, and SQLite adapters. Import-linter contracts prevent service and
-entrypoint code from reaching through those ports to concrete adapters.
+`codecairn.bootstrap` is the single composition root that selects the provider
+router, filesystem, and SQLite adapters. The router reads a JSONL source once,
+selects the Codex or Claude Code adapter, and keeps provider format branches out
+of the service layer. Import-linter contracts prevent service and entrypoint
+code from reaching through those ports to concrete adapters.
 
 The evaluation module exposes one interface:
 

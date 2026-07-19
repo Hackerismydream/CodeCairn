@@ -29,10 +29,10 @@ uv sync --all-groups
 make check
 ```
 
-The first implemented vertical slice imports an auditable Failed Command from a
-Codex JSONL session. Repeated imports validate the committed prefix, resume from
-the active Task Episode, and repair committed Markdown through an audited
-recovery path:
+The import path auto-detects Codex and Claude Code JSONL and emits one shared
+Agent Trace before creating an auditable Failed Command. Repeated imports
+validate the committed prefix, resume from the active Task Episode, and repair
+committed Markdown through an audited recovery path:
 
 ```bash
 uv run codecairn import /path/to/session.jsonl \

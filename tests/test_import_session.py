@@ -17,6 +17,7 @@ from codecairn.service.runtime import MemoryRuntime
 from codecairn.storage.markdown import MarkdownMemoryStore
 
 FIXTURES = Path(__file__).parent / "fixtures" / "codex"
+CLAUDE_FIXTURE = Path(__file__).parent / "fixtures" / "claude" / "failed_command.jsonl"
 
 
 def test_imports_codex_failed_command_as_auditable_memory(tmp_path: Path) -> None:
@@ -52,6 +53,107 @@ def test_imports_codex_failed_command_as_auditable_memory(tmp_path: Path) -> Non
 
     restored = MarkdownMemoryStore(tmp_path / "runtime").read(Path(memory.markdown_path))
     assert restored == memory
+
+
+def test_imports_claude_failed_command_through_the_shared_runtime(tmp_path: Path) -> None:
+    runtime = create_runtime(tmp_path / "runtime")
+
+    result = runtime.import_session(CLAUDE_FIXTURE, repo_key="acme/widgets")
+
+    assert result.provider == "claude"
+    assert result.session_id == "claude-session-test-001"
+    assert result.raw_event_count == 6
+    assert result.created_memory_count == 1
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    assert memory.memory_type == "failed_command"
+    assert memory.command == "uv run pytest"
+    assert memory.exit_code == 1
+    assert memory.evidence[0].provider == "claude"
+    assert [item.raw_event_index for item in memory.evidence] == [1, 2]
+
+
+def test_cross_provider_session_identifiers_cannot_collide(tmp_path: Path) -> None:
+    claude_source = tmp_path / "claude.jsonl"
+    claude_source.write_text(
+        CLAUDE_FIXTURE.read_text(encoding="utf-8").replace(
+            "claude-session-test-001",
+            "session-test-001",
+        ),
+        encoding="utf-8",
+    )
+    runtime = create_runtime(tmp_path / "runtime")
+
+    runtime.import_session(FIXTURES / "failed_command.jsonl", repo_key="acme/widgets")
+    runtime.import_session(claude_source, repo_key="acme/widgets")
+
+    memories = runtime.list_memories(repo_key="acme/widgets")
+    assert len(memories) == 2
+    assert len({memory.memory_id for memory in memories}) == 2
+    assert {memory.evidence[0].provider for memory in memories} == {"claude", "codex"}
+
+
+def test_repeat_claude_import_resumes_from_the_last_active_task(tmp_path: Path) -> None:
+    source = tmp_path / "claude-two-tasks.jsonl"
+    second_task = [
+        {
+            "type": "user",
+            "sessionId": "claude-session-test-001",
+            "uuid": "user-002",
+            "parentUuid": "assistant-003",
+            "message": {"role": "user", "content": "Run the integration suite."},
+        },
+        {
+            "type": "assistant",
+            "sessionId": "claude-session-test-001",
+            "uuid": "assistant-004",
+            "parentUuid": "user-002",
+            "message": {
+                "type": "message",
+                "role": "assistant",
+                "content": [
+                    {
+                        "type": "tool_use",
+                        "id": "tool-call-003",
+                        "name": "Bash",
+                        "input": {"command": "uv run pytest tests/integration"},
+                    }
+                ],
+            },
+        },
+        {
+            "type": "user",
+            "sessionId": "claude-session-test-001",
+            "uuid": "result-003",
+            "parentUuid": "assistant-004",
+            "message": {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": "tool-call-003",
+                        "content": "Exit code 2\n2 failed",
+                        "is_error": True,
+                    }
+                ],
+            },
+        },
+    ]
+    source.write_text(
+        CLAUDE_FIXTURE.read_text(encoding="utf-8")
+        + "".join(f"{json.dumps(record)}\n" for record in second_task),
+        encoding="utf-8",
+    )
+    runtime = create_runtime(tmp_path / "runtime")
+
+    initial = runtime.import_session(source, repo_key="acme/widgets")
+    repeated = runtime.import_session(source, repo_key="acme/widgets")
+
+    assert initial.processed_raw_event_count == 9
+    assert initial.created_memory_count == 2
+    assert repeated.resumed_from_raw_event_index == 6
+    assert repeated.processed_raw_event_count == 3
+    assert repeated.created_memory_count == 0
+    assert repeated.skipped_memory_count == 1
 
 
 def test_appending_unrelated_session_record_does_not_rename_committed_memory(

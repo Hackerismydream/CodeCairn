@@ -20,8 +20,6 @@ from codecairn.memory.trace import (
 
 
 class TraceImporter(Protocol):
-    provider: str
-
     def read(
         self,
         source_path: Path,
@@ -44,7 +42,6 @@ class ImportState(Protocol):
         self,
         *,
         repo_key: str,
-        provider: str,
         source_path: str,
     ) -> ImportCheckpoint | None: ...
 
@@ -107,7 +104,6 @@ class MemoryRuntime:
         observed_path = str(Path(os.path.abspath(source_path)))
         checkpoint = self._state.get_checkpoint(
             repo_key=repo_key,
-            provider=self._importer.provider,
             source_path=observed_path,
         )
         trace = self._importer.read(
@@ -147,7 +143,7 @@ class MemoryRuntime:
             raw_event_count=trace.raw_event_count,
             committed_raw_event_index=committed_raw_event_index,
             resumed_from_raw_event_index=trace.resumed_from_raw_event_index,
-            processed_raw_event_count=len(trace.events),
+            processed_raw_event_count=len(trace.raw_suffix_event_sha256s),
             created_memory_count=created_count,
             skipped_memory_count=len(persisted) - created_count,
             repaired_memory_count=repaired_memory_count,
@@ -229,13 +225,19 @@ def _next_resume_checkpoint(trace: AgentTrace) -> tuple[int, str, tuple[str, ...
     prefix_sha256 = trace.raw_prefix_sha256
     call_ids = set(trace.raw_prefix_call_ids)
     file_change_fact_count = trace.raw_prefix_file_change_fact_count
-    for event in trace.events:
-        if event.evidence.raw_event_index >= resume_raw_event_index:
+    for offset, raw_event_sha256 in enumerate(
+        trace.raw_suffix_event_sha256s,
+        start=trace.resumed_from_raw_event_index,
+    ):
+        if offset >= resume_raw_event_index:
             break
         prefix_sha256 = extend_raw_prefix_sha256(
             prefix_sha256,
-            event.evidence.raw_event_sha256,
+            raw_event_sha256,
         )
+    for event in trace.events:
+        if event.evidence.raw_event_index >= resume_raw_event_index:
+            break
         if event.kind == "tool_call" and event.call_id is not None:
             call_ids.add(event.call_id)
         file_change_fact_count += len(event.file_changes)

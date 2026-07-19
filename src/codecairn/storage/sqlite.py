@@ -25,23 +25,26 @@ class SQLiteState:
         self,
         *,
         repo_key: str,
-        provider: str,
         source_path: str,
     ) -> ImportCheckpoint | None:
         with self._connect() as connection:
-            row = connection.execute(
+            rows = connection.execute(
                 """
-                SELECT session_id, committed_raw_event_index,
+                SELECT provider, session_id, committed_raw_event_index,
                        resume_raw_event_index, resume_prefix_sha256,
                        resume_call_ids_json, resume_file_change_fact_count
                 FROM imports
-                WHERE repo_key = ? AND provider = ? AND source_path = ?
+                WHERE repo_key = ? AND source_path = ?
                 """,
-                (repo_key, provider, source_path),
-            ).fetchone()
-        if row is None:
+                (repo_key, source_path),
+            ).fetchall()
+        if not rows:
             return None
+        if len(rows) != 1:
+            raise ValueError(f"Import source has conflicting provider checkpoints: {source_path}")
+        row = rows[0]
         return ImportCheckpoint(
+            provider=row["provider"],
             session_id=row["session_id"],
             committed_raw_event_index=row["committed_raw_event_index"],
             resume_raw_event_index=row["resume_raw_event_index"],
