@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
-  "suite_id": "coding-memory-bench-20-v1",
+  "suite_id": "coding-memory-bench-20-v2",
+  "verifier_source_path": "verifier/verify.py",
   "tasks": [
     {
       "task_id": "task-01",
       "prompt": "Repair clamp; boundary and in-range values are currently wrong. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-01.md",
-      "verifier_argv": ["{python}", "verify.py", "task-01"],
+      "verifier_argv": ["{python}", "{verifier}", "task-01"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -15,7 +16,7 @@
       "prompt": "Repair parse_bool so configuration values behave consistently. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-02.md",
-      "verifier_argv": ["{python}", "verify.py", "task-02"],
+      "verifier_argv": ["{python}", "{verifier}", "task-02"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -23,7 +24,7 @@
       "prompt": "Repair chunked; it loses values and mishandles invalid sizes. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-03.md",
-      "verifier_argv": ["{python}", "verify.py", "task-03"],
+      "verifier_argv": ["{python}", "{verifier}", "task-03"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -31,7 +32,7 @@
       "prompt": "Repair unique_stable; callers observe unstable ordering. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-04.md",
-      "verifier_argv": ["{python}", "verify.py", "task-04"],
+      "verifier_argv": ["{python}", "{verifier}", "task-04"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -39,7 +40,7 @@
       "prompt": "Repair retry_delay; long retry sequences wait beyond the configured policy. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-05.md",
-      "verifier_argv": ["{python}", "verify.py", "task-05"],
+      "verifier_argv": ["{python}", "{verifier}", "task-05"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -47,7 +48,7 @@
       "prompt": "Repair redact_token; short credentials are exposed incorrectly. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-06.md",
-      "verifier_argv": ["{python}", "verify.py", "task-06"],
+      "verifier_argv": ["{python}", "{verifier}", "task-06"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -55,7 +56,7 @@
       "prompt": "Repair normalize_repo_key so equivalent repository identifiers canonicalize identically.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-07.md",
-      "verifier_argv": ["{python}", "verify.py", "task-07"],
+      "verifier_argv": ["{python}", "{verifier}", "task-07"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -63,7 +64,7 @@
       "prompt": "Repair merge_ranges; adjacent ranges are fragmented. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-08.md",
-      "verifier_argv": ["{python}", "verify.py", "task-08"],
+      "verifier_argv": ["{python}", "{verifier}", "task-08"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -71,7 +72,7 @@
       "prompt": "Repair parse_duration_ms so supported duration literals convert correctly. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-09.md",
-      "verifier_argv": ["{python}", "verify.py", "task-09"],
+      "verifier_argv": ["{python}", "{verifier}", "task-09"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -79,7 +80,7 @@
       "prompt": "Harden safe_relative_path against paths that leave the workspace. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-10.md",
-      "verifier_argv": ["{python}", "verify.py", "task-10"],
+      "verifier_argv": ["{python}", "{verifier}", "task-10"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -87,7 +88,7 @@
       "prompt": "Repair stable_partition; matching values have their original order reversed. Preserve its signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-11.md",
-      "verifier_argv": ["{python}", "verify.py", "task-11"],
+      "verifier_argv": ["{python}", "{verifier}", "task-11"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -95,7 +96,7 @@
       "prompt": "Repair median for edge cases and even-length sequences. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-12.md",
-      "verifier_argv": ["{python}", "verify.py", "task-12"],
+      "verifier_argv": ["{python}", "{verifier}", "task-12"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -103,7 +104,7 @@
       "prompt": "Repair slugify so display names become repository-safe slugs. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-13.md",
-      "verifier_argv": ["{python}", "verify.py", "task-13"],
+      "verifier_argv": ["{python}", "{verifier}", "task-13"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -111,7 +112,7 @@
       "prompt": "Repair env_enabled; several common disabled values are treated as enabled. Preserve its signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-14.md",
-      "verifier_argv": ["{python}", "verify.py", "task-14"],
+      "verifier_argv": ["{python}", "{verifier}", "task-14"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -119,7 +120,7 @@
       "prompt": "Repair deep_get so missing nested configuration returns the default safely. Preserve its signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-15.md",
-      "verifier_argv": ["{python}", "verify.py", "task-15"],
+      "verifier_argv": ["{python}", "{verifier}", "task-15"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -127,7 +128,7 @@
       "prompt": "Repair bounded_tail for non-positive limits. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-16.md",
-      "verifier_argv": ["{python}", "verify.py", "task-16"],
+      "verifier_argv": ["{python}", "{verifier}", "task-16"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -135,7 +136,7 @@
       "prompt": "Repair percent_change when the previous value is zero. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-17.md",
-      "verifier_argv": ["{python}", "verify.py", "task-17"],
+      "verifier_argv": ["{python}", "{verifier}", "task-17"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -143,7 +144,7 @@
       "prompt": "Repair extension for dotfiles and ordinary paths. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-18.md",
-      "verifier_argv": ["{python}", "verify.py", "task-18"],
+      "verifier_argv": ["{python}", "{verifier}", "task-18"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -151,7 +152,7 @@
       "prompt": "Repair common_prefix; it currently returns a whole input string. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-19.md",
-      "verifier_argv": ["{python}", "verify.py", "task-19"],
+      "verifier_argv": ["{python}", "{verifier}", "task-19"],
       "verifier_timeout_seconds": 20
     },
     {
@@ -159,7 +160,7 @@
       "prompt": "Repair truncate_middle so its result respects the requested limit. Preserve its public signature.",
       "starter_path": "starter",
       "recall_context_path": "contexts/task-20.md",
-      "verifier_argv": ["{python}", "verify.py", "task-20"],
+      "verifier_argv": ["{python}", "{verifier}", "task-20"],
       "verifier_timeout_seconds": 20
     }
   ]

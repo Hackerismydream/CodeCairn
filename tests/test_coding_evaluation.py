@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -34,6 +36,7 @@ class RecordingAgent:
 
     def run(self, request: AgentRunRequest) -> AgentExecution:
         self.requests.append(request)
+        assert not any(request.workspace.rglob("verify.py"))
         if request.repeat in self.fail_repeats:
             raise RuntimeError("provider unavailable")
         target = request.workspace / "answer.txt"
@@ -59,7 +62,8 @@ def _write_suite(root: Path) -> Path:
     starter = root / "starter"
     starter.mkdir(parents=True)
     (starter / "answer.txt").write_text("broken\n", encoding="utf-8")
-    (starter / "verify.py").write_text(
+    verifier = root / "verifier.py"
+    verifier.write_text(
         "from pathlib import Path\n"
         "value = Path('answer.txt').read_text().strip()\n"
         "raise SystemExit(0 if value in {'plain', 'memory'} else 1)\n",
@@ -73,13 +77,14 @@ def _write_suite(root: Path) -> Path:
             {
                 "schema_version": 1,
                 "suite_id": "fixture",
+                "verifier_source_path": "verifier.py",
                 "tasks": [
                     {
                         "task_id": "task-01",
                         "prompt": "Repair answer.txt.",
                         "starter_path": "starter",
                         "recall_context_path": "memory.md",
-                        "verifier_argv": ["{python}", "verify.py"],
+                        "verifier_argv": ["{python}", "{verifier}"],
                         "verifier_timeout_seconds": 10,
                     }
                 ],
@@ -131,10 +136,12 @@ def test_coding_runner_creates_isolated_immutable_runs_and_executes_verifier(
         manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
         assert result["outcome"] == "passed"
         assert verifier["exit_code"] == 0
+        assert verifier["verifier_source_sha256"] == manifest["verifier_source_sha256"]
         assert verifier["executed_in_workspace"] is True
         assert manifest["workspace_snapshot_before_sha256"]
         assert manifest["memory_snapshot_sha256"]
         assert (run_dir / "raw-agent-trace.log").read_text(encoding="utf-8")
+        assert not any((run_dir / "workspace").rglob("verify.py"))
 
     on = artifact.summary["arms"]["memory-on"]
     assert on["pass_rate"] == 1.0
@@ -210,6 +217,7 @@ def test_checked_in_suite_defines_20_tasks_and_120_default_runs() -> None:
     assert len(suite.tasks) * 2 * 3 == 120
     assert all(task.verifier_argv for task in suite.tasks)
     assert all(task.recall_context_path is not None for task in suite.tasks)
+    assert suite.verifier_source_path.name == "verify.py"
 
 
 def test_codex_trace_parser_extracts_usage_changes_and_shell_wrapped_reads() -> None:
@@ -302,3 +310,104 @@ def test_codex_agent_uses_ephemeral_auth_home_and_does_not_forward_secrets(
     assert "OPENAI_API_KEY" not in environment
     assert environment["HOME"] == environment["CODEX_HOME"]
     assert not os.path.exists(str(environment["CODEX_HOME"]))
+
+
+def test_task_19_verifier_accepts_the_actual_longest_common_prefix(tmp_path: Path) -> None:
+    shutil.copyfile(BENCHMARK_ROOT / "verifier" / "verify.py", tmp_path / "verify.py")
+    correct_source = (
+        "def common_prefix(values):\n"
+        "    if not values:\n"
+        "        return ''\n"
+        "    prefix = values[0]\n"
+        "    for value in values[1:]:\n"
+        "        while not value.startswith(prefix):\n"
+        "            prefix = prefix[:-1]\n"
+        "    return prefix\n"
+    )
+    (tmp_path / "kata.py").write_text(correct_source, encoding="utf-8")
+
+    correct = subprocess.run(
+        [sys.executable, "verify.py", "task-19"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=False,
+        env={"PYTHONPATH": str(tmp_path)},
+    )
+
+    assert correct.returncode == 0, correct.stderr
+
+    (tmp_path / "kata.py").write_text(
+        "def common_prefix(values):\n    return 'age' if values else ''\n",
+        encoding="utf-8",
+    )
+    wrong = subprocess.run(
+        [sys.executable, "verify.py", "task-19"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=False,
+        env={"PYTHONPATH": str(tmp_path)},
+    )
+    assert wrong.returncode != 0
+
+
+def test_runner_injects_real_verifier_after_agent_and_imports_workspace_code(
+    tmp_path: Path,
+) -> None:
+    inputs = tmp_path / "inputs"
+    starter = inputs / "starter"
+    verifier = inputs / "verifier"
+    starter.mkdir(parents=True)
+    verifier.mkdir()
+    (starter / "answer.txt").write_text("broken\n", encoding="utf-8")
+    (starter / "kata.py").write_text(
+        "def common_prefix(values):\n"
+        "    if not values:\n"
+        "        return ''\n"
+        "    prefix = values[0]\n"
+        "    for value in values[1:]:\n"
+        "        while not value.startswith(prefix):\n"
+        "            prefix = prefix[:-1]\n"
+        "    return prefix\n",
+        encoding="utf-8",
+    )
+    shutil.copyfile(BENCHMARK_ROOT / "verifier" / "verify.py", verifier / "verify.py")
+    context = inputs / "memory.md"
+    context.write_text("Use the longest character prefix.\n", encoding="utf-8")
+    suite = inputs / "suite.json"
+    suite.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "suite_id": "hidden-verifier-fixture",
+                "verifier_source_path": "verifier/verify.py",
+                "tasks": [
+                    {
+                        "task_id": "task-19",
+                        "prompt": "Repair common_prefix.",
+                        "starter_path": "starter",
+                        "recall_context_path": "memory.md",
+                        "verifier_argv": ["{python}", "{verifier}", "task-19"],
+                        "verifier_timeout_seconds": 10,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    artifact = run_coding_evaluation(
+        CodingRunConfig(
+            suite_path=suite,
+            output_root=tmp_path / "runs",
+            experiment_id="hidden-verifier",
+            repository_commit="abc123",
+            repeats=1,
+        ),
+        agent=RecordingAgent(),
+    )
+
+    assert artifact.summary["completed_run_count"] == 2
+    assert artifact.summary["arms"]["memory-off"]["pass_rate"] == 1.0
+    assert artifact.summary["arms"]["memory-on"]["pass_rate"] == 1.0

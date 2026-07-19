@@ -61,6 +61,7 @@ class CodingSuite:
     suite_id: str
     source_path: Path
     source_sha256: str
+    verifier_source_path: Path
     tasks: tuple[CodingTask, ...]
 
 
@@ -214,6 +215,9 @@ def load_coding_suite(path: Path) -> CodingSuite:
     if not isinstance(raw_tasks, list) or not raw_tasks:
         raise ValueError("Coding suite tasks must be a non-empty array")
     tasks = tuple(_parse_task(item, root=root) for item in raw_tasks)
+    verifier_source_path = _resolve_input_path(root, _required_str(payload, "verifier_source_path"))
+    if not verifier_source_path.is_file():
+        raise ValueError(f"Verifier source path is not a file: {verifier_source_path}")
     task_ids = [task.task_id for task in tasks]
     if len(task_ids) != len(set(task_ids)):
         raise ValueError("Coding task identifiers must be unique")
@@ -221,6 +225,7 @@ def load_coding_suite(path: Path) -> CodingSuite:
         suite_id=suite_id,
         source_path=source_path,
         source_sha256=file_sha256(source_path),
+        verifier_source_path=verifier_source_path,
         tasks=tasks,
     )
 
@@ -271,6 +276,7 @@ def run_coding_evaluation(
                     seed=config.seed + repeat - 1,
                     repository_commit=config.repository_commit,
                     agent=agent,
+                    verifier_source_path=suite.verifier_source_path,
                 )
                 for task, repeat in work
             ]
@@ -356,6 +362,7 @@ def _run_one(
     seed: int,
     repository_commit: str,
     agent: CodingAgent,
+    verifier_source_path: Path,
 ) -> None:
     starter_sha256 = _directory_sha256(task.starter_path)
     memory_sha256 = (
@@ -363,6 +370,7 @@ def _run_one(
         if arm == "memory-on" and task.recall_context_path is not None
         else hashlib.sha256(b"").hexdigest()
     )
+    verifier_source_sha256 = file_sha256(verifier_source_path)
     identity = canonical_json(
         {
             "task_id": task.task_id,
@@ -372,6 +380,7 @@ def _run_one(
             "repository_commit": repository_commit,
             "starter_sha256": starter_sha256,
             "memory_sha256": memory_sha256,
+            "verifier_source_sha256": verifier_source_sha256,
             "agent": agent.public_config,
         }
     )
@@ -400,6 +409,7 @@ def _run_one(
         "repository_commit": repository_commit,
         "workspace_snapshot_before_sha256": workspace_snapshot,
         "memory_snapshot_sha256": memory_sha256,
+        "verifier_source_sha256": verifier_source_sha256,
         "agent": agent.public_config,
         "verifier_argv": list(task.verifier_argv),
         "verifier_timeout_seconds": task.verifier_timeout_seconds,
@@ -457,8 +467,13 @@ def _run_one(
             error_type="AgentProcessError",
         )
         return
+    workspace_snapshot_after = _directory_sha256(workspace)
     try:
-        verifier = _execute_verifier(task, workspace=workspace)
+        verifier = _execute_verifier(
+            task,
+            workspace=workspace,
+            verifier_source_path=verifier_source_path,
+        )
     except Exception as error:
         write_json_exclusive(
             item_dir / "verifier.json",
@@ -494,7 +509,7 @@ def _run_one(
             "arm": arm,
             "repeat": repeat,
             "outcome": outcome,
-            "workspace_snapshot_after_sha256": _directory_sha256(workspace),
+            "workspace_snapshot_after_sha256": workspace_snapshot_after,
             "input_tokens": execution.input_tokens,
             "cached_input_tokens": execution.cached_input_tokens,
             "output_tokens": execution.output_tokens,
@@ -537,8 +552,24 @@ def _write_infrastructure_result(
     )
 
 
-def _execute_verifier(task: CodingTask, *, workspace: Path) -> dict[str, object]:
-    argv = [sys.executable if value == "{python}" else value for value in task.verifier_argv]
+def _execute_verifier(
+    task: CodingTask,
+    *,
+    workspace: Path,
+    verifier_source_path: Path,
+) -> dict[str, object]:
+    verifier_directory = workspace / ".codecairn-verifier"
+    verifier_directory.mkdir(parents=False, exist_ok=False)
+    verifier_path = verifier_directory / "verify.py"
+    shutil.copyfile(verifier_source_path, verifier_path)
+    argv = [
+        sys.executable
+        if value == "{python}"
+        else str(verifier_path.relative_to(workspace))
+        if value == "{verifier}"
+        else value
+        for value in task.verifier_argv
+    ]
     started = time.perf_counter()
     try:
         completed = subprocess.run(
@@ -548,12 +579,15 @@ def _execute_verifier(task: CodingTask, *, workspace: Path) -> dict[str, object]
             capture_output=True,
             timeout=task.verifier_timeout_seconds,
             check=False,
-            env=_verifier_environment(),
+            env=_verifier_environment(workspace=workspace),
         )
     except subprocess.TimeoutExpired as error:
         raise RuntimeError(
             f"Verifier timed out after {task.verifier_timeout_seconds} seconds"
         ) from error
+    finally:
+        verifier_path.unlink(missing_ok=True)
+        verifier_directory.rmdir()
     return {
         "schema_version": 1,
         "status": "completed",
@@ -567,6 +601,7 @@ def _execute_verifier(task: CodingTask, *, workspace: Path) -> dict[str, object]
         "output_sha256": hashlib.sha256(
             (completed.stdout + "\0" + completed.stderr).encode()
         ).hexdigest(),
+        "verifier_source_sha256": file_sha256(verifier_source_path),
     }
 
 
@@ -758,9 +793,11 @@ def _agent_environment(*, codex_home: Path) -> dict[str, str]:
     return environment
 
 
-def _verifier_environment() -> dict[str, str]:
+def _verifier_environment(*, workspace: Path) -> dict[str, str]:
     allowed = ("PATH", "LANG", "LC_ALL", "TMPDIR", "SYSTEMROOT", "WINDIR")
-    return {key: value for key, value in os.environ.items() if key in allowed}
+    environment = {key: value for key, value in os.environ.items() if key in allowed}
+    environment["PYTHONPATH"] = str(workspace)
+    return environment
 
 
 def _write_text_exclusive(path: Path, value: str) -> None:
