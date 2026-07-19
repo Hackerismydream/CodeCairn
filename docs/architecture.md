@@ -48,6 +48,11 @@ import_session(source, repo_key) -> ImportResult
 It hides parsing, stable identity, episode creation, evidence derivation,
 durable writes, and cursor commits. CLI and HTTP call the same interface.
 
+`MemoryRuntime` depends only on importer, Markdown-store, and state-store ports.
+`codecairn.bootstrap` is the single composition root that selects the Codex,
+filesystem, and SQLite adapters. Import-linter contracts prevent service and
+entrypoint code from reaching through those ports to concrete adapters.
+
 The evaluation module exposes one interface:
 
 ```text
@@ -60,8 +65,13 @@ adapter over the evaluation interface.
 
 ## Storage
 
-- Markdown is durable truth and uses same-directory temp files, flush, fsync,
-  and atomic replace.
+- Markdown is immutable durable truth. Creation uses a same-directory temp
+  file, flush, fsync, and an atomic create-if-absent link; an existing memory
+  ID is never overwritten with different evidence.
+- An evidence `source_path` is the observed import-time locator, while raw-event
+  hashes are its immutable identity. The Import Ledger records every observed
+  source location; recovery may resolve or repair live locators without
+  rewriting memory identity.
 - SQLite owns transactions, cursors, audit, leases, and the index outbox.
 - LanceDB owns vector and lexical search material only. It is disposable.
 
