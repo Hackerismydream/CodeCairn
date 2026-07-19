@@ -82,6 +82,12 @@ Each run has an isolated workspace and immutable manifest. LoCoMo is a benchmark
 adapter over the memory interface; coding-task A/B is a separate agent execution
 adapter over the evaluation interface.
 
+CLI and HTTP depend on `CodeCairnApplication`, a shared use-case facade. The
+composition root supplies the local runtime, evaluation dispatch, and
+operational diagnostics. HTTP adds path authorization, request identifiers,
+stable error envelopes, and a loopback-only bind policy; it does not implement
+alternative import, recall, evaluation, or health behavior.
+
 ## Storage
 
 - Markdown is immutable durable truth. Creation uses a same-directory temp
