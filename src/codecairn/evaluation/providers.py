@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from typing import cast
 
 import httpx
@@ -17,6 +18,8 @@ class OpenAICompatibleTextModel:
         api_key: str,
         model: str,
         timeout_seconds: float = 120.0,
+        max_attempts: int = 3,
+        retry_backoff_seconds: float = 1.0,
     ) -> None:
         if not api_key:
             raise ValueError("api_key must not be empty")
@@ -31,10 +34,16 @@ class OpenAICompatibleTextModel:
             raise ValueError("base_url must be an HTTP origin/path without credentials or query")
         if not model.strip():
             raise ValueError("model must not be empty")
+        if max_attempts < 1:
+            raise ValueError("max_attempts must be positive")
+        if retry_backoff_seconds < 0:
+            raise ValueError("retry_backoff_seconds must not be negative")
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
         self._model = model
         self._timeout_seconds = timeout_seconds
+        self._max_attempts = max_attempts
+        self._retry_backoff_seconds = retry_backoff_seconds
 
     @property
     def model_id(self) -> str:
@@ -47,6 +56,8 @@ class OpenAICompatibleTextModel:
             "base_url": self._base_url,
             "model": self._model,
             "timeout_seconds": self._timeout_seconds,
+            "max_attempts": self._max_attempts,
+            "retry_backoff_seconds": self._retry_backoff_seconds,
         }
 
     def generate(
@@ -68,13 +79,7 @@ class OpenAICompatibleTextModel:
         }
         if response_format == "json":
             payload["response_format"] = {"type": "json_object"}
-        response = httpx.post(
-            f"{self._base_url}/chat/completions",
-            headers={"Authorization": f"Bearer {self._api_key}"},
-            json=payload,
-            timeout=self._timeout_seconds,
-        )
-        response.raise_for_status()
+        response = self._post(payload)
         body = cast(dict[str, object], response.json())
         choices = body.get("choices")
         if not isinstance(choices, list) or not choices:
@@ -97,6 +102,29 @@ class OpenAICompatibleTextModel:
             input_tokens=input_tokens,
             output_tokens=output_tokens,
         )
+
+    def _post(self, payload: dict[str, object]) -> httpx.Response:
+        for attempt in range(1, self._max_attempts + 1):
+            try:
+                response = httpx.post(
+                    f"{self._base_url}/chat/completions",
+                    headers={"Authorization": f"Bearer {self._api_key}"},
+                    json=payload,
+                    timeout=self._timeout_seconds,
+                )
+                response.raise_for_status()
+                return response
+            except httpx.HTTPStatusError as error:
+                status_code = error.response.status_code
+                if status_code != 429 and status_code < 500:
+                    raise
+                if attempt == self._max_attempts:
+                    raise
+            except httpx.TransportError:
+                if attempt == self._max_attempts:
+                    raise
+            time.sleep(self._retry_backoff_seconds * (2 ** (attempt - 1)))
+        raise RuntimeError("Model retry loop exhausted without a response")
 
 
 def _optional_int(value: object) -> int | None:

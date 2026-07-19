@@ -353,6 +353,7 @@ def report_locomo(run_dir: Path) -> dict[str, object]:
     correct = 0
     scored = 0
     infrastructure_failed = 0
+    completed_questions = 0
     categories: dict[int, list[bool]] = {}
     for record in records:
         for response_key in ("answer",):
@@ -375,9 +376,13 @@ def report_locomo(run_dir: Path) -> dict[str, object]:
                 if cost is not None:
                     total_cost_usd += cost
                     known_cost_count += 1
+        if record.get("status") != "completed":
+            infrastructure_failed += 1
+            continue
+        completed_questions += 1
         if mode != "full":
             continue
-        if record.get("status") != "completed" or not isinstance(votes, list):
+        if not isinstance(votes, list):
             infrastructure_failed += 1
             continue
         labels = [vote.get("label") for vote in votes if isinstance(vote, dict)]
@@ -408,6 +413,7 @@ def report_locomo(run_dir: Path) -> dict[str, object]:
         "mode": mode,
         "scored": mode == "full",
         "question_artifact_count": len(records),
+        "completed_question_count": completed_questions,
         "scored_question_count": scored,
         "infrastructure_failed_count": infrastructure_failed,
         "correct_count": correct if mode == "full" else None,

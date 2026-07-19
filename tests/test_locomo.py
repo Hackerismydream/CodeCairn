@@ -115,6 +115,20 @@ class AlternatingJudgeModel:
         )
 
 
+@dataclass
+class FailingAnswerModel(FakeAnswerModel):
+    def generate(
+        self,
+        *,
+        system: str,
+        user: str,
+        seed: int,
+        response_format: str = "text",
+    ) -> ModelResponse:
+        self.calls += 1
+        raise RuntimeError("provider unavailable")
+
+
 def test_loader_preserves_sessions_speakers_timestamps_and_all_categories() -> None:
     dataset = load_locomo_dataset(FIXTURE)
 
@@ -244,6 +258,31 @@ def test_smoke_run_is_explicitly_unscored_and_never_calls_a_judge(tmp_path: Path
     assert artifact.summary["unscored_reason"] == "smoke mode is never scored"
     assert artifact.summary["question_artifact_count"] == 2
     assert answer.calls == 2
+
+
+def test_smoke_report_counts_infrastructure_failures_without_scoring_them(
+    tmp_path: Path,
+) -> None:
+    answer = FailingAnswerModel()
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-failed-smoke",
+            repository_commit="abc123",
+            mode="smoke",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=answer,
+        judge_model=None,
+    )
+
+    assert artifact.summary["question_artifact_count"] == 2
+    assert artifact.summary["completed_question_count"] == 0
+    assert artifact.summary["infrastructure_failed_count"] == 2
+    assert artifact.summary["scored_question_count"] == 0
+    assert artifact.summary["accuracy"] is None
 
 
 def test_run_rejects_path_traversal_identifiers(tmp_path: Path) -> None:
