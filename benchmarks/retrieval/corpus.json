@@ -1,0 +1,122 @@
+[
+  {
+    "content": "Run the Python unit suite with uv run pytest -q before opening a pull request.",
+    "key": "be-tests",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 01"
+  },
+  {
+    "content": "Store Alembic migration revisions under services/payments/migrations and review generated SQL.",
+    "key": "be-migrations",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 02"
+  },
+  {
+    "content": "Every HTTP mutation accepts an Idempotency-Key header and replays the original response.",
+    "key": "be-idempotency",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 03"
+  },
+  {
+    "content": "Persist timezone-aware UTC timestamps and convert to local time only in presentation code.",
+    "key": "be-time",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 04"
+  },
+  {
+    "content": "Represent currency amounts with Decimal; binary floating point is forbidden for money.",
+    "key": "be-money",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 05"
+  },
+  {
+    "content": "Keep FastAPI route handlers thin and delegate business orchestration to service use cases.",
+    "key": "be-api",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 06"
+  },
+  {
+    "content": "The backend passes mypy in strict mode; do not hide type failures with broad ignores.",
+    "key": "be-types",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 07"
+  },
+  {
+    "content": "Redis cache entries use a default TTL of 300 seconds and namespaced keys.",
+    "key": "be-cache",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 08"
+  },
+  {
+    "content": "Emit structured JSON audit logs with structlog and include the request identifier.",
+    "key": "be-audit",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 09"
+  },
+  {
+    "content": "Load credentials from environment variables or the secret manager and never commit them.",
+    "key": "be-secrets",
+    "repo_key": "acme/backend",
+    "title": "Backend Rule 10"
+  },
+  {
+    "content": "Run the frontend package tests with pnpm test before submitting a change.",
+    "key": "fe-tests",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 01"
+  },
+  {
+    "content": "Use Zustand for small client-side application state and keep stores feature-scoped.",
+    "key": "fe-state",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 02"
+  },
+  {
+    "content": "Generate the TypeScript API client from the pinned OpenAPI schema; do not hand-write endpoints.",
+    "key": "fe-client",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 03"
+  },
+  {
+    "content": "Compose interface styling with Tailwind utility classes and shared design tokens.",
+    "key": "fe-style",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 04"
+  },
+  {
+    "content": "Browser end-to-end scenarios run in Playwright against a production build.",
+    "key": "fe-e2e",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 05"
+  },
+  {
+    "content": "Component unit tests use Vitest together with Testing Library queries.",
+    "key": "fe-unit",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 06"
+  },
+  {
+    "content": "ESLint enforces code rules and Prettier owns source formatting.",
+    "key": "fe-format",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 07"
+  },
+  {
+    "content": "Manage remote server state with TanStack React Query instead of copying it into local stores.",
+    "key": "fe-server-state",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 08"
+  },
+  {
+    "content": "Send production browser exceptions to Sentry with release and source-map metadata.",
+    "key": "fe-errors",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 09"
+  },
+  {
+    "content": "Read feature flags through ConfigCat and provide deterministic defaults for tests.",
+    "key": "fe-flags",
+    "repo_key": "acme/frontend",
+    "title": "Frontend Rule 10"
+  }
+]

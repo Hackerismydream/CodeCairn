@@ -1,0 +1,225 @@
+{
+  "groups": [
+    {
+      "queries": [
+        {"query_id": "q001", "text": "Which command runs the Python unit suite before review?"},
+        {"query_id": "q002", "text": "How should I verify backend tests from the terminal?"},
+        {"query_id": "q003", "text": "What is the required pytest invocation for a pull request?"},
+        {"query_id": "q004", "text": "I changed Python code; what quick unit-test command comes next?"},
+        {"query_id": "q005", "text": "Find the repository rule for running uv and pytest quietly."}
+      ],
+      "relevant_keys": ["be-tests"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q006", "text": "Where do payment database revision files belong?"},
+        {"query_id": "q007", "text": "What folder contains Alembic migrations?"},
+        {"query_id": "q008", "text": "Before applying a schema change, what generated output must be reviewed?"},
+        {"query_id": "q009", "text": "Locate the backend convention for migration revision storage."},
+        {"query_id": "q010", "text": "How are SQL schema upgrades organized for the payments service?"}
+      ],
+      "relevant_keys": ["be-migrations"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q011", "text": "Which request header prevents duplicate mutations?"},
+        {"query_id": "q012", "text": "How should a repeated POST return the same result safely?"},
+        {"query_id": "q013", "text": "Find the rule for idempotent HTTP writes."},
+        {"query_id": "q014", "text": "What key accompanies a mutation so retries do not duplicate work?"},
+        {"query_id": "q015", "text": "How does the API replay an earlier response for a retried operation?"}
+      ],
+      "relevant_keys": ["be-idempotency"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q016", "text": "What timezone is used for persisted timestamps?"},
+        {"query_id": "q017", "text": "Where should conversion to a user's local clock happen?"},
+        {"query_id": "q018", "text": "Find the convention for timezone-aware datetimes."},
+        {"query_id": "q019", "text": "Should storage contain local time or UTC?"},
+        {"query_id": "q020", "text": "How are timestamps normalized before database persistence?"}
+      ],
+      "relevant_keys": ["be-time"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q021", "text": "Which numeric type should represent currency?"},
+        {"query_id": "q022", "text": "How do we avoid floating-point errors in money values?"},
+        {"query_id": "q023", "text": "Find the rule that forbids binary float for prices."},
+        {"query_id": "q024", "text": "What representation preserves exact cents?"},
+        {"query_id": "q025", "text": "Should financial amounts use Decimal or float?"}
+      ],
+      "relevant_keys": ["be-money"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q026", "text": "Where should FastAPI handlers delegate business work?"},
+        {"query_id": "q027", "text": "How much orchestration belongs in an HTTP route?"},
+        {"query_id": "q028", "text": "Find the architectural rule for thin API endpoints."},
+        {"query_id": "q029", "text": "Which layer owns use-case coordination outside route functions?"},
+        {"query_id": "q030", "text": "How should presentation code call backend business logic?"}
+      ],
+      "relevant_keys": ["be-api"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q031", "text": "What strict static type checker must the backend pass?"},
+        {"query_id": "q032", "text": "Are broad type-ignore comments acceptable?"},
+        {"query_id": "q033", "text": "Find the policy for mypy failures."},
+        {"query_id": "q034", "text": "Which mode is required for Python type analysis?"},
+        {"query_id": "q035", "text": "How should developers handle a backend typing error?"}
+      ],
+      "relevant_keys": ["be-types"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q036", "text": "What is the default lifetime for Redis entries?"},
+        {"query_id": "q037", "text": "How many seconds should cached values survive?"},
+        {"query_id": "q038", "text": "Find the key namespace and expiration policy for cache data."},
+        {"query_id": "q039", "text": "What TTL applies when no cache override is provided?"},
+        {"query_id": "q040", "text": "How are Redis keys separated between features?"}
+      ],
+      "relevant_keys": ["be-cache"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q041", "text": "Which logging library emits backend audit events?"},
+        {"query_id": "q042", "text": "What identifier must appear in structured audit logs?"},
+        {"query_id": "q043", "text": "Find the JSON logging convention for requests."},
+        {"query_id": "q044", "text": "How should audit entries correlate with an HTTP call?"},
+        {"query_id": "q045", "text": "Are backend audit records plain text or structured data?"}
+      ],
+      "relevant_keys": ["be-audit"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q046", "text": "Where should service credentials be loaded from?"},
+        {"query_id": "q047", "text": "What is the policy on committing secrets?"},
+        {"query_id": "q048", "text": "Find the approved sources for API keys."},
+        {"query_id": "q049", "text": "Should passwords live in repository configuration files?"},
+        {"query_id": "q050", "text": "How does the backend obtain sensitive runtime values?"}
+      ],
+      "relevant_keys": ["be-secrets"],
+      "repo_key": "acme/backend"
+    },
+    {
+      "queries": [
+        {"query_id": "q051", "text": "Which package-manager command runs frontend tests?"},
+        {"query_id": "q052", "text": "How should the web package be verified before submission?"},
+        {"query_id": "q053", "text": "Find the pnpm test convention."},
+        {"query_id": "q054", "text": "What terminal command checks the frontend suite?"},
+        {"query_id": "q055", "text": "I changed UI code; which test command is required?"}
+      ],
+      "relevant_keys": ["fe-tests"],
+      "repo_key": "acme/frontend"
+    },
+    {
+      "queries": [
+        {"query_id": "q056", "text": "Which library holds small client-side application state?"},
+        {"query_id": "q057", "text": "How should local feature stores be scoped?"},
+        {"query_id": "q058", "text": "Find the convention for Zustand stores."},
+        {"query_id": "q059", "text": "Where does lightweight browser state belong?"},
+        {"query_id": "q060", "text": "What state manager is preferred for small UI features?"}
+      ],
+      "relevant_keys": ["fe-state"],
+      "repo_key": "acme/frontend"
+    },
+    {
+      "queries": [
+        {"query_id": "q061", "text": "How is the TypeScript API client produced?"},
+        {"query_id": "q062", "text": "Should developers hand-write frontend endpoint wrappers?"},
+        {"query_id": "q063", "text": "Find the OpenAPI generation rule."},
+        {"query_id": "q064", "text": "Which pinned schema feeds client code generation?"},
+        {"query_id": "q065", "text": "What is the approved source of browser API types and calls?"}
+      ],
+      "relevant_keys": ["fe-client"],
+      "repo_key": "acme/frontend"
+    },
+    {
+      "queries": [
+        {"query_id": "q066", "text": "Which utility framework is used for interface styling?"},
+        {"query_id": "q067", "text": "How should shared design tokens enter component CSS?"},
+        {"query_id": "q068", "text": "Find the Tailwind class convention."},
+        {"query_id": "q069", "text": "What approach composes visual styles in the web app?"},
+        {"query_id": "q070", "text": "Should components use utility classes or isolated ad hoc styles?"}
+      ],
+      "relevant_keys": ["fe-style"],
+      "repo_key": "acme/frontend"
+    },
+    {
+      "queries": [
+        {"query_id": "q071", "text": "Which tool runs browser end-to-end scenarios?"},
+        {"query_id": "q072", "text": "What build should E2E tests execute against?"},
+        {"query_id": "q073", "text": "Find the Playwright testing rule."},
+        {"query_id": "q074", "text": "How are full browser workflows verified?"},
+        {"query_id": "q075", "text": "Do end-to-end checks use a development server or production build?"}
+      ],
+      "relevant_keys": ["fe-e2e"],
+      "repo_key": "acme/frontend"
+    },
+    {
+      "queries": [
+        {"query_id": "q076", "text": "Which runner is used for component unit tests?"},
+        {"query_id": "q077", "text": "What query library accompanies Vitest?"},
+        {"query_id": "q078", "text": "Find the Testing Library convention for components."},
+        {"query_id": "q079", "text": "How should isolated UI behavior be tested?"},
+        {"query_id": "q080", "text": "What tools make up the frontend unit-testing stack?"}
+      ],
+      "relevant_keys": ["fe-unit"],
+      "repo_key": "acme/frontend"
+    },
+    {
+      "queries": [
+        {"query_id": "q081", "text": "Which tool owns source formatting?"},
+        {"query_id": "q082", "text": "What enforces JavaScript code rules?"},
+        {"query_id": "q083", "text": "Find the ESLint and Prettier responsibility split."},
+        {"query_id": "q084", "text": "Should the linter or formatter decide whitespace?"},
+        {"query_id": "q085", "text": "How are frontend style violations and formatting handled?"}
+      ],
+      "relevant_keys": ["fe-format"],
+      "repo_key": "acme/frontend"
+    },
+    {
+      "queries": [
+        {"query_id": "q086", "text": "Which library manages remote server state?"},
+        {"query_id": "q087", "text": "Should fetched data be copied into a local Zustand store?"},
+        {"query_id": "q088", "text": "Find the TanStack query convention."},
+        {"query_id": "q089", "text": "Where do caching and lifecycle for API responses belong?"},
+        {"query_id": "q090", "text": "What tool coordinates asynchronous backend data in React?"}
+      ],
+      "relevant_keys": ["fe-server-state"],
+      "repo_key": "acme/frontend"
+    },
+    {
+      "queries": [
+        {"query_id": "q091", "text": "Where are production browser exceptions reported?"},
+        {"query_id": "q092", "text": "What metadata should accompany a frontend error release?"},
+        {"query_id": "q093", "text": "Find the Sentry source-map convention."},
+        {"query_id": "q094", "text": "How are client crashes tied to a deployed version?"},
+        {"query_id": "q095", "text": "Which service receives web application failures?"}
+      ],
+      "relevant_keys": ["fe-errors"],
+      "repo_key": "acme/frontend"
+    },
+    {
+      "queries": [
+        {"query_id": "q096", "text": "Which provider supplies feature flags?"},
+        {"query_id": "q097", "text": "How should tests behave when a flag service is unavailable?"},
+        {"query_id": "q098", "text": "Find the ConfigCat access convention."},
+        {"query_id": "q099", "text": "What deterministic value should a feature toggle have in tests?"},
+        {"query_id": "q100", "text": "Where does the frontend read runtime feature switches?"}
+      ],
+      "relevant_keys": ["fe-flags"],
+      "repo_key": "acme/frontend"
+    }
+  ],
+  "schema_version": 1
+}
