@@ -2,7 +2,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from codecairn.bootstrap import create_runtime
+from codecairn.bootstrap import create_cascade, create_runtime
 from codecairn.entrypoints.api import create_app
 
 FIXTURE = Path(__file__).parent / "fixtures" / "codex" / "failed_command.jsonl"
@@ -101,3 +101,28 @@ def test_http_import_rejects_intermediate_symlink_escape(tmp_path: Path) -> None
 
     assert response.status_code == 422
     assert "symbolic links" in response.json()["detail"]
+
+
+def test_http_recall_uses_the_shared_ranked_context_contract(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    runtime.import_session(FIXTURE, repo_key="acme/widgets", source_root=FIXTURE.parent)
+    create_cascade(root).run_until_idle(worker_id="test")
+    client = TestClient(create_app(create_runtime(root), source_roots=(FIXTURE.parent,)))
+
+    response = client.post(
+        "/api/v1/recall",
+        json={
+            "task": "pytest command failed",
+            "repo_key": "acme/widgets",
+            "limit": 5,
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["markdown"].startswith("# Recall Context")
+    assert result["sidecar"]["ranked"][0]["candidate_sources"] == ["lexical", "vector"]
+    evidence = result["sidecar"]["ranked"][0]["evidence"][0]
+    assert "source_path" not in evidence
+    assert evidence["raw_event_index"] == 2

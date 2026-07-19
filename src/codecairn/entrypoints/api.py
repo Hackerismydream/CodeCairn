@@ -18,6 +18,12 @@ class ImportRequest(BaseModel):
     repo_key: str = Field(min_length=1)
 
 
+class RecallRequest(BaseModel):
+    task: str = Field(min_length=1, max_length=8_000)
+    repo_key: str = Field(min_length=1)
+    limit: int = Field(default=5, ge=1, le=20)
+
+
 def create_app(runtime: MemoryRuntime, *, source_roots: tuple[Path, ...]) -> FastAPI:
     if not source_roots:
         raise ValueError("At least one source root is required")
@@ -55,6 +61,16 @@ def create_app(runtime: MemoryRuntime, *, source_roots: tuple[Path, ...]) -> Fas
         repo_key: str = Query(min_length=1),
     ) -> list[dict[str, Any]]:
         return [_memory_response(memory) for memory in runtime.list_memories(repo_key=repo_key)]
+
+    @app.post("/api/v1/recall")
+    def recall(request: RecallRequest) -> dict[str, Any]:
+        return asdict(
+            runtime.recall(
+                request.task,
+                repo_key=request.repo_key,
+                limit=request.limit,
+            )
+        )
 
     return app
 

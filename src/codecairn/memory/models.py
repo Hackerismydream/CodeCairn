@@ -45,6 +45,7 @@ GateDecisionReason = Literal[
     "debug_episode_facts_are_disconnected",
 ]
 IndexOperation = Literal["upsert", "delete"]
+CandidateSource = Literal["lexical", "vector"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -264,3 +265,55 @@ class RebuildReport:
     truth_count: int
     index_count: int
     parity: bool
+
+
+@dataclass(frozen=True, slots=True)
+class IndexCandidate:
+    repo_key: str
+    memory_id: str
+    score: float
+
+
+@dataclass(frozen=True, slots=True)
+class RecallEvidence:
+    provider: str
+    session_id: str
+    raw_event_sha256: str
+    raw_event_index: int
+    raw_event_type: str
+    call_id: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class RankedRecall:
+    rank: int
+    memory_id: str
+    memory_type: MemoryType
+    title: str
+    summary: str
+    source_uri: str
+    content_sha256: str
+    candidate_sources: tuple[CandidateSource, ...]
+    vector_score: float | None
+    vector_rank: int | None
+    lexical_score: float | None
+    lexical_rank: int | None
+    final_score: float
+    evidence: tuple[RecallEvidence, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class RecallSidecar:
+    query: str
+    repo_key: str
+    limit: int
+    latency_ms: float
+    vector_candidate_count: int
+    lexical_candidate_count: int
+    ranked: tuple[RankedRecall, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class RecallResult:
+    markdown: str
+    sidecar: RecallSidecar
