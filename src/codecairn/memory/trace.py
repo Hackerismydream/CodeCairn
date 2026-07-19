@@ -18,14 +18,16 @@ def stable_id(prefix: str, *parts: object) -> str:
 
 def segment_tasks(trace: AgentTrace, *, repo_key: str) -> tuple[TaskEpisode, ...]:
     episodes: list[TaskEpisode] = []
-    current: list[TraceEvent] = []
+    current: list[TraceEvent] | None = None
 
     for event in trace.events:
         starts_task = event.kind == "message" and event.role == "user"
-        if starts_task and current:
-            episodes.append(_build_episode(trace, repo_key=repo_key, events=current))
-            current = []
-        current.append(event)
+        if starts_task:
+            if current:
+                episodes.append(_build_episode(trace, repo_key=repo_key, events=current))
+            current = [event]
+        elif current is not None:
+            current.append(event)
 
     if current:
         episodes.append(_build_episode(trace, repo_key=repo_key, events=current))
@@ -98,7 +100,11 @@ def _build_episode(trace: AgentTrace, *, repo_key: str, events: list[TraceEvent]
 
 
 def _outcome(events: list[TraceEvent]) -> EpisodeOutcome:
-    results = [event.exit_code for event in events if event.kind == "tool_result"]
+    results = [
+        event.exit_code
+        for event in events
+        if event.kind == "tool_result" and event.is_command_result
+    ]
     if any(code is not None and code != 0 for code in results):
         return "failed"
     if any(code == 0 for code in results):

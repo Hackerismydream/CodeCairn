@@ -7,3 +7,5 @@ offset.
 
 Appending a later event may extend the active uncommitted episode or create a
 new episode, but cannot rename a previously committed episode or memory.
+Provider metadata before the first user task remains in the Agent Trace and
+does not create a synthetic metadata-only Task Episode.

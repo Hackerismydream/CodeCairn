@@ -2,15 +2,24 @@ from __future__ import annotations
 
 import errno
 import hashlib
+import io
 import json
 import os
 import re
 import stat
+import unicodedata
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
 from codecairn.memory.errors import TraceImportError
-from codecairn.memory.models import AgentTrace, EvidenceReference, TraceEvent
+from codecairn.memory.models import (
+    AgentTrace,
+    EvidenceReference,
+    FileChangeFact,
+    FileChangeOperation,
+    TraceEvent,
+)
 from codecairn.memory.trace import stable_id
 
 
@@ -19,9 +28,30 @@ class TraceParseError(TraceImportError):
 
 
 _MAX_SESSION_BYTES = 64 * 1024 * 1024
+_MAX_RAW_EVENTS = 100_000
+_MAX_SESSION_ID_CHARS = 512
+_MAX_PATCH_FILE_CHANGE_FACTS = 4_096
+_MAX_SESSION_FILE_CHANGE_FACTS = 10_000
+_MAX_PATCH_PATH_CHARS = 4_096
+_MAX_PATCH_CHARS = 4 * 1024 * 1024
+_MAX_PATCH_LINES = 100_000
 _COMMAND_TOOLS = frozenset({"exec_command"})
+_COMMAND_RESULT_TOOLS = frozenset({"exec_command", "write_stdin"})
 _MIN_EXIT_CODE = -(2**31)
 _MAX_EXIT_CODE = 2**31 - 1
+
+
+@dataclass(frozen=True, slots=True)
+class _PendingCall:
+    event: TraceEvent
+    expected_output_type: str
+
+
+@dataclass(slots=True)
+class _NormalizeState:
+    pending_calls: dict[str, _PendingCall] = field(default_factory=dict)
+    seen_call_ids: set[str] = field(default_factory=set)
+    file_change_fact_count: int = 0
 
 
 class CodexImporter:
@@ -39,8 +69,7 @@ class CodexImporter:
         source_sha256 = hashlib.sha256(source_bytes).hexdigest()
         records = _parse_jsonl(source_bytes, source_path=observed_path)
         session_id = _session_id(records, fallback=observed_path.stem)
-        pending_calls: dict[str, TraceEvent] = {}
-        seen_call_ids: set[str] = set()
+        state = _NormalizeState()
         events = tuple(
             _normalize(
                 raw_event=record,
@@ -48,8 +77,7 @@ class CodexImporter:
                 raw_event_index=index,
                 source_path=observed_path,
                 session_id=session_id,
-                pending_calls=pending_calls,
-                seen_call_ids=seen_call_ids,
+                state=state,
             )
             for index, (record, raw_event_sha256) in enumerate(records)
         )
@@ -143,9 +171,14 @@ def _safe_open_error(source_path: Path, error: OSError) -> Exception:
 
 def _parse_jsonl(source: bytes, *, source_path: Path) -> list[RawRecord]:
     records: list[RawRecord] = []
-    for line_number, line in enumerate(source.splitlines(), start=1):
+    for line_number, line in enumerate(io.BytesIO(source), start=1):
+        line = line.removesuffix(b"\n").removesuffix(b"\r")
         if not line.strip():
             continue
+        if len(records) >= _MAX_RAW_EVENTS:
+            raise TraceParseError(
+                f"Codex source exceeds the {_MAX_RAW_EVENTS}-event import limit: {source_path}"
+            )
         try:
             value = json.loads(line)
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -157,15 +190,26 @@ def _parse_jsonl(source: bytes, *, source_path: Path) -> list[RawRecord]:
 
 
 def _session_id(records: list[RawRecord], *, fallback: str) -> str:
-    for record, _raw_event_sha256 in records:
+    if records:
+        record, _raw_event_sha256 = records[0]
         if record.get("type") != "session_meta":
-            continue
+            return _validated_session_id(fallback)
         payload = record.get("payload")
         if isinstance(payload, dict):
             value = payload.get("id")
             if isinstance(value, str):
-                return value
-    return fallback
+                return _validated_session_id(value)
+    return _validated_session_id(fallback)
+
+
+def _validated_session_id(value: str) -> str:
+    if not value or len(value) > _MAX_SESSION_ID_CHARS:
+        raise TraceParseError(
+            f"Codex session id must contain 1 to {_MAX_SESSION_ID_CHARS} characters"
+        )
+    if _contains_unsafe_text_character(value):
+        raise TraceParseError("Codex session id contains an unsafe control or line separator")
+    return value
 
 
 def _normalize(
@@ -175,8 +219,7 @@ def _normalize(
     raw_event_index: int,
     source_path: Path,
     session_id: str,
-    pending_calls: dict[str, TraceEvent],
-    seen_call_ids: set[str],
+    state: _NormalizeState,
 ) -> TraceEvent:
     raw_event_type = _string(raw_event.get("type")) or "unknown"
     payload = raw_event.get("payload")
@@ -224,18 +267,53 @@ def _normalize(
             call_id=call_id,
             command=command,
         )
-        if call_id is not None:
-            if call_id in seen_call_ids:
-                raise TraceParseError(
-                    f"Duplicate Codex call_id {call_id!r} at raw event {raw_event_index}"
-                )
-            seen_call_ids.add(call_id)
-            pending_calls[call_id] = event
+        _register_call(
+            event,
+            expected_output_type="function_call_output",
+            raw_event_index=raw_event_index,
+            state=state,
+        )
+        return event
+    if payload_type == "custom_tool_call":
+        tool_name = _string(payload.get("name"))
+        tool_input = _string(payload.get("input"))
+        event = TraceEvent(
+            event_id=event_id,
+            kind="tool_call",
+            evidence=evidence,
+            text=tool_input,
+            tool_name=tool_name,
+            call_id=call_id,
+            tool_status=_string(payload.get("status")),
+        )
+        if tool_name == "apply_patch" and tool_input is not None:
+            event = replace(
+                event,
+                file_changes=_parse_apply_patch(
+                    tool_input,
+                    event_id=event_id,
+                    evidence=evidence,
+                    remaining_session_facts=(
+                        _MAX_SESSION_FILE_CHANGE_FACTS - state.file_change_fact_count
+                    ),
+                ),
+            )
+            state.file_change_fact_count += len(event.file_changes)
+        _register_call(
+            event,
+            expected_output_type="custom_tool_call_output",
+            raw_event_index=raw_event_index,
+            state=state,
+        )
         return event
     if payload_type == "function_call_output":
         raw_output = payload.get("output")
         output = _output_text(raw_output)
-        paired_call = pending_calls.pop(call_id, None) if call_id is not None else None
+        paired_call = _take_call(
+            call_id,
+            output_type="function_call_output",
+            pending_calls=state.pending_calls,
+        )
         return TraceEvent(
             event_id=event_id,
             kind="tool_result",
@@ -245,8 +323,180 @@ def _normalize(
             call_id=call_id,
             command=paired_call.command if paired_call is not None else None,
             exit_code=_exit_code(raw_output),
+            is_command_result=(
+                paired_call is not None and paired_call.tool_name in _COMMAND_RESULT_TOOLS
+            ),
+        )
+    if payload_type == "custom_tool_call_output":
+        output = _output_text(payload.get("output"))
+        paired_call = _take_call(
+            call_id,
+            output_type="custom_tool_call_output",
+            pending_calls=state.pending_calls,
+        )
+        return TraceEvent(
+            event_id=event_id,
+            kind="tool_result",
+            evidence=evidence,
+            text=output,
+            tool_name=paired_call.tool_name if paired_call is not None else None,
+            call_id=call_id,
         )
     return TraceEvent(event_id=event_id, kind="unknown", evidence=evidence)
+
+
+def _register_call(
+    event: TraceEvent,
+    *,
+    expected_output_type: str,
+    raw_event_index: int,
+    state: _NormalizeState,
+) -> None:
+    if event.call_id is None:
+        return
+    if event.call_id in state.seen_call_ids:
+        raise TraceParseError(
+            f"Duplicate Codex call_id {event.call_id!r} at raw event {raw_event_index}"
+        )
+    state.seen_call_ids.add(event.call_id)
+    state.pending_calls[event.call_id] = _PendingCall(
+        event=event,
+        expected_output_type=expected_output_type,
+    )
+
+
+def _take_call(
+    call_id: str | None,
+    *,
+    output_type: str,
+    pending_calls: dict[str, _PendingCall],
+) -> TraceEvent | None:
+    if call_id is None:
+        return None
+    pending = pending_calls.get(call_id)
+    if pending is None or pending.expected_output_type != output_type:
+        return None
+    pending_calls.pop(call_id)
+    return pending.event
+
+
+_PATCH_FILE = re.compile(r"^\*\*\* (?P<operation>Add|Update|Delete) File: (?P<path>.+)$")
+_PATCH_MOVE = re.compile(r"^\*\*\* Move to: (?P<path>.+)$")
+_PATCH_OPERATIONS: dict[str, FileChangeOperation] = {
+    "Add": "add",
+    "Update": "update",
+    "Delete": "delete",
+}
+
+
+def _parse_apply_patch(
+    patch: str,
+    *,
+    event_id: str,
+    evidence: EvidenceReference,
+    remaining_session_facts: int,
+) -> tuple[FileChangeFact, ...]:
+    if len(patch) > _MAX_PATCH_CHARS:
+        raise TraceParseError(
+            f"apply_patch input exceeds the {_MAX_PATCH_CHARS}-character import limit"
+        )
+    lines = io.StringIO(patch)
+    first_line = lines.readline()
+    if _patch_line(first_line) != "*** Begin Patch":
+        return ()
+    changes: list[FileChangeFact] = []
+    previous_line: str | None = None
+    line_count = 1
+    for raw_line in lines:
+        line_count += 1
+        if line_count > _MAX_PATCH_LINES:
+            raise TraceParseError(f"apply_patch exceeds the {_MAX_PATCH_LINES}-line import limit")
+        if previous_line is not None:
+            _record_patch_line(
+                previous_line,
+                changes=changes,
+                event_id=event_id,
+                evidence=evidence,
+                remaining_session_facts=remaining_session_facts,
+            )
+        previous_line = _patch_line(raw_line)
+    if previous_line != "*** End Patch":
+        return ()
+    return tuple(changes)
+
+
+def _record_patch_line(
+    line: str,
+    *,
+    changes: list[FileChangeFact],
+    event_id: str,
+    evidence: EvidenceReference,
+    remaining_session_facts: int,
+) -> None:
+    file_match = _PATCH_FILE.fullmatch(line)
+    if file_match is not None:
+        _check_file_change_budget(
+            patch_count=len(changes),
+            remaining_session_facts=remaining_session_facts,
+        )
+        operation = _PATCH_OPERATIONS[file_match.group("operation")]
+        path = _patch_path(file_match.group("path"))
+        changes.append(
+            FileChangeFact(
+                fact_id=stable_id("fact", event_id, len(changes), operation, path),
+                operation=operation,
+                path=path,
+                destination_path=None,
+                evidence=evidence,
+            )
+        )
+        return
+    move_match = _PATCH_MOVE.fullmatch(line)
+    if move_match is not None and changes and changes[-1].operation == "update":
+        destination = _patch_path(move_match.group("path"))
+        current = changes[-1]
+        changes[-1] = replace(
+            current,
+            fact_id=stable_id(
+                "fact",
+                event_id,
+                len(changes) - 1,
+                "move",
+                current.path,
+                destination,
+            ),
+            operation="move",
+            destination_path=destination,
+        )
+
+
+def _patch_line(raw_line: str) -> str:
+    return raw_line.removesuffix("\n").removesuffix("\r")
+
+
+def _check_file_change_budget(*, patch_count: int, remaining_session_facts: int) -> None:
+    if patch_count >= _MAX_PATCH_FILE_CHANGE_FACTS:
+        raise TraceParseError(
+            f"apply_patch exceeds the {_MAX_PATCH_FILE_CHANGE_FACTS}-fact per-patch import limit"
+        )
+    if patch_count >= remaining_session_facts:
+        raise TraceParseError(
+            f"Codex session exceeds the {_MAX_SESSION_FILE_CHANGE_FACTS}-fact import limit"
+        )
+
+
+def _patch_path(value: str) -> str:
+    if len(value) > _MAX_PATCH_PATH_CHARS:
+        raise TraceParseError(
+            f"apply_patch path evidence exceeds the {_MAX_PATCH_PATH_CHARS}-character import limit"
+        )
+    if not value or _contains_unsafe_text_character(value):
+        raise TraceParseError(f"Invalid apply_patch path evidence: {value!r}")
+    return value
+
+
+def _contains_unsafe_text_character(value: str) -> bool:
+    return any(unicodedata.category(character) in {"Cc", "Zl", "Zp"} for character in value)
 
 
 def _string(value: object) -> str | None:

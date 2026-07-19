@@ -1,0 +1,11 @@
+{"type":"session_meta","payload":{"id":"session-patch-001"}}
+{"type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"Refactor the example and update its docs."}]}}
+{"type":"response_item","payload":{"type":"custom_tool_call","status":"completed","call_id":"patch-call-001","name":"apply_patch","input":"*** Begin Patch\n*** Add File: created_by_patch.txt\n+hello\n*** Update File: src/example.py\n*** Move to: src/renamed.py\n@@\n-old\n+new\n*** End Patch"}}
+{"type":"response_item","payload":{"type":"custom_tool_call_output","call_id":"patch-call-001","output":"Done!"}}
+{"type":"response_item","payload":{"type":"custom_tool_call","status":"completed","call_id":"patch-call-002","name":"apply_patch","input":"*** Begin Patch\n*** Delete File: docs/obsolete.md\n*** Update File: README.md\n@@\n-old\n+new\n*** End Patch"}}
+{"type":"response_item","payload":{"type":"custom_tool_call_output","call_id":"patch-call-002","output":"Done!"}}
+{"type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"pytest -q\"}","call_id":"verify-call-001"}}
+{"type":"response_item","payload":{"type":"function_call_output","call_id":"verify-call-001","output":"Process exited with code 0\nFinal output:\n4 passed"}}
+{"type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"Now check the optional integration suite."}]}}
+{"type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"pytest -q tests/integration\"}","call_id":"verify-call-002"}}
+{"type":"response_item","payload":{"type":"function_call_output","call_id":"verify-call-002","output":"Process exited with code 1\nFinal output:\n1 failed"}}

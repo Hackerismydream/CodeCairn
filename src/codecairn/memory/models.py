@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 TraceEventKind = Literal["message", "tool_call", "tool_result", "metadata", "unknown"]
+FileChangeOperation = Literal["add", "update", "delete", "move"]
 MemoryType = Literal[
     "debug_episode",
     "repository_convention",
@@ -26,6 +27,15 @@ class EvidenceReference:
 
 
 @dataclass(frozen=True, slots=True)
+class FileChangeFact:
+    fact_id: str
+    operation: FileChangeOperation
+    path: str
+    destination_path: str | None
+    evidence: EvidenceReference
+
+
+@dataclass(frozen=True, slots=True)
 class TraceEvent:
     event_id: str
     kind: TraceEventKind
@@ -36,6 +46,9 @@ class TraceEvent:
     call_id: str | None = None
     command: str | None = None
     exit_code: int | None = None
+    tool_status: str | None = None
+    file_changes: tuple[FileChangeFact, ...] = ()
+    is_command_result: bool = False
 
 
 @dataclass(frozen=True, slots=True)
