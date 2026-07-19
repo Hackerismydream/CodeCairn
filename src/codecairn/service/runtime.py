@@ -17,12 +17,14 @@ from codecairn.memory.models import (
     MemoryProposal,
     MemoryRepairPlan,
     PendingRecoveryAudit,
+    RecallResult,
 )
 from codecairn.memory.trace import (
     extend_raw_prefix_sha256,
     extract_failed_commands,
     segment_tasks,
 )
+from codecairn.service.recall import RecallEngine
 
 
 class TraceImporter(Protocol):
@@ -102,11 +104,13 @@ class MemoryRuntime:
         memory_store: MemoryStore,
         state: ImportState,
         evidence_gate: EvidenceGate,
+        recall_engine: RecallEngine | None = None,
     ) -> None:
         self._state = state
         self._markdown = memory_store
         self._importer = importer
         self._evidence_gate = evidence_gate
+        self._recall_engine = recall_engine
 
     def import_session(
         self,
@@ -184,6 +188,11 @@ class MemoryRuntime:
 
     def list_gate_audits(self, *, repo_key: str) -> tuple[GateAudit, ...]:
         return self._state.list_gate_audits(repo_key=repo_key)
+
+    def recall(self, query: str, *, repo_key: str, limit: int = 5) -> RecallResult:
+        if self._recall_engine is None:
+            raise RuntimeError("Recall is not configured for this runtime")
+        return self._recall_engine.recall(query, repo_key=repo_key, limit=limit)
 
     def _repair_committed_memories(self, *, repo_key: str) -> int:
         memories = {

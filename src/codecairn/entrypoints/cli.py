@@ -43,4 +43,21 @@ def build_app(runtime_factory: RuntimeFactory) -> typer.Typer:
         memories = runtime_factory(root).list_memories(repo_key=repo_key)
         typer.echo(json.dumps([asdict(memory) for memory in memories], sort_keys=True))
 
+    @app.command("recall")
+    def recall_command(
+        task: Annotated[str, typer.Argument(help="Current coding task")],
+        repo_key: Annotated[str, typer.Option("--repo-key")],
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        limit: Annotated[int, typer.Option("--limit", min=1, max=20)] = 5,
+        output_format: Annotated[str, typer.Option("--format")] = "json",
+    ) -> None:
+        """Generate task-shaped Recall Context from hybrid candidates."""
+        result = runtime_factory(root).recall(task, repo_key=repo_key, limit=limit)
+        if output_format == "markdown":
+            typer.echo(result.markdown, nl=False)
+            return
+        if output_format != "json":
+            raise typer.BadParameter("format must be 'json' or 'markdown'", param_hint="--format")
+        typer.echo(json.dumps(asdict(result), sort_keys=True))
+
     return app
