@@ -1,0 +1,591 @@
+{
+  "answer": {
+    "cost_usd": null,
+    "input_tokens": 2673,
+    "model": "gpt-5.4",
+    "output_tokens": 137,
+    "text": "Based on the provided context, the earliest evidence that Calvin had already been to Tokyo is **2023-04-20**.\n\nThe key memory is:\n- **2023-04-20T16:15:00+00:00** — “I just went to an awesome music thingy in Tokyo...”\n\nThere is also an earlier March 23, 2023 memory about being excited to learn about Japanese culture, but it does **not** explicitly say he had already traveled there. So the context is **insufficient to determine the exact first travel date**, only that he had been there by **April 20, 2023**."
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "evidence": [
+    "D3:1"
+  ],
+  "golden_answer": "between 26 March and 20 April 2023",
+  "judge_votes": [],
+  "question": "When did Calvin first travel to Tokyo?",
+  "question_id": "locomo-question_9d79d9bbad48895a98fe",
+  "recall_markdown": "# Recall Context\n\nTask: When did Calvin first travel to Tokyo?\nRepository: `locomo/conv-50`\n\n## 1. Calvin in session_3\n\n2023-04-20T16:22:00+00:00 — Calvin: Not yet, been pretty busy with rehearsals and traveling. But I'm looking forward to exploring the city, trying out some delicious food, and visiting the popular attractions. Maybe we can grab a bite together when I'm there?\n\n- Type: `user_preference`\n- Source: [memory_d30937172853e5bae300](codecairn://memory/memory_d30937172853e5bae300)\n- Evidence: 1 cited raw event(s)\n\n## 2. Calvin in session_28\n\n2023-11-02T17:55:00+00:00 — Calvin: Thanks! Where did you get this car?\n\n- Type: `user_preference`\n- Source: [memory_80646ab47ffa28a728ab](codecairn://memory/memory_80646ab47ffa28a728ab)\n- Evidence: 1 cited raw event(s)\n\n## 3. Calvin in session_14\n\n2023-08-14T00:37:30+00:00 — Calvin: Thanks, Dave! That show in Tokyo was awesome! Everyone was so into it when I played one of my songs and sang along. It was a magical moment.\n\n- Type: `user_preference`\n- Source: [memory_a063cf80a7f47667b7ac](codecairn://memory/memory_a063cf80a7f47667b7ac)\n- Evidence: 1 cited raw event(s)\n\n## 4. Calvin in session_3\n\n2023-04-20T16:15:00+00:00 — Calvin: Hey Dave! Long time no see. I just went to an awesome music thingy in Tokyo - so cool!\n\n- Type: `user_preference`\n- Source: [memory_59957d01d63bdaa24c1f](codecairn://memory/memory_59957d01d63bdaa24c1f)\n- Evidence: 1 cited raw event(s)\n\n## 5. Calvin in session_17\n\n2023-09-02T09:23:30+00:00 — Calvin: Thanks, Dave! Gotta stay safe on the trip. Can't wait to see you there! I will contact you when I arrive. Goodbye!\n\n- Type: `user_preference`\n- Source: [memory_7916a7c5d0b4de8bbe7f](codecairn://memory/memory_7916a7c5d0b4de8bbe7f)\n- Evidence: 1 cited raw event(s)\n\n## 6. Calvin in session_6\n\n2023-05-16T11:55:00+00:00 — Calvin: Thanks Dave! Super excited for my upcoming performance in Tokyo this month. It's gonna be great to show my music to a whole new crowd and hopefully expand my following!\n\n- Type: `user_preference`\n- Source: [memory_3a70a1f2055817720041](codecairn://memory/memory_3a70a1f2055817720041)\n- Evidence: 1 cited raw event(s)\n\n## 7. Dave in session_30\n\n2023-11-17T10:55:00+00:00 — Dave: Calvin, that event looks amazing! You all look awesome. Who did you have the most interesting chat with? [Image caption: a photo of a boat is floating in the water at sunset]\n\n- Type: `user_preference`\n- Source: [memory_44395514161c1fdc50d3](codecairn://memory/memory_44395514161c1fdc50d3)\n- Evidence: 1 cited raw event(s)\n\n## 8. Calvin in session_30\n\n2023-11-17T11:04:30+00:00 — Calvin: Thanks, Dave! I'll catch you when I'm in Boston. Cheers!\n\n- Type: `user_preference`\n- Source: [memory_9d71a7a5d12f64844408](codecairn://memory/memory_9d71a7a5d12f64844408)\n- Evidence: 1 cited raw event(s)\n\n## 9. Calvin in session_27\n\n2023-10-29T10:55:00+00:00 — Calvin: Cheers! I'll let you know when I'm free. Bye!\n\n- Type: `user_preference`\n- Source: [memory_b35a9a5e4b1ff76c805b](codecairn://memory/memory_b35a9a5e4b1ff76c805b)\n- Evidence: 1 cited raw event(s)\n\n## 10. Calvin in session_7\n\n2023-05-31T18:15:00+00:00 — Calvin: Thanks! I'll fill you in on all the details when I get back. See you soon!\n\n- Type: `user_preference`\n- Source: [memory_048acd2ee3a38fbe3f36](codecairn://memory/memory_048acd2ee3a38fbe3f36)\n- Evidence: 1 cited raw event(s)\n\n## 11. Calvin in session_28\n\n2023-11-02T17:53:00+00:00 — Calvin: Wow Dave, those headlights look great! What did you do to get them looking so good?\n\n- Type: `user_preference`\n- Source: [memory_bb63c1b70c57fb0abffd](codecairn://memory/memory_bb63c1b70c57fb0abffd)\n- Evidence: 1 cited raw event(s)\n\n## 12. Calvin in session_17\n\n2023-09-02T09:22:30+00:00 — Calvin: Yeah, for sure! I'll let you know when I'm in Boston. See you soon!\n\n- Type: `user_preference`\n- Source: [memory_45bd276465a0da7eda6b](codecairn://memory/memory_45bd276465a0da7eda6b)\n- Evidence: 1 cited raw event(s)\n\n## 13. Calvin in session_24\n\n2023-10-19T10:17:00+00:00 — Calvin: Yes, Dave! That was an incredible experience to visit similar streets like you shared in your photo. Is there anything else that interests you in Tokyo?\n\n- Type: `user_preference`\n- Source: [memory_2058fb034e03c56eec58](codecairn://memory/memory_2058fb034e03c56eec58)\n- Evidence: 1 cited raw event(s)\n\n## 14. Calvin in session_15\n\n2023-08-22T11:07:30+00:00 — Calvin: Thanks, Dave! I had the opportunity to meet Frank Ocean at a music festival in Tokyo and we clicked. We've been speaking and sharing ideas we arranged a meeting and recorded a song in the studio at my mansion - it's been great!\n\n- Type: `user_preference`\n- Source: [memory_5001872945a890dca0c8](codecairn://memory/memory_5001872945a890dca0c8)\n- Evidence: 1 cited raw event(s)\n\n## 15. Calvin in session_14\n\n2023-08-14T00:40:30+00:00 — Calvin: Wow Dave, that car is going to look amazing when you're done. How long do you think it will take to restore it?\n\n- Type: `user_preference`\n- Source: [memory_8d0dc4d5ee447df65b8d](codecairn://memory/memory_8d0dc4d5ee447df65b8d)\n- Evidence: 1 cited raw event(s)\n\n## 16. Dave in session_3\n\n2023-04-20T16:20:30+00:00 — Dave: Last weekend I went to a car show. Classic cars are so charming and the dedication people put into restoring them is amazing. That's why I'm so into auto engineering. Can't wait to show you some when you come to Boston! Oh, almost forgot to send a photo, look at this beautiful car! [Image caption: a photography of a green mustang parked in a field of grass]\n\n- Type: `user_preference`\n- Source: [memory_8eeca103d20815230d2f](codecairn://memory/memory_8eeca103d20815230d2f)\n- Evidence: 1 cited raw event(s)\n\n## 17. Calvin in session_3\n\n2023-04-20T16:16:00+00:00 — Calvin: Hey Dave! The festival in Tokyo was awesome! Didn't see any bands, but met lots of talented artists and industry people. Totally enriching!\n\n- Type: `user_preference`\n- Source: [memory_285d64f867701dbd9500](codecairn://memory/memory_285d64f867701dbd9500)\n- Evidence: 1 cited raw event(s)\n\n## 18. Calvin in session_24\n\n2023-10-19T10:20:00+00:00 — Calvin: Yeah definitely! Shibuya Crossing is like Tokyo's Times Square, and I was excited to explore Shinjuku. Plus, there's amazing food there, can't wait to try it again! Look at the photo of Shibuya Crossing at night, that's amazing! [Image caption: a photo of a crowd of people with umbrellas in the rain]\n\n- Type: `user_preference`\n- Source: [memory_39efabe5333e732cc288](codecairn://memory/memory_39efabe5333e732cc288)\n- Evidence: 1 cited raw event(s)\n\n## 19. Calvin in session_28\n\n2023-11-02T18:03:00+00:00 — Calvin: Cool, Dave! These really help you stay focused when making music.\n\n- Type: `user_preference`\n- Source: [memory_9ea0993b6e9955171fb8](codecairn://memory/memory_9ea0993b6e9955171fb8)\n- Evidence: 1 cited raw event(s)\n\n## 20. Calvin in session_1\n\n2023-03-23T11:55:00+00:00 — Calvin: I'm so excited to learn about Japanese culture and get a chance to expand.\n\n- Type: `user_preference`\n- Source: [memory_657712d11c993a1fa362](codecairn://memory/memory_657712d11c993a1fa362)\n- Evidence: 1 cited raw event(s)\n",
+  "retrieval": {
+    "latency_ms": 92.857,
+    "lexical_candidate_count": 80,
+    "limit": 20,
+    "query": "When did Calvin first travel to Tokyo?",
+    "ranked": [
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "4dde85883c13825111d43f136568f87ee6d7be0c68be5e9825dbbce9e62b7075",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 54,
+            "raw_event_sha256": "def9d454a77c4a5429c67a5826f3828335099407ed90c263c3e20601a44f6e17",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_3"
+          }
+        ],
+        "final_score": 0.031054405392,
+        "lexical_rank": 2,
+        "lexical_score": 7.121746063232,
+        "memory_id": "memory_d30937172853e5bae300",
+        "memory_type": "user_preference",
+        "rank": 1,
+        "source_uri": "codecairn://memory/memory_d30937172853e5bae300",
+        "summary": "2023-04-20T16:22:00+00:00 — Calvin: Not yet, been pretty busy with rehearsals and traveling. But I'm looking forward to exploring the city, trying out some delicious food, and visiting the popular attractions. Maybe we can grab a bite together when I'm there?",
+        "title": "Calvin in session_3",
+        "vector_rank": 7,
+        "vector_score": 0.369636256344
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "77821cfcc3e18807a3092ab8973ad8bc0cc04930281d73ef32de12d84c05d2fe",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 501,
+            "raw_event_sha256": "b7690744d6f342e4062577ca9afa4da4a79ef17224f1a07e77f40948d9ab9569",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_28"
+          }
+        ],
+        "final_score": 0.027673192771,
+        "lexical_rank": 23,
+        "lexical_score": 3.140137195587,
+        "memory_id": "memory_80646ab47ffa28a728ab",
+        "memory_type": "user_preference",
+        "rank": 2,
+        "source_uri": "codecairn://memory/memory_80646ab47ffa28a728ab",
+        "summary": "2023-11-02T17:55:00+00:00 — Calvin: Thanks! Where did you get this car?",
+        "title": "Calvin in session_28",
+        "vector_rank": 4,
+        "vector_score": 0.371692402255
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "00c8ddcfcd88a99832d15980b2a8193d44f0a5ea565d3dba59e9664deeee6280",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 245,
+            "raw_event_sha256": "ab60117d28e5ce8e5382cc36c8f805407f26a4df8090675e8f4204287ab1603d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_14"
+          }
+        ],
+        "final_score": 0.024160524161,
+        "lexical_rank": 6,
+        "lexical_score": 5.209328174591,
+        "memory_id": "memory_a063cf80a7f47667b7ac",
+        "memory_type": "user_preference",
+        "rank": 3,
+        "source_uri": "codecairn://memory/memory_a063cf80a7f47667b7ac",
+        "summary": "2023-08-14T00:37:30+00:00 — Calvin: Thanks, Dave! That show in Tokyo was awesome! Everyone was so into it when I played one of my songs and sang along. It was a magical moment.",
+        "title": "Calvin in session_14",
+        "vector_rank": 51,
+        "vector_score": 0.356106885962
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "8bc42fb38b09273f3d6e541bcb7c978cfb31299c771229dde964d862ce9c005b",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 40,
+            "raw_event_sha256": "0477428b1032151c0110d1021f0148f4fd409cf01ddedefc20caaed20974ef03",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_3"
+          }
+        ],
+        "final_score": 0.023739701159,
+        "lexical_rank": 33,
+        "lexical_score": 2.994577407837,
+        "memory_id": "memory_59957d01d63bdaa24c1f",
+        "memory_type": "user_preference",
+        "rank": 4,
+        "source_uri": "codecairn://memory/memory_59957d01d63bdaa24c1f",
+        "summary": "2023-04-20T16:15:00+00:00 — Calvin: Hey Dave! Long time no see. I just went to an awesome music thingy in Tokyo - so cool!",
+        "title": "Calvin in session_3",
+        "vector_rank": 17,
+        "vector_score": 0.36457985326
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "e82d6d4fa01cdddac5cb6f03689a5bbb66bdb7221268c6e9db3bd4d6f84d1db5",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 305,
+            "raw_event_sha256": "95b60f94a322f314aa3feef86aa66775bf532a5ff114bc9500a0c04ffcb789ef",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_17"
+          }
+        ],
+        "final_score": 0.023119392685,
+        "lexical_rank": 78,
+        "lexical_score": 1.911474585533,
+        "memory_id": "memory_7916a7c5d0b4de8bbe7f",
+        "memory_type": "user_preference",
+        "rank": 5,
+        "source_uri": "codecairn://memory/memory_7916a7c5d0b4de8bbe7f",
+        "summary": "2023-09-02T09:23:30+00:00 — Calvin: Thanks, Dave! Gotta stay safe on the trip. Can't wait to see you there! I will contact you when I arrive. Goodbye!",
+        "title": "Calvin in session_17",
+        "vector_rank": 3,
+        "vector_score": 0.37188150111
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "27318f74cad21ad27611aa01bd3d64b5eb9f5a25e7361b8d845ca3e3c8d8f927",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 111,
+            "raw_event_sha256": "3c073f118e864de828a6af5bab8de9034be97e0f940113cf8de6d3a42c31cdc0",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_6"
+          }
+        ],
+        "final_score": 0.021235955056,
+        "lexical_rank": 40,
+        "lexical_score": 2.903185606003,
+        "memory_id": "memory_3a70a1f2055817720041",
+        "memory_type": "user_preference",
+        "rank": 6,
+        "source_uri": "codecairn://memory/memory_3a70a1f2055817720041",
+        "summary": "2023-05-16T11:55:00+00:00 — Calvin: Thanks Dave! Super excited for my upcoming performance in Tokyo this month. It's gonna be great to show my music to a whole new crowd and hopefully expand my following!",
+        "title": "Calvin in session_6",
+        "vector_rank": 29,
+        "vector_score": 0.361342466577
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "df7dc7a57737be4e05bfef5b6dc3ebaa8ab866d8521e51cf33e8a5e61f24fee6",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 546,
+            "raw_event_sha256": "b7e148d52ef6fd56cfe5181e0d1c0ffff6bb20d16f3fefa298634848c8a503db",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_30"
+          }
+        ],
+        "final_score": 0.020887445887,
+        "lexical_rank": 28,
+        "lexical_score": 3.037685155869,
+        "memory_id": "memory_44395514161c1fdc50d3",
+        "memory_type": "user_preference",
+        "rank": 7,
+        "source_uri": "codecairn://memory/memory_44395514161c1fdc50d3",
+        "summary": "2023-11-17T10:55:00+00:00 — Dave: Calvin, that event looks amazing! You all look awesome. Who did you have the most interesting chat with? [Image caption: a photo of a boat is floating in the water at sunset]",
+        "title": "Dave in session_30",
+        "vector_rank": 45,
+        "vector_score": 0.357228976205
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "2bc67b72b98b0284338936ee0f5224526539967a8b56b3a1ba40fa990b72f93c",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 565,
+            "raw_event_sha256": "e391f8c4cf0d376859d9fb34db4a2b2f019f29b850e668b190f577e22ae83e1e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_30"
+          }
+        ],
+        "final_score": 0.020633012821,
+        "lexical_rank": 68,
+        "lexical_score": 1.96573972702,
+        "memory_id": "memory_9d71a7a5d12f64844408",
+        "memory_type": "user_preference",
+        "rank": 8,
+        "source_uri": "codecairn://memory/memory_9d71a7a5d12f64844408",
+        "summary": "2023-11-17T11:04:30+00:00 — Calvin: Thanks, Dave! I'll catch you when I'm in Boston. Cheers!",
+        "title": "Calvin in session_30",
+        "vector_rank": 18,
+        "vector_score": 0.36417885877
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "dad8f27da871f8f3a60736f6d70c64c756b8c7f9792bf6a89a95e0b2e790ca81",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 482,
+            "raw_event_sha256": "bbbc787c9a7713c8a245e0622b1575ba5722751a583d88c4a2f75adca3ea8a3d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_27"
+          }
+        ],
+        "final_score": 0.020251937984,
+        "lexical_rank": 69,
+        "lexical_score": 1.96573972702,
+        "memory_id": "memory_b35a9a5e4b1ff76c805b",
+        "memory_type": "user_preference",
+        "rank": 9,
+        "source_uri": "codecairn://memory/memory_b35a9a5e4b1ff76c805b",
+        "summary": "2023-10-29T10:55:00+00:00 — Calvin: Cheers! I'll let you know when I'm free. Bye!",
+        "title": "Calvin in session_27",
+        "vector_rank": 20,
+        "vector_score": 0.36385247953
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b92fec5462db7cf9852b1d8fc5f6b09a00f7b3b63cb87b7a59cd73d56a6cfac3",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 137,
+            "raw_event_sha256": "c7a137094bbf38e9c9098ee2867164e34ecfbc470edb1aad106dd0d5857f40dd",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_7"
+          }
+        ],
+        "final_score": 0.019480519481,
+        "lexical_rank": 72,
+        "lexical_score": 1.942117333412,
+        "memory_id": "memory_048acd2ee3a38fbe3f36",
+        "memory_type": "user_preference",
+        "rank": 10,
+        "source_uri": "codecairn://memory/memory_048acd2ee3a38fbe3f36",
+        "summary": "2023-05-31T18:15:00+00:00 — Calvin: Thanks! I'll fill you in on all the details when I get back. See you soon!",
+        "title": "Calvin in session_7",
+        "vector_rank": 24,
+        "vector_score": 0.362454179637
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "9bef371e2ecab569fc375ba20e76c75020d277daf555f129949ebb5d65a5d697",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 497,
+            "raw_event_sha256": "5f9c1c88fb8ee3e751cbe5e1eda827102ff86e4b7a2e04ec8ee52b08711d81ba",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_28"
+          }
+        ],
+        "final_score": 0.019307832423,
+        "lexical_rank": 30,
+        "lexical_score": 3.029500007629,
+        "memory_id": "memory_bb63c1b70c57fb0abffd",
+        "memory_type": "user_preference",
+        "rank": 11,
+        "source_uri": "codecairn://memory/memory_bb63c1b70c57fb0abffd",
+        "summary": "2023-11-02T17:53:00+00:00 — Calvin: Wow Dave, those headlights look great! What did you do to get them looking so good?",
+        "title": "Calvin in session_28",
+        "vector_rank": 62,
+        "vector_score": 0.354003402626
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "45eeef182bc1be5bca6918f65b96105b58e075d1f3785d066cfab811c5d92b8c",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 303,
+            "raw_event_sha256": "66f430249b900665744243b860096b45c04b7df3d9455ecce49ee3065ba2a545",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_17"
+          }
+        ],
+        "final_score": 0.019013049866,
+        "lexical_rank": 73,
+        "lexical_score": 1.942117333412,
+        "memory_id": "memory_45bd276465a0da7eda6b",
+        "memory_type": "user_preference",
+        "rank": 12,
+        "source_uri": "codecairn://memory/memory_45bd276465a0da7eda6b",
+        "summary": "2023-09-02T09:22:30+00:00 — Calvin: Yeah, for sure! I'll let you know when I'm in Boston. See you soon!",
+        "title": "Calvin in session_17",
+        "vector_rank": 27,
+        "vector_score": 0.361732150547
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "2e61da72131cccf0559a93271132df7aad822ccba614e99f11fa6c184292af52",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 413,
+            "raw_event_sha256": "e5c4d0f975301bd4d911f710d0cfe041ee833ac4dc6697825dfd46dcea1a0296",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_24"
+          }
+        ],
+        "final_score": 0.01875,
+        "lexical_rank": 36,
+        "lexical_score": 2.959646701813,
+        "memory_id": "memory_2058fb034e03c56eec58",
+        "memory_type": "user_preference",
+        "rank": 13,
+        "source_uri": "codecairn://memory/memory_2058fb034e03c56eec58",
+        "summary": "2023-10-19T10:17:00+00:00 — Calvin: Yes, Dave! That was an incredible experience to visit similar streets like you shared in your photo. Is there anything else that interests you in Tokyo?",
+        "title": "Calvin in session_24",
+        "vector_rank": 60,
+        "vector_score": 0.354192692784
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "57985e183aedc0272aedba2f3aa19590626780bbcb8ce784cc44a0a3b39ad3a6",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 259,
+            "raw_event_sha256": "fb15c7d430ec3d87a799ba83e42867ddbca570a8a417c21c8a6baa236d183a29",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_15"
+          }
+        ],
+        "final_score": 0.018637309293,
+        "lexical_rank": 43,
+        "lexical_score": 2.817148923874,
+        "memory_id": "memory_5001872945a890dca0c8",
+        "memory_type": "user_preference",
+        "rank": 14,
+        "source_uri": "codecairn://memory/memory_5001872945a890dca0c8",
+        "summary": "2023-08-22T11:07:30+00:00 — Calvin: Thanks, Dave! I had the opportunity to meet Frank Ocean at a music festival in Tokyo and we clicked. We've been speaking and sharing ideas we arranged a meeting and recorded a song in the studio at my mansion - it's been great!",
+        "title": "Calvin in session_15",
+        "vector_rank": 52,
+        "vector_score": 0.356037269833
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "94508c6ef52f8545c26a1a4a4d8bdf6b39945209699abcde689d0c88b2e15dc9",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 251,
+            "raw_event_sha256": "84d0bb14a78f497b633a4cefa7f437c7729e2416903ec2b6b8130ef26a0956a9",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_14"
+          }
+        ],
+        "final_score": 0.018410381184,
+        "lexical_rank": 77,
+        "lexical_score": 1.919045567513,
+        "memory_id": "memory_8d0dc4d5ee447df65b8d",
+        "memory_type": "user_preference",
+        "rank": 15,
+        "source_uri": "codecairn://memory/memory_8d0dc4d5ee447df65b8d",
+        "summary": "2023-08-14T00:40:30+00:00 — Calvin: Wow Dave, that car is going to look amazing when you're done. How long do you think it will take to restore it?",
+        "title": "Calvin in session_14",
+        "vector_rank": 30,
+        "vector_score": 0.360579793323
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "f0c10a99feb0d1d7abc22e74ef17bfbfbf1600e5ec75b8c39f4947297be6cde7",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 51,
+            "raw_event_sha256": "b9680af3c031473b7f6d45abaebeec5efe301c8b2583b18378d8befcab321809",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_3"
+          }
+        ],
+        "final_score": 0.01809771141,
+        "lexical_rank": 62,
+        "lexical_score": 2.008303165436,
+        "memory_id": "memory_8eeca103d20815230d2f",
+        "memory_type": "user_preference",
+        "rank": 16,
+        "source_uri": "codecairn://memory/memory_8eeca103d20815230d2f",
+        "summary": "2023-04-20T16:20:30+00:00 — Dave: Last weekend I went to a car show. Classic cars are so charming and the dedication people put into restoring them is amazing. That's why I'm so into auto engineering. Can't wait to show you some when you come to Boston! Oh, almost forgot to send a photo, look at this beautiful car! [Image caption: a photography of a green mustang parked in a field of grass]",
+        "title": "Dave in session_3",
+        "vector_rank": 41,
+        "vector_score": 0.358154789446
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b1ae6b7b2c8db497e0aa872bbeedc48c4179b946ab301fae3b0d26c20e3ae301",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 42,
+            "raw_event_sha256": "6672d3f22f8ea3abfd53c997d5bddb7dd26903b6986227eae27e7e860295b7ee",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_3"
+          }
+        ],
+        "final_score": 0.017503522955,
+        "lexical_rank": 37,
+        "lexical_score": 2.948182106018,
+        "memory_id": "memory_285d64f867701dbd9500",
+        "memory_type": "user_preference",
+        "rank": 17,
+        "source_uri": "codecairn://memory/memory_285d64f867701dbd9500",
+        "summary": "2023-04-20T16:16:00+00:00 — Calvin: Hey Dave! The festival in Tokyo was awesome! Didn't see any bands, but met lots of talented artists and industry people. Totally enriching!",
+        "title": "Calvin in session_3",
+        "vector_rank": 79,
+        "vector_score": 0.351749445075
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "bec2258a7ebf2cdc212f48103d55f2ef01b0dff6b38c5da84e21327670482507",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 419,
+            "raw_event_sha256": "2730766ad6b050cdb56c66c129997eba470a2530196e725e5dcfa89e19ff684e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_24"
+          }
+        ],
+        "final_score": 0.01746031746,
+        "lexical_rank": 45,
+        "lexical_score": 2.755860805511,
+        "memory_id": "memory_39efabe5333e732cc288",
+        "memory_type": "user_preference",
+        "rank": 18,
+        "source_uri": "codecairn://memory/memory_39efabe5333e732cc288",
+        "summary": "2023-10-19T10:20:00+00:00 — Calvin: Yeah definitely! Shibuya Crossing is like Tokyo's Times Square, and I was excited to explore Shinjuku. Plus, there's amazing food there, can't wait to try it again! Look at the photo of Shibuya Crossing at night, that's amazing! [Image caption: a photo of a crowd of people with umbrellas in the rain]",
+        "title": "Calvin in session_24",
+        "vector_rank": 66,
+        "vector_score": 0.353676702043
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b65a2f2713c21462b48211edaccd6f4f20841f54c21d143c179e375c5ad5e15c",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 517,
+            "raw_event_sha256": "207a01aedf7a7401e15ac2f9526aa14eaac6d4cedd63d2dc6c5edbc6e6e18510",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_28"
+          }
+        ],
+        "final_score": 0.016685205784,
+        "lexical_rank": 64,
+        "lexical_score": 1.973740100861,
+        "memory_id": "memory_9ea0993b6e9955171fb8",
+        "memory_type": "user_preference",
+        "rank": 19,
+        "source_uri": "codecairn://memory/memory_9ea0993b6e9955171fb8",
+        "summary": "2023-11-02T18:03:00+00:00 — Calvin: Cool, Dave! These really help you stay focused when making music.",
+        "title": "Calvin in session_28",
+        "vector_rank": 56,
+        "vector_score": 0.355191255442
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "5015949362484293e00e6db5706bf80379833d460e4963255a6019901f9538d3",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 4,
+            "raw_event_sha256": "5c0db3ebf3865178653ba9325c0cce75c56e1530e93312ff9eca90e910490413",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-50/session_1"
+          }
+        ],
+        "final_score": 0.016393442623,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_657712d11c993a1fa362",
+        "memory_type": "user_preference",
+        "rank": 20,
+        "source_uri": "codecairn://memory/memory_657712d11c993a1fa362",
+        "summary": "2023-03-23T11:55:00+00:00 — Calvin: I'm so excited to learn about Japanese culture and get a chance to expand.",
+        "title": "Calvin in session_1",
+        "vector_rank": 1,
+        "vector_score": 0.375832681453
+      }
+    ],
+    "repo_key": "locomo/conv-50",
+    "vector_candidate_count": 80
+  },
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "status": "completed"
+}

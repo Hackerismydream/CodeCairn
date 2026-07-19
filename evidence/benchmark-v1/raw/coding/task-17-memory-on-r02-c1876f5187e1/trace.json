@@ -1,0 +1,75 @@
+{
+  "events": [
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 1
+    },
+    {
+      "command": "/bin/zsh -lc 'rg -n \"percent_change|percent change\" .'",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 2
+    },
+    {
+      "command": "/bin/zsh -lc 'rg --files .'",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 3
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 4
+    },
+    {
+      "command": "/bin/zsh -lc \"nl -ba kata.py | sed -n '1,160p'\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 5
+    },
+    {
+      "command": "/bin/zsh -lc 'git status --short'",
+      "exit_code": 128,
+      "kind": "command",
+      "path": null,
+      "step": 6
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 7
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "file_change",
+      "path": "/private/tmp/codecairn-evidence-fbc7023/coding/coding-fbc7023-gpt54/task-17-memory-on-r02-c1876f5187e1/workspace/kata.py",
+      "step": 8
+    },
+    {
+      "command": "/bin/zsh -lc \"python - <<'PY'\nfrom kata import percent_change\n\ncases = [\n    (0, 0),\n    (10, 15),\n    (10, 5),\n]\nfor previous, current in cases:\n    print(previous, current, percent_change(previous, current))\n\ntry:\n    percent_change(0, 1)\nexcept Exception as exc:\n    print(type(exc).__name__, str(exc))\nPY\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 9
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 10
+    }
+  ],
+  "schema_version": 1
+}

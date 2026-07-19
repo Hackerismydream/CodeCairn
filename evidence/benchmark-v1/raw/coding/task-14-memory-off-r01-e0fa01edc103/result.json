@@ -1,0 +1,16 @@
+{
+  "arm": "memory-off",
+  "cached_input_tokens": 66816,
+  "cost_usd": null,
+  "input_tokens": 73309,
+  "outcome": "passed",
+  "output_tokens": 1219,
+  "repeat": 1,
+  "repeated_failed_commands": 0,
+  "repeated_file_reads": 0,
+  "run_id": "task-14-memory-off-r01-e0fa01edc103",
+  "schema_version": 1,
+  "steps_to_first_useful_action": 10,
+  "task_id": "task-14",
+  "workspace_snapshot_after_sha256": "bdd39b08d5d4138129af8418e86af3414111ec75ba8b470dcf82b5e1203a89a3"
+}

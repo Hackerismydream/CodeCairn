@@ -1,0 +1,46 @@
+{
+  "arms": {
+    "memory-off": {
+      "completed_run_count": 60,
+      "cost_observation_count": 0,
+      "infrastructure_failure_count": 0,
+      "mean_repeated_failed_commands": 0.0,
+      "mean_repeated_file_reads": 0.016666666666666666,
+      "mean_steps_to_first_useful_action": 8.316666666666666,
+      "pass_rate": 0.85,
+      "passed_run_count": 51,
+      "planned_run_count": 60,
+      "task_failure_count": 9,
+      "token_observation_count": 60,
+      "total_cached_input_tokens": 3187584,
+      "total_cost_usd": null,
+      "total_input_tokens": 3670590,
+      "total_output_tokens": 64687,
+      "total_tokens": 3735277
+    },
+    "memory-on": {
+      "completed_run_count": 60,
+      "cost_observation_count": 0,
+      "infrastructure_failure_count": 0,
+      "mean_repeated_failed_commands": 0.0,
+      "mean_repeated_file_reads": 0.0,
+      "mean_steps_to_first_useful_action": 8.033333333333333,
+      "pass_rate": 1.0,
+      "passed_run_count": 60,
+      "planned_run_count": 60,
+      "task_failure_count": 0,
+      "token_observation_count": 60,
+      "total_cached_input_tokens": 3083648,
+      "total_cost_usd": null,
+      "total_input_tokens": 3591608,
+      "total_output_tokens": 59138,
+      "total_tokens": 3650746
+    }
+  },
+  "completed_run_count": 120,
+  "experiment_id": "coding-fbc7023-gpt54",
+  "infrastructure_failure_count": 0,
+  "planned_run_count": 120,
+  "schema_version": 1,
+  "suite": "coding-memory-ab"
+}

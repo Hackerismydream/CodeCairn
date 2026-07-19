@@ -1,0 +1,580 @@
+{
+  "answer": {
+    "cost_usd": null,
+    "input_tokens": 2926,
+    "model": "gpt-5.4",
+    "output_tokens": 47,
+    "text": "The context is insufficient to identify a project from the beginning of January 2023.\n\nThe earliest relevant memory is from 2023-02-09, when Jolene said she was working on an engineering project."
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "evidence": [
+    "D1:2"
+  ],
+  "golden_answer": "electricity engineering project",
+  "judge_votes": [],
+  "question": "What kind of project was Jolene working on in the beginning of January 2023?",
+  "question_id": "locomo-question_976334fe70b9c8c88595",
+  "recall_markdown": "# Recall Context\n\nTask: What kind of project was Jolene working on in the beginning of January 2023?\nRepository: `locomo/conv-48`\n\n## 1. Jolene in session_22\n\n2023-08-26T17:35:30+00:00 — Jolene: Yeah, Deborah! We've been figuring out how to add these values into our projects. As an engineering student, I want to use my talents to do good and help solve important problems. I'm keen on coming up with new ideas and making things more efficient to make the world a better place. Going further, my mom stressed the value of helping others and that's something I want to keep in mind for my engineering projects.\n\n- Type: `user_preference`\n- Source: [memory_dc38f00e0ae7eedc2d9b](codecairn://memory/memory_dc38f00e0ae7eedc2d9b)\n- Evidence: 1 cited raw event(s)\n\n## 2. Jolene in session_17\n\n2023-08-12T20:54:30+00:00 — Jolene: Working on a cool project now - a prototype that could revolutionize aerial surveillance. Can't wait to see the results!\n\n- Type: `user_preference`\n- Source: [memory_9475339318402ced450a](codecairn://memory/memory_9475339318402ced450a)\n- Evidence: 1 cited raw event(s)\n\n## 3. Jolene in session_13\n\n2023-06-06T15:56:00+00:00 — Jolene: Hey Deborah! Long time no talk - I had lots of stuff going on. Remember the tough engineering project? I finally wrapped that up last month. Look at the result! [Image caption: a photo of a solar powered vehicle with a solar panel on the back]\n\n- Type: `user_preference`\n- Source: [memory_423ad59d89952a75ae0d](codecairn://memory/memory_423ad59d89952a75ae0d)\n- Evidence: 1 cited raw event(s)\n\n## 4. Jolene in session_22\n\n2023-08-26T17:38:30+00:00 — Jolene: The other is finding ways to supply clean water to those with limited access. Both align with my beliefs about sustainability and assisting those in need. I still have so much to figure out before beginning, but I'm up for the challenge.\n\n- Type: `user_preference`\n- Source: [memory_300fb16be23f50f7227d](codecairn://memory/memory_300fb16be23f50f7227d)\n- Evidence: 1 cited raw event(s)\n\n## 5. Jolene in session_12\n\n2023-04-09T16:35:30+00:00 — Jolene: Thanks Deb! Your support means a lot. I'll keep you updated on the progress of the project.\n\n- Type: `user_preference`\n- Source: [memory_27ff7a8018e8126745a6](codecairn://memory/memory_27ff7a8018e8126745a6)\n- Evidence: 1 cited raw event(s)\n\n## 6. Jolene in session_4\n\n2023-02-04T09:52:00+00:00 — Jolene: I want to keep working in engineering and continue to make a positive impact on communities in need by creating sustainable solutions. My goal is to contribute towards making the world a better place with my work.\n\n- Type: `user_preference`\n- Source: [memory_ecbdac0804e413c551e3](codecairn://memory/memory_ecbdac0804e413c551e3)\n- Evidence: 1 cited raw event(s)\n\n## 7. Jolene in session_5\n\n2023-02-09T21:05:00+00:00 — Jolene: I really accomplished something with my engineering project - I came up with some neat solutions and I'm really excited about it.\n\n- Type: `user_preference`\n- Source: [memory_9744485cb5257213133d](codecairn://memory/memory_9744485cb5257213133d)\n- Evidence: 1 cited raw event(s)\n\n## 8. Jolene in session_7\n\n2023-02-25T16:55:00+00:00 — Jolene: Yep, teaming up for these projects feels great! We get each other's struggles and both love it. [Image caption: a photo of a group of men standing in front of a building]\n\n- Type: `user_preference`\n- Source: [memory_1c452431875c74b59e4c](codecairn://memory/memory_1c452431875c74b59e4c)\n- Evidence: 1 cited raw event(s)\n\n## 9. Jolene in session_21\n\n2023-08-24T09:34:30+00:00 — Jolene: Wow, Deb, sounds great! Glad you got to connect with yourself and nature. That's my own way to relax. What are your thoughts on life now? [Image caption: a photo of a man bending over on a blanket in the grass]\n\n- Type: `user_preference`\n- Source: [memory_49c7d8a0d5ba9cf9a4d7](codecairn://memory/memory_49c7d8a0d5ba9cf9a4d7)\n- Evidence: 1 cited raw event(s)\n\n## 10. Deborah in session_22\n\n2023-08-26T17:36:00+00:00 — Deborah: When our work ties into our values, it becomes more meaningful. What goals or ideas do you have for incorporating those values into your future projects?\n\n- Type: `user_preference`\n- Source: [memory_7bcd4a1d0a199136c1a0](codecairn://memory/memory_7bcd4a1d0a199136c1a0)\n- Evidence: 1 cited raw event(s)\n\n## 11. Jolene in session_16\n\n2023-08-01T09:26:30+00:00 — Jolene: Hey Debs! Congrats on your project for the community! As for me, life's been a rollercoaster lately. Last week, I had a huge setback with my project. I put in so much work and it all crashed and I lost everything. SO frustrating and depressing.\n\n- Type: `user_preference`\n- Source: [memory_3706a4542664b4a08fb1](codecairn://memory/memory_3706a4542664b4a08fb1)\n- Evidence: 1 cited raw event(s)\n\n## 12. Jolene in session_19\n\n2023-08-19T01:00:30+00:00 — Jolene: Sounds lovely! Nature can be calming. What makes this bench special to you? [Image caption: a photo of a bench in a park with a tree in the background]\n\n- Type: `user_preference`\n- Source: [memory_5cf056755cefed72afd5](codecairn://memory/memory_5cf056755cefed72afd5)\n- Evidence: 1 cited raw event(s)\n\n## 13. Deborah in session_2\n\n2023-01-27T09:57:00+00:00 — Deborah: Yeah, Jolene. She'd sit there every night with a book and a smile, reading was one of her hobbies. It was one of her favorite places in the house. [Image caption: a photo of a view of the sky from an airplane window]\n\n- Type: `user_preference`\n- Source: [memory_180d9fcf5cdb51195e79](codecairn://memory/memory_180d9fcf5cdb51195e79)\n- Evidence: 1 cited raw event(s)\n\n## 14. Deborah in session_14\n\n2023-06-26T09:23:00+00:00 — Deborah: Awesome, Jolene! I'm really glad your project worked out.\n\n- Type: `user_preference`\n- Source: [memory_6f5a5f8bdf7be5028fac](codecairn://memory/memory_6f5a5f8bdf7be5028fac)\n- Evidence: 1 cited raw event(s)\n\n## 15. Deborah in session_16\n\n2023-08-01T09:32:00+00:00 — Deborah: In the meantime, check out this great place for yoga. [Image caption: a photo of a room with a lot of yoga mats on the floor]\n\n- Type: `user_preference`\n- Source: [memory_189e02a9d6251a7afc6e](codecairn://memory/memory_189e02a9d6251a7afc6e)\n- Evidence: 1 cited raw event(s)\n\n## 16. Deborah in session_7\n\n2023-02-25T16:54:30+00:00 — Deborah: Wow, your relationship started from a strong friendship. Do you still enjoy working on engineering projects together?\n\n- Type: `user_preference`\n- Source: [memory_d866b2c9bff27c5c91d3](codecairn://memory/memory_d866b2c9bff27c5c91d3)\n- Evidence: 1 cited raw event(s)\n\n## 17. Deborah in session_21\n\n2023-08-24T09:41:00+00:00 — Deborah: Come on! The journey's as important as the destination. Take time for yourself and find joy in it. We believe in you! [Image caption: a photo of a field of sunflowers with a sunset in the background]\n\n- Type: `user_preference`\n- Source: [memory_a69f7513ebb019460660](codecairn://memory/memory_a69f7513ebb019460660)\n- Evidence: 1 cited raw event(s)\n\n## 18. Jolene in session_12\n\n2023-04-09T16:34:30+00:00 — Jolene: Just so you know, I've been working on a big project lately - it's been tough but also really cool to watch it take shape. Can't wait to see the final result!\n\n- Type: `user_preference`\n- Source: [memory_33ade3c07b4d2e9763a6](codecairn://memory/memory_33ade3c07b4d2e9763a6)\n- Evidence: 1 cited raw event(s)\n\n## 19. Jolene in session_21\n\n2023-08-24T09:41:30+00:00 — Jolene: Yeah, you're right! I'll take your advice and find joy on the way. Cheers for the support! [Image caption: a photo of a city skyline at sunset with a body of water]\n\n- Type: `user_preference`\n- Source: [memory_da6998b989112e465d33](codecairn://memory/memory_da6998b989112e465d33)\n- Evidence: 1 cited raw event(s)\n\n## 20. Jolene in session_28\n\n2023-09-15T15:16:30+00:00 — Jolene: I like to create my own serene yoga space with candles and oils for extra chill vibes. Also, we tried a new style of meditation in Thailand - with flowers. [Image caption: a photography of a couple of towels sitting on top of a table]\n\n- Type: `user_preference`\n- Source: [memory_19a4a1f412529136ea5e](codecairn://memory/memory_19a4a1f412529136ea5e)\n- Evidence: 1 cited raw event(s)\n",
+  "retrieval": {
+    "latency_ms": 106.008,
+    "lexical_candidate_count": 80,
+    "limit": 20,
+    "query": "What kind of project was Jolene working on in the beginning of January 2023?",
+    "ranked": [
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "3fff294b13057141a63e538a782bb1f3b3f83a264800910f67fa37ad08f8ae74",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 473,
+            "raw_event_sha256": "b7e1ff2cfcd53508bfa1c00f79aa075592848863cd8a873e48ae4011f2642af4",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_22"
+          }
+        ],
+        "final_score": 0.026132699813,
+        "lexical_rank": 23,
+        "lexical_score": 3.844979047775,
+        "memory_id": "memory_dc38f00e0ae7eedc2d9b",
+        "memory_type": "user_preference",
+        "rank": 1,
+        "source_uri": "codecairn://memory/memory_dc38f00e0ae7eedc2d9b",
+        "summary": "2023-08-26T17:35:30+00:00 — Jolene: Yeah, Deborah! We've been figuring out how to add these values into our projects. As an engineering student, I want to use my talents to do good and help solve important problems. I'm keen on coming up with new ideas and making things more efficient to make the world a better place. Going further, my mom stressed the value of helping others and that's something I want to keep in mind for my engineering projects.",
+        "title": "Jolene in session_22",
+        "vector_rank": 11,
+        "vector_score": 0.38736299955
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "0cee15bd69de86e2dd6df889b358a1401056b268a8b3b3c29751403257afcac7",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 380,
+            "raw_event_sha256": "8b82d59bd0603f88602f95e8e4b32b1560460335445b62a0f61b8eef9ecce6e4",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_17"
+          }
+        ],
+        "final_score": 0.025801282051,
+        "lexical_rank": 5,
+        "lexical_score": 6.088634490967,
+        "memory_id": "memory_9475339318402ced450a",
+        "memory_type": "user_preference",
+        "rank": 2,
+        "source_uri": "codecairn://memory/memory_9475339318402ced450a",
+        "summary": "2023-08-12T20:54:30+00:00 — Jolene:  Working on a cool project now - a prototype that could revolutionize aerial surveillance. Can't wait to see the results!",
+        "title": "Jolene in session_17",
+        "vector_rank": 36,
+        "vector_score": 0.376493111344
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "cdd8e2f55656f5195a032ca2dfa753cd6204c565818380087c94c1e2924e3c84",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 262,
+            "raw_event_sha256": "a11c82cbed39ebeb7a0eea465038b3fc992ba2147e98f05d44b7d34e7c0412f6",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_13"
+          }
+        ],
+        "final_score": 0.023234683281,
+        "lexical_rank": 47,
+        "lexical_score": 2.90370631218,
+        "memory_id": "memory_423ad59d89952a75ae0d",
+        "memory_type": "user_preference",
+        "rank": 3,
+        "source_uri": "codecairn://memory/memory_423ad59d89952a75ae0d",
+        "summary": "2023-06-06T15:56:00+00:00 — Jolene: Hey Deborah! Long time no talk - I had lots of stuff going on. Remember the tough engineering project? I finally wrapped that up last month. Look at the result! [Image caption: a photo of a solar powered vehicle with a solar panel on the back]",
+        "title": "Jolene in session_13",
+        "vector_rank": 12,
+        "vector_score": 0.387362105184
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "00e1086584851380a2d7f6ea80471a1580a5702293cbe2bc81c61166bc3416b4",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 479,
+            "raw_event_sha256": "d9690b41e2d59fb98e0d77148bb445907c4609be9c644c5862f42d201d1b6c5b",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_22"
+          }
+        ],
+        "final_score": 0.022292250233,
+        "lexical_rank": 12,
+        "lexical_score": 5.212373256683,
+        "memory_id": "memory_300fb16be23f50f7227d",
+        "memory_type": "user_preference",
+        "rank": 4,
+        "source_uri": "codecairn://memory/memory_300fb16be23f50f7227d",
+        "summary": "2023-08-26T17:38:30+00:00 — Jolene: The other is finding ways to supply clean water to those with limited access. Both align with my beliefs about sustainability and assisting those in need. I still have so much to figure out before beginning, but I'm up for the challenge.",
+        "title": "Jolene in session_22",
+        "vector_rank": 59,
+        "vector_score": 0.369106494378
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "ae3a6736221a8c29cf2a355c8f5c679dbefc57ba6ae2e0d0676c9692fb545e1b",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 257,
+            "raw_event_sha256": "e5e512b7cc0f637ec498c61a7e25f4ac656497478fa84763b0a74513edde74a4",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_12"
+          }
+        ],
+        "final_score": 0.022222222222,
+        "lexical_rank": 30,
+        "lexical_score": 3.111039876938,
+        "memory_id": "memory_27ff7a8018e8126745a6",
+        "memory_type": "user_preference",
+        "rank": 5,
+        "source_uri": "codecairn://memory/memory_27ff7a8018e8126745a6",
+        "summary": "2023-04-09T16:35:30+00:00 — Jolene: Thanks Deb! Your support means a lot. I'll keep you updated on the progress of the project.",
+        "title": "Jolene in session_12",
+        "vector_rank": 30,
+        "vector_score": 0.378187417055
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "a6f0cbd3e20ead24c72de9b4817c2e59a0bc7b3018203f79b83d7931e6ab682a",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 73,
+            "raw_event_sha256": "9644635e6be1157a6b4f926e0fbb5e48ad6cc1f34ccd035b735fcbbe2df1d37e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_4"
+          }
+        ],
+        "final_score": 0.020815811606,
+        "lexical_rank": 22,
+        "lexical_score": 3.879106044769,
+        "memory_id": "memory_ecbdac0804e413c551e3",
+        "memory_type": "user_preference",
+        "rank": 6,
+        "source_uri": "codecairn://memory/memory_ecbdac0804e413c551e3",
+        "summary": "2023-02-04T09:52:00+00:00 — Jolene:  I want to keep working in engineering and continue to make a positive impact on communities in need by creating sustainable solutions. My goal is to contribute towards making the world a better place with my work.",
+        "title": "Jolene in session_4",
+        "vector_rank": 56,
+        "vector_score": 0.36979793339
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "4e2eaa0175b301feb1b6cf80b701409361881df114ee5002a711b97b01af669f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 113,
+            "raw_event_sha256": "9b829a4d3db5d77b7e13660d44439ca09e8f9a59d64d0e956ed352f2a3750809",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_5"
+          }
+        ],
+        "final_score": 0.019333950046,
+        "lexical_rank": 34,
+        "lexical_score": 3.050545692444,
+        "memory_id": "memory_9744485cb5257213133d",
+        "memory_type": "user_preference",
+        "rank": 7,
+        "source_uri": "codecairn://memory/memory_9744485cb5257213133d",
+        "summary": "2023-02-09T21:05:00+00:00 — Jolene: I really accomplished something with my engineering project - I came up with some neat solutions and I'm really excited about it.",
+        "title": "Jolene in session_5",
+        "vector_rank": 55,
+        "vector_score": 0.369910157328
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "c65f5abbbe70f2b03662df48fccba54827f437b655adc39cf607b28bad967092",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 152,
+            "raw_event_sha256": "27afaf926b1c7597504cab28b7be784a260c6eb5c044feae562f4ec7c149c364",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_7"
+          }
+        ],
+        "final_score": 0.018334162933,
+        "lexical_rank": 38,
+        "lexical_score": 3.00381231308,
+        "memory_id": "memory_1c452431875c74b59e4c",
+        "memory_type": "user_preference",
+        "rank": 8,
+        "source_uri": "codecairn://memory/memory_1c452431875c74b59e4c",
+        "summary": "2023-02-25T16:55:00+00:00 — Jolene: Yep, teaming up for these projects feels great! We get each other's struggles and both love it. [Image caption: a photo of a group of men standing in front of a building]",
+        "title": "Jolene in session_7",
+        "vector_rank": 63,
+        "vector_score": 0.368633788305
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "a929cd1548aec0495a4a8b54b16a6c9487f8c99f0c6f537a572d5529f934a658",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 452,
+            "raw_event_sha256": "a95635f045b5d03e3cf9bdeedafd3a6cef3d8d240d3d32a1445a5b1a7e5724d7",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_21"
+          }
+        ],
+        "final_score": 0.016393442623,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_49c7d8a0d5ba9cf9a4d7",
+        "memory_type": "user_preference",
+        "rank": 9,
+        "source_uri": "codecairn://memory/memory_49c7d8a0d5ba9cf9a4d7",
+        "summary": "2023-08-24T09:34:30+00:00 — Jolene: Wow, Deb, sounds great! Glad you got to connect with yourself and nature. That's my own way to relax. What are your thoughts on life now? [Image caption: a photo of a man bending over on a blanket in the grass]",
+        "title": "Jolene in session_21",
+        "vector_rank": 1,
+        "vector_score": 0.400773779408
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "3d91422f0c47d70650ad128fa0f1f83546e7f40e370f5a2b955e5b130601657f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 474,
+            "raw_event_sha256": "722b1a5c2adc86e774d687b9ec12cbfa406c53fa1c263cb352d4eba647ca4236",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_22"
+          }
+        ],
+        "final_score": 0.016393442623,
+        "lexical_rank": 1,
+        "lexical_score": 8.105739593506,
+        "memory_id": "memory_7bcd4a1d0a199136c1a0",
+        "memory_type": "user_preference",
+        "rank": 10,
+        "source_uri": "codecairn://memory/memory_7bcd4a1d0a199136c1a0",
+        "summary": "2023-08-26T17:36:00+00:00 — Deborah: When our work ties into our values, it becomes more meaningful. What goals or ideas do you have for incorporating those values into your future projects?",
+        "title": "Deborah in session_22",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "eaf577aae3d97aeaa8760ba5426f2917fca109e79c28f5c1169020830223cb41",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 352,
+            "raw_event_sha256": "f8b78fed2be0f243cdc515e92bafcd6764b32d992739f1618187798030583a17",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_16"
+          }
+        ],
+        "final_score": 0.016129032258,
+        "lexical_rank": 2,
+        "lexical_score": 6.863273143768,
+        "memory_id": "memory_3706a4542664b4a08fb1",
+        "memory_type": "user_preference",
+        "rank": 11,
+        "source_uri": "codecairn://memory/memory_3706a4542664b4a08fb1",
+        "summary": "2023-08-01T09:26:30+00:00 — Jolene: Hey Debs! Congrats on your project for the community! As for me, life's been a rollercoaster lately. Last week, I had a huge setback with my project. I put in so much work and it all crashed and I lost everything. SO frustrating and depressing.",
+        "title": "Jolene in session_16",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "36ab9cb03aad6eac8a95cadd2272e60627c96b2f151a1f447711f2ad1358e566",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 418,
+            "raw_event_sha256": "70baad2b4fca0add1473054664a1f1606a650cee0fc886330b2005af889036b2",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_19"
+          }
+        ],
+        "final_score": 0.016129032258,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_5cf056755cefed72afd5",
+        "memory_type": "user_preference",
+        "rank": 12,
+        "source_uri": "codecairn://memory/memory_5cf056755cefed72afd5",
+        "summary": "2023-08-19T01:00:30+00:00 — Jolene: Sounds lovely! Nature can be calming. What makes this bench special to you? [Image caption: a photo of a bench in a park with a tree in the background]",
+        "title": "Jolene in session_19",
+        "vector_rank": 2,
+        "vector_score": 0.397110430972
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "ac15e182340dd25a14fc3287e5eafad54ab117a7f9aae742069c9723c71dd81b",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 34,
+            "raw_event_sha256": "2ed4c95fe361a6298595a770baf614d52e643ce77a8e6ae8f9e4de30a7c9370c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_2"
+          }
+        ],
+        "final_score": 0.015873015873,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_180d9fcf5cdb51195e79",
+        "memory_type": "user_preference",
+        "rank": 13,
+        "source_uri": "codecairn://memory/memory_180d9fcf5cdb51195e79",
+        "summary": "2023-01-27T09:57:00+00:00 — Deborah: Yeah, Jolene. She'd sit there every night with a book and a smile, reading was one of her hobbies. It was one of her favorite places in the house.  [Image caption: a photo of a view of the sky from an airplane window]",
+        "title": "Deborah in session_2",
+        "vector_rank": 3,
+        "vector_score": 0.396843797177
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "2cbf6107f3f6dc7322057ff7787d62592d90f0862986fede6c957cd2ed67c158",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 301,
+            "raw_event_sha256": "a0eb22fd64fed361d7b29272305cfdab96cce0b88948904a15f8000973fbaea5",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_14"
+          }
+        ],
+        "final_score": 0.015873015873,
+        "lexical_rank": 3,
+        "lexical_score": 6.21654176712,
+        "memory_id": "memory_6f5a5f8bdf7be5028fac",
+        "memory_type": "user_preference",
+        "rank": 14,
+        "source_uri": "codecairn://memory/memory_6f5a5f8bdf7be5028fac",
+        "summary": "2023-06-26T09:23:00+00:00 — Deborah: Awesome, Jolene! I'm really glad your project worked out. ",
+        "title": "Deborah in session_14",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "9cc1d470a04392fe82f8301781c049cca617e1bdcc6569cf7f0b61d10c3bd050",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 363,
+            "raw_event_sha256": "b272b1ed3ea59abf6b363522a29a1291518704febe68c5137eca081f54f6aace",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_16"
+          }
+        ],
+        "final_score": 0.015625,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_189e02a9d6251a7afc6e",
+        "memory_type": "user_preference",
+        "rank": 15,
+        "source_uri": "codecairn://memory/memory_189e02a9d6251a7afc6e",
+        "summary": "2023-08-01T09:32:00+00:00 — Deborah: In the meantime, check out this great place for yoga. [Image caption: a photo of a room with a lot of yoga mats on the floor]",
+        "title": "Deborah in session_16",
+        "vector_rank": 4,
+        "vector_score": 0.395832452511
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "70e12d4705378bb488f3c9d160d9860d348418f72ab21738fa2a4d3372f49853",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 151,
+            "raw_event_sha256": "407f6ce4f8b271fc685f64a36e6a0f8958465e21fd98d186a0f3825bd4bdaca5",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_7"
+          }
+        ],
+        "final_score": 0.015625,
+        "lexical_rank": 4,
+        "lexical_score": 6.17856502533,
+        "memory_id": "memory_d866b2c9bff27c5c91d3",
+        "memory_type": "user_preference",
+        "rank": 16,
+        "source_uri": "codecairn://memory/memory_d866b2c9bff27c5c91d3",
+        "summary": "2023-02-25T16:54:30+00:00 — Deborah: Wow, your relationship started from a strong friendship. Do you still enjoy working on engineering projects together?",
+        "title": "Deborah in session_7",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "454e0bc8bf341b269ecd01b917f6625b439448c1a7731f3d1d0c6bd839a10246",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 465,
+            "raw_event_sha256": "4e824e574f6e54f8a922a3524692add1fa4a17aa7860cca57d93c97d454a0c46",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_21"
+          }
+        ],
+        "final_score": 0.015384615385,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_a69f7513ebb019460660",
+        "memory_type": "user_preference",
+        "rank": 17,
+        "source_uri": "codecairn://memory/memory_a69f7513ebb019460660",
+        "summary": "2023-08-24T09:41:00+00:00 — Deborah: Come on! The journey's as important as the destination. Take time for yourself and find joy in it. We believe in you! [Image caption: a photo of a field of sunflowers with a sunset in the background]",
+        "title": "Deborah in session_21",
+        "vector_rank": 5,
+        "vector_score": 0.395050677071
+      },
+      {
+        "candidate_sources": [
+          "lexical"
+        ],
+        "content_sha256": "b02ba742e81d763ba28f36344e42321aa1c3c4d3b62bca6eafb29e76d4e3b1c2",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 255,
+            "raw_event_sha256": "d2085960c23309e2d141bfd24752fb6451d14e842e18e151296169b804e40357",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_12"
+          }
+        ],
+        "final_score": 0.015151515152,
+        "lexical_rank": 6,
+        "lexical_score": 5.814533233643,
+        "memory_id": "memory_33ade3c07b4d2e9763a6",
+        "memory_type": "user_preference",
+        "rank": 18,
+        "source_uri": "codecairn://memory/memory_33ade3c07b4d2e9763a6",
+        "summary": "2023-04-09T16:34:30+00:00 — Jolene: Just so you know, I've been working on a big project lately - it's been tough but also really cool to watch it take shape. Can't wait to see the final result!",
+        "title": "Jolene in session_12",
+        "vector_rank": null,
+        "vector_score": null
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "c12ddbb3b47b008f001b17de5b5412d71c502e3933eb605d3b42f1013620e95f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 466,
+            "raw_event_sha256": "f44a48674971faf0c0ce0e52fd0ac6c06937b5b23bc53e22a52c5b6ce35a1a50",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_21"
+          }
+        ],
+        "final_score": 0.015151515152,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_da6998b989112e465d33",
+        "memory_type": "user_preference",
+        "rank": 19,
+        "source_uri": "codecairn://memory/memory_da6998b989112e465d33",
+        "summary": "2023-08-24T09:41:30+00:00 — Jolene: Yeah, you're right! I'll take your advice and find joy on the way. Cheers for the support! [Image caption: a photo of a city skyline at sunset with a body of water]",
+        "title": "Jolene in session_21",
+        "vector_rank": 6,
+        "vector_score": 0.392689924353
+      },
+      {
+        "candidate_sources": [
+          "vector"
+        ],
+        "content_sha256": "9185ceda7c6ac8ae4234e5444e63acd74c2d90777585e168690c90ed287d6477",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 614,
+            "raw_event_sha256": "638a1a70ccee7316a67a204c26b18767cab7772aaf63b7702080167f32e221c2",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-48/session_28"
+          }
+        ],
+        "final_score": 0.014925373134,
+        "lexical_rank": null,
+        "lexical_score": null,
+        "memory_id": "memory_19a4a1f412529136ea5e",
+        "memory_type": "user_preference",
+        "rank": 20,
+        "source_uri": "codecairn://memory/memory_19a4a1f412529136ea5e",
+        "summary": "2023-09-15T15:16:30+00:00 — Jolene:  I like to create my own serene yoga space with candles and oils for extra chill vibes. Also, we tried a new style of meditation in Thailand - with flowers. [Image caption: a photography of a couple of towels sitting on top of a table]",
+        "title": "Jolene in session_28",
+        "vector_rank": 7,
+        "vector_score": 0.392569701459
+      }
+    ],
+    "repo_key": "locomo/conv-48",
+    "vector_candidate_count": 80
+  },
+  "sample_id": "conv-48",
+  "schema_version": 1,
+  "status": "completed"
+}

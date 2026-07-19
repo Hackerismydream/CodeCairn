@@ -1,0 +1,124 @@
+{
+  "entries": [
+    {
+      "content_sha256": "457581b602a57921a585829b11553f03e9f47979571629919eb8217e7ae4c93d",
+      "key": "be-tests",
+      "memory_id": "memory_22f141f012f75d6df037",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "c852e74c352c0bc8fc2315e41d9602582d3377347dc45a2783330b1338a02b35",
+      "key": "be-migrations",
+      "memory_id": "memory_64ea68cad22a4ba9e2fd",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "b3a94126efd118eaded0b8532714cafc5e532464a9338101cc0be6d269021880",
+      "key": "be-idempotency",
+      "memory_id": "memory_7bd88d82109ab405a3be",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "87e710ed5cca83c7aaef229d377f70aa69841f853a88a5c601a1509152b6ab4c",
+      "key": "be-time",
+      "memory_id": "memory_fa41608ff39857a7b381",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "ea7c513c59b23266d05e70962d26cbdf3f49449ce5d09b88cda58d86966b6f77",
+      "key": "be-money",
+      "memory_id": "memory_822b19c8551dcceba7a9",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "ff01ca1b640b7cff0238c566cd15a132b7b5d85dc96b6e4f18d4c97d08f1ba2a",
+      "key": "be-api",
+      "memory_id": "memory_1d7f4956a7aaa5f293af",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "9e366b5307e56a7a9decc18180cb7e41d591517dada53e8f7607a999a774d227",
+      "key": "be-types",
+      "memory_id": "memory_548574d9f92bb150a599",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "d3029db79f6c6ea2727e85899bae6786dd8638b84d5205f7ca9e6f78c3c67344",
+      "key": "be-cache",
+      "memory_id": "memory_d2ef656b839e0592db7b",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "8c87f461de96fd5767e8a3b7e016bc2e49ac507199a5a9f129cf301f2607cb79",
+      "key": "be-audit",
+      "memory_id": "memory_bc6903371ac055d6a2a9",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "e2dd34b0e8d0c374aac25b338678c07bc87dcd05479cbdf4377e33aeb868045f",
+      "key": "be-secrets",
+      "memory_id": "memory_1d317da308d6b6d58e49",
+      "repo_key": "acme/backend"
+    },
+    {
+      "content_sha256": "ae67041573f79d1bd417317fb483c50dbd55d8876ffbf45c3b44945a9207f985",
+      "key": "fe-tests",
+      "memory_id": "memory_ceea0aa90355a54283ec",
+      "repo_key": "acme/frontend"
+    },
+    {
+      "content_sha256": "45fa6d819726934b4d5509be96ea124e8a1730aecab67b547ef1003b0b553b87",
+      "key": "fe-state",
+      "memory_id": "memory_45c980c253dba6ce44e1",
+      "repo_key": "acme/frontend"
+    },
+    {
+      "content_sha256": "e2c39892315aff383df72f29d8315b5aa0228770062402c920da5e0cda20380c",
+      "key": "fe-client",
+      "memory_id": "memory_92ba54e3657adcea6b85",
+      "repo_key": "acme/frontend"
+    },
+    {
+      "content_sha256": "c175aa4a2a29a8cbfb4d6509248c5b19f564a89ee21fc48d8abf62ea944da0c9",
+      "key": "fe-style",
+      "memory_id": "memory_61c7998c43dfaf31d3cb",
+      "repo_key": "acme/frontend"
+    },
+    {
+      "content_sha256": "2cac99d14ce9c3c410fa2280dc4a21c7d382b05f6782ff5ede3a76b621a7c2ba",
+      "key": "fe-e2e",
+      "memory_id": "memory_ba664fd532f935ae49a1",
+      "repo_key": "acme/frontend"
+    },
+    {
+      "content_sha256": "c30f8fef98eeccc0e20f108fba5ad0913e0143c3f6537ce7f59a0651b2316487",
+      "key": "fe-unit",
+      "memory_id": "memory_f369b5f9e0287ad0d43c",
+      "repo_key": "acme/frontend"
+    },
+    {
+      "content_sha256": "edb67943464fa686bf339d6058c3f377b9e9520700f5528230121ab54a90d8df",
+      "key": "fe-format",
+      "memory_id": "memory_b8e75e096efa2077710d",
+      "repo_key": "acme/frontend"
+    },
+    {
+      "content_sha256": "7e1fbd2530c843ba23adbe9ae6a3590e7112a17c8d4a5af032eca16665693d19",
+      "key": "fe-server-state",
+      "memory_id": "memory_aaad51df8068c45eb244",
+      "repo_key": "acme/frontend"
+    },
+    {
+      "content_sha256": "500cf519aac1cbc0da846a374972d02757638add9850d513eddb3f92828e3172",
+      "key": "fe-errors",
+      "memory_id": "memory_aa8a5ff5b3348d146856",
+      "repo_key": "acme/frontend"
+    },
+    {
+      "content_sha256": "4beb18c57530a7c9f41fdd46c7661f89ebc54fe9b22350af41c40fff4c9d19d8",
+      "key": "fe-flags",
+      "memory_id": "memory_1e8b7c30c3731d216c44",
+      "repo_key": "acme/frontend"
+    }
+  ]
+}

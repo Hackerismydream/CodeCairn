@@ -1,0 +1,594 @@
+{
+  "answer": {
+    "cost_usd": null,
+    "input_tokens": 2912,
+    "model": "gpt-5.4",
+    "output_tokens": 167,
+    "text": "John’s stated basketball-career goals are to improve and keep progressing as a player. Most explicitly, on 2023-05-21 he said his goal was to “improve my shooting percentage” and that he’d been practicing hard. Later, on 2023-09-21, he said he likes “seeing myself get better and beating goals,” and on 2024-01-02 he said he practices and trains every day “to stay in shape and improve.”\n\nThere’s also indirect evidence that he may have goals beyond playing, since Tim said on 2023-09-21 that John had “goals both on and off the court” and was “thinking about the future and building your brand,” but John’s specific off-court goals aren’t stated in the provided context."
+  },
+  "category": 1,
+  "category_name": "single-hop",
+  "evidence": [
+    "D1:9",
+    "D6:15",
+    "D11:17"
+  ],
+  "golden_answer": "improve shooting percentage, win a championship",
+  "judge_votes": [],
+  "question": "what are John's goals with regards to his basketball career?",
+  "question_id": "locomo-question_5b8794c28b6f1eab754d",
+  "recall_markdown": "# Recall Context\n\nTask: what are John's goals with regards to his basketball career?\nRepository: `locomo/conv-43`\n\n## 1. John in session_12\n\n2023-10-02T15:10:30+00:00 — John: I really admire his work ethic and dedication to the game, such an inspiration. [Image caption: a photo of a group of people standing on a basketball court]\n\n- Type: `user_preference`\n- Source: [memory_1fa5755fee4ab59bae21](codecairn://memory/memory_1fa5755fee4ab59bae21)\n- Evidence: 1 cited raw event(s)\n\n## 2. John in session_11\n\n2023-09-21T20:24:00+00:00 — John: Thanks! I love playing pro ball - it's a constant challenge and keeps me growing. There's nothing like seeing myself get better and beating goals. Plus, playing with my teammates and having the fans cheer is awesome. Basketball gives me a great sense of satisfaction and purpose.\n\n- Type: `user_preference`\n- Source: [memory_0d30ee1434ac5e068aab](codecairn://memory/memory_0d30ee1434ac5e068aab)\n- Evidence: 1 cited raw event(s)\n\n## 3. Tim in session_19\n\n2023-11-21T10:26:00+00:00 — Tim: When things get tough, it's so important to remember why we love what we do. For me, it's writing and reading. That's what helps me stay motivated and push myself to get better. Has anything similar happened with basketball for you? Tell me about it!\n\n- Type: `user_preference`\n- Source: [memory_67c7cc939e0f1c4d36dd](codecairn://memory/memory_67c7cc939e0f1c4d36dd)\n- Evidence: 1 cited raw event(s)\n\n## 4. John in session_8\n\n2023-08-21T16:34:00+00:00 — John: Thanks! Appreciate your support. It's been a journey, but I'm happy with the progress. Excited to see what's next. What about you? How have you been?\n\n- Type: `user_preference`\n- Source: [memory_100c7653616b65d29072](codecairn://memory/memory_100c7653616b65d29072)\n- Evidence: 1 cited raw event(s)\n\n## 5. John in session_21\n\n2023-12-06T17:34:30+00:00 — John: Hey Tim! That's cool! I love learning about different cultures. It's really cool to meet people with different backgrounds. My teammates come from all over. [Image caption: a photo of three young men standing next to each other on a basketball court]\n\n- Type: `user_preference`\n- Source: [memory_6c61864dde4d7d2e561e](codecairn://memory/memory_6c61864dde4d7d2e561e)\n- Evidence: 1 cited raw event(s)\n\n## 6. Tim in session_11\n\n2023-09-21T20:25:30+00:00 — Tim: Awesome! It's great that you have goals both on and off the court. It's wise to think about the future and building your brand. What are your thoughts on life after basketball?\n\n- Type: `user_preference`\n- Source: [memory_f22111310feb8a723eca](codecairn://memory/memory_f22111310feb8a723eca)\n- Evidence: 1 cited raw event(s)\n\n## 7. John in session_27\n\n2024-01-02T17:31:30+00:00 — John: It takes dedication and practice, but it's so rewarding to communicate with different cultures. Keep it up with German! [Image caption: a photo of a basketball ball on the ground with a basketball hoop in the background]\n\n- Type: `user_preference`\n- Source: [memory_8558c67d67b62d335004](codecairn://memory/memory_8558c67d67b62d335004)\n- Evidence: 1 cited raw event(s)\n\n## 8. John in session_18\n\n2023-11-16T16:01:30+00:00 — John: I visualize my goals and success for focus and motivation. It really helps me stay motivated during tough studying. Do you have any study tricks? [Image caption: a photo of a soccer game with a player on the field]\n\n- Type: `user_preference`\n- Source: [memory_95818702031bd8784934](codecairn://memory/memory_95818702031bd8784934)\n- Evidence: 1 cited raw event(s)\n\n## 9. John in session_27\n\n2024-01-02T17:39:30+00:00 — John: Yeah. His journey is really inspiring. I have a painting in my room to remind me to stay true and be a leader in everything I do. [Image caption: a photo of a painting of a man smoking a cigarette]\n\n- Type: `user_preference`\n- Source: [memory_a18ef680021cd1e9ea4e](codecairn://memory/memory_a18ef680021cd1e9ea4e)\n- Evidence: 1 cited raw event(s)\n\n## 10. John in session_19\n\n2023-11-21T10:25:30+00:00 — John: Thanks! That means a lot. Difficult times are part of life – what's important is how we handle them. When things get tough, I try to remember why I'm so passionate about basketball. That love and enthusiasm keeps me motivated, no matter what.\n\n- Type: `user_preference`\n- Source: [memory_354e7c9bcfd27a3b3f78](codecairn://memory/memory_354e7c9bcfd27a3b3f78)\n- Evidence: 1 cited raw event(s)\n\n## 11. John in session_23\n\n2023-12-11T20:31:00+00:00 — John: I've had some thrilling games in my career. My favorite was when we were down 10 in the 4th and I hit the buzzer-beater shot to win. The atmosphere was incredible and it was such a thrilling experience. Those moments make me love basketball so much.\n\n- Type: `user_preference`\n- Source: [memory_c91171454db79e86e45e](codecairn://memory/memory_c91171454db79e86e45e)\n- Evidence: 1 cited raw event(s)\n\n## 12. John in session_27\n\n2024-01-02T17:41:30+00:00 — John: Yeah, that's what I'm thinking! Love this map, it really helps you get lost in another world. What's on it?\n\n- Type: `user_preference`\n- Source: [memory_f2d9a446522731bd6dd5](codecairn://memory/memory_f2d9a446522731bd6dd5)\n- Evidence: 1 cited raw event(s)\n\n## 13. John in session_27\n\n2024-01-02T17:32:30+00:00 — John: Yeah, basketball is still really important to me - I practice and train every day to stay in shape and improve. Can't imagine my life without it, it's my passion. [Image caption: a photo of a basketball ball on the ground with a basketball hoop in the background]\n\n- Type: `user_preference`\n- Source: [memory_56ab7a4ef10bba2ca610](codecairn://memory/memory_56ab7a4ef10bba2ca610)\n- Evidence: 1 cited raw event(s)\n\n## 14. John in session_1\n\n2023-05-21T19:52:00+00:00 — John: Yeah, my goal is to improve my shooting percentage. Been practicing hard and gonna make it happen. [Image caption: a photo of two men standing next to a basketball machine]\n\n- Type: `user_preference`\n- Source: [memory_08549b37f9eced547d0f](codecairn://memory/memory_08549b37f9eced547d0f)\n- Evidence: 1 cited raw event(s)\n\n## 15. John in session_21\n\n2023-12-06T17:38:30+00:00 — John: Learning an instrument is really cool. What instrument are you playing? What genres of music do you want to learn?\n\n- Type: `user_preference`\n- Source: [memory_437ab375bf0bd1749b6c](codecairn://memory/memory_437ab375bf0bd1749b6c)\n- Evidence: 1 cited raw event(s)\n\n## 16. Tim in session_23\n\n2023-12-11T20:32:30+00:00 — Tim: Yeah! Sports are the best. When we're feeling down, it's a way to express ourselves and stay positive. It's awesome how much basketball has done for you. Keep going with your dreams! [Image caption: a photo of a basketball ball on the ground with a basketball hoop in the background]\n\n- Type: `user_preference`\n- Source: [memory_e9221e627cda73b687b2](codecairn://memory/memory_e9221e627cda73b687b2)\n- Evidence: 1 cited raw event(s)\n\n## 17. Tim in session_7\n\n2023-08-17T19:59:30+00:00 — Tim: That's so sweet. It's great to have something so meaningful to keep you motivated. I'll keep that in mind next time I need a push to reach my goals.\n\n- Type: `user_preference`\n- Source: [memory_7a147a733ea9026669f7](codecairn://memory/memory_7a147a733ea9026669f7)\n- Evidence: 1 cited raw event(s)\n\n## 18. John in session_8\n\n2023-08-21T16:41:00+00:00 — John: That's a classic! What other movies do you watch during the holidays?\n\n- Type: `user_preference`\n- Source: [memory_5ba170e33eaa27db2dc7](codecairn://memory/memory_5ba170e33eaa27db2dc7)\n- Evidence: 1 cited raw event(s)\n\n## 19. John in session_14\n\n2023-10-17T13:52:00+00:00 — John: There are challenges, since everyone is so different. But it's been awesome gaining experience and adapting, motivating and encouraging everyone. It's been great to watch each of them develop and reach their goals - such a reward!\n\n- Type: `user_preference`\n- Source: [memory_db6176b2a73b745c092d](codecairn://memory/memory_db6176b2a73b745c092d)\n- Evidence: 1 cited raw event(s)\n\n## 20. John in session_3\n\n2023-07-16T16:24:00+00:00 — John: Definitely! Being surrounded by teammates who are equally passionate creates a strong bond. We push each other to be our best and the love for the game is infectious. It's like having a second family. [Image caption: a photo of a rack of basketball jerseys in a store]\n\n- Type: `user_preference`\n- Source: [memory_653ce1c0557fc9d07085](codecairn://memory/memory_653ce1c0557fc9d07085)\n- Evidence: 1 cited raw event(s)\n",
+  "retrieval": {
+    "latency_ms": 106.047,
+    "lexical_candidate_count": 80,
+    "limit": 20,
+    "query": "what are John's goals with regards to his basketball career?",
+    "ranked": [
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b8a3c6f57b6f00efb7f83c5b5c3f50d81727cbbb4f1f71b17c30f17419a08ef0",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 268,
+            "raw_event_sha256": "2c94934caa7f7f391074deeb73aaf4e5a4a27211deb5e7aa35fb09c06d4727f9",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_12"
+          }
+        ],
+        "final_score": 0.029850746269,
+        "lexical_rank": 7,
+        "lexical_score": 6.674134254456,
+        "memory_id": "memory_1fa5755fee4ab59bae21",
+        "memory_type": "user_preference",
+        "rank": 1,
+        "source_uri": "codecairn://memory/memory_1fa5755fee4ab59bae21",
+        "summary": "2023-10-02T15:10:30+00:00 — John: I really admire his work ethic and dedication to the game, such an inspiration. [Image caption: a photo of a group of people standing on a basketball court]",
+        "title": "John in session_12",
+        "vector_rank": 7,
+        "vector_score": 0.392059015468
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "d3050c658f27523ea15924b0eb0a6abd80b0baa62296ba9b3eead2c037e5a83a",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 231,
+            "raw_event_sha256": "30d897cbaef823eab84f6f80c85abe17b4d6772c7fa21dc9617b38c4fe246aa8",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_11"
+          }
+        ],
+        "final_score": 0.027783137179,
+        "lexical_rank": 11,
+        "lexical_score": 5.971666812897,
+        "memory_id": "memory_0d30ee1434ac5e068aab",
+        "memory_type": "user_preference",
+        "rank": 2,
+        "source_uri": "codecairn://memory/memory_0d30ee1434ac5e068aab",
+        "summary": "2023-09-21T20:24:00+00:00 — John: Thanks! I love playing pro ball - it's a constant challenge and keeps me growing. There's nothing like seeing myself get better and beating goals. Plus, playing with my teammates and having the fans cheer is awesome. Basketball gives me a great sense of satisfaction and purpose.",
+        "title": "John in session_11",
+        "vector_rank": 13,
+        "vector_score": 0.388185827395
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "9f17da766efe2ad445400d96a807537c93ec69ace4e8d805a0b1d6a01797c5a2",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 418,
+            "raw_event_sha256": "2e3834f0796770c7e2edc91f8ac4cf5a50b69c51d5769be5196ef924c5001bca",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_19"
+          }
+        ],
+        "final_score": 0.027598020556,
+        "lexical_rank": 14,
+        "lexical_score": 5.339149951935,
+        "memory_id": "memory_67c7cc939e0f1c4d36dd",
+        "memory_type": "user_preference",
+        "rank": 3,
+        "source_uri": "codecairn://memory/memory_67c7cc939e0f1c4d36dd",
+        "summary": "2023-11-21T10:26:00+00:00 — Tim: When things get tough, it's so important to remember why we love what we do. For me, it's writing and reading. That's what helps me stay motivated and push myself to get better. Has anything similar happened with basketball for you? Tell me about it!",
+        "title": "Tim in session_19",
+        "vector_rank": 11,
+        "vector_score": 0.390815203883
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "966e5600307c636d1d12becb2d6e61f9041e3bf1aacf9a5d0c3443b6c9c89a51",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 158,
+            "raw_event_sha256": "949cd07923bb3936e9c9fc0d7e2903df8cd63aa2661fa68466c7e3918559c722",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_8"
+          }
+        ],
+        "final_score": 0.025188536953,
+        "lexical_rank": 42,
+        "lexical_score": 3.268131494522,
+        "memory_id": "memory_100c7653616b65d29072",
+        "memory_type": "user_preference",
+        "rank": 4,
+        "source_uri": "codecairn://memory/memory_100c7653616b65d29072",
+        "summary": "2023-08-21T16:34:00+00:00 — John: Thanks! Appreciate your support. It's been a journey, but I'm happy with the progress. Excited to see what's next. What about you? How have you been?",
+        "title": "John in session_8",
+        "vector_rank": 5,
+        "vector_score": 0.392465636365
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "6ee629a5eacafffbf8ebdfaa71525b804bc628403984981ac3da5a87ab1f467c",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 477,
+            "raw_event_sha256": "a406ee43a0150934e1c7e62f12ab016bfa1f39b1c8bff0111c362d15248c4ea8",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_21"
+          }
+        ],
+        "final_score": 0.025165372448,
+        "lexical_rank": 54,
+        "lexical_score": 2.722571134567,
+        "memory_id": "memory_6c61864dde4d7d2e561e",
+        "memory_type": "user_preference",
+        "rank": 5,
+        "source_uri": "codecairn://memory/memory_6c61864dde4d7d2e561e",
+        "summary": "2023-12-06T17:34:30+00:00 — John: Hey Tim! That's cool! I love learning about different cultures. It's really cool to meet people with different backgrounds. My teammates come from all over. [Image caption: a photo of three young men standing next to each other on a basketball court]",
+        "title": "John in session_21",
+        "vector_rank": 1,
+        "vector_score": 0.408148025357
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "0d82062fb9a1f52c34019ef038ab9d3ca074ca3a7f6684fe1e1bd3c53b0ded9f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 234,
+            "raw_event_sha256": "c080e43d66cb56f04f7cd9bb4edf8186b944ff4418844df2a75779c55a0a22c5",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_11"
+          }
+        ],
+        "final_score": 0.024884259259,
+        "lexical_rank": 4,
+        "lexical_score": 8.156249046326,
+        "memory_id": "memory_f22111310feb8a723eca",
+        "memory_type": "user_preference",
+        "rank": 6,
+        "source_uri": "codecairn://memory/memory_f22111310feb8a723eca",
+        "summary": "2023-09-21T20:25:30+00:00 — Tim: Awesome! It's great that you have goals both on and off the court. It's wise to think about the future and building your brand. What are your thoughts on life after basketball?",
+        "title": "Tim in session_11",
+        "vector_rank": 48,
+        "vector_score": 0.380565785179
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "9b7f841cdefb077132b7be794ba96ba0982de60985007bd6bd4d0d7cc24e60ff",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 615,
+            "raw_event_sha256": "a6b88f1d64c1c68f804e92d216cba234e6f9ca2f8987462ce810a1f6c9bfb15c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_27"
+          }
+        ],
+        "final_score": 0.024702380952,
+        "lexical_rank": 36,
+        "lexical_score": 3.449234962463,
+        "memory_id": "memory_8558c67d67b62d335004",
+        "memory_type": "user_preference",
+        "rank": 7,
+        "source_uri": "codecairn://memory/memory_8558c67d67b62d335004",
+        "summary": "2024-01-02T17:31:30+00:00 — John: It takes dedication and practice, but it's so rewarding to communicate with different cultures. Keep it up with German! [Image caption: a photo of a basketball ball on the ground with a basketball hoop in the background]",
+        "title": "John in session_27",
+        "vector_rank": 10,
+        "vector_score": 0.391109934116
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "5b2534e9b4c51370d46451ad8e19e5a2fab45e555d6879a8935e26091f488baa",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 400,
+            "raw_event_sha256": "d261f600291e11b33154a5ae267116690421887e98c08bed2b0f4d68c77d2606",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_18"
+          }
+        ],
+        "final_score": 0.023414503613,
+        "lexical_rank": 41,
+        "lexical_score": 3.299731254578,
+        "memory_id": "memory_95818702031bd8784934",
+        "memory_type": "user_preference",
+        "rank": 8,
+        "source_uri": "codecairn://memory/memory_95818702031bd8784934",
+        "summary": "2023-11-16T16:01:30+00:00 — John: I visualize my goals and success for focus and motivation. It really helps me stay motivated during tough studying. Do you have any study tricks? [Image caption: a photo of a soccer game with a player on the field]",
+        "title": "John in session_18",
+        "vector_rank": 14,
+        "vector_score": 0.388169463393
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "40fd26376dc657c376a08f7f9a1c90aed0ccb863e467097a6d3870602867a394",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 631,
+            "raw_event_sha256": "b3f14c066fc042d4e4e0d73e938c683481450178845b37142cc584a2caad19d1",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_27"
+          }
+        ],
+        "final_score": 0.023284147827,
+        "lexical_rank": 23,
+        "lexical_score": 4.369630336761,
+        "memory_id": "memory_a18ef680021cd1e9ea4e",
+        "memory_type": "user_preference",
+        "rank": 9,
+        "source_uri": "codecairn://memory/memory_a18ef680021cd1e9ea4e",
+        "summary": "2024-01-02T17:39:30+00:00 — John: Yeah. His journey is really inspiring. I have a painting in my room to remind me to stay true and be a leader in everything I do. [Image caption: a photo of a painting of a man smoking a cigarette]",
+        "title": "John in session_27",
+        "vector_rank": 29,
+        "vector_score": 0.384903020921
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "2a5ac533b35401add44c269b78b912a067f2c5b6624a4986d7dc23e0f65d22db",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 417,
+            "raw_event_sha256": "c1ee591be04fa4cdddf11632a2b6c269b923c1e539cae876a818fbc8f865dfcd",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_19"
+          }
+        ],
+        "final_score": 0.023184543638,
+        "lexical_rank": 19,
+        "lexical_score": 4.976132392883,
+        "memory_id": "memory_354e7c9bcfd27a3b3f78",
+        "memory_type": "user_preference",
+        "rank": 10,
+        "source_uri": "codecairn://memory/memory_354e7c9bcfd27a3b3f78",
+        "summary": "2023-11-21T10:25:30+00:00 — John: Thanks! That means a lot. Difficult times are part of life – what's important is how we handle them. When things get tough, I try to remember why I'm so passionate about basketball. That love and enthusiasm keeps me motivated, no matter what.",
+        "title": "John in session_19",
+        "vector_rank": 35,
+        "vector_score": 0.383481186281
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "3056fdb73dd0e9a48199bcd13d4aa97e48986e2b08ecfae8ba121cb958475f3d",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 519,
+            "raw_event_sha256": "10a37c9f5c5211522345c93f33259d590850fb27fd1b1d43562e44933b57fbde",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_23"
+          }
+        ],
+        "final_score": 0.023180458624,
+        "lexical_rank": 8,
+        "lexical_score": 6.562797546387,
+        "memory_id": "memory_c91171454db79e86e45e",
+        "memory_type": "user_preference",
+        "rank": 11,
+        "source_uri": "codecairn://memory/memory_c91171454db79e86e45e",
+        "summary": "2023-12-11T20:31:00+00:00 — John: I've had some thrilling games in my career. My favorite was when we were down 10 in the 4th and I hit the buzzer-beater shot to win. The atmosphere was incredible and it was such a thrilling experience. Those moments make me love basketball so much.",
+        "title": "John in session_23",
+        "vector_rank": 58,
+        "vector_score": 0.378540169167
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "32d636b8125d5bb77d893153afe447f62027190bb8643610782a8d3b85091046",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 635,
+            "raw_event_sha256": "4d874bdab0826f3d56de528b95fea37b2c46442bcdd3ea23c2976574cfc126c2",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_27"
+          }
+        ],
+        "final_score": 0.022195121951,
+        "lexical_rank": 40,
+        "lexical_score": 3.319167375565,
+        "memory_id": "memory_f2d9a446522731bd6dd5",
+        "memory_type": "user_preference",
+        "rank": 12,
+        "source_uri": "codecairn://memory/memory_f2d9a446522731bd6dd5",
+        "summary": "2024-01-02T17:41:30+00:00 — John: Yeah, that's what I'm thinking! Love this map, it really helps you get lost in another world. What's on it?",
+        "title": "John in session_27",
+        "vector_rank": 22,
+        "vector_score": 0.386405749603
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "433963f2fc1669975f8eba11a53eb39db4646eccdbf2951946a685307c17eef5",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 617,
+            "raw_event_sha256": "0b05baa849290e5d189b7882271465e5b073859f11bbde95b6015ef71b6422bc",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_27"
+          }
+        ],
+        "final_score": 0.0221001221,
+        "lexical_rank": 31,
+        "lexical_score": 3.780421495438,
+        "memory_id": "memory_56ab7a4ef10bba2ca610",
+        "memory_type": "user_preference",
+        "rank": 13,
+        "source_uri": "codecairn://memory/memory_56ab7a4ef10bba2ca610",
+        "summary": "2024-01-02T17:32:30+00:00 — John: Yeah, basketball is still really important to me - I practice and train every day to stay in shape and improve. Can't imagine my life without it, it's my passion. [Image caption: a photo of a basketball ball on the ground with a basketball hoop in the background]",
+        "title": "John in session_27",
+        "vector_rank": 30,
+        "vector_score": 0.384897811027
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "a187ccc9d750dead6b9c17b8e74d85722ee3220c6deaa6fd552c20492de2facf",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 8,
+            "raw_event_sha256": "3fcf755ece6bb790ef907463cfd4dced02dd5958f0444ee1206aec551b646eac",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_1"
+          }
+        ],
+        "final_score": 0.021106037544,
+        "lexical_rank": 13,
+        "lexical_score": 5.504638671875,
+        "memory_id": "memory_08549b37f9eced547d0f",
+        "memory_type": "user_preference",
+        "rank": 14,
+        "source_uri": "codecairn://memory/memory_08549b37f9eced547d0f",
+        "summary": "2023-05-21T19:52:00+00:00 — John: Yeah, my goal is to improve my shooting percentage. Been practicing hard and gonna make it happen. [Image caption: a photo of two men standing next to a basketball machine]",
+        "title": "John in session_1",
+        "vector_rank": 75,
+        "vector_score": 0.375699133563
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "0ef1213294069426577ec1fa2820080dc495f9123d59a1b9aafd32a75e4eeb97",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 485,
+            "raw_event_sha256": "cb99be80d0d514fd0a5a0fbffb81268ef293353cefdfc66b60b05624b6fe51b1",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_21"
+          }
+        ],
+        "final_score": 0.020694528569,
+        "lexical_rank": 67,
+        "lexical_score": 2.554961681366,
+        "memory_id": "memory_437ab375bf0bd1749b6c",
+        "memory_type": "user_preference",
+        "rank": 15,
+        "source_uri": "codecairn://memory/memory_437ab375bf0bd1749b6c",
+        "summary": "2023-12-06T17:38:30+00:00 — John: Learning an instrument is really cool. What instrument are you playing? What genres of music do you want to learn?",
+        "title": "John in session_21",
+        "vector_rank": 18,
+        "vector_score": 0.387373177728
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "040991f989ef8cf039736d1e5e93a002b786e56114023b775f57942021c98175",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 522,
+            "raw_event_sha256": "1d15db91988781c60522c8363ebe928926111d99e62e2ca81efd882f1010d7cb",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_23"
+          }
+        ],
+        "final_score": 0.020244964065,
+        "lexical_rank": 29,
+        "lexical_score": 4.020211696625,
+        "memory_id": "memory_e9221e627cda73b687b2",
+        "memory_type": "user_preference",
+        "rank": 16,
+        "source_uri": "codecairn://memory/memory_e9221e627cda73b687b2",
+        "summary": "2023-12-11T20:32:30+00:00 — Tim: Yeah! Sports are the best. When we're feeling down, it's a way to express ourselves and stay positive. It's awesome how much basketball has done for you. Keep going with your dreams! [Image caption: a photo of a basketball ball on the ground with a basketball hoop in the background]",
+        "title": "Tim in session_23",
+        "vector_rank": 51,
+        "vector_score": 0.380175476244
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "f68ceba08d8e8eab5a27db36b5c6be2e39ff49b12193a6af21384de87b578f63",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 143,
+            "raw_event_sha256": "b00964c280ff290d4fa9b266f4962fb3de6779ef775e696a34fbf6b69539ce84",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_7"
+          }
+        ],
+        "final_score": 0.020029168692,
+        "lexical_rank": 25,
+        "lexical_score": 4.166265487671,
+        "memory_id": "memory_7a147a733ea9026669f7",
+        "memory_type": "user_preference",
+        "rank": 17,
+        "source_uri": "codecairn://memory/memory_7a147a733ea9026669f7",
+        "summary": "2023-08-17T19:59:30+00:00 — Tim: That's so sweet. It's great to have something so meaningful to keep you motivated. I'll keep that in mind next time I need a push to reach my goals.",
+        "title": "Tim in session_7",
+        "vector_rank": 61,
+        "vector_score": 0.377915528846
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "84307522fc02ba4bd7842067087cc02543a4eadfd59c7c79c00c451edc284f08",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 172,
+            "raw_event_sha256": "b2ae59fbb150a77d1e26317eb346b7270c92348d47bb835fc51b97df25e5272f",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_8"
+          }
+        ],
+        "final_score": 0.019852472452,
+        "lexical_rank": 79,
+        "lexical_score": 2.473577737808,
+        "memory_id": "memory_5ba170e33eaa27db2dc7",
+        "memory_type": "user_preference",
+        "rank": 18,
+        "source_uri": "codecairn://memory/memory_5ba170e33eaa27db2dc7",
+        "summary": "2023-08-21T16:41:00+00:00 — John: That's a classic! What other movies do you watch during the holidays?",
+        "title": "John in session_8",
+        "vector_rank": 19,
+        "vector_score": 0.387315317705
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "f157e1f32b9cf9def0750d3098571bef8c5c175d4a65251fafb47d1cbe36fa93",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 302,
+            "raw_event_sha256": "ad3f53e7bcdaeded974552e1fbc964a7a1498c8b925fcdb754629c18032cb90c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_14"
+          }
+        ],
+        "final_score": 0.019827586207,
+        "lexical_rank": 27,
+        "lexical_score": 4.112407207489,
+        "memory_id": "memory_db6176b2a73b745c092d",
+        "memory_type": "user_preference",
+        "rank": 19,
+        "source_uri": "codecairn://memory/memory_db6176b2a73b745c092d",
+        "summary": "2023-10-17T13:52:00+00:00 — John: There are challenges, since everyone is so different. But it's been awesome gaining experience and adapting, motivating and encouraging everyone. It's been great to watch each of them develop and reach their goals - such a reward!",
+        "title": "John in session_14",
+        "vector_rank": 60,
+        "vector_score": 0.37822956934
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "83058102a512c469f5305bab3d8f624734429d4b7380760110eaa3ed2761d660",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 45,
+            "raw_event_sha256": "f2d0a43eb92d5bad97aa4710977151891705eef5e0d3a77506c70e98330d38ad",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-43/session_3"
+          }
+        ],
+        "final_score": 0.018989010989,
+        "lexical_rank": 65,
+        "lexical_score": 2.556666612625,
+        "memory_id": "memory_653ce1c0557fc9d07085",
+        "memory_type": "user_preference",
+        "rank": 20,
+        "source_uri": "codecairn://memory/memory_653ce1c0557fc9d07085",
+        "summary": "2023-07-16T16:24:00+00:00 — John: Definitely! Being surrounded by teammates who are equally passionate creates a strong bond. We push each other to be our best and the love for the game is infectious. It's like having a second family. [Image caption: a photo of a rack of basketball jerseys in a store]",
+        "title": "John in session_3",
+        "vector_rank": 31,
+        "vector_score": 0.383967770283
+      }
+    ],
+    "repo_key": "locomo/conv-43",
+    "vector_candidate_count": 80
+  },
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "status": "completed"
+}

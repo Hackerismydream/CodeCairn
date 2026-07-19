@@ -1,0 +1,37 @@
+{
+  "agent": {
+    "adapter": "codex-exec-jsonl",
+    "ephemeral": true,
+    "executable": "codex",
+    "ignore_rules": true,
+    "ignore_user_config": true,
+    "isolated_codex_home": true,
+    "model": "gpt-5.4",
+    "sandbox": "workspace-write",
+    "seed_supported": false,
+    "timeout_seconds": 900,
+    "tools": [
+      "shell",
+      "apply_patch"
+    ]
+  },
+  "arms": [
+    "memory-off",
+    "memory-on"
+  ],
+  "created_at_utc": "2026-07-19T12:54:31.081535+00:00",
+  "execution_order": [
+    "memory-off",
+    "memory-on"
+  ],
+  "experiment_id": "coding-fbc7023-gpt54",
+  "max_workers": 4,
+  "planned_run_count": 120,
+  "repeats": 3,
+  "repository_commit": "fbc7023",
+  "schema_version": 1,
+  "seed": 17,
+  "suite": "coding-memory-ab",
+  "suite_id": "coding-memory-bench-20-v2",
+  "suite_sha256": "e832a4c92d2c9c41b1d29fa228d9ac35554e057b2198f59c6214bbff7178333e"
+}

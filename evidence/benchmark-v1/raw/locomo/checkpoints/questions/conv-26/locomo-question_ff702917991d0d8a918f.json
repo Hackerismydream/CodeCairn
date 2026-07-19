@@ -1,0 +1,592 @@
+{
+  "answer": {
+    "cost_usd": null,
+    "input_tokens": 3032,
+    "model": "gpt-5.4",
+    "output_tokens": 39,
+    "text": "Caroline said on 2023-05-08 that she went to an LGBTQ support group “yesterday,” so that would be 2023-05-07."
+  },
+  "category": 2,
+  "category_name": "multi-hop",
+  "evidence": [
+    "D1:3"
+  ],
+  "golden_answer": "7 May 2023",
+  "judge_votes": [],
+  "question": "When did Caroline go to the LGBTQ support group?",
+  "question_id": "locomo-question_ff702917991d0d8a918f",
+  "recall_markdown": "# Recall Context\n\nTask: When did Caroline go to the LGBTQ support group?\nRepository: `locomo/conv-26`\n\n## 1. Caroline in session_10\n\n2023-07-20T20:58:00+00:00 — Caroline: Thanks, Melanie! It's awesome to have our own platform to be ourselves and support others' rights. Our group, 'Connected LGBTQ Activists', is made of all kinds of people investing in positive changes. We have regular meetings, plan events and campaigns, to get together and support each other.\n\n- Type: `user_preference`\n- Source: [memory_c741075e1822df7b6a93](codecairn://memory/memory_c741075e1822df7b6a93)\n- Evidence: 1 cited raw event(s)\n\n## 2. Caroline in session_4\n\n2023-06-27T10:44:00+00:00 — Caroline: Thanks, Melanie. It really mattered. My own journey and the support I got made a huge difference. Now I want to help people go through it too. I saw how counseling and support groups improved my life, so I started caring more about mental health and understanding myself. Now I'm passionate about creating a safe, inviting place for people to grow.\n\n- Type: `user_preference`\n- Source: [memory_46767b4240f3bd553e06](codecairn://memory/memory_46767b4240f3bd553e06)\n- Evidence: 1 cited raw event(s)\n\n## 3. Caroline in session_1\n\n2023-05-08T13:57:00+00:00 — Caroline: I went to a LGBTQ support group yesterday and it was so powerful.\n\n- Type: `user_preference`\n- Source: [memory_3676aca3e2ca84767146](codecairn://memory/memory_3676aca3e2ca84767146)\n- Evidence: 1 cited raw event(s)\n\n## 4. Melanie in session_5\n\n2023-07-03T13:36:30+00:00 — Melanie: Wow, Caroline, sounds like the parade was an awesome experience! It's great to see the love and support for the LGBTQ+ community. Congrats! Has this experience influenced your goals at all?\n\n- Type: `user_preference`\n- Source: [memory_d55bfa64f5db59cd3598](codecairn://memory/memory_d55bfa64f5db59cd3598)\n- Evidence: 1 cited raw event(s)\n\n## 5. Caroline in session_15\n\n2023-08-28T15:20:00+00:00 — Caroline: Wow, your kids had so much fun at the park! Being outdoors can be really enjoyable. A lot happened since our last chat. I've been chasing my ambitions and had the chance to volunteer at an LGBTQ+ youth center. It was so gratifying to talk to similar young people. It made me remember how essential it is to be kind and show support.\n\n- Type: `user_preference`\n- Source: [memory_b1e560cf98a416f377d0](codecairn://memory/memory_b1e560cf98a416f377d0)\n- Evidence: 1 cited raw event(s)\n\n## 6. Caroline in session_4\n\n2023-06-27T10:38:00+00:00 — Caroline: Thanks, Melanie! This necklace is super special to me - a gift from my grandma in my home country, Sweden. She gave it to me when I was young, and it stands for love, faith and strength. It's like a reminder of my roots and all the love and support I get from my family.\n\n- Type: `user_preference`\n- Source: [memory_1e145b196075c1fcf396](codecairn://memory/memory_1e145b196075c1fcf396)\n- Evidence: 1 cited raw event(s)\n\n## 7. Caroline in session_1\n\n2023-05-08T13:59:00+00:00 — Caroline: The support group has made me feel accepted and given me courage to embrace myself.\n\n- Type: `user_preference`\n- Source: [memory_7bf6e8d682de7f826dfc](codecairn://memory/memory_7bf6e8d682de7f826dfc)\n- Evidence: 1 cited raw event(s)\n\n## 8. Caroline in session_2\n\n2023-05-25T13:19:30+00:00 — Caroline: I chose them 'cause they help LGBTQ+ folks with adoption. Their inclusivity and support really spoke to me.\n\n- Type: `user_preference`\n- Source: [memory_07ecb75c69bcfe42bc7c](codecairn://memory/memory_07ecb75c69bcfe42bc7c)\n- Evidence: 1 cited raw event(s)\n\n## 9. Caroline in session_11\n\n2023-08-14T14:26:30+00:00 — Caroline: It was so inspiring, Mel! Check out the crowd. People of all kinds celebrating love and acceptance - it really pushed me to keep fighting for LGBTQ rights. [Image caption: a photo of a group of people walking down a street with balloons]\n\n- Type: `user_preference`\n- Source: [memory_e231f6ef52f36f5ad938](codecairn://memory/memory_e231f6ef52f36f5ad938)\n- Evidence: 1 cited raw event(s)\n\n## 10. Caroline in session_13\n\n2023-08-23T15:31:00+00:00 — Caroline: Hi Melanie! Hope you're doing good. Guess what I did this week? I took the first step towards becoming a mom - I applied to adoption agencies! It's a big decision, but I think I'm ready to give all my love to a child. I got lots of help from this adoption advice/assistance group I attended. It was great! [Image caption: a photo of a sign with a picture of a guinea pig]\n\n- Type: `user_preference`\n- Source: [memory_62b74ca2f14fb1fda095](codecairn://memory/memory_62b74ca2f14fb1fda095)\n- Evidence: 1 cited raw event(s)\n\n## 11. Caroline in session_15\n\n2023-08-28T15:21:00+00:00 — Caroline: I loved it. It was awesome to see how strong the young people were, with all the challenges they face. I felt fulfilled guiding and supporting them. I even got to let them know they're not alone by sharing my story. Such a powerful, emotional experience. [Image caption: a photo of a table with a black table cloth and a group of people]\n\n- Type: `user_preference`\n- Source: [memory_1970c1b7fe07f069f7af](codecairn://memory/memory_1970c1b7fe07f069f7af)\n- Evidence: 1 cited raw event(s)\n\n## 12. Caroline in session_6\n\n2023-07-06T20:23:00+00:00 — Caroline: Wow, that's great! It sure shows how important friendship and compassion are. It's made me appreciate how lucky I am to have my friends and family helping with my transition. They make all the difference. We even had a picnic last week! [Image caption: a photo of a group of women sitting on a blanket in a park]\n\n- Type: `user_preference`\n- Source: [memory_87627531aee28ffaf6b8](codecairn://memory/memory_87627531aee28ffaf6b8)\n- Evidence: 1 cited raw event(s)\n\n## 13. Melanie in session_2\n\n2023-05-25T13:15:00+00:00 — Melanie: Thanks, Caroline! The event was really thought-provoking. I'm starting to realize that self-care is really important. It's a journey for me, but when I look after myself, I'm able to better look after my family.\n\n- Type: `user_preference`\n- Source: [memory_be2dd476ae8db3a1f66c](codecairn://memory/memory_be2dd476ae8db3a1f66c)\n- Evidence: 1 cited raw event(s)\n\n## 14. Caroline in session_12\n\n2023-08-17T13:55:00+00:00 — Caroline: Definitely, Mel! Finding those happy moments and clinging to them is key. It's what keeps us going, even when life's hard. I'm lucky to have people like you to remind me.\n\n- Type: `user_preference`\n- Source: [memory_3093d40405553a416cda](codecairn://memory/memory_3093d40405553a416cda)\n- Evidence: 1 cited raw event(s)\n\n## 15. Caroline in session_9\n\n2023-07-17T14:35:30+00:00 — Caroline: Seeing my mentee's face light up when they saw the support was the best! Such a special moment.\n\n- Type: `user_preference`\n- Source: [memory_92a6990167f6bbe328fd](codecairn://memory/memory_92a6990167f6bbe328fd)\n- Evidence: 1 cited raw event(s)\n\n## 16. Caroline in session_13\n\n2023-08-23T15:38:00+00:00 — Caroline: Thanks, Melanie. Art gives me a sense of freedom, but so does having supportive people around, promoting LGBTQ rights and being true to myself. I want to live authentically and help others to do the same.\n\n- Type: `user_preference`\n- Source: [memory_ba90958f1069e5714886](codecairn://memory/memory_ba90958f1069e5714886)\n- Evidence: 1 cited raw event(s)\n\n## 17. Caroline in session_16\n\n2023-09-13T00:11:00+00:00 — Caroline: I'm inspired seeing my work make a difference for the LGBTQ+ community. Knowing I'm helping create a more loving world is amazing. I'm really thankful for my friends, family and mentors' support. It inspires me to keep making art, too. [Image caption: a photo of a painting of a heart on a table]\n\n- Type: `user_preference`\n- Source: [memory_9134fdaf255d1f3d2cfc](codecairn://memory/memory_9134fdaf255d1f3d2cfc)\n- Evidence: 1 cited raw event(s)\n\n## 18. Caroline in session_9\n\n2023-07-17T14:31:30+00:00 — Caroline: Hey Melanie! That sounds great! Last weekend I joined a mentorship program for LGBTQ youth - it's really rewarding to help the community.\n\n- Type: `user_preference`\n- Source: [memory_ead79f01e69ff9384d0a](codecairn://memory/memory_ead79f01e69ff9384d0a)\n- Evidence: 1 cited raw event(s)\n\n## 19. Melanie in session_10\n\n2023-07-20T21:00:30+00:00 — Melanie: Seeing my kids' faces so happy at the beach was the best! We don't go often, usually only once or twice a year. But those times are always special to spend time together and chill. [Image caption: a photo of a sand castle on the beach with a blue sky]\n\n- Type: `user_preference`\n- Source: [memory_b4a9eb077d257f83555c](codecairn://memory/memory_b4a9eb077d257f83555c)\n- Evidence: 1 cited raw event(s)\n\n## 20. Melanie in session_18\n\n2023-10-20T19:03:00+00:00 — Melanie: Thanks, Caroline! Yup, we just did it yesterday! The kids loved it and it was a nice way to relax after the road trip.\n\n- Type: `user_preference`\n- Source: [memory_439b3ea6cb1d82844411](codecairn://memory/memory_439b3ea6cb1d82844411)\n- Evidence: 1 cited raw event(s)\n",
+  "retrieval": {
+    "latency_ms": 106.54,
+    "lexical_candidate_count": 80,
+    "limit": 20,
+    "query": "When did Caroline go to the LGBTQ support group?",
+    "ranked": [
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "0a4cb5890f5f1fbf4cb9cb46ba6d727f35250b09ee646c5d960042c6bedc0a06",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 195,
+            "raw_event_sha256": "3a5f9e1775c2914ffe9345afc846a5a8966d04a9bc33e65a077cb2a4c4adf2f2",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_10"
+          }
+        ],
+        "final_score": 0.032522474881,
+        "lexical_rank": 2,
+        "lexical_score": 7.761018753052,
+        "memory_id": "memory_c741075e1822df7b6a93",
+        "memory_type": "user_preference",
+        "rank": 1,
+        "source_uri": "codecairn://memory/memory_c741075e1822df7b6a93",
+        "summary": "2023-07-20T20:58:00+00:00 — Caroline: Thanks, Melanie! It's awesome to have our own platform to be ourselves and support others' rights. Our group, 'Connected LGBTQ Activists', is made of all kinds of people investing in positive changes. We have regular meetings, plan events and campaigns, to get together and support each other.",
+        "title": "Caroline in session_10",
+        "vector_rank": 1,
+        "vector_score": 0.38072149391
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "979ebb25c87d0e27e9b0a28fb0cd16637cf9ed532a426d70dc45ef62cc442f08",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 72,
+            "raw_event_sha256": "1ba654409c24414e054e56652cad07a241bfbd3409c0e5bbd544b6f3d6786f89",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_4"
+          }
+        ],
+        "final_score": 0.031498015873,
+        "lexical_rank": 3,
+        "lexical_score": 7.333201885223,
+        "memory_id": "memory_46767b4240f3bd553e06",
+        "memory_type": "user_preference",
+        "rank": 2,
+        "source_uri": "codecairn://memory/memory_46767b4240f3bd553e06",
+        "summary": "2023-06-27T10:44:00+00:00 — Caroline: Thanks, Melanie. It really mattered. My own journey and the support I got made a huge difference. Now I want to help people go through it too. I saw how counseling and support groups improved my life, so I started caring more about mental health and understanding myself. Now I'm passionate about creating a safe, inviting place for people to grow.",
+        "title": "Caroline in session_4",
+        "vector_rank": 4,
+        "vector_score": 0.370519279939
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "8ed1bc709217c0c1f4695182feb474bac2e7fa81a67e238435652d1ffe32650a",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 2,
+            "raw_event_sha256": "ce709ac0e73d5b3db51953c139aa54bbfdb1748ffec85f8842ecca852a3b142b",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_1"
+          }
+        ],
+        "final_score": 0.028298204528,
+        "lexical_rank": 1,
+        "lexical_score": 7.829926490784,
+        "memory_id": "memory_3676aca3e2ca84767146",
+        "memory_type": "user_preference",
+        "rank": 3,
+        "source_uri": "codecairn://memory/memory_3676aca3e2ca84767146",
+        "summary": "2023-05-08T13:57:00+00:00 — Caroline: I went to a LGBTQ support group yesterday and it was so powerful.",
+        "title": "Caroline in session_1",
+        "vector_rank": 24,
+        "vector_score": 0.356038463628
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b5c37a5340fa4ce523c4bd6b895fce03c8434158cffdaec3809ef658de5a199f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 77,
+            "raw_event_sha256": "2383c1647e983fd21651cc78fed4bb6d5ea78142e712c8760b8505d43e7779e4",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_5"
+          }
+        ],
+        "final_score": 0.027526395173,
+        "lexical_rank": 18,
+        "lexical_score": 4.471034049988,
+        "memory_id": "memory_d55bfa64f5db59cd3598",
+        "memory_type": "user_preference",
+        "rank": 4,
+        "source_uri": "codecairn://memory/memory_d55bfa64f5db59cd3598",
+        "summary": "2023-07-03T13:36:30+00:00 — Melanie: Wow, Caroline, sounds like the parade was an awesome experience! It's great to see the love and support for the LGBTQ+ community. Congrats! Has this experience influenced your goals at all?",
+        "title": "Melanie in session_5",
+        "vector_rank": 8,
+        "vector_score": 0.364806880765
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "a1e701b7fe909fbfe8cb3204293fb144c8bbdf8e74cce85f5e1987bd2bf2db1f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 308,
+            "raw_event_sha256": "517e81a6f6938f4268b05734fad744fc96f4673598e1703f1782943cbc7acea1",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_15"
+          }
+        ],
+        "final_score": 0.026916221034,
+        "lexical_rank": 25,
+        "lexical_score": 4.017748832703,
+        "memory_id": "memory_b1e560cf98a416f377d0",
+        "memory_type": "user_preference",
+        "rank": 5,
+        "source_uri": "codecairn://memory/memory_b1e560cf98a416f377d0",
+        "summary": "2023-08-28T15:20:00+00:00 — Caroline: Wow, your kids had so much fun at the park! Being outdoors can be really enjoyable. A lot happened since our last chat. I've been chasing my ambitions and had the chance to volunteer at an LGBTQ+ youth center. It was so gratifying to talk to similar young people. It made me remember how essential it is to be kind and show support.",
+        "title": "Caroline in session_15",
+        "vector_rank": 6,
+        "vector_score": 0.366374083629
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "7e073f7c39852912f90600ccffc6d2f04d94301ee68619e2a343280033f7c968",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 60,
+            "raw_event_sha256": "6a653cacd8006f9ae99f58352b4d1f8d91e2667e21e6362ac20051d576e6c7cf",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_4"
+          }
+        ],
+        "final_score": 0.026388888889,
+        "lexical_rank": 20,
+        "lexical_score": 4.384556293488,
+        "memory_id": "memory_1e145b196075c1fcf396",
+        "memory_type": "user_preference",
+        "rank": 6,
+        "source_uri": "codecairn://memory/memory_1e145b196075c1fcf396",
+        "summary": "2023-06-27T10:38:00+00:00 — Caroline: Thanks, Melanie! This necklace is super special to me - a gift from my grandma in my home country, Sweden. She gave it to me when I was young, and it stands for love, faith and strength. It's like a reminder of my roots and all the love and support I get from my family.",
+        "title": "Caroline in session_4",
+        "vector_rank": 12,
+        "vector_score": 0.361198159194
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "ed9f78d150eca3b36f3d6c13473b3bd60ab4b8af467650aa1dc346ba961241fd",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 6,
+            "raw_event_sha256": "883e0d3b6405281b47ecee15d94ba6c4aaac5e5b56ae8ca1f00f431c590f745d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_1"
+          }
+        ],
+        "final_score": 0.026198630137,
+        "lexical_rank": 13,
+        "lexical_score": 4.761204242706,
+        "memory_id": "memory_7bf6e8d682de7f826dfc",
+        "memory_type": "user_preference",
+        "rank": 7,
+        "source_uri": "codecairn://memory/memory_7bf6e8d682de7f826dfc",
+        "summary": "2023-05-08T13:59:00+00:00 — Caroline: The support group has made me feel accepted and given me courage to embrace myself.",
+        "title": "Caroline in session_1",
+        "vector_rank": 20,
+        "vector_score": 0.356990829686
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b7ef7351c945a43929465a8e0ca65a5faa4f9017b97e8b2331676dd8d1b87b41",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 29,
+            "raw_event_sha256": "41b2fd1e46042efaccbb6cff9f76f0d0bd4b9d930a51a4890a781a3eda45047c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_2"
+          }
+        ],
+        "final_score": 0.026144907724,
+        "lexical_rank": 16,
+        "lexical_score": 4.506751537323,
+        "memory_id": "memory_07ecb75c69bcfe42bc7c",
+        "memory_type": "user_preference",
+        "rank": 8,
+        "source_uri": "codecairn://memory/memory_07ecb75c69bcfe42bc7c",
+        "summary": "2023-05-25T13:19:30+00:00 — Caroline: I chose them 'cause they help LGBTQ+ folks with adoption. Their inclusivity and support really spoke to me.",
+        "title": "Caroline in session_2",
+        "vector_rank": 17,
+        "vector_score": 0.357830611649
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "e684ca269ff71de45a6fe417c946706cc823106fc35f8b59a619b7ec81189f24",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 220,
+            "raw_event_sha256": "5447dae73b8a43490a24c5df7cb0271e4eb6dee1de0f590b63aa2b380b068478",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_11"
+          }
+        ],
+        "final_score": 0.025941837409,
+        "lexical_rank": 8,
+        "lexical_score": 5.409778594971,
+        "memory_id": "memory_e231f6ef52f36f5ad938",
+        "memory_type": "user_preference",
+        "rank": 9,
+        "source_uri": "codecairn://memory/memory_e231f6ef52f36f5ad938",
+        "summary": "2023-08-14T14:26:30+00:00 — Caroline: It was so inspiring, Mel! Check out the crowd. People of all kinds celebrating love and acceptance - it really pushed me to keep fighting for LGBTQ rights. [Image caption: a photo of a group of people walking down a street with balloons]",
+        "title": "Caroline in session_11",
+        "vector_rank": 29,
+        "vector_score": 0.353970479871
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "90343368e643438eb7487fe43325fe4ca1df285919c6e9925ae1533cd0a4e877",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 253,
+            "raw_event_sha256": "84a98ff341c31e81599915805a1f1bab40fd6d88c30486581e87a9e11269add6",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_13"
+          }
+        ],
+        "final_score": 0.025155279503,
+        "lexical_rank": 10,
+        "lexical_score": 5.035953044891,
+        "memory_id": "memory_62b74ca2f14fb1fda095",
+        "memory_type": "user_preference",
+        "rank": 10,
+        "source_uri": "codecairn://memory/memory_62b74ca2f14fb1fda095",
+        "summary": "2023-08-23T15:31:00+00:00 — Caroline: Hi Melanie! Hope you're doing good. Guess what I did this week? I took the first step towards becoming a mom - I applied to adoption agencies! It's a big decision, but I think I'm ready to give all my love to a child. I got lots of help from this adoption advice/assistance group I attended. It was great! [Image caption: a photo of a sign with a picture of a guinea pig]",
+        "title": "Caroline in session_13",
+        "vector_rank": 32,
+        "vector_score": 0.353166286448
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "1d652a31844f177bed4bbe55115bc7565363a3356ce715dc5180943c7ea57e6c",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 310,
+            "raw_event_sha256": "6b0a070bb885818e6b9b42b6a901189891664f372ac0220b6fdc3062600474a2",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_15"
+          }
+        ],
+        "final_score": 0.024243314722,
+        "lexical_rank": 23,
+        "lexical_score": 4.273443222046,
+        "memory_id": "memory_1970c1b7fe07f069f7af",
+        "memory_type": "user_preference",
+        "rank": 11,
+        "source_uri": "codecairn://memory/memory_1970c1b7fe07f069f7af",
+        "summary": "2023-08-28T15:21:00+00:00 — Caroline: I loved it. It was awesome to see how strong the young people were, with all the challenges they face. I felt fulfilled guiding and supporting them. I even got to let them know they're not alone by sharing my story. Such a powerful, emotional experience. [Image caption: a photo of a table with a black table cloth and a group of people]",
+        "title": "Caroline in session_15",
+        "vector_rank": 22,
+        "vector_score": 0.356562813585
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "4613797e041dff6b8c829ab429b27ce990e483582d69700fc12287f6f8f19a27",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 102,
+            "raw_event_sha256": "7b3d1a330efcdcfebf014ad7c4e6474ae1d6dbe1a17f2502edf2f663b47036a6",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_6"
+          }
+        ],
+        "final_score": 0.022630992196,
+        "lexical_rank": 78,
+        "lexical_score": 2.51033115387,
+        "memory_id": "memory_87627531aee28ffaf6b8",
+        "memory_type": "user_preference",
+        "rank": 12,
+        "source_uri": "codecairn://memory/memory_87627531aee28ffaf6b8",
+        "summary": "2023-07-06T20:23:00+00:00 — Caroline: Wow, that's great! It sure shows how important friendship and compassion are. It's made me appreciate how lucky I am to have my friends and family helping with my transition. They make all the difference. We even had a picnic last week! [Image caption: a photo of a group of women sitting on a blanket in a park]",
+        "title": "Caroline in session_6",
+        "vector_rank": 5,
+        "vector_score": 0.368439416401
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "545c134fa543a8f001ff89ee267b6825c6335776b5007c6a11ca9521f1197669",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 20,
+            "raw_event_sha256": "51115e115115bc4a592a6f0c2d148af2091714395ebc1a20f98ed12d4a235aa4",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_2"
+          }
+        ],
+        "final_score": 0.021749084249,
+        "lexical_rank": 52,
+        "lexical_score": 2.766548395157,
+        "memory_id": "memory_be2dd476ae8db3a1f66c",
+        "memory_type": "user_preference",
+        "rank": 13,
+        "source_uri": "codecairn://memory/memory_be2dd476ae8db3a1f66c",
+        "summary": "2023-05-25T13:15:00+00:00 — Melanie: Thanks, Caroline! The event was really thought-provoking. I'm starting to realize that self-care is really important. It's a journey for me, but when I look after myself, I'm able to better look after my family.",
+        "title": "Melanie in session_2",
+        "vector_rank": 18,
+        "vector_score": 0.357675323249
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "ce7c91c17565a966432ce318f7178500f898dc73d3b5ac9deb5c574df44265a8",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 242,
+            "raw_event_sha256": "266246d9ed10cb6ef416871447d81bb16c936687c8e56d5bd184ed5afafccd6d",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_12"
+          }
+        ],
+        "final_score": 0.021686998228,
+        "lexical_rank": 9,
+        "lexical_score": 5.384542942047,
+        "memory_id": "memory_3093d40405553a416cda",
+        "memory_type": "user_preference",
+        "rank": 14,
+        "source_uri": "codecairn://memory/memory_3093d40405553a416cda",
+        "summary": "2023-08-17T13:55:00+00:00 — Caroline: Definitely, Mel! Finding those happy moments and clinging to them is key. It's what keeps us going, even when life's hard. I'm lucky to have people like you to remind me.",
+        "title": "Caroline in session_12",
+        "vector_rank": 79,
+        "vector_score": 0.345156727774
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "3545bfb167e6f7e7a0b32679cbb7c64650e3417b792ec0fd2f5251ce6965fc82",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 183,
+            "raw_event_sha256": "11c52df7ed6ce07b5e821a0e33eb032c301e2f68a0054b004ceebd8dccda8b0a",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_9"
+          }
+        ],
+        "final_score": 0.021330883854,
+        "lexical_rank": 11,
+        "lexical_score": 4.796938419342,
+        "memory_id": "memory_92a6990167f6bbe328fd",
+        "memory_type": "user_preference",
+        "rank": 15,
+        "source_uri": "codecairn://memory/memory_92a6990167f6bbe328fd",
+        "summary": "2023-07-17T14:35:30+00:00 — Caroline: Seeing my mentee's face light up when they saw the support was the best! Such a special moment.",
+        "title": "Caroline in session_9",
+        "vector_rank": 78,
+        "vector_score": 0.345182264464
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "b283566da32df5170c309c8cb436d901b737673590e79a1c579e9a11359e16f7",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 267,
+            "raw_event_sha256": "c024851bac5b99dc94a9b5db06bf216bf6825e5475985797d484130ee291fe2c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_13"
+          }
+        ],
+        "final_score": 0.020967051776,
+        "lexical_rank": 22,
+        "lexical_score": 4.288013935089,
+        "memory_id": "memory_ba90958f1069e5714886",
+        "memory_type": "user_preference",
+        "rank": 16,
+        "source_uri": "codecairn://memory/memory_ba90958f1069e5714886",
+        "summary": "2023-08-23T15:38:00+00:00 — Caroline: Thanks, Melanie. Art gives me a sense of freedom, but so does having supportive people around, promoting LGBTQ rights and being true to myself. I want to live authentically and help others to do the same.",
+        "title": "Caroline in session_13",
+        "vector_rank": 54,
+        "vector_score": 0.34709169988
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "3233e855c55c6077cb386d3af7749bb6db6c1e80e462a756ae216f8d6dbd6eba",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 338,
+            "raw_event_sha256": "334e047661ed78e777dbf27a98f2e9062a845ae09dc27128f1f427ba99f0aa1e",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_16"
+          }
+        ],
+        "final_score": 0.020913770914,
+        "lexical_rank": 24,
+        "lexical_score": 4.074845314026,
+        "memory_id": "memory_9134fdaf255d1f3d2cfc",
+        "memory_type": "user_preference",
+        "rank": 17,
+        "source_uri": "codecairn://memory/memory_9134fdaf255d1f3d2cfc",
+        "summary": "2023-09-13T00:11:00+00:00 — Caroline: I'm inspired seeing my work make a difference for the LGBTQ+ community. Knowing I'm helping create a more loving world is amazing. I'm really thankful for my friends, family and mentors' support. It inspires me to keep making art, too. [Image caption: a photo of a painting of a heart on a table]",
+        "title": "Caroline in session_16",
+        "vector_rank": 51,
+        "vector_score": 0.348057126856
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "085d392c03af6c499133d4164b590e57031857ac42b61b50aacc63f6fb0a19d7",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 175,
+            "raw_event_sha256": "692bbce138ca035659d44772dd106be06b3d4ef67a3a5f6f5bdf760c5e9c4404",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_9"
+          }
+        ],
+        "final_score": 0.01892717705,
+        "lexical_rank": 77,
+        "lexical_score": 2.514838695526,
+        "memory_id": "memory_ead79f01e69ff9384d0a",
+        "memory_type": "user_preference",
+        "rank": 18,
+        "source_uri": "codecairn://memory/memory_ead79f01e69ff9384d0a",
+        "summary": "2023-07-17T14:31:30+00:00 — Caroline: Hey Melanie! That sounds great! Last weekend I joined a mentorship program for LGBTQ youth - it's really rewarding to help the community.",
+        "title": "Caroline in session_9",
+        "vector_rank": 26,
+        "vector_score": 0.355160547351
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "baa5d68289b1623a36dbbc1e1363dc7c04c810556cb3ad574027ca5c44da2dc4",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 200,
+            "raw_event_sha256": "1f949c43a5430cb5d527939841e5f1382e11f68b3d4e5aa5fef2d0312adcae72",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_10"
+          }
+        ],
+        "final_score": 0.017745465916,
+        "lexical_rank": 63,
+        "lexical_score": 2.642496585846,
+        "memory_id": "memory_b4a9eb077d257f83555c",
+        "memory_type": "user_preference",
+        "rank": 19,
+        "source_uri": "codecairn://memory/memory_b4a9eb077d257f83555c",
+        "summary": "2023-07-20T21:00:30+00:00 — Melanie: Seeing my kids' faces so happy at the beach was the best! We don't go often, usually only once or twice a year. But those times are always special to spend time together and chill. [Image caption: a photo of a sand castle on the beach with a blue sky]",
+        "title": "Melanie in session_10",
+        "vector_rank": 44,
+        "vector_score": 0.349318711316
+      },
+      {
+        "candidate_sources": [
+          "lexical",
+          "vector"
+        ],
+        "content_sha256": "d25fffd9a76ec78412896a092fe0e3929e5981d50ec5a821a56e99548b72453f",
+        "evidence": [
+          {
+            "call_id": null,
+            "provider": "locomo",
+            "raw_event_index": 396,
+            "raw_event_sha256": "f0e74e35f591197c723694c7de75a3eb18cc6c418f5ec6d43beceaf2cb2b6b9c",
+            "raw_event_type": "locomo_turn",
+            "session_id": "conv-26/session_18"
+          }
+        ],
+        "final_score": 0.01720573032,
+        "lexical_rank": 51,
+        "lexical_score": 2.769765377045,
+        "memory_id": "memory_439b3ea6cb1d82844411",
+        "memory_type": "user_preference",
+        "rank": 20,
+        "source_uri": "codecairn://memory/memory_439b3ea6cb1d82844411",
+        "summary": "2023-10-20T19:03:00+00:00 — Melanie: Thanks, Caroline! Yup, we just did it yesterday! The kids loved it and it was a nice way to relax after the road trip.",
+        "title": "Melanie in session_18",
+        "vector_rank": 62,
+        "vector_score": 0.346259514584
+      }
+    ],
+    "repo_key": "locomo/conv-26",
+    "vector_candidate_count": 80
+  },
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "status": "completed"
+}

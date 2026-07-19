@@ -1,0 +1,12 @@
+{
+  "irrelevant_at_5_rate": 0.808,
+  "mrr": 0.797944,
+  "p95_latency_ms": 10.91,
+  "query_count": 100,
+  "recall_at_1": 0.67,
+  "recall_at_5": 0.96,
+  "repository_isolation_violation_count": 0,
+  "run_id": "retrieval-fbc7023",
+  "schema_version": 1,
+  "suite": "retrieval"
+}
