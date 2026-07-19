@@ -13,6 +13,7 @@ from codecairn.service.application import (
     EvaluationReportRequest,
     EvaluationRunRequest,
     EvaluationSuite,
+    EvidenceBundleBuildRequest,
 )
 
 ApplicationFactory = Callable[[Path], CodeCairnApplication]
@@ -26,7 +27,9 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         no_args_is_help=True,
     )
     evaluation_app = typer.Typer(help="Run or report immutable evaluation artifacts.")
+    evidence_app = typer.Typer(help="Build or verify a public benchmark evidence bundle.")
     app.add_typer(evaluation_app, name="eval")
+    app.add_typer(evidence_app, name="evidence")
 
     @app.command("import")
     def import_session_command(
@@ -115,6 +118,50 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 run_dir=run_dir,
             )
         )
+        typer.echo(json.dumps(result, sort_keys=True))
+
+    @evidence_app.command("build")
+    def evidence_build_command(
+        bundle_id: Annotated[str, typer.Option("--bundle-id")],
+        locomo_run: Annotated[Path, typer.Option("--locomo-run", exists=True, file_okay=False)],
+        retrieval_run: Annotated[
+            Path, typer.Option("--retrieval-run", exists=True, file_okay=False)
+        ],
+        recovery_run: Annotated[Path, typer.Option("--recovery-run", exists=True, file_okay=False)],
+        coding_run: Annotated[Path, typer.Option("--coding-run", exists=True, file_okay=False)],
+        quality_junit: Annotated[
+            Path, typer.Option("--quality-junit", exists=True, dir_okay=False)
+        ],
+        quality_coverage: Annotated[
+            Path, typer.Option("--quality-coverage", exists=True, dir_okay=False)
+        ],
+        generator_commit: Annotated[str, typer.Option("--generator-commit")],
+        output_root: Annotated[Path, typer.Option("--output-root")] = Path("evidence"),
+        repository_root: Annotated[Path, typer.Option("--repository-root")] = Path("."),
+    ) -> None:
+        """Generate immutable metrics and recruiting copy from completed artifacts."""
+        result = application_factory(Path(".codecairn")).build_evidence_bundle(
+            EvidenceBundleBuildRequest(
+                bundle_id=bundle_id,
+                output_root=output_root,
+                locomo_run_dir=locomo_run,
+                retrieval_run_dir=retrieval_run,
+                recovery_run_dir=recovery_run,
+                coding_run_dir=coding_run,
+                quality_junit_path=quality_junit,
+                quality_coverage_path=quality_coverage,
+                repository_root=repository_root,
+                generator_commit=generator_commit,
+            )
+        )
+        typer.echo(json.dumps(result, sort_keys=True))
+
+    @evidence_app.command("verify")
+    def evidence_verify_command(
+        bundle_dir: Annotated[Path, typer.Argument(exists=True, file_okay=False, readable=True)],
+    ) -> None:
+        """Recompute and verify one public evidence bundle without provider access."""
+        result = application_factory(Path(".codecairn")).verify_evidence_bundle(bundle_dir)
         typer.echo(json.dumps(result, sort_keys=True))
 
     @app.command("doctor")

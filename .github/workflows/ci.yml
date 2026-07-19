@@ -21,5 +21,7 @@ jobs:
         run: uv sync --locked --all-groups
       - name: Run architecture, type, and test gates
         run: make check
+      - name: Recompute the public evidence bundle
+        run: uv run codecairn evidence verify evidence/benchmark-v1
       - name: Build source and wheel artifacts
         run: uv build
