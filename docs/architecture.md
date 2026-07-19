@@ -84,9 +84,12 @@ adapter over the evaluation interface.
 
 LoCoMo parallelizes only across conversations, whose runtime roots are already
 isolated. Within one conversation, retrieval, answer generation, and repeated
-judge calls retain deterministic order. The checkpoint contract is
-missing-only: resume validates the original manifest and fills absent ingest or
-question artifacts without rewriting completed evidence.
+judge calls retain deterministic order. Malformed structured judge output is
+retried within the same vote with a deterministic attempt-specific prompt and
+seed, up to the manifest-recorded attempt and response-length limits. Every
+attempt is retained for audit and included in usage accounting. The checkpoint
+contract is missing-only: resume validates the original manifest and fills
+absent ingest or question artifacts without rewriting completed evidence.
 
 The evidence-bundle reducer sits outside the runtime use cases. It copies only
 public aggregate inputs, recomputes the four suite reports, derives inventory

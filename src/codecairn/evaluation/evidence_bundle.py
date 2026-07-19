@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import platform
 import shutil
 import xml.etree.ElementTree as ET
@@ -102,6 +103,11 @@ def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
 
 
 def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> None:
+    _assert_equal(
+        read_json(config.locomo_run_dir / "summary.json"),
+        report_locomo(config.locomo_run_dir),
+        field="source LoCoMo report",
+    )
     _copy_named_files(
         config.locomo_run_dir,
         target / "raw" / "locomo",
@@ -201,10 +207,145 @@ def _copy_public_locomo_questions(source: Path, target: Path) -> None:
     )
     for path in paths:
         raw = _required_dict(read_json(path), field="LoCoMo question artifact")
-        public = {key: raw[key] for key in allowed_fields if key in raw}
+        public: dict[str, object] = {}
+        for key in allowed_fields:
+            if key not in raw:
+                continue
+            if key in {"schema_version", "category"}:
+                public[key] = _public_nonnegative_int(raw[key], field=key)
+            elif key in {
+                "sample_id",
+                "question_id",
+                "category_name",
+                "status",
+                "phase",
+                "error_type",
+            }:
+                public[key] = _public_string(raw[key], field=key)
+            else:
+                public[key] = raw[key]
+        if "answer" in public:
+            public["answer"] = _public_model_answer(public["answer"])
+        if "judge_votes" in public:
+            public["judge_votes"] = _public_judge_votes(public["judge_votes"])
         public["source_artifact_sha256"] = file_sha256(path)
         destination = target / path.relative_to(source)
         write_json_exclusive(destination, public)
+
+
+_PUBLIC_USAGE_FIELDS = (
+    "input_tokens",
+    "output_tokens",
+    "cached_input_tokens",
+    "uncached_input_tokens",
+    "reasoning_tokens",
+    "cost_usd",
+    "cost_cny",
+    "known_cost_count",
+    "known_cost_cny_count",
+)
+
+
+def _public_model_answer(value: object) -> dict[str, object]:
+    answer = _required_dict(value, field="LoCoMo model answer")
+    public: dict[str, object] = {
+        "text": _public_string(answer.get("text"), field="answer text", allow_empty=True),
+        "model": _public_string(answer.get("model"), field="answer model"),
+    }
+    public.update(_public_usage(answer, field="answer"))
+    return public
+
+
+def _public_judge_votes(value: object) -> list[dict[str, object]]:
+    if not isinstance(value, list):
+        raise ValueError("LoCoMo judge votes must be an array")
+    public_votes: list[dict[str, object]] = []
+    for value_item in value:
+        vote = _required_dict(value_item, field="LoCoMo judge vote")
+        label = _public_string(vote.get("label"), field="judge label")
+        if label not in {"correct", "wrong", "invalid"}:
+            raise ValueError("LoCoMo judge label is invalid")
+        failed_attempts = vote.get("failed_attempts")
+        if not isinstance(failed_attempts, list):
+            raise ValueError("LoCoMo failed judge attempts must be an array")
+        public_vote: dict[str, object] = {
+            "vote_index": _public_nonnegative_int(vote.get("vote_index"), field="judge vote index"),
+            "label": label,
+            "attempt_count": _public_positive_int(
+                vote.get("attempt_count"), field="judge attempt count"
+            ),
+            "response_chars": _public_nonnegative_int(
+                vote.get("response_chars"), field="judge response chars"
+            ),
+            "failed_attempts": [
+                _public_failed_judge_attempt(attempt) for attempt in failed_attempts
+            ],
+        }
+        for key in ("error_type", "model"):
+            if key in vote:
+                public_vote[key] = _public_string(vote[key], field=f"judge {key}")
+        public_vote.update(_public_usage(vote, field="judge vote"))
+        public_votes.append(public_vote)
+    return public_votes
+
+
+def _public_failed_judge_attempt(value: object) -> dict[str, object]:
+    attempt = _required_dict(value, field="LoCoMo failed judge attempt")
+    public: dict[str, object] = {
+        "attempt_index": _public_positive_int(
+            attempt.get("attempt_index"), field="failed judge attempt index"
+        ),
+        "error_type": _public_string(attempt.get("error_type"), field="failed judge error type"),
+        "response_chars": _public_nonnegative_int(
+            attempt.get("response_chars"), field="failed judge response chars"
+        ),
+    }
+    if "model" in attempt:
+        public["model"] = _public_string(attempt["model"], field="failed judge model")
+    public.update(_public_usage(attempt, field="failed judge attempt"))
+    return public
+
+
+def _public_usage(record: dict[str, object], *, field: str) -> dict[str, object]:
+    public: dict[str, object] = {}
+    for key in _PUBLIC_USAGE_FIELDS:
+        if key not in record:
+            continue
+        value = record[key]
+        if value is None:
+            public[key] = None
+        elif key in {"cost_usd", "cost_cny"}:
+            public[key] = _public_nonnegative_number(value, field=f"{field} {key}")
+        else:
+            public[key] = _public_nonnegative_int(value, field=f"{field} {key}")
+    return public
+
+
+def _public_string(value: object, *, field: str, allow_empty: bool = False) -> str:
+    if not isinstance(value, str) or (not allow_empty and not value):
+        raise ValueError(f"LoCoMo public {field} must be a string")
+    return value
+
+
+def _public_nonnegative_int(value: object, *, field: str) -> int:
+    if type(value) is not int or value < 0:
+        raise ValueError(f"LoCoMo public {field} must be a non-negative integer")
+    return value
+
+
+def _public_positive_int(value: object, *, field: str) -> int:
+    result = _public_nonnegative_int(value, field=field)
+    if result < 1:
+        raise ValueError(f"LoCoMo public {field} must be positive")
+    return result
+
+
+def _public_nonnegative_number(value: object, *, field: str) -> int | float:
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        raise ValueError(f"LoCoMo public {field} must be a finite non-negative number")
+    if value < 0 or not math.isfinite(value):
+        raise ValueError(f"LoCoMo public {field} must be a finite non-negative number")
+    return value
 
 
 def _copy_public_locomo_ingests(source: Path, target: Path) -> None:
@@ -220,7 +361,15 @@ def _copy_public_locomo_ingests(source: Path, target: Path) -> None:
     )
     for path in paths:
         raw = _required_dict(read_json(path), field="LoCoMo ingest checkpoint")
-        public = {key: raw[key] for key in allowed_fields if key in raw}
+        public = {
+            key: (
+                _public_string(raw[key], field=f"ingest {key}")
+                if key == "sample_id"
+                else _public_nonnegative_int(raw[key], field=f"ingest {key}")
+            )
+            for key in allowed_fields
+            if key in raw
+        }
         public["source_artifact_sha256"] = file_sha256(path)
         destination = target / path.relative_to(source)
         write_json_exclusive(destination, public)

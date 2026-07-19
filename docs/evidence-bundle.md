@@ -28,11 +28,12 @@ The output is exclusive: an existing bundle directory is never overwritten.
 The reducer copies manifests, query records, recovery checks, normalized coding
 traces, public verifier results, and normalized LoCoMo ingest/question
 checkpoints. Public LoCoMo question records retain category, status, generated
-answer, judge votes, usage, and the original artifact hash while excluding the
-dataset question, gold answer, evidence text, retrieval query, and recalled
-conversation content. Public ingest records retain only identifiers, aggregate
-counts, and the original artifact hash, excluding speaker names and runtime
-paths. Public verifier records retain outcome, timing, output
+answer, normalized judge labels, retry metadata, usage, and the original
+artifact hash while excluding raw judge responses, the dataset question, gold
+answer, evidence text, retrieval query, and recalled conversation content.
+Public ingest records retain only identifiers, aggregate counts, and the
+original artifact hash, excluding speaker names and runtime paths. Public
+verifier records retain outcome, timing, output
 hash, verifier-source hash, and the original artifact hash while excluding
 machine-local paths and stderr. The bundle also excludes runtime databases,
 vector indexes, final workspaces, provider secrets, and the LoCoMo dataset file.
@@ -66,7 +67,11 @@ limitations.
 - A full LoCoMo bundle publishes accuracy only when the question checkpoints
   cover every category 1-4 question declared by the selection manifest, every
   question has the configured valid judge-vote count, and infrastructure
-  failures are zero. Provider-native CNY cost remains distinct from USD cost.
+  failures are zero. A judge vote retries malformed structured output up to the
+  attempt limit recorded in the run manifest. The manifest also records the
+  maximum accepted response length. All attempts remain in the raw checkpoint
+  and count toward token and cost totals. Provider-native CNY cost remains
+  distinct from USD cost.
 - CodingMemoryBench compares memory-off and memory-on over the same 20 tasks,
   three repeats, isolated workspaces, and a verifier hidden from the agent.
 - Retrieval reports measure the checked-in 100-query corpus on the recorded

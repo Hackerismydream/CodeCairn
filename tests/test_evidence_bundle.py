@@ -19,6 +19,40 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
     tmp_path: Path,
 ) -> None:
     sources = _make_source_runs(tmp_path / "sources")
+    private_question_path = (
+        sources / "locomo" / "checkpoints" / "questions" / "conv-1" / "question-1.json"
+    )
+    private_question = read_json(private_question_path)
+    assert isinstance(private_question, dict)
+    private_answer = private_question["answer"]
+    assert isinstance(private_answer, dict)
+    private_answer["provider_debug"] = {"authorization": "Bearer must-not-be-public"}
+    private_question["judge_votes"] = [
+        {
+            "vote_index": 0,
+            "label": "correct",
+            "raw_response": '{"label":"CORRECT"}',
+            "attempt_count": 2,
+            "response_chars": 19,
+            "provider_debug": {
+                "api_key": "must-not-be-public",
+                "local_path": "/private/runtime",
+            },
+            "failed_attempts": [
+                {
+                    "attempt_index": 1,
+                    "error_type": "JSONDecodeError",
+                    "raw_response": "private malformed response",
+                    "response_chars": 26,
+                    "request_debug": {
+                        "authorization": "Bearer must-not-be-public",
+                        "gold_answer": "private gold",
+                    },
+                }
+            ],
+        }
+    ]
+    _replace_json(private_question_path, private_question)
     output_root = tmp_path / "evidence"
 
     artifact = build_evidence_bundle(
@@ -76,6 +110,13 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
         }
         & public_question.keys()
     )
+    public_vote = public_question["judge_votes"][0]
+    assert "provider_debug" not in public_question["answer"]
+    assert "raw_response" not in public_vote
+    assert "provider_debug" not in public_vote
+    assert "raw_response" not in public_vote["failed_attempts"][0]
+    assert "request_debug" not in public_vote["failed_attempts"][0]
+    assert public_vote["attempt_count"] == 2
     assert len(public_question["source_artifact_sha256"]) == 64
     public_ingest = read_json(
         artifact.bundle_dir / "raw" / "locomo" / "checkpoints" / "ingest" / "conv-1.json"
@@ -109,6 +150,8 @@ def test_full_locomo_bundle_publishes_accuracy_cny_cost_and_resume_evidence(
             "mode": "full",
             "scored": True,
             "judge_votes": 3,
+            "judge_response_max_attempts": 3,
+            "judge_response_max_chars": 32_768,
             "judge_model": {"adapter": "fake", "model": "judge"},
             "selection": {
                 "categories": [1, 2, 3, 4],
@@ -131,7 +174,18 @@ def test_full_locomo_bundle_publishes_accuracy_cny_cost_and_resume_evidence(
         }
     )
     question["judge_votes"] = [
-        {"vote_index": index, "label": "correct", "input_tokens": 2, "output_tokens": 1}
+        {
+            "vote_index": index,
+            "label": "correct",
+            "attempt_count": 1,
+            "response_chars": 19,
+            "failed_attempts": [],
+            "raw_response": '{"label":"CORRECT"}',
+            "input_tokens": 2,
+            "output_tokens": 1,
+            "known_cost_count": 0,
+            "known_cost_cny_count": 0,
+        }
         for index in range(3)
     ]
     _replace_json(question_path, question)
@@ -164,6 +218,68 @@ def test_full_locomo_bundle_publishes_accuracy_cny_cost_and_resume_evidence(
     assert "with 3 judge votes each" in resume
     assert "LoCoMo accuracy of 100.00%" in resume
     assert "LoCoMo 准确率 100.00%" in (artifact.bundle_dir / "resume.zh-CN.md").read_text()
+
+
+def test_bundle_rejects_type_confusion_in_public_locomo_fields(tmp_path: Path) -> None:
+    sources = _make_source_runs(tmp_path / "sources")
+    question_path = sources / "locomo" / "checkpoints" / "questions" / "conv-1" / "question-1.json"
+    question = read_json(question_path)
+    assert isinstance(question, dict)
+    answer = question["answer"]
+    assert isinstance(answer, dict)
+    answer["model"] = {"api_key": "must-not-be-public"}
+    _replace_json(question_path, question)
+
+    with pytest.raises(ValueError, match="model"):
+        build_evidence_bundle(
+            EvidenceBundleConfig(
+                bundle_id="benchmark-type-confusion",
+                output_root=tmp_path / "evidence",
+                locomo_run_dir=sources / "locomo",
+                retrieval_run_dir=sources / "retrieval",
+                recovery_run_dir=sources / "recovery",
+                coding_run_dir=sources / "coding",
+                quality_junit_path=sources / "junit.xml",
+                quality_coverage_path=sources / "coverage.json",
+                repository_root=Path(__file__).parents[1],
+                generator_commit="abc123",
+            )
+        )
+
+
+def test_bundle_rejects_nested_data_in_public_locomo_usage_fields(tmp_path: Path) -> None:
+    sources = _make_source_runs(tmp_path / "sources")
+    question_path = sources / "locomo" / "checkpoints" / "questions" / "conv-1" / "question-1.json"
+    question = read_json(question_path)
+    assert isinstance(question, dict)
+    question["judge_votes"] = [
+        {
+            "vote_index": 0,
+            "label": "correct",
+            "attempt_count": 1,
+            "response_chars": 19,
+            "failed_attempts": [],
+            "raw_response": '{"label":"CORRECT"}',
+            "input_tokens": {"private_prompt": "must-not-be-public"},
+        }
+    ]
+    _replace_json(question_path, question)
+
+    with pytest.raises(ValueError, match="input_tokens"):
+        build_evidence_bundle(
+            EvidenceBundleConfig(
+                bundle_id="benchmark-usage-type-confusion",
+                output_root=tmp_path / "evidence",
+                locomo_run_dir=sources / "locomo",
+                retrieval_run_dir=sources / "retrieval",
+                recovery_run_dir=sources / "recovery",
+                coding_run_dir=sources / "coding",
+                quality_junit_path=sources / "junit.xml",
+                quality_coverage_path=sources / "coverage.json",
+                repository_root=Path(__file__).parents[1],
+                generator_commit="abc123",
+            )
+        )
 
 
 def _replace_json(path: Path, value: object) -> None:
