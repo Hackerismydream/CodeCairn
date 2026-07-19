@@ -107,9 +107,9 @@ class SQLiteState:
                 INSERT INTO gate_audit (
                     proposal_id, repo_key, memory_type, accepted, reason,
                     proposal_title, proposal_summary, proposed_quote,
-                    proposed_quote_role,
+                    proposed_quote_role, proposal_confidence,
                     proposed_fact_ids_json, resolved_fact_ids_json, memory_id
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(repo_key, proposal_id) DO NOTHING
                 """,
                 (
@@ -122,6 +122,7 @@ class SQLiteState:
                     proposal.summary,
                     proposal.quote,
                     proposal.quote_role,
+                    proposal.confidence,
                     json.dumps(decision.proposed_fact_ids),
                     json.dumps(decision.resolved_fact_ids),
                     memory_id,
@@ -131,7 +132,8 @@ class SQLiteState:
                 """
                 SELECT memory_type, accepted, reason, proposal_title,
                        proposal_summary, proposed_quote, proposed_quote_role,
-                       proposed_fact_ids_json, resolved_fact_ids_json, memory_id
+                       proposal_confidence, proposed_fact_ids_json,
+                       resolved_fact_ids_json, memory_id
                 FROM gate_audit
                 WHERE repo_key = ? AND proposal_id = ?
                 """,
@@ -145,6 +147,7 @@ class SQLiteState:
                 proposal.summary,
                 proposal.quote,
                 proposal.quote_role,
+                proposal.confidence,
                 json.dumps(decision.proposed_fact_ids),
                 json.dumps(decision.resolved_fact_ids),
                 memory_id,
@@ -158,7 +161,8 @@ class SQLiteState:
                 """
                 SELECT audit_id, proposal_id, repo_key, memory_type, accepted,
                        reason, proposal_title, proposal_summary, proposed_quote,
-                       proposed_quote_role, proposed_fact_ids_json,
+                       proposed_quote_role, proposal_confidence,
+                       proposed_fact_ids_json,
                        resolved_fact_ids_json, memory_id
                 FROM gate_audit
                 WHERE repo_key = ?
@@ -178,6 +182,7 @@ class SQLiteState:
                 proposal_summary=row["proposal_summary"],
                 proposed_quote=row["proposed_quote"],
                 proposed_quote_role=row["proposed_quote_role"],
+                proposal_confidence=row["proposal_confidence"],
                 proposed_fact_ids=_parse_string_tuple(
                     row["proposed_fact_ids_json"],
                     field="proposed fact IDs",
@@ -413,6 +418,7 @@ class SQLiteState:
                     proposal_summary TEXT NOT NULL,
                     proposed_quote TEXT,
                     proposed_quote_role TEXT,
+                    proposal_confidence REAL,
                     proposed_fact_ids_json TEXT NOT NULL,
                     resolved_fact_ids_json TEXT NOT NULL,
                     memory_id TEXT,
@@ -452,6 +458,12 @@ class SQLiteState:
                 connection.execute(
                     "ALTER TABLE memories ADD COLUMN fact_ids_json TEXT NOT NULL DEFAULT '[]'"
                 )
+            gate_columns = {
+                row["name"]
+                for row in connection.execute("PRAGMA table_info(gate_audit)").fetchall()
+            }
+            if "proposal_confidence" not in gate_columns:
+                connection.execute("ALTER TABLE gate_audit ADD COLUMN proposal_confidence REAL")
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self._path)

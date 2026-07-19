@@ -12,8 +12,12 @@ _MAX_FACT_IDS = 64
 _MAX_TITLE_CHARS = 256
 _MAX_SUMMARY_CHARS = 4_096
 _MAX_QUOTE_CHARS = 4_096
-_PROPOSAL_FIELDS = frozenset({"memory_type", "title", "summary", "fact_ids", "quote", "quote_role"})
-_SUPPORTED_TYPES = frozenset({"repository_convention", "user_preference"})
+_REQUIRED_PROPOSAL_FIELDS = frozenset({"memory_type", "title", "summary", "fact_ids"})
+_OPTIONAL_PROPOSAL_FIELDS = frozenset({"quote", "quote_role", "confidence"})
+_PROPOSAL_FIELDS = _REQUIRED_PROPOSAL_FIELDS | _OPTIONAL_PROPOSAL_FIELDS
+_SUPPORTED_TYPES = frozenset(
+    {"debug_episode", "repository_convention", "user_preference", "verified_fix"}
+)
 
 
 class TextRedactor(Protocol):
@@ -86,7 +90,11 @@ def _parse_proposals(value: object, *, repo_key: str) -> tuple[MemoryProposal, .
         raise ProposalSchemaError("Compression output must be a bounded proposal list")
     proposals: list[MemoryProposal] = []
     for position, item in enumerate(value):
-        if not isinstance(item, Mapping) or set(item) != _PROPOSAL_FIELDS:
+        if (
+            not isinstance(item, Mapping)
+            or not set(item) >= _REQUIRED_PROPOSAL_FIELDS
+            or not set(item) <= _PROPOSAL_FIELDS
+        ):
             raise ProposalSchemaError(f"Proposal {position} has an invalid field set")
         memory_type = _required_string(item, "memory_type", position=position)
         if memory_type not in _SUPPORTED_TYPES:
@@ -126,6 +134,7 @@ def _parse_proposals(value: object, *, repo_key: str) -> tuple[MemoryProposal, .
             position=position,
             max_chars=32,
         )
+        confidence = _optional_confidence(item, position=position)
         proposals.append(
             MemoryProposal(
                 proposal_id=stable_id(
@@ -145,6 +154,7 @@ def _parse_proposals(value: object, *, repo_key: str) -> tuple[MemoryProposal, .
                 fact_ids=fact_ids,
                 quote=quote,
                 quote_role=quote_role,
+                confidence=confidence,
             )
         )
     return tuple(proposals)
@@ -183,3 +193,15 @@ def _optional_bounded_string(
     if not isinstance(value, str) or not value or len(value) > max_chars:
         raise ProposalSchemaError(f"Proposal {position} field {key!r} is invalid")
     return value
+
+
+def _optional_confidence(item: Mapping[object, object], *, position: int) -> float | None:
+    value = item.get("confidence")
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ProposalSchemaError(f"Proposal {position} confidence is invalid")
+    confidence = float(value)
+    if not 0.0 <= confidence <= 1.0:
+        raise ProposalSchemaError(f"Proposal {position} confidence is outside [0, 1]")
+    return confidence

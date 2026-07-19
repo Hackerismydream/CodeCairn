@@ -64,6 +64,14 @@ Accepted memories persist fact identifiers in Markdown and SQLite; accepted and
 rejected proposals both create SQLite gate-audit rows with their proposal,
 resolved references, and reason.
 
+Command results become verification facts only when deterministic command
+classification identifies a test, lint, type-check, or build invocation.
+Verified Fix requires that successful verification to occur after a file change
+in the same Task Episode and source chronology. Debug Episode requires an
+ordered user task, tool action, and observed success or failure from one
+episode. A bounded, redacted JSONL export exposes gate candidates for human
+precision labels without including raw evidence locators.
+
 The evaluation module exposes one interface:
 
 ```text

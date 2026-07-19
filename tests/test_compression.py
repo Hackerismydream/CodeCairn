@@ -126,3 +126,27 @@ def test_semantic_compression_rejects_unknown_proposal_fields() -> None:
 
     with pytest.raises(ProposalSchemaError, match="invalid field set"):
         compression.propose((), repo_key="acme/widgets")
+
+
+def test_semantic_compression_parses_verified_fix_confidence_as_untrusted_metadata() -> None:
+    compression = SemanticCompression(
+        model=_StaticModel(
+            [
+                {
+                    "memory_type": "verified_fix",
+                    "title": "Fix widget validation",
+                    "summary": "The focused test passes after the change.",
+                    "fact_ids": ["fact-change", "fact-verification"],
+                    "confidence": 1.0,
+                }
+            ]
+        ),
+        redactor=_IdentityRedactor(),
+        max_payload_bytes=1_024,
+    )
+
+    proposals = compression.propose((), repo_key="acme/widgets")
+
+    assert proposals[0].memory_type == "verified_fix"
+    assert proposals[0].confidence == 1.0
+    assert proposals[0].quote is None

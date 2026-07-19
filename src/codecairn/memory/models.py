@@ -14,7 +14,18 @@ MemoryType = Literal[
 ]
 EpisodeOutcome = Literal["success", "failed", "unknown"]
 MemoryRepairReason = Literal["missing", "truncated", "hash_mismatch", "unparsable"]
-EvidenceFactKind = Literal["user_quote", "repository_rule", "repeated_trace"]
+EvidenceFactKind = Literal[
+    "action",
+    "command_outcome",
+    "episode_outcome",
+    "file_change",
+    "repository_rule",
+    "repeated_trace",
+    "task_prompt",
+    "user_quote",
+    "verification",
+]
+EvidenceFactStatus = Literal["success", "failed", "unknown"]
 GateDecisionReason = Literal[
     "accepted",
     "duplicate_fact_id",
@@ -25,6 +36,13 @@ GateDecisionReason = Literal[
     "preference_requires_user_role",
     "quote_not_exact_source_substring",
     "convention_requires_grounding",
+    "verified_fix_requires_change",
+    "verified_fix_requires_successful_verification",
+    "verification_must_follow_change",
+    "debug_episode_requires_task_prompt",
+    "debug_episode_requires_action",
+    "debug_episode_requires_observed_outcome",
+    "debug_episode_facts_are_disconnected",
 ]
 
 
@@ -48,6 +66,7 @@ class EvidenceFact:
     text: str
     role: str | None
     evidence: tuple[EvidenceReference, ...]
+    status: EvidenceFactStatus | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -126,6 +145,7 @@ class MemoryProposal:
     fact_ids: tuple[str, ...]
     quote: str | None = None
     quote_role: str | None = None
+    confidence: float | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -152,6 +172,7 @@ class GateAudit:
     proposal_summary: str
     proposed_quote: str | None
     proposed_quote_role: str | None
+    proposal_confidence: float | None
     proposed_fact_ids: tuple[str, ...]
     resolved_fact_ids: tuple[str, ...]
     memory_id: str | None
