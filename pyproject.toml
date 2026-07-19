@@ -26,7 +26,7 @@ dev = [
 ]
 
 [project.scripts]
-codecairn = "codecairn.entrypoints.cli:main"
+codecairn = "codecairn.bootstrap:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/codecairn"]
@@ -68,3 +68,15 @@ name = "Adapters do not depend on entrypoints"
 type = "forbidden"
 source_modules = ["codecairn.importers", "codecairn.storage"]
 forbidden_modules = ["codecairn.entrypoints"]
+
+[[tool.importlinter.contracts]]
+name = "Service depends on ports, not adapters"
+type = "forbidden"
+source_modules = ["codecairn.service"]
+forbidden_modules = ["codecairn.importers", "codecairn.storage"]
+
+[[tool.importlinter.contracts]]
+name = "Entrypoints depend on contracts, not adapters"
+type = "forbidden"
+source_modules = ["codecairn.entrypoints"]
+forbidden_modules = ["codecairn.importers", "codecairn.storage"]

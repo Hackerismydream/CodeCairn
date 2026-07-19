@@ -29,6 +29,19 @@ uv sync --all-groups
 make check
 ```
 
+The first implemented vertical slice imports an auditable Failed Command from a
+Codex JSONL session:
+
+```bash
+uv run codecairn import /path/to/session.jsonl \
+  --repo-key owner/repository \
+  --root .codecairn
+uv run codecairn list --repo-key owner/repository --root .codecairn
+```
+
+Runtime state is ignored by Git because it can contain source paths, commands,
+and evidence text.
+
 Project contracts live in [CONTEXT.md](CONTEXT.md),
 [docs/architecture.md](docs/architecture.md), and [docs/adr/](docs/adr/).
 
