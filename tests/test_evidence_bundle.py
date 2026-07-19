@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from codecairn.evaluation.artifacts import write_json_exclusive
+from codecairn.evaluation.artifacts import read_json, write_json_exclusive
 from codecairn.evaluation.coding import report_coding_runs
 from codecairn.evaluation.evidence_bundle import (
     EvidenceBundleConfig,
@@ -57,6 +57,13 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
     assert "LoCoMo accuracy: pending" in (artifact.bundle_dir / "resume.md").read_text()
     assert "由 0% 提升至 100%" in (artifact.bundle_dir / "resume.zh-CN.md").read_text()
     assert not (artifact.bundle_dir / "raw" / "locomo" / "runtime").exists()
+    verifier = read_json(
+        artifact.bundle_dir / "raw" / "coding" / "task-1-memory-on" / "verifier.json"
+    )
+    assert isinstance(verifier, dict)
+    assert verifier["passed"] is True
+    assert len(verifier["source_artifact_sha256"]) == 64
+    assert "workspace" not in verifier
 
     query = artifact.bundle_dir / "raw" / "retrieval" / "queries" / "q-1.json"
     query.write_text("{}\n", encoding="utf-8")

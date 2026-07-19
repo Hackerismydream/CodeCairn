@@ -26,9 +26,11 @@ uv run codecairn evidence build \
 
 The output is exclusive: an existing bundle directory is never overwritten.
 The reducer copies manifests, query records, recovery checks, normalized coding
-traces, verifier results, and LoCoMo ingest/question checkpoints. It deliberately
-excludes runtime databases, vector indexes, final workspaces, provider secrets,
-and the LoCoMo dataset file.
+traces, public verifier results, and LoCoMo ingest/question checkpoints. Public
+verifier records retain outcome, timing, output hash, verifier-source hash, and
+the original artifact hash while excluding machine-local paths and stderr. The
+bundle also excludes runtime databases, vector indexes, final workspaces,
+provider secrets, and the LoCoMo dataset file.
 
 ## Verification contract
 

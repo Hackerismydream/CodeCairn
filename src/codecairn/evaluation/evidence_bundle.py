@@ -129,8 +129,9 @@ def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> No
         target / "raw" / "coding",
         ("experiment.json", "summary.json"),
     )
-    for pattern in ("*/manifest.json", "*/result.json", "*/trace.json", "*/verifier.json"):
+    for pattern in ("*/manifest.json", "*/result.json", "*/trace.json"):
         _copy_glob(config.coding_run_dir, target / "raw" / "coding", pattern)
+    _copy_public_verifiers(config.coding_run_dir, target / "raw" / "coding")
     quality = target / "raw" / "quality"
     quality.mkdir(parents=True, exist_ok=False)
     shutil.copyfile(config.quality_junit_path, quality / "junit.xml")
@@ -154,6 +155,33 @@ def _copy_glob(source: Path, target: Path, pattern: str) -> None:
         destination = target / path.relative_to(source)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, destination)
+
+
+def _copy_public_verifiers(source: Path, target: Path) -> None:
+    paths = sorted(source.glob("*/verifier.json"))
+    if not paths:
+        raise ValueError(f"Required verifier artifacts are missing: {source}")
+    for path in paths:
+        raw = _required_dict(read_json(path), field="verifier artifact")
+        exit_code = raw.get("exit_code")
+        if not isinstance(exit_code, int):
+            passed = raw.get("passed")
+            if not isinstance(passed, bool):
+                raise ValueError("Verifier artifact must contain exit_code or passed")
+            exit_code = 0 if passed else 1
+        public = {
+            "schema_version": raw.get("schema_version", 1),
+            "status": raw.get("status", "completed"),
+            "passed": raw.get("status", "completed") == "completed" and exit_code == 0,
+            "exit_code": exit_code,
+            "duration_ms": raw.get("duration_ms"),
+            "executed_in_workspace": raw.get("executed_in_workspace"),
+            "output_sha256": raw.get("output_sha256"),
+            "verifier_source_sha256": raw.get("verifier_source_sha256"),
+            "source_artifact_sha256": file_sha256(path),
+        }
+        destination = target / path.relative_to(source)
+        write_json_exclusive(destination, public)
 
 
 def _aggregate_bundle(
@@ -305,6 +333,16 @@ def _inventory_counts(*, locomo_dir: Path, retrieval_dir: Path, coding_dir: Path
     ]
     results = sorted(coding_dir.glob("*/result.json"))
     verifier_results = sorted(coding_dir.glob("*/verifier.json"))
+    for result_path in results:
+        result = _required_dict(read_json(result_path), field="coding result")
+        verifier = _required_dict(
+            read_json(result_path.with_name("verifier.json")), field="public verifier"
+        )
+        if verifier.get("passed") is not (result.get("outcome") == "passed"):
+            raise ValueError(f"Verifier outcome does not match coding result: {result_path.parent}")
+        source_sha256 = verifier.get("source_artifact_sha256")
+        if not isinstance(source_sha256, str) or len(source_sha256) != 64:
+            raise ValueError("Public verifier must retain its source artifact SHA-256")
     return {
         "locomo_conversation_count": len(ingest_records),
         "locomo_session_count": sum(
