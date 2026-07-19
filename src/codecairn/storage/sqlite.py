@@ -12,10 +12,15 @@ from codecairn.memory.models import (
     GateDecision,
     GateDecisionReason,
     ImportCheckpoint,
+    IndexHealth,
+    IndexJob,
+    IndexOperation,
     MemoryProposal,
     MemoryRepairPlan,
     MemoryType,
     PendingRecoveryAudit,
+    ReconcileReport,
+    TruthScan,
 )
 from codecairn.memory.trace import EMPTY_RAW_PREFIX_SHA256, stable_id
 
@@ -99,8 +104,8 @@ class SQLiteState:
             raise ValueError("Gate decision memory crosses repository namespace")
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
-            if memory is not None:
-                _insert_memory(connection, memory)
+            if memory is not None and _insert_memory(connection, memory):
+                _enqueue_index_revision(connection, memory, operation="upsert")
             memory_id = memory.memory_id if memory is not None else None
             connection.execute(
                 """
@@ -311,7 +316,10 @@ class SQLiteState:
             if prior is not None and committed_raw_event_index < prior["committed_raw_event_index"]:
                 raise ValueError("Committed import cursor must not move backwards")
             for memory in memories:
-                created_count += _insert_memory(connection, memory)
+                inserted = _insert_memory(connection, memory)
+                created_count += inserted
+                if inserted:
+                    _enqueue_index_revision(connection, memory, operation="upsert")
             connection.execute(
                 """
                 INSERT INTO imports (
@@ -360,6 +368,267 @@ class SQLiteState:
                 (repo_key,),
             ).fetchall()
         return tuple(_memory_from_row(repo_key, row) for row in rows)
+
+    def get_memory(self, *, repo_key: str, memory_id: str) -> CodingMemory | None:
+        with self._connect() as connection:
+            row = connection.execute(
+                """
+                SELECT memory_id, memory_type, title, summary, episode_id,
+                       command, exit_code, evidence_json, fact_ids_json, markdown_path,
+                       content_sha256
+                FROM memories
+                WHERE repo_key = ? AND memory_id = ?
+                """,
+                (repo_key, memory_id),
+            ).fetchone()
+        return None if row is None else _memory_from_row(repo_key, row)
+
+    def list_all_memories(self) -> tuple[CodingMemory, ...]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT repo_key, memory_id, memory_type, title, summary, episode_id,
+                       command, exit_code, evidence_json, fact_ids_json, markdown_path,
+                       content_sha256
+                FROM memories
+                ORDER BY repo_key, memory_id
+                """
+            ).fetchall()
+        return tuple(_memory_from_row(row["repo_key"], row) for row in rows)
+
+    def reconcile_truth(self, scan: TruthScan) -> ReconcileReport:
+        discovered = {(memory.repo_key, memory.memory_id): memory for memory in scan.memories}
+        if len(discovered) != len(scan.memories):
+            raise ValueError("Markdown truth contains duplicate memory identities")
+        discovered_paths = {_required_markdown_path(memory) for memory in scan.memories}
+        issue_paths = {issue.markdown_path for issue in scan.issues}
+        created = 0
+        modified = 0
+        deleted = 0
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            existing_rows = connection.execute(
+                "SELECT repo_key, memory_id, markdown_path, content_sha256 FROM memories"
+            ).fetchall()
+            existing = {(row["repo_key"], row["memory_id"]): row for row in existing_rows}
+            connection.execute("DELETE FROM reconcile_issues")
+            connection.executemany(
+                """
+                INSERT INTO reconcile_issues (
+                    markdown_path, observed_sha256, error_type
+                ) VALUES (?, ?, ?)
+                """,
+                [
+                    (issue.markdown_path, issue.observed_sha256, issue.error_type)
+                    for issue in scan.issues
+                ],
+            )
+            for key, memory in discovered.items():
+                prior = existing.get(key)
+                if prior is None:
+                    _insert_truth_memory(connection, memory)
+                    _enqueue_index_revision(connection, memory, operation="upsert")
+                    created += 1
+                elif prior["content_sha256"] != memory.content_sha256:
+                    _update_truth_memory(connection, memory)
+                    _enqueue_index_revision(connection, memory, operation="upsert")
+                    modified += 1
+            for key, prior in existing.items():
+                if key in discovered:
+                    continue
+                markdown_path = prior["markdown_path"]
+                if markdown_path in issue_paths:
+                    continue
+                if markdown_path in discovered_paths:
+                    raise ValueError("Markdown path changed memory identity")
+                connection.execute(
+                    "DELETE FROM memories WHERE repo_key = ? AND memory_id = ?",
+                    key,
+                )
+                _enqueue_index_key(
+                    connection,
+                    repo_key=key[0],
+                    memory_id=key[1],
+                    content_sha256=prior["content_sha256"],
+                    operation="delete",
+                )
+                deleted += 1
+        return ReconcileReport(
+            created=created,
+            modified=modified,
+            deleted=deleted,
+            corrupt=len(scan.issues),
+        )
+
+    def claim_index_job(
+        self,
+        *,
+        worker_id: str,
+        now_ms: int,
+        lease_ms: int,
+    ) -> IndexJob | None:
+        if not worker_id.strip():
+            raise ValueError("worker_id must not be empty")
+        if lease_ms <= 0:
+            raise ValueError("lease_ms must be positive")
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            row = connection.execute(
+                """
+                SELECT job_id, repo_key, memory_id, content_sha256, operation
+                FROM index_queue
+                WHERE status = 'pending'
+                   OR (status = 'leased' AND lease_expires_at_ms <= ?)
+                ORDER BY job_id
+                LIMIT 1
+                """,
+                (now_ms,),
+            ).fetchone()
+            if row is None:
+                return None
+            cursor = connection.execute(
+                """
+                UPDATE index_queue
+                SET status = 'leased', lease_owner = ?, lease_expires_at_ms = ?,
+                    attempts = attempts + 1, error_type = NULL
+                WHERE job_id = ?
+                  AND (status = 'pending'
+                       OR (status = 'leased' AND lease_expires_at_ms <= ?))
+                """,
+                (worker_id, now_ms + lease_ms, row["job_id"], now_ms),
+            )
+            if cursor.rowcount != 1:
+                return None
+            return IndexJob(
+                job_id=row["job_id"],
+                repo_key=row["repo_key"],
+                memory_id=row["memory_id"],
+                content_sha256=row["content_sha256"],
+                operation=cast(IndexOperation, row["operation"]),
+                lease_owner=worker_id,
+            )
+
+    def complete_index_job(self, job: IndexJob, *, update_fingerprint: bool = True) -> None:
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            cursor = connection.execute(
+                """
+                UPDATE index_queue
+                SET status = 'indexed', lease_owner = NULL,
+                    lease_expires_at_ms = NULL, error_type = NULL
+                WHERE job_id = ? AND status = 'leased' AND lease_owner = ?
+                """,
+                (job.job_id, job.lease_owner),
+            )
+            if cursor.rowcount != 1:
+                raise ValueError(f"Index lease is no longer owned: {job.job_id}")
+            if not update_fingerprint:
+                return
+            if job.operation == "delete":
+                connection.execute(
+                    "DELETE FROM index_state WHERE repo_key = ? AND memory_id = ?",
+                    (job.repo_key, job.memory_id),
+                )
+            else:
+                connection.execute(
+                    """
+                    INSERT INTO index_state (repo_key, memory_id, content_sha256)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT(repo_key, memory_id) DO UPDATE SET
+                        content_sha256 = excluded.content_sha256
+                    """,
+                    (job.repo_key, job.memory_id, job.content_sha256),
+                )
+
+    def fail_index_job(self, job: IndexJob, *, error_type: str) -> None:
+        with self._connect() as connection:
+            cursor = connection.execute(
+                """
+                UPDATE index_queue
+                SET status = 'failed', lease_owner = NULL,
+                    lease_expires_at_ms = NULL, error_type = ?
+                WHERE job_id = ? AND status = 'leased' AND lease_owner = ?
+                """,
+                (error_type, job.job_id, job.lease_owner),
+            )
+            if cursor.rowcount != 1:
+                raise ValueError(f"Index lease is no longer owned: {job.job_id}")
+
+    def index_health(self, *, now_ms: int) -> IndexHealth:
+        with self._connect() as connection:
+            queue = connection.execute(
+                """
+                SELECT
+                    SUM(CASE WHEN status = 'pending'
+                                  OR (status = 'leased' AND lease_expires_at_ms <= ?)
+                             THEN 1 ELSE 0 END) AS pending,
+                    SUM(CASE WHEN status = 'leased' AND lease_expires_at_ms > ?
+                             THEN 1 ELSE 0 END) AS leased,
+                    SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) AS failed
+                FROM index_queue
+                """,
+                (now_ms, now_ms),
+            ).fetchone()
+            indexed = connection.execute("SELECT COUNT(*) AS count FROM index_state").fetchone()
+            stale = connection.execute("SELECT COUNT(*) AS count FROM reconcile_issues").fetchone()
+        return IndexHealth(
+            pending=int(queue["pending"] or 0),
+            leased=int(queue["leased"] or 0),
+            indexed=int(indexed["count"]),
+            failed=int(queue["failed"] or 0),
+            stale=int(stale["count"]),
+        )
+
+    def replace_index_state(self, fingerprints: set[tuple[str, str, str]]) -> None:
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("DELETE FROM index_state")
+            connection.executemany(
+                """
+                INSERT INTO index_state (repo_key, memory_id, content_sha256)
+                VALUES (?, ?, ?)
+                """,
+                sorted(fingerprints),
+            )
+            connection.execute(
+                """
+                UPDATE index_queue
+                SET status = 'indexed', lease_owner = NULL,
+                    lease_expires_at_ms = NULL, error_type = NULL
+                WHERE operation = 'upsert'
+                  AND EXISTS (
+                    SELECT 1 FROM index_state
+                    WHERE index_state.repo_key = index_queue.repo_key
+                      AND index_state.memory_id = index_queue.memory_id
+                      AND index_state.content_sha256 = index_queue.content_sha256
+                  )
+                """
+            )
+
+            connection.execute(
+                """
+                UPDATE index_queue
+                SET status = 'indexed', lease_owner = NULL,
+                    lease_expires_at_ms = NULL, error_type = NULL
+                WHERE operation = 'delete'
+                  AND NOT EXISTS (
+                    SELECT 1 FROM index_state
+                    WHERE index_state.repo_key = index_queue.repo_key
+                      AND index_state.memory_id = index_queue.memory_id
+                  )
+                """
+            )
+
+    def retry_failed_index_jobs(self) -> int:
+        with self._connect() as connection:
+            cursor = connection.execute(
+                """
+                UPDATE index_queue
+                SET status = 'pending', error_type = NULL
+                WHERE status = 'failed'
+                """
+            )
+        return cursor.rowcount
 
     def _initialize(self) -> None:
         with self._connect() as connection:
@@ -424,9 +693,37 @@ class SQLiteState:
                     memory_id TEXT,
                     UNIQUE (repo_key, proposal_id)
                 );
+                CREATE TABLE IF NOT EXISTS index_queue (
+                    job_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    repo_key TEXT NOT NULL,
+                    memory_id TEXT NOT NULL,
+                    content_sha256 TEXT NOT NULL,
+                    operation TEXT NOT NULL CHECK (operation IN ('upsert', 'delete')),
+                    status TEXT NOT NULL CHECK (
+                        status IN ('pending', 'leased', 'indexed', 'failed')
+                    ),
+                    attempts INTEGER NOT NULL DEFAULT 0,
+                    lease_owner TEXT,
+                    lease_expires_at_ms INTEGER,
+                    error_type TEXT
+                );
+                CREATE TABLE IF NOT EXISTS index_state (
+                    repo_key TEXT NOT NULL,
+                    memory_id TEXT NOT NULL,
+                    content_sha256 TEXT NOT NULL,
+                    PRIMARY KEY (repo_key, memory_id)
+                );
+                CREATE TABLE IF NOT EXISTS reconcile_issues (
+                    markdown_path TEXT PRIMARY KEY,
+                    observed_sha256 TEXT,
+                    error_type TEXT NOT NULL
+                );
                 CREATE UNIQUE INDEX IF NOT EXISTS recovery_audit_active_operation
                 ON recovery_audit(operation_key)
                 WHERE status = 'started';
+                CREATE UNIQUE INDEX IF NOT EXISTS index_queue_active_revision
+                ON index_queue(repo_key, memory_id, content_sha256, operation)
+                WHERE status IN ('pending', 'leased');
                 """
             )
             columns = {
@@ -464,10 +761,35 @@ class SQLiteState:
             }
             if "proposal_confidence" not in gate_columns:
                 connection.execute("ALTER TABLE gate_audit ADD COLUMN proposal_confidence REAL")
+            connection.execute(
+                """
+                INSERT INTO index_queue (
+                    repo_key, memory_id, content_sha256, operation, status
+                )
+                SELECT memories.repo_key, memories.memory_id,
+                       memories.content_sha256, 'upsert', 'pending'
+                FROM memories
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM index_state
+                    WHERE index_state.repo_key = memories.repo_key
+                      AND index_state.memory_id = memories.memory_id
+                      AND index_state.content_sha256 = memories.content_sha256
+                )
+                  AND NOT EXISTS (
+                    SELECT 1 FROM index_queue
+                    WHERE index_queue.repo_key = memories.repo_key
+                      AND index_queue.memory_id = memories.memory_id
+                      AND index_queue.content_sha256 = memories.content_sha256
+                      AND index_queue.operation = 'upsert'
+                      AND index_queue.status IN ('pending', 'leased')
+                )
+                """
+            )
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self._path)
         connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA busy_timeout = 5000")
         return connection
 
 
@@ -522,6 +844,86 @@ def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
         if stored is None or stored["content_sha256"] != memory.content_sha256:
             raise ValueError(f"Committed memory conflicts with candidate: {memory.memory_id}")
     return cursor.rowcount
+
+
+def _insert_truth_memory(connection: sqlite3.Connection, memory: CodingMemory) -> None:
+    if _insert_memory(connection, memory) != 1:
+        raise ValueError(f"Markdown truth conflicts with SQLite: {memory.memory_id}")
+
+
+def _update_truth_memory(connection: sqlite3.Connection, memory: CodingMemory) -> None:
+    markdown_path = _required_markdown_path(memory)
+    if memory.content_sha256 is None:
+        raise ValueError("Markdown truth is missing its content digest")
+    cursor = connection.execute(
+        """
+        UPDATE memories
+        SET memory_type = ?, title = ?, summary = ?, episode_id = ?,
+            command = ?, exit_code = ?, evidence_json = ?, fact_ids_json = ?,
+            markdown_path = ?, content_sha256 = ?
+        WHERE repo_key = ? AND memory_id = ?
+        """,
+        (
+            memory.memory_type,
+            memory.title,
+            memory.summary,
+            memory.episode_id,
+            memory.command,
+            memory.exit_code,
+            json.dumps([_evidence_dict(item) for item in memory.evidence]),
+            json.dumps(memory.fact_ids),
+            markdown_path,
+            memory.content_sha256,
+            memory.repo_key,
+            memory.memory_id,
+        ),
+    )
+    if cursor.rowcount != 1:
+        raise ValueError(f"Markdown truth memory disappeared: {memory.memory_id}")
+
+
+def _enqueue_index_revision(
+    connection: sqlite3.Connection,
+    memory: CodingMemory,
+    *,
+    operation: IndexOperation,
+) -> None:
+    if memory.content_sha256 is None:
+        raise ValueError("Cannot index Markdown without its content digest")
+    _enqueue_index_key(
+        connection,
+        repo_key=memory.repo_key,
+        memory_id=memory.memory_id,
+        content_sha256=memory.content_sha256,
+        operation=operation,
+    )
+
+
+def _enqueue_index_key(
+    connection: sqlite3.Connection,
+    *,
+    repo_key: str,
+    memory_id: str,
+    content_sha256: str,
+    operation: IndexOperation,
+) -> None:
+    connection.execute(
+        """
+        INSERT INTO index_queue (
+            repo_key, memory_id, content_sha256, operation, status
+        ) VALUES (?, ?, ?, ?, 'pending')
+        ON CONFLICT(repo_key, memory_id, content_sha256, operation)
+        WHERE status IN ('pending', 'leased')
+        DO NOTHING
+        """,
+        (repo_key, memory_id, content_sha256, operation),
+    )
+
+
+def _required_markdown_path(memory: CodingMemory) -> str:
+    if memory.markdown_path is None:
+        raise ValueError("Markdown truth is missing its canonical path")
+    return memory.markdown_path
 
 
 def _parse_call_ids(value: str) -> tuple[str, ...]:
