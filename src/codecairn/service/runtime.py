@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 import os
+from dataclasses import replace
 from pathlib import Path
 from typing import Literal, Protocol
 
+from codecairn.memory.evidence import EvidenceGate
 from codecairn.memory.models import (
     AgentTrace,
     CodingMemory,
+    EvidenceFact,
+    GateAudit,
+    GateDecision,
     ImportCheckpoint,
     ImportResult,
+    MemoryProposal,
     MemoryRepairPlan,
     PendingRecoveryAudit,
 )
@@ -76,6 +82,15 @@ class ImportState(Protocol):
 
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]: ...
 
+    def commit_gate_decision(
+        self,
+        decision: GateDecision,
+        *,
+        proposal: MemoryProposal,
+    ) -> None: ...
+
+    def list_gate_audits(self, *, repo_key: str) -> tuple[GateAudit, ...]: ...
+
 
 class MemoryRuntime:
     """Deep module for importing and inspecting durable coding memory."""
@@ -86,10 +101,12 @@ class MemoryRuntime:
         importer: TraceImporter,
         memory_store: MemoryStore,
         state: ImportState,
+        evidence_gate: EvidenceGate,
     ) -> None:
         self._state = state
         self._markdown = memory_store
         self._importer = importer
+        self._evidence_gate = evidence_gate
 
     def import_session(
         self,
@@ -151,6 +168,22 @@ class MemoryRuntime:
 
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
         return self._state.list_memories(repo_key=repo_key)
+
+    def evaluate_proposal(
+        self,
+        proposal: MemoryProposal,
+        *,
+        facts: tuple[EvidenceFact, ...],
+    ) -> GateDecision:
+        decision = self._evidence_gate.evaluate(proposal, facts=facts)
+        if decision.memory is not None:
+            persisted = self._markdown.write(decision.memory)
+            decision = replace(decision, memory=persisted)
+        self._state.commit_gate_decision(decision, proposal=proposal)
+        return decision
+
+    def list_gate_audits(self, *, repo_key: str) -> tuple[GateAudit, ...]:
+        return self._state.list_gate_audits(repo_key=repo_key)
 
     def _repair_committed_memories(self, *, repo_key: str) -> int:
         memories = {

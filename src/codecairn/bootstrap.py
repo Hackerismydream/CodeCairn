@@ -4,6 +4,7 @@ from pathlib import Path
 
 from codecairn.entrypoints.cli import build_app
 from codecairn.importers.session import SessionImporter
+from codecairn.memory.evidence import EvidenceGate
 from codecairn.service.runtime import MemoryRuntime
 from codecairn.storage.markdown import MarkdownMemoryStore
 from codecairn.storage.sqlite import SQLiteState
@@ -16,6 +17,7 @@ def create_runtime(root: Path) -> MemoryRuntime:
         importer=SessionImporter(),
         memory_store=MarkdownMemoryStore(resolved),
         state=SQLiteState(resolved / "state.sqlite3"),
+        evidence_gate=EvidenceGate(),
     )
 
 

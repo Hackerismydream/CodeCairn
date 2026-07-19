@@ -30,9 +30,11 @@ make check
 ```
 
 The import path auto-detects Codex and Claude Code JSONL and emits one shared
-Agent Trace before creating an auditable Failed Command. Repeated imports
-validate the committed prefix, resume from the active Task Episode, and repair
-committed Markdown through an audited recovery path:
+Agent Trace. Deterministic Evidence Facts and type-specific gates accept
+grounded User Preference and Repository Convention proposals while recording
+rejections for audit. Repeated imports validate the committed prefix, resume
+from the active Task Episode, and repair committed Markdown through an audited
+recovery path:
 
 ```bash
 uv run codecairn import /path/to/session.jsonl \

@@ -55,6 +55,15 @@ selects the Codex or Claude Code adapter, and keeps provider format branches out
 of the service layer. Import-linter contracts prevent service and entrypoint
 code from reaching through those ports to concrete adapters.
 
+Semantic compression receives only fact identifiers, kinds, roles, and text
+after an explicitly configured redactor runs. A configured byte limit is
+checked before the remote-model port is called, and strict schema parsing keeps
+model output from supplying evidence fields. The Evidence Gate resolves every
+proposed fact identifier against the repository-scoped deterministic fact set.
+Accepted memories persist fact identifiers in Markdown and SQLite; accepted and
+rejected proposals both create SQLite gate-audit rows with their proposal,
+resolved references, and reason.
+
 The evaluation module exposes one interface:
 
 ```text
