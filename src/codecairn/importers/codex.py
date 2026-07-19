@@ -1,18 +1,15 @@
 from __future__ import annotations
 
-import errno
-import hashlib
 import io
 import json
-import os
 import re
-import stat
 import unicodedata
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
-from codecairn.memory.errors import TraceImportError
+from codecairn.importers.jsonl import JsonlScan, RawRecord, read_jsonl
+from codecairn.memory.errors import TraceParseError
 from codecairn.memory.models import (
     AgentTrace,
     EvidenceReference,
@@ -21,16 +18,7 @@ from codecairn.memory.models import (
     ImportCheckpoint,
     TraceEvent,
 )
-from codecairn.memory.trace import (
-    EMPTY_RAW_PREFIX_SHA256,
-    extend_raw_prefix_sha256,
-    stable_id,
-)
-
-
-class TraceParseError(TraceImportError):
-    """Raised when a provider trace cannot be parsed safely."""
-
+from codecairn.memory.trace import stable_id
 
 _MAX_SESSION_BYTES = 64 * 1024 * 1024
 _MAX_RAW_EVENTS = 100_000
@@ -59,13 +47,6 @@ class _NormalizeState:
     file_change_fact_count: int = 0
 
 
-@dataclass(frozen=True, slots=True)
-class _RawScan:
-    records: tuple[RawRecord, ...]
-    raw_event_count: int
-    prefix_sha256: str
-
-
 class CodexImporter:
     provider = "codex"
 
@@ -76,38 +57,40 @@ class CodexImporter:
         source_root: Path | None = None,
         checkpoint: ImportCheckpoint | None = None,
     ) -> AgentTrace:
-        observed_path = Path(os.path.abspath(source_path))
-        if source_root is None:
-            source_bytes = _read_session_bytes(observed_path)
-        else:
-            source_bytes = _read_session_beneath_root(
-                observed_path,
-                source_root=source_root,
-            )
-        source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+        resumed_from = checkpoint.resume_raw_event_index if checkpoint is not None else 0
+        scan = read_jsonl(
+            source_path,
+            source_root=source_root,
+            start_raw_event_index=resumed_from,
+            max_session_bytes=_MAX_SESSION_BYTES,
+            max_raw_events=_MAX_RAW_EVENTS,
+        )
+        return self._from_scan(scan, checkpoint=checkpoint)
+
+    def _from_scan(
+        self,
+        scan: JsonlScan,
+        *,
+        checkpoint: ImportCheckpoint | None,
+    ) -> AgentTrace:
         if checkpoint is not None:
             _validate_checkpoint(checkpoint)
         resumed_from = checkpoint.resume_raw_event_index if checkpoint is not None else 0
-        scan = _scan_jsonl(
-            source_bytes,
-            source_path=observed_path,
-            start_raw_event_index=resumed_from,
-        )
         if checkpoint is not None and scan.prefix_sha256 != checkpoint.resume_prefix_sha256:
             raise TraceParseError(
-                f"Codex source changed before committed checkpoint: {observed_path}"
+                f"Codex source changed before committed checkpoint: {scan.source_path}"
             )
         if (
             checkpoint is not None
             and scan.raw_event_count - 1 < checkpoint.committed_raw_event_index
         ):
             raise TraceParseError(
-                f"Codex source is truncated before committed cursor: {observed_path}"
+                f"Codex source is truncated before committed cursor: {scan.source_path}"
             )
         session_id = (
             _validated_session_id(checkpoint.session_id)
             if checkpoint is not None
-            else _session_id(scan.records, fallback=observed_path.stem)
+            else _session_id(scan.records, fallback=scan.source_path.stem)
         )
         raw_prefix_call_ids = checkpoint.resume_call_ids if checkpoint is not None else ()
         raw_prefix_file_change_fact_count = (
@@ -122,7 +105,7 @@ class CodexImporter:
                 raw_event=record,
                 raw_event_sha256=raw_event_sha256,
                 raw_event_index=index,
-                source_path=observed_path,
+                source_path=scan.source_path,
                 session_id=session_id,
                 state=state,
             )
@@ -135,135 +118,16 @@ class CodexImporter:
             trace_id=stable_id("trace", self.provider, session_id),
             provider=self.provider,
             session_id=session_id,
-            source_path=str(observed_path),
-            source_sha256=source_sha256,
+            source_path=str(scan.source_path),
+            source_sha256=scan.source_sha256,
             raw_event_count=scan.raw_event_count,
             resumed_from_raw_event_index=resumed_from,
             raw_prefix_sha256=scan.prefix_sha256,
             raw_prefix_call_ids=raw_prefix_call_ids,
             raw_prefix_file_change_fact_count=raw_prefix_file_change_fact_count,
+            raw_suffix_event_sha256s=tuple(item[1] for item in scan.records),
             events=events,
         )
-
-
-RawRecord = tuple[dict[str, Any], str]
-
-
-def _read_session_bytes(source_path: Path) -> bytes:
-    flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0)
-    flags |= getattr(os, "O_CLOEXEC", 0)
-    flags |= getattr(os, "O_NOFOLLOW", 0)
-    try:
-        descriptor = os.open(source_path, flags)
-    except OSError as exc:
-        translated = _safe_open_error(source_path, exc)
-        if translated is exc:
-            raise
-        raise translated from exc
-    return _read_regular_descriptor(descriptor, source_path=source_path)
-
-
-def _read_session_beneath_root(source_path: Path, *, source_root: Path) -> bytes:
-    root = Path(os.path.abspath(source_root))
-    try:
-        relative = source_path.relative_to(root)
-    except ValueError as exc:
-        raise TraceParseError(f"Codex source is outside configured root: {source_path}") from exc
-    if not relative.parts:
-        raise TraceParseError(f"Codex source is not a file: {source_path}")
-    if os.open not in os.supports_dir_fd:
-        raise TraceParseError("Secure source-root traversal is unsupported on this platform")
-
-    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
-    directory_flags |= getattr(os, "O_CLOEXEC", 0)
-    directory_flags |= getattr(os, "O_NOFOLLOW", 0)
-    file_flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0)
-    file_flags |= getattr(os, "O_CLOEXEC", 0)
-    file_flags |= getattr(os, "O_NOFOLLOW", 0)
-
-    descriptors: list[int] = []
-    try:
-        descriptors.append(os.open(root, directory_flags))
-        for component in relative.parts[:-1]:
-            descriptors.append(os.open(component, directory_flags, dir_fd=descriptors[-1]))
-        file_descriptor = os.open(
-            relative.parts[-1],
-            file_flags,
-            dir_fd=descriptors[-1],
-        )
-    except OSError as exc:
-        translated = _safe_open_error(source_path, exc)
-        if translated is exc:
-            raise
-        raise translated from exc
-    finally:
-        for descriptor in reversed(descriptors):
-            os.close(descriptor)
-    return _read_regular_descriptor(file_descriptor, source_path=source_path)
-
-
-def _read_regular_descriptor(descriptor: int, *, source_path: Path) -> bytes:
-    try:
-        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
-            raise TraceParseError(f"Codex source is not a regular file: {source_path}")
-        with os.fdopen(descriptor, "rb", closefd=False) as handle:
-            source = handle.read(_MAX_SESSION_BYTES + 1)
-    finally:
-        os.close(descriptor)
-    if len(source) > _MAX_SESSION_BYTES:
-        raise TraceParseError(
-            f"Codex source exceeds the {_MAX_SESSION_BYTES}-byte import limit: {source_path}"
-        )
-    return source
-
-
-def _safe_open_error(source_path: Path, error: OSError) -> Exception:
-    if error.errno in {errno.ELOOP, errno.ENOTDIR}:
-        return TraceParseError(f"Codex source path must not traverse symbolic links: {source_path}")
-    return error
-
-
-def _scan_jsonl(
-    source: bytes,
-    *,
-    source_path: Path,
-    start_raw_event_index: int,
-) -> _RawScan:
-    if start_raw_event_index < 0:
-        raise TraceParseError("Codex checkpoint raw-event index must not be negative")
-    records: list[RawRecord] = []
-    raw_event_count = 0
-    prefix_sha256 = EMPTY_RAW_PREFIX_SHA256
-    for line_number, line in enumerate(io.BytesIO(source), start=1):
-        line = line.removesuffix(b"\n").removesuffix(b"\r")
-        if not line.strip():
-            continue
-        if raw_event_count >= _MAX_RAW_EVENTS:
-            raise TraceParseError(
-                f"Codex source exceeds the {_MAX_RAW_EVENTS}-event import limit: {source_path}"
-            )
-        raw_event_sha256 = hashlib.sha256(line).hexdigest()
-        if raw_event_count < start_raw_event_index:
-            prefix_sha256 = extend_raw_prefix_sha256(prefix_sha256, raw_event_sha256)
-            raw_event_count += 1
-            continue
-        try:
-            value = json.loads(line)
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise TraceParseError(f"Invalid Codex JSONL at {source_path}:{line_number}") from exc
-        if not isinstance(value, dict):
-            raise TraceParseError(f"Codex record at {source_path}:{line_number} is not an object")
-        records.append((value, raw_event_sha256))
-        raw_event_count += 1
-    if raw_event_count < start_raw_event_index:
-        raise TraceParseError(
-            f"Codex source is truncated before committed checkpoint: {source_path}"
-        )
-    return _RawScan(
-        records=tuple(records),
-        raw_event_count=raw_event_count,
-        prefix_sha256=prefix_sha256,
-    )
 
 
 def _session_id(records: tuple[RawRecord, ...], *, fallback: str) -> str:
@@ -290,6 +154,8 @@ def _validated_session_id(value: str) -> str:
 
 
 def _validate_checkpoint(checkpoint: ImportCheckpoint) -> None:
+    if checkpoint.provider != CodexImporter.provider:
+        raise TraceParseError("Codex checkpoint provider does not match the importer")
     if checkpoint.committed_raw_event_index < -1:
         raise TraceParseError("Codex committed raw-event index is invalid")
     if not 0 <= checkpoint.resume_raw_event_index <= checkpoint.committed_raw_event_index + 1:

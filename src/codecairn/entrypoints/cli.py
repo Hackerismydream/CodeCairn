@@ -30,7 +30,7 @@ def build_app(runtime_factory: RuntimeFactory) -> typer.Typer:
         repo_key: Annotated[str, typer.Option("--repo-key")],
         root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
     ) -> None:
-        """Import one Codex session and persist evidence-backed memories."""
+        """Import one supported agent session and persist evidence-backed memories."""
         result = runtime_factory(root).import_session(source, repo_key=repo_key)
         typer.echo(json.dumps(asdict(result), sort_keys=True))
 

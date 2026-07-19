@@ -6,6 +6,7 @@ from codecairn.bootstrap import create_runtime
 from codecairn.entrypoints.api import create_app
 
 FIXTURE = Path(__file__).parent / "fixtures" / "codex" / "failed_command.jsonl"
+CLAUDE_FIXTURE = Path(__file__).parent / "fixtures" / "claude" / "failed_command.jsonl"
 
 
 def test_http_import_and_list_share_the_runtime_contract(tmp_path: Path) -> None:
@@ -35,6 +36,24 @@ def test_http_import_and_list_share_the_runtime_contract(tmp_path: Path) -> None
     assert [item["raw_event_index"] for item in memories[0]["evidence"]] == [2, 3]
     assert "markdown_path" not in memories[0]
     assert "source_path" not in memories[0]["evidence"][0]
+
+
+def test_http_import_auto_detects_claude_code(tmp_path: Path) -> None:
+    client = TestClient(
+        create_app(
+            create_runtime(tmp_path / "runtime"),
+            source_roots=(CLAUDE_FIXTURE.parent,),
+        )
+    )
+
+    imported = client.post(
+        "/api/v1/import",
+        json={"source_path": str(CLAUDE_FIXTURE), "repo_key": "acme/widgets"},
+    )
+
+    assert imported.status_code == 200
+    assert imported.json()["provider"] == "claude"
+    assert imported.json()["created_memory_count"] == 1
 
 
 def test_http_import_rejects_source_outside_configured_roots(tmp_path: Path) -> None:

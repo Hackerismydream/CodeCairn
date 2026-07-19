@@ -64,6 +64,7 @@ class AgentTrace:
     raw_prefix_sha256: str
     raw_prefix_call_ids: tuple[str, ...]
     raw_prefix_file_change_fact_count: int
+    raw_suffix_event_sha256s: tuple[str, ...]
     events: tuple[TraceEvent, ...]
 
 
@@ -93,6 +94,7 @@ class CodingMemory:
 
 @dataclass(frozen=True, slots=True)
 class ImportCheckpoint:
+    provider: str
     session_id: str
     committed_raw_event_index: int
     resume_raw_event_index: int
