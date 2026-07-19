@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import hashlib
+import shlex
 import unicodedata
+from pathlib import PurePath
 
 from codecairn.memory.models import (
     CodingMemory,
     EvidenceFact,
+    EvidenceFactKind,
     EvidenceReference,
     GateDecision,
     GateDecisionReason,
@@ -51,6 +54,10 @@ class EvidenceGate:
             reason = _preference_rejection(proposal, resolved_facts)
         elif proposal.memory_type == "repository_convention":
             reason = _convention_rejection(resolved_facts)
+        elif proposal.memory_type == "verified_fix":
+            reason = _verified_fix_rejection(resolved_facts)
+        elif proposal.memory_type == "debug_episode":
+            reason = _debug_episode_rejection(resolved_facts)
         else:
             reason = "unsupported_memory_type"
         if reason is not None:
@@ -65,37 +72,157 @@ def collect_evidence_facts(
 ) -> tuple[EvidenceFact, ...]:
     """Derive exact user quotes and repeated observations from Task Episodes."""
     quote_facts: list[EvidenceFact] = []
+    episode_facts: list[EvidenceFact] = []
     by_text: dict[str, list[EvidenceFact]] = {}
     for episode in episodes:
+        calls = {
+            event.call_id: event
+            for event in episode.events
+            if event.kind == "tool_call" and event.call_id is not None
+        }
+        command_outcome_facts: list[EvidenceFact] = []
         for event in episode.events:
-            if event.kind != "message" or event.role != "user" or not event.text:
-                continue
-            fact = EvidenceFact(
-                fact_id=stable_id(
-                    "fact",
-                    repo_key,
-                    "user_quote",
-                    episode.episode_id,
-                    event.event_id,
-                    event.text,
-                ),
-                repo_key=repo_key,
-                episode_id=episode.episode_id,
-                kind="user_quote",
-                text=event.text,
-                role="user",
-                evidence=(event.evidence,),
+            if event.kind == "message" and event.role == "user" and event.text:
+                fact = EvidenceFact(
+                    fact_id=stable_id(
+                        "fact",
+                        repo_key,
+                        "user_quote",
+                        episode.episode_id,
+                        event.event_id,
+                        event.text,
+                    ),
+                    repo_key=repo_key,
+                    episode_id=episode.episode_id,
+                    kind="user_quote",
+                    text=event.text,
+                    role="user",
+                    evidence=(event.evidence,),
+                )
+                quote_facts.append(fact)
+                by_text.setdefault(event.text, []).append(fact)
+                if event.event_id == episode.opening_event_id:
+                    episode_facts.append(
+                        EvidenceFact(
+                            fact_id=stable_id(
+                                "fact",
+                                repo_key,
+                                "task_prompt",
+                                episode.episode_id,
+                                event.event_id,
+                                event.text,
+                            ),
+                            repo_key=repo_key,
+                            episode_id=episode.episode_id,
+                            kind="task_prompt",
+                            text=event.text,
+                            role="user",
+                            evidence=(event.evidence,),
+                        )
+                    )
+            if event.kind == "tool_call":
+                action_text = event.command or event.tool_name
+                if action_text:
+                    episode_facts.append(
+                        EvidenceFact(
+                            fact_id=stable_id(
+                                "fact",
+                                repo_key,
+                                "action",
+                                episode.episode_id,
+                                event.event_id,
+                                action_text,
+                            ),
+                            repo_key=repo_key,
+                            episode_id=episode.episode_id,
+                            kind="action",
+                            text=action_text,
+                            role=None,
+                            evidence=(event.evidence,),
+                        )
+                    )
+            for change in event.file_changes:
+                episode_facts.append(
+                    EvidenceFact(
+                        fact_id=stable_id(
+                            "fact",
+                            repo_key,
+                            "file_change",
+                            episode.episode_id,
+                            change.fact_id,
+                        ),
+                        repo_key=repo_key,
+                        episode_id=episode.episode_id,
+                        kind="file_change",
+                        text=f"{change.operation}:{change.path}",
+                        role=None,
+                        evidence=(change.evidence,),
+                        status="success",
+                    )
+                )
+            if (
+                event.kind == "tool_result"
+                and event.is_command_result
+                and event.command is not None
+                and event.exit_code is not None
+            ):
+                call = calls.get(event.call_id) if event.call_id is not None else None
+                command_evidence = (
+                    (call.evidence, event.evidence)
+                    if call is not None and call.command == event.command
+                    else (event.evidence,)
+                )
+                fact_kind: EvidenceFactKind = (
+                    "verification" if _is_verification_command(event.command) else "command_outcome"
+                )
+                command_outcome = EvidenceFact(
+                    fact_id=stable_id(
+                        "fact",
+                        repo_key,
+                        fact_kind,
+                        episode.episode_id,
+                        event.event_id,
+                        event.command,
+                        event.exit_code,
+                    ),
+                    repo_key=repo_key,
+                    episode_id=episode.episode_id,
+                    kind=fact_kind,
+                    text=event.command,
+                    role=None,
+                    evidence=command_evidence,
+                    status="success" if event.exit_code == 0 else "failed",
+                )
+                command_outcome_facts.append(command_outcome)
+                episode_facts.append(command_outcome)
+        if episode.outcome in {"success", "failed"} and command_outcome_facts:
+            episode_facts.append(
+                EvidenceFact(
+                    fact_id=stable_id(
+                        "fact",
+                        repo_key,
+                        "episode_outcome",
+                        episode.episode_id,
+                        episode.outcome,
+                        *(fact.fact_id for fact in command_outcome_facts),
+                    ),
+                    repo_key=repo_key,
+                    episode_id=episode.episode_id,
+                    kind="episode_outcome",
+                    text=episode.outcome,
+                    role=None,
+                    evidence=_unique_evidence(tuple(command_outcome_facts)),
+                    status=episode.outcome,
+                )
             )
-            quote_facts.append(fact)
-            by_text.setdefault(event.text, []).append(fact)
 
     repeated_facts: list[EvidenceFact] = []
     for text, matching in by_text.items():
         if len(matching) < 2:
             continue
         episode_ids = tuple(dict.fromkeys(fact.episode_id for fact in matching))
-        evidence = _unique_evidence(tuple(matching))
-        if len(evidence) < 2:
+        repeated_evidence = _unique_evidence(tuple(matching))
+        if len(repeated_evidence) < 2:
             continue
         repeated_facts.append(
             EvidenceFact(
@@ -111,10 +238,10 @@ def collect_evidence_facts(
                 kind="repeated_trace",
                 text=text,
                 role="user",
-                evidence=evidence,
+                evidence=repeated_evidence,
             )
         )
-    return (*quote_facts, *repeated_facts)
+    return (*quote_facts, *episode_facts, *repeated_facts)
 
 
 def collect_repository_rule_fact(
@@ -221,6 +348,146 @@ def _is_grounded_convention_fact(fact: EvidenceFact) -> bool:
         for evidence in fact.evidence
     }
     return len(locations) >= 2
+
+
+def _verified_fix_rejection(
+    facts: tuple[EvidenceFact, ...],
+) -> GateDecisionReason | None:
+    changes = tuple(fact for fact in facts if fact.kind == "file_change" and bool(fact.evidence))
+    if not changes:
+        return "verified_fix_requires_change"
+    verifications = tuple(
+        fact
+        for fact in facts
+        if fact.kind == "verification"
+        and fact.status == "success"
+        and bool(fact.evidence)
+        and _is_verification_command(fact.text)
+    )
+    if not verifications:
+        return "verified_fix_requires_successful_verification"
+    if not any(
+        change.episode_id == verification.episode_id
+        and _verification_started_after_change(change, verification)
+        for change in changes
+        for verification in verifications
+    ):
+        return "verification_must_follow_change"
+    return None
+
+
+def _has_later_evidence(change: EvidenceFact, verification: EvidenceFact) -> bool:
+    return any(
+        verified.provider == changed.provider
+        and verified.session_id == changed.session_id
+        and verified.source_path == changed.source_path
+        and verified.raw_event_index > changed.raw_event_index
+        for changed in change.evidence
+        for verified in verification.evidence
+    )
+
+
+def _verification_started_after_change(
+    change: EvidenceFact,
+    verification: EvidenceFact,
+) -> bool:
+    change_by_source: dict[tuple[str, str, str], list[int]] = {}
+    for evidence in change.evidence:
+        source = (evidence.provider, evidence.session_id, evidence.source_path)
+        change_by_source.setdefault(source, []).append(evidence.raw_event_index)
+    verification_by_source: dict[tuple[str, str, str], list[int]] = {}
+    for evidence in verification.evidence:
+        source = (evidence.provider, evidence.session_id, evidence.source_path)
+        verification_by_source.setdefault(source, []).append(evidence.raw_event_index)
+    return any(
+        min(verification_by_source[source]) > max(change_indices)
+        for source, change_indices in change_by_source.items()
+        if source in verification_by_source
+    )
+
+
+def _is_verification_command(command: str) -> bool:
+    try:
+        tokens = shlex.split(command)
+    except ValueError:
+        return False
+    if not tokens:
+        return False
+    if tokens[:2] == ["uv", "run"]:
+        tokens = tokens[2:]
+    if tokens[:3] == ["python", "-m", "pytest"] or tokens[:3] == [
+        "python3",
+        "-m",
+        "pytest",
+    ]:
+        return True
+    executable = PurePath(tokens[0]).name
+    if executable in {"pytest", "mypy", "tox", "nox"}:
+        return executable != "pytest" or not any(
+            token in {"--collect-only", "--fixtures", "--help", "--version"} for token in tokens[1:]
+        )
+    if executable == "ruff":
+        return len(tokens) > 1 and (
+            tokens[1] == "check" or (tokens[1] == "format" and "--check" in tokens[2:])
+        )
+    if executable == "make":
+        return any(
+            target in {"check", "ci", "integration", "lint", "test"} for target in tokens[1:]
+        )
+    if executable in {"npm", "pnpm", "yarn", "bun"}:
+        if len(tokens) > 1 and tokens[1] == "test":
+            return True
+        return (
+            len(tokens) > 2
+            and tokens[1] == "run"
+            and any(
+                marker in tokens[2].lower()
+                for marker in ("build", "check", "lint", "test", "typecheck")
+            )
+        )
+    if executable == "cargo":
+        return len(tokens) > 1 and tokens[1] in {"build", "check", "test"}
+    if executable == "go":
+        return len(tokens) > 1 and tokens[1] in {"build", "test", "vet"}
+    if executable in {"gradle", "gradlew"}:
+        return any(target in {"build", "check", "test"} for target in tokens[1:])
+    if executable in {"mvn", "mvnw"}:
+        return any(target in {"install", "package", "test", "verify"} for target in tokens[1:])
+    return False
+
+
+def _debug_episode_rejection(
+    facts: tuple[EvidenceFact, ...],
+) -> GateDecisionReason | None:
+    tasks = tuple(
+        fact
+        for fact in facts
+        if fact.kind == "task_prompt" and fact.role == "user" and bool(fact.evidence)
+    )
+    if not tasks:
+        return "debug_episode_requires_task_prompt"
+    actions = tuple(fact for fact in facts if fact.kind == "action" and bool(fact.evidence))
+    if not actions:
+        return "debug_episode_requires_action"
+    outcomes = tuple(
+        fact
+        for fact in facts
+        if fact.kind == "episode_outcome"
+        and fact.status in {"success", "failed"}
+        and bool(fact.evidence)
+    )
+    if not outcomes:
+        return "debug_episode_requires_observed_outcome"
+    if not any(
+        task.episode_id == action.episode_id == outcome.episode_id
+        and _has_later_evidence(task, action)
+        and _has_later_evidence(action, outcome)
+        for task in tasks
+        for action in actions
+        for outcome in outcomes
+    ):
+        return "debug_episode_facts_are_disconnected"
+    return None
 
 
 def _accept(proposal: MemoryProposal, facts: tuple[EvidenceFact, ...]) -> GateDecision:

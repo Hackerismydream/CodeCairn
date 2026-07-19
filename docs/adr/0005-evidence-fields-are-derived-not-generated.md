@@ -19,3 +19,15 @@ payload. Proposal output has a closed schema and may author title, summary,
 quote, role claim, and fact references only. Gate audit rows retain the full
 proposal fields, proposed and resolved fact identifiers, the decision reason,
 and an accepted memory identifier when one exists.
+
+Verified Fix requires file-change evidence and a later successful verification
+fact in the same episode and source chronology. Only deterministically
+recognized test, lint, type-check, and build commands qualify; an unrelated
+successful shell command does not. Debug Episode requires an ordered
+user-authored task prompt, tool action, and observed non-unknown outcome from
+one episode. Proposal confidence is retained for analysis but never weakens a
+gate requirement.
+
+Human-label export is deterministic, byte-bounded JSONL. It includes accepted
+and rejected candidates, gate reasons, proposal confidence, and Fact
+identifiers after redaction, but omits raw trace locators and evidence content.
