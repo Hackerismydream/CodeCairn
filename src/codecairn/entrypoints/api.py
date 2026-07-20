@@ -47,6 +47,7 @@ class EvaluationRequest(BaseModel):
     judge_model: str | None = Field(default=None, min_length=1, max_length=128)
     max_workers: int = Field(default=1, ge=1, le=16)
     resume: bool = False
+    question_set_path: Path | None = None
 
 
 class _ApiError(Exception):
@@ -216,6 +217,17 @@ def create_app(
                 code="source_path_forbidden",
                 message="Evaluation input is outside configured roots",
             )
+        question_set_path: Path | None = None
+        if request.question_set_path is not None:
+            question_set_path = Path(os.path.abspath(request.question_set_path)).resolve(
+                strict=True
+            )
+            if _allowed_source_root(question_set_path, allowed_roots=allowed_roots) is None:
+                raise _ApiError(
+                    status_code=403,
+                    code="source_path_forbidden",
+                    message="Evaluation question set is outside configured roots",
+                )
         if not _SAFE_ID.fullmatch(request.run_id):
             raise _ApiError(
                 status_code=422,
@@ -243,6 +255,7 @@ def create_app(
                 judge_model=request.judge_model,
                 max_workers=request.max_workers,
                 resume=request.resume,
+                question_set_path=question_set_path,
             )
         )
 

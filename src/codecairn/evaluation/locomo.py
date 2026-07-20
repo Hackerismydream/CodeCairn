@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from collections import Counter
 from collections.abc import Callable
@@ -85,6 +86,32 @@ class LoCoMoDataset:
 
 
 @dataclass(frozen=True, slots=True)
+class LoCoMoQuestionSet:
+    selection_id: str
+    definition_sha256: str
+    dataset_sha256: str
+    algorithm: str
+    seed: str
+    category_targets: tuple[tuple[int, int], ...]
+    question_ids: tuple[str, ...]
+    selection_sha256: str
+
+    @property
+    def public_manifest(self) -> dict[str, object]:
+        return {
+            "selection_id": self.selection_id,
+            "definition_sha256": self.definition_sha256,
+            "dataset_sha256": self.dataset_sha256,
+            "algorithm": self.algorithm,
+            "seed": self.seed,
+            "category_targets": {str(category): count for category, count in self.category_targets},
+            "question_count": len(self.question_ids),
+            "question_ids": list(self.question_ids),
+            "selection_sha256": self.selection_sha256,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class ConversationIngestResult:
     session_count: int
     turn_count: int
@@ -121,6 +148,7 @@ class LoCoMoRunConfig:
     resume: bool = False
     expected_dataset_sha256: str | None = LOCOMO_DATASET_SHA256
     retrieval_config: dict[str, object] | None = None
+    question_set_path: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -230,6 +258,72 @@ def load_locomo_dataset(path: Path) -> LoCoMoDataset:
     )
 
 
+def load_locomo_question_set(path: Path, *, dataset: LoCoMoDataset) -> LoCoMoQuestionSet:
+    """Resolve a small frozen diagnostic set without redistributing benchmark text."""
+    raw = _required_dict(read_json(path), field="LoCoMo question set")
+    if raw.get("schema_version") != 1:
+        raise ValueError("LoCoMo question set schema version must be 1")
+    selection_id = _required_str(raw, "selection_id")
+    if _SAFE_ID.fullmatch(selection_id) is None:
+        raise ValueError("LoCoMo question-set ID must be a safe path segment")
+    dataset_sha256 = _required_str(raw, "dataset_sha256")
+    if dataset_sha256 != dataset.sha256:
+        raise ValueError("LoCoMo question set targets a different dataset")
+    algorithm = _required_str(raw, "algorithm")
+    if algorithm != "stratified-sha256-v1":
+        raise ValueError("Unknown LoCoMo question-set algorithm")
+    seed = _required_str(raw, "seed")
+    raw_targets = _required_dict(raw.get("category_targets"), field="category targets")
+    targets: list[tuple[int, int]] = []
+    for raw_category, raw_count in raw_targets.items():
+        try:
+            category = int(raw_category)
+        except ValueError as error:
+            raise ValueError("LoCoMo category target key must be an integer") from error
+        if category not in CATEGORY_NAMES or type(raw_count) is not int or raw_count < 1:
+            raise ValueError("LoCoMo category targets must be positive known categories")
+        targets.append((category, raw_count))
+    if not targets:
+        raise ValueError("LoCoMo question set must select at least one category")
+    questions = [
+        question for conversation in dataset.conversations for question in conversation.questions
+    ]
+    selected_ids: set[str] = set()
+    for category, target in sorted(targets):
+        candidates = [question for question in questions if question.category == category]
+        if len(candidates) < target:
+            raise ValueError("LoCoMo category target exceeds available questions")
+        candidates.sort(
+            key=lambda question: (
+                hashlib.sha256(f"{seed}\0{question.question_id}".encode()).hexdigest(),
+                question.question_id,
+            )
+        )
+        selected_ids.update(question.question_id for question in candidates[:target])
+    question_ids = tuple(
+        question.question_id for question in questions if question.question_id in selected_ids
+    )
+    selection_sha256 = hashlib.sha256(
+        json.dumps(
+            sorted(question_ids),
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    if _required_str(raw, "selection_sha256") != selection_sha256:
+        raise ValueError("LoCoMo question-set digest does not match its deterministic selection")
+    return LoCoMoQuestionSet(
+        selection_id=selection_id,
+        definition_sha256=file_sha256(path),
+        dataset_sha256=dataset_sha256,
+        algorithm=algorithm,
+        seed=seed,
+        category_targets=tuple(sorted(targets)),
+        question_ids=question_ids,
+        selection_sha256=selection_sha256,
+    )
+
+
 def run_locomo(
     config: LoCoMoRunConfig,
     *,
@@ -244,7 +338,24 @@ def run_locomo(
         and dataset.sha256 != config.expected_dataset_sha256
     ):
         raise ValueError("LoCoMo dataset digest does not match the run manifest")
+    question_set = (
+        None
+        if config.question_set_path is None
+        else load_locomo_question_set(config.question_set_path, dataset=dataset)
+    )
+    selected_question_ids = None if question_set is None else set(question_set.question_ids)
     selected = _select_conversations(dataset, config.conversation_ids)
+    eligible_question_ids = {
+        question.question_id
+        for conversation in selected
+        for question in conversation.questions
+        if question.category in config.categories
+        and (selected_question_ids is None or question.question_id in selected_question_ids)
+    }
+    if question_set is not None and eligible_question_ids != set(question_set.question_ids):
+        raise ValueError(
+            "LoCoMo conversation or category filters exclude part of the frozen question set"
+        )
     output_root = config.output_root.resolve()
     run_dir = (output_root / config.run_id).resolve()
     if not run_dir.is_relative_to(output_root):
@@ -254,6 +365,7 @@ def run_locomo(
         for conversation in selected
         for question in conversation.questions
         if question.category in config.categories
+        and (selected_question_ids is None or question.question_id in selected_question_ids)
     )
     dataset_category_counts = Counter(
         question.category
@@ -290,6 +402,7 @@ def run_locomo(
             "conversation_ids": [item.sample_id for item in selected],
             "categories": list(config.categories),
             "question_counts": {str(key): value for key, value in sorted(question_counts.items())},
+            "question_set": None if question_set is None else question_set.public_manifest,
         },
         "retrieval": {
             **(config.retrieval_config or {"method": "hybrid-rrf"}),
@@ -340,6 +453,7 @@ def run_locomo(
                     memory_factory=memory_factory,
                     answer_model=answer_model,
                     judge_model=judge_model,
+                    selected_question_ids=selected_question_ids,
                 ),
                 work,
             )
@@ -360,6 +474,7 @@ def _run_conversation(
     memory_factory: MemoryFactory,
     answer_model: TextModel,
     judge_model: TextModel | None,
+    selected_question_ids: set[str] | None,
 ) -> None:
     memory_root = run_dir / "runtime" / conversation.sample_id
     ingest_path = run_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
@@ -380,7 +495,10 @@ def _run_conversation(
             },
         )
     selected_questions = [
-        question for question in conversation.questions if question.category in config.categories
+        question
+        for question in conversation.questions
+        if question.category in config.categories
+        and (selected_question_ids is None or question.question_id in selected_question_ids)
     ]
     if config.mode == "smoke":
         selected_questions = selected_questions[:1]
@@ -425,6 +543,11 @@ def _manifest_signature(manifest: dict[str, object]) -> dict[str, object]:
 def report_locomo(run_dir: Path) -> dict[str, object]:
     manifest = _required_dict(read_json(run_dir / "manifest.json"), field="run manifest")
     retrieval_contract = _report_retrieval_contract(manifest)
+    raw_selection = manifest.get("selection")
+    diagnostic_question_set = (
+        raw_selection.get("question_set") if isinstance(raw_selection, dict) else None
+    )
+    collect_retrieval_diagnostics = isinstance(diagnostic_question_set, dict)
     mode = _required_str(manifest, "mode")
     expected_votes = _required_int(manifest, "judge_votes")
     expected_retry_attempts = 0
@@ -455,8 +578,35 @@ def report_locomo(run_dir: Path) -> dict[str, object]:
     infrastructure_failed = 0
     completed_questions = 0
     categories: dict[int, list[bool]] = {}
+    retrieval_latencies: list[float] = []
+    route_counts: Counter[str] = Counter()
+    candidate_totals: Counter[str] = Counter()
     for record in records:
         _validate_report_retrieval(record, contract=retrieval_contract)
+        if collect_retrieval_diagnostics and isinstance(record.get("retrieval"), dict):
+            retrieval = cast(dict[str, object], record["retrieval"])
+            latency_ms = retrieval.get("latency_ms")
+            route = retrieval.get("recall_route")
+            if (
+                not isinstance(latency_ms, int | float)
+                or not math.isfinite(latency_ms)
+                or latency_ms < 0
+                or route not in {"episode_first", "fact_first"}
+            ):
+                raise ValueError("Diagnostic retrieval sidecar has invalid latency or route")
+            retrieval_latencies.append(float(latency_ms))
+            route_counts[str(route)] += 1
+            for field in (
+                "episode_vector_candidate_count",
+                "episode_lexical_candidate_count",
+                "atomic_fact_vector_candidate_count",
+                "atomic_fact_lexical_candidate_count",
+                "neighbor_expansion_count",
+            ):
+                value = retrieval.get(field)
+                if type(value) is not int or value < 0:
+                    raise ValueError("Diagnostic retrieval sidecar has invalid candidate counts")
+                candidate_totals[field] += value
         for response_key in ("answer",):
             response = record.get(response_key)
             if isinstance(response, dict):
@@ -580,7 +730,30 @@ def report_locomo(run_dir: Path) -> dict[str, object]:
     }
     if mode == "full":
         report["judge_votes"] = expected_votes
+    if collect_retrieval_diagnostics:
+        if len(retrieval_latencies) != len(records):
+            raise ValueError("Diagnostic run is missing retrieval sidecars")
+        report["retrieval_diagnostics"] = {
+            "latency_ms": {
+                "p50": _nearest_rank(retrieval_latencies, percentile=0.50),
+                "p95": _nearest_rank(retrieval_latencies, percentile=0.95),
+                "max": round(max(retrieval_latencies), 3) if retrieval_latencies else None,
+            },
+            "route_counts": dict(sorted(route_counts.items())),
+            "average_counts": {
+                field: round(total / len(records), 3) if records else None
+                for field, total in sorted(candidate_totals.items())
+            },
+        }
     return report
+
+
+def _nearest_rank(values: list[float], *, percentile: float) -> float | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    index = max(0, math.ceil(percentile * len(ordered)) - 1)
+    return round(ordered[index], 3)
 
 
 def _valid_judge_vote_retry_metadata(

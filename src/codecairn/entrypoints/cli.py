@@ -14,6 +14,7 @@ from codecairn.service.application import (
     EvaluationRunRequest,
     EvaluationSuite,
     EvidenceBundleBuildRequest,
+    LoCoMoAblationRequest,
 )
 
 ApplicationFactory = Callable[[Path], CodeCairnApplication]
@@ -86,6 +87,10 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         judge_model: Annotated[str | None, typer.Option("--judge-model")] = None,
         max_workers: Annotated[int, typer.Option("--max-workers", min=1)] = 1,
         resume: Annotated[bool, typer.Option("--resume")] = False,
+        question_set: Annotated[
+            Path | None,
+            typer.Option("--question-set", exists=True, dir_okay=False, readable=True),
+        ] = None,
     ) -> None:
         """Execute one immutable evaluation suite run."""
         if mode not in {"full", "smoke"}:
@@ -102,6 +107,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 judge_model=judge_model,
                 max_workers=max_workers,
                 resume=resume,
+                question_set_path=question_set,
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))
@@ -120,6 +126,37 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
             EvaluationReportRequest(
                 suite=_evaluation_suite(suite),
                 run_dir=run_dir,
+            )
+        )
+        typer.echo(json.dumps(result, sort_keys=True))
+
+    @evaluation_app.command("compare-locomo")
+    def compare_locomo_command(
+        question_set: Annotated[
+            Path,
+            typer.Argument(exists=True, dir_okay=False, readable=True),
+        ],
+        episode_only_run: Annotated[
+            Path, typer.Option("--episode-only-run", exists=True, file_okay=False)
+        ],
+        hierarchy_no_neighbors_run: Annotated[
+            Path,
+            typer.Option("--hierarchy-no-neighbors-run", exists=True, file_okay=False),
+        ],
+        hierarchy_run: Annotated[
+            Path, typer.Option("--hierarchy-run", exists=True, file_okay=False)
+        ],
+        output: Annotated[Path, typer.Option("--output")],
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+    ) -> None:
+        """Compare the frozen three-layer LoCoMo diagnostic and evaluate its gate."""
+        result = application_factory(root).build_locomo_ablation_report(
+            LoCoMoAblationRequest(
+                question_set_path=question_set,
+                episode_only_run=episode_only_run,
+                hierarchy_no_neighbors_run=hierarchy_no_neighbors_run,
+                hierarchy_run=hierarchy_run,
+                output_path=output,
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))

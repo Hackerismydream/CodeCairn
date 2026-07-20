@@ -4,7 +4,7 @@ import hashlib
 import json
 import shutil
 import threading
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 import pytest
@@ -17,8 +17,13 @@ from codecairn.evaluation.locomo import (
     LoCoMoConversation,
     LoCoMoRunConfig,
     load_locomo_dataset,
+    load_locomo_question_set,
     report_locomo,
     run_locomo,
+)
+from codecairn.evaluation.locomo_ablation import (
+    LoCoMoAblationConfig,
+    build_locomo_ablation_report,
 )
 from codecairn.evaluation.model import ModelResponse
 from codecairn.memory.models import RecallResult, RecallSidecar
@@ -379,6 +384,187 @@ def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
     question_files[0].write_text(json.dumps(tampered), encoding="utf-8")
     with pytest.raises(ValueError, match="configuration hash"):
         report_locomo(artifact.run_dir)
+
+
+def test_frozen_question_set_selects_exact_strata_and_reports_retrieval_diagnostics(
+    tmp_path: Path,
+) -> None:
+    dataset = load_locomo_dataset(FIXTURE)
+    selected = tuple(
+        question.question_id
+        for conversation in dataset.conversations
+        for question in conversation.questions
+        if question.category in {1, 4}
+    )
+    selection_sha256 = hashlib.sha256(
+        json.dumps(sorted(selected), separators=(",", ":")).encode()
+    ).hexdigest()
+    question_set_path = tmp_path / "diagnostic.json"
+    write_json_exclusive(
+        question_set_path,
+        {
+            "schema_version": 1,
+            "selection_id": "synthetic-diagnostic",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-v1",
+            "seed": "selection-seed",
+            "category_targets": {"1": 1, "4": 1},
+            "selection_sha256": selection_sha256,
+        },
+    )
+
+    question_set = load_locomo_question_set(question_set_path, dataset=dataset)
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-diagnostic",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+            question_set_path=question_set_path,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+
+    assert question_set.question_ids == selected
+    assert artifact.summary["question_artifact_count"] == 2
+    assert artifact.summary["retrieval_diagnostics"] == {
+        "latency_ms": {"p50": 1.25, "p95": 1.25, "max": 1.25},
+        "route_counts": {"episode_first": 2},
+        "average_counts": {
+            "atomic_fact_lexical_candidate_count": 0.0,
+            "atomic_fact_vector_candidate_count": 0.0,
+            "episode_lexical_candidate_count": 0.0,
+            "episode_vector_candidate_count": 0.0,
+            "neighbor_expansion_count": 0.0,
+        },
+    }
+    manifest = json.loads((artifact.run_dir / "manifest.json").read_text())
+    assert manifest["selection"]["question_set"]["question_count"] == 2
+    assert manifest["selection"]["question_set"]["question_ids"] == list(selected)
+
+
+def test_frozen_question_set_fails_closed_on_selection_drift(tmp_path: Path) -> None:
+    dataset = load_locomo_dataset(FIXTURE)
+    path = tmp_path / "drifted.json"
+    write_json_exclusive(
+        path,
+        {
+            "schema_version": 1,
+            "selection_id": "drifted-diagnostic",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-v1",
+            "seed": "selection-seed",
+            "category_targets": {"1": 1},
+            "selection_sha256": "0" * 64,
+        },
+    )
+
+    with pytest.raises(ValueError, match="digest"):
+        load_locomo_question_set(path, dataset=dataset)
+
+
+def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: Path) -> None:
+    dataset = load_locomo_dataset(FIXTURE)
+    selected = tuple(
+        question.question_id
+        for conversation in dataset.conversations
+        for question in conversation.questions
+        if question.category in {1, 4}
+    )
+    selection_sha256 = hashlib.sha256(
+        json.dumps(sorted(selected), separators=(",", ":")).encode()
+    ).hexdigest()
+    definition_path = tmp_path / "ablation.json"
+    write_json_exclusive(
+        definition_path,
+        {
+            "schema_version": 1,
+            "selection_id": "synthetic-ablation",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-v1",
+            "seed": "selection-seed",
+            "category_targets": {"1": 1, "4": 1},
+            "selection_sha256": selection_sha256,
+            "variants": [
+                {"id": "episode-only", "recall_mode": "episode-only"},
+                {
+                    "id": "hierarchy-no-neighbors",
+                    "recall_mode": "hierarchy-no-neighbors",
+                },
+                {"id": "hierarchy", "recall_mode": "hierarchy"},
+            ],
+            "protocol": {
+                "answer_model": "fake-answer",
+                "judge_model": "fake-judge",
+                "judge_votes": 3,
+                "top_k": 20,
+                "max_workers": 1,
+            },
+            "gates": {
+                "required_scored_questions_per_variant": 2,
+                "maximum_infrastructure_failures": 0,
+                "hierarchy_vs_episode_minimum_accuracy_delta_points": 0.0,
+                "hierarchy_vs_no_neighbors_minimum_accuracy_delta_points": 0.0,
+                "hierarchy_maximum_retrieval_p95_ms": 2.0,
+            },
+        },
+    )
+    run_paths: dict[str, Path] = {}
+    for mode in ("episode-only", "hierarchy-no-neighbors", "hierarchy"):
+        retrieval_config = {
+            **FAKE_RETRIEVAL_CONFIG,
+            "planner": {"mode": mode},
+        }
+
+        class ConfiguredMemory(FakeMemory):
+            config_sha256 = retrieval_config_sha256(retrieval_config)
+
+            def recall(self, question: str, *, limit: int) -> RecallResult:
+                result = super().recall(question, limit=limit)
+                return replace(
+                    result,
+                    sidecar=replace(
+                        result.sidecar,
+                        retrieval_config_sha256=self.config_sha256,
+                    ),
+                )
+
+        artifact = run_locomo(
+            LoCoMoRunConfig(
+                dataset_path=FIXTURE,
+                output_root=tmp_path / "runs",
+                run_id=f"diagnostic-{mode}",
+                repository_commit="abc123",
+                expected_dataset_sha256=None,
+                retrieval_config=retrieval_config,
+                question_set_path=definition_path,
+            ),
+            memory_factory=ConfiguredMemory,
+            answer_model=FakeAnswerModel(),
+            judge_model=AlternatingJudgeModel(),
+        )
+        run_paths[mode] = artifact.run_dir
+
+    report = build_locomo_ablation_report(
+        LoCoMoAblationConfig(
+            question_set_path=definition_path,
+            episode_only_run=run_paths["episode-only"],
+            hierarchy_no_neighbors_run=run_paths["hierarchy-no-neighbors"],
+            hierarchy_run=run_paths["hierarchy"],
+            output_path=tmp_path / "ablation-report.json",
+        )
+    )
+
+    assert report["gate_passed"] is True
+    assert report["accuracy_delta_points"] == {
+        "hierarchy_vs_episode_only": 0.0,
+        "hierarchy_vs_hierarchy_no_neighbors": 0.0,
+    }
+    assert (tmp_path / "ablation-report.json").is_file()
 
 
 def test_locomo_marks_retrieval_identity_mismatch_as_infrastructure_failure(

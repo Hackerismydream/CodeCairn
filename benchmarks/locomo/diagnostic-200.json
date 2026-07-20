@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "selection_id": "locomo-diagnostic-200-v1",
+  "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "algorithm": "stratified-sha256-v1",
+  "seed": "codecairn-locomo-diagnostic-200-v1",
+  "category_targets": {
+    "1": 50,
+    "2": 50,
+    "3": 50,
+    "4": 50
+  },
+  "selection_sha256": "d46528af81467f0379e4d9456cbad99bf57a7237bc491690a6c5732ef51de579",
+  "variants": [
+    {
+      "id": "episode-only",
+      "recall_mode": "episode-only"
+    },
+    {
+      "id": "hierarchy-no-neighbors",
+      "recall_mode": "hierarchy-no-neighbors"
+    },
+    {
+      "id": "hierarchy",
+      "recall_mode": "hierarchy"
+    }
+  ],
+  "protocol": {
+    "answer_model": "deepseek-v4-pro",
+    "judge_model": "deepseek-v4-pro",
+    "judge_votes": 3,
+    "top_k": 20,
+    "max_workers": 10
+  },
+  "gates": {
+    "required_scored_questions_per_variant": 200,
+    "maximum_infrastructure_failures": 0,
+    "hierarchy_vs_episode_minimum_accuracy_delta_points": 2.0,
+    "hierarchy_vs_no_neighbors_minimum_accuracy_delta_points": -1.0,
+    "hierarchy_maximum_retrieval_p95_ms": 2500.0
+  }
+}

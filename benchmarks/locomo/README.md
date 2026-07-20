@@ -59,6 +59,54 @@ never overwritten, and any configuration drift from the original manifest is
 rejected. A completed run is publishable only when all 1,540 selected questions
 are scored, each has three valid votes, and infrastructure failures are zero.
 
+## Frozen 200-question diagnostic
+
+Before a new retrieval stack may spend a full 1,540-question run, execute the
+three-layer ablation frozen in `diagnostic-200.json`. The selector takes 50
+questions from each scored category with a dataset-pinned SHA-256 ordering; its
+expected selection digest prevents a seed, loader, or question-identity change
+from silently moving the diagnostic set. Question text is not redistributed.
+
+Run the same commit, answer model, judge model, vote count, and top-k under the
+three declared recall modes. Each command must include:
+
+```bash
+--question-set benchmarks/locomo/diagnostic-200.json
+```
+
+The reproducible launch sequence is:
+
+```bash
+COMMIT="$(git rev-parse HEAD)"
+for MODE in episode-only hierarchy-no-neighbors hierarchy; do
+  CODECAIRN_RECALL_MODE="$MODE" uv run codecairn eval run locomo \
+    benchmarks/locomo/data/locomo10.json \
+    --question-set benchmarks/locomo/diagnostic-200.json \
+    --run-id "locomo-diagnostic-200-v1-$MODE" \
+    --repository-commit "$COMMIT" \
+    --output-root benchmark_results \
+    --root "benchmark_results/runtime-$MODE" \
+    --mode full \
+    --model deepseek-v4-pro \
+    --judge-model deepseek-v4-pro \
+    --max-workers 10
+done
+
+uv run codecairn eval compare-locomo \
+  benchmarks/locomo/diagnostic-200.json \
+  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v1-episode-only \
+  --hierarchy-no-neighbors-run \
+    benchmark_results/locomo/locomo-diagnostic-200-v1-hierarchy-no-neighbors \
+  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v1-hierarchy \
+  --output benchmark_results/locomo/locomo-diagnostic-200-v1-report.json
+```
+
+The comparison gate requires 200 scored questions and zero infrastructure
+failures per variant. Full hierarchy must improve at least 2.0 accuracy points
+over Episode-only recall, may regress by at most 1.0 point against hierarchy
+without neighbors, and must keep retrieval P95 at or below 2,500 ms. A failed
+gate is a diagnostic result, not permission to launch the full run.
+
 DeepSeek model capabilities and pricing are sourced from the
 [official model and pricing page](https://api-docs.deepseek.com/quick_start/pricing/);
 request fields and usage breakdowns follow the

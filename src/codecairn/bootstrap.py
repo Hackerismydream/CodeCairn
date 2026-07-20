@@ -37,6 +37,7 @@ from codecairn.service.application import (
     EvaluationReportRequest,
     EvaluationRunRequest,
     EvidenceBundleBuildRequest,
+    LoCoMoAblationRequest,
 )
 from codecairn.service.cascade import MemoryIndex, MiniCascade
 from codecairn.service.recall import RecallEngine
@@ -341,6 +342,8 @@ class _LocalOperations(ApplicationOperations):
 
     def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]:
         output_root = request.output_root.resolve() / request.suite
+        if request.question_set_path is not None and request.suite != "locomo":
+            raise ValueError("Question sets are supported only by LoCoMo evaluation")
         if request.suite == "retrieval":
             from codecairn.evaluation.retrieval import (
                 RetrievalRunConfig,
@@ -433,6 +436,22 @@ class _LocalOperations(ApplicationOperations):
 
         return verify_evidence_bundle(bundle_dir)
 
+    def build_locomo_ablation_report(self, request: LoCoMoAblationRequest) -> dict[str, object]:
+        from codecairn.evaluation.locomo_ablation import (
+            LoCoMoAblationConfig,
+            build_locomo_ablation_report,
+        )
+
+        return build_locomo_ablation_report(
+            LoCoMoAblationConfig(
+                question_set_path=request.question_set_path,
+                episode_only_run=request.episode_only_run,
+                hierarchy_no_neighbors_run=request.hierarchy_no_neighbors_run,
+                hierarchy_run=request.hierarchy_run,
+                output_path=request.output_path,
+            )
+        )
+
     def _run_locomo(
         self,
         request: EvaluationRunRequest,
@@ -478,6 +497,7 @@ class _LocalOperations(ApplicationOperations):
                 max_workers=request.max_workers,
                 resume=request.resume,
                 retrieval_config=self._retrieval.public_config,
+                question_set_path=request.question_set_path,
             ),
             memory_factory=memory_factory,
             answer_model=answer_model,
