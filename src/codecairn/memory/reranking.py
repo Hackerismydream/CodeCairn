@@ -5,7 +5,11 @@ from collections.abc import Iterable
 from threading import Lock
 from typing import Protocol, cast
 
-from codecairn.memory.model_artifact import download_hf_snapshot, validate_hf_artifact
+from codecairn.memory.model_artifact import (
+    FASTEMBED_INFERENCE_THREADS,
+    download_hf_snapshot,
+    validate_hf_artifact,
+)
 from codecairn.memory.models import RerankDocument, RerankScore
 
 DEFAULT_RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"
@@ -142,6 +146,7 @@ def _load_fastembed_reranker(
             model_name=model_id,
             cache_dir=cache_dir,
             specific_model_path=snapshot,
+            threads=FASTEMBED_INFERENCE_THREADS,
             lazy_load=False,
         ),
     )

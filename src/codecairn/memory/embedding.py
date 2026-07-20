@@ -9,6 +9,7 @@ from threading import Lock
 from typing import Protocol, cast
 
 from codecairn.memory.model_artifact import (
+    FASTEMBED_INFERENCE_THREADS,
     download_hf_snapshot,
     fastembed_version,
     validate_hf_artifact,
@@ -186,6 +187,7 @@ def _load_fastembed_model(
             model_name=model_id,
             cache_dir=cache_dir,
             specific_model_path=snapshot,
+            threads=FASTEMBED_INFERENCE_THREADS,
             lazy_load=False,
         ),
     )

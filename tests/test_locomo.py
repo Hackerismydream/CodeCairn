@@ -33,6 +33,7 @@ from codecairn.memory.retrieval import retrieval_config_sha256
 FIXTURE = Path(__file__).parent / "fixtures" / "locomo" / "synthetic.json"
 FAKE_RETRIEVAL_CONFIG: dict[str, object] = {
     "method": "hybrid-rrf-cross-encoder",
+    "inference_threads": 1,
     "embedding": {
         "model": "test/embedding",
         "source": "test/embedding-source",
@@ -535,6 +536,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,
+                "inference_threads": 1,
                 "max_workers": 1,
                 "ingest_max_workers": 1,
             },

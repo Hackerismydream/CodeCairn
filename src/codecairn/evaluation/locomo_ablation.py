@@ -177,7 +177,7 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
                 raise ValueError(f"{variant} changes the frozen LoCoMo protocol field: {field}")
         retrieval = _dict(manifest.get("retrieval"), field=f"{variant} retrieval")
         reference_retrieval = _dict(reference.get("retrieval"), field="hierarchy retrieval")
-        for field in ("embedding", "reranker", "top_k"):
+        for field in ("embedding", "reranker", "inference_threads", "top_k"):
             if retrieval.get(field) != reference_retrieval.get(field):
                 raise ValueError(f"{variant} changes the frozen retrieval field: {field}")
 
@@ -195,6 +195,7 @@ def _validate_definition_protocol(
         "judge_model": judge.get("model"),
         "judge_votes": manifest.get("judge_votes"),
         "top_k": retrieval.get("top_k"),
+        "inference_threads": retrieval.get("inference_threads"),
         "max_workers": manifest.get("max_workers"),
         "ingest_max_workers": manifest.get("ingest_max_workers"),
     }

@@ -90,7 +90,9 @@ adapter over the evaluation interface.
 
 LoCoMo runs in two bounded phases. Conversation ingestion and index rebuilding
 are serialized because each rebuild materializes Arrow and LanceDB batches and
-is the memory-bound stage. Once all ingest checkpoints exist, questions run in
+is the memory-bound stage. FastEmbed ONNX sessions use one inference thread to
+bound per-process model memory, and this setting is part of the retrieval
+manifest. Once all ingest checkpoints exist, questions run in
 parallel across isolated conversation roots up to the manifest-recorded
 `max_workers`; retrieval, answer generation, and repeated judge calls within
 one conversation retain deterministic order. The manifest records

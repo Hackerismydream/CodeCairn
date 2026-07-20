@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from codecairn.memory.embedding import EmbeddingProvider
-from codecairn.memory.model_artifact import fastembed_version
+from codecairn.memory.model_artifact import FASTEMBED_INFERENCE_THREADS, fastembed_version
 from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.memory.reranking import RerankingProvider
 
@@ -52,6 +52,7 @@ class RetrievalProviders:
             }
         return {
             "method": "hybrid-rrf-cross-encoder",
+            "inference_threads": FASTEMBED_INFERENCE_THREADS,
             "embedding": {
                 "adapter": "fastembed",
                 "adapter_version": fastembed_version(),

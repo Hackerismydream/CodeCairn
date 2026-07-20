@@ -30,6 +30,7 @@
     "judge_model": "deepseek-v4-flash",
     "judge_votes": 3,
     "top_k": 20,
+    "inference_threads": 1,
     "max_workers": 10,
     "ingest_max_workers": 1
   },

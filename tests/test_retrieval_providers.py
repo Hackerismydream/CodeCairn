@@ -90,6 +90,7 @@ def test_production_retrieval_profile_uses_learned_models_without_loading_them()
 
     assert providers.public_config == {
         "method": "hybrid-rrf-cross-encoder",
+        "inference_threads": 1,
         "embedding": {
             "adapter": "fastembed",
             "adapter_version": fastembed_version(),
@@ -231,6 +232,7 @@ def test_fastembed_loaders_use_resolved_snapshot_paths_and_eager_inner_loading(
                 "model_name": "test/embedding",
                 "cache_dir": "/models",
                 "specific_model_path": "/snapshots/" + "a" * 40,
+                "threads": 1,
                 "lazy_load": False,
             },
         ),
@@ -240,6 +242,7 @@ def test_fastembed_loaders_use_resolved_snapshot_paths_and_eager_inner_loading(
                 "model_name": "test/reranker",
                 "cache_dir": "/models",
                 "specific_model_path": "/snapshots/" + "b" * 40,
+                "threads": 1,
                 "lazy_load": False,
             },
         ),

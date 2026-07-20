@@ -70,7 +70,9 @@ Initial conversation ingestion uses the same Markdown truth and rebuild parity
 contract as production recovery, but projects all Episode and AtomicFact
 documents in embedding batches instead of issuing one ONNX call per memory.
 Ingestion and index rebuilding are serialized to bound Arrow/LanceDB peak
-memory. After all ten ingest checkpoints exist, question answering remains
+memory. FastEmbed ONNX sessions use one manifest-recorded inference thread,
+which avoids per-process thread-pool arenas dominating the 16 GB reference
+machine. After all ten ingest checkpoints exist, question answering remains
 parallel across conversations at `--max-workers`; the manifest records both
 the requested question concurrency and `ingest_max_workers = 1`.
 
@@ -89,7 +91,7 @@ for MODE in episode-only hierarchy-no-neighbors hierarchy; do
   CODECAIRN_RECALL_MODE="$MODE" uv run codecairn eval run locomo \
     benchmarks/locomo/data/locomo10.json \
     --question-set benchmarks/locomo/diagnostic-200.json \
-    --run-id "locomo-diagnostic-200-v2-$MODE" \
+    --run-id "locomo-diagnostic-200-v3-$MODE" \
     --repository-commit "$COMMIT" \
     --output-root benchmark_results \
     --root "benchmark_results/runtime-$MODE" \
@@ -101,11 +103,11 @@ done
 
 uv run codecairn eval compare-locomo \
   benchmarks/locomo/diagnostic-200.json \
-  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v2-episode-only \
+  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v3-episode-only \
   --hierarchy-no-neighbors-run \
-    benchmark_results/locomo/locomo-diagnostic-200-v2-hierarchy-no-neighbors \
-  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v2-hierarchy \
-  --output benchmark_results/locomo/locomo-diagnostic-200-v2-report.json
+    benchmark_results/locomo/locomo-diagnostic-200-v3-hierarchy-no-neighbors \
+  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v3-hierarchy \
+  --output benchmark_results/locomo/locomo-diagnostic-200-v3-report.json
 ```
 
 The comparison gate requires 200 scored questions and zero infrastructure
