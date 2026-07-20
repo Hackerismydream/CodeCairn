@@ -88,14 +88,19 @@ Each run has an isolated workspace and immutable manifest. LoCoMo is a benchmark
 adapter over the memory interface; coding-task A/B is a separate agent execution
 adapter over the evaluation interface.
 
-LoCoMo parallelizes only across conversations, whose runtime roots are already
-isolated. Within one conversation, retrieval, answer generation, and repeated
-judge calls retain deterministic order. Malformed structured judge output is
-retried within the same vote with a deterministic attempt-specific prompt and
-seed, up to the manifest-recorded attempt and response-length limits. Every
-attempt is retained for audit and included in usage accounting. The checkpoint
-contract is missing-only: resume validates the original manifest and fills
-absent ingest or question artifacts without rewriting completed evidence.
+LoCoMo runs in two bounded phases. Conversation ingestion and index rebuilding
+are serialized because each rebuild materializes Arrow and LanceDB batches and
+is the memory-bound stage. Once all ingest checkpoints exist, questions run in
+parallel across isolated conversation roots up to the manifest-recorded
+`max_workers`; retrieval, answer generation, and repeated judge calls within
+one conversation retain deterministic order. The manifest records
+`ingest_max_workers = 1` so this resource-safety contract is auditable.
+Malformed structured judge output is retried within the same vote with a
+deterministic attempt-specific prompt and seed, up to the manifest-recorded
+attempt and response-length limits. Every attempt is retained for audit and
+included in usage accounting. The checkpoint contract is missing-only: resume
+validates the original manifest and fills absent ingest or question artifacts
+without rewriting completed evidence.
 
 The evidence-bundle reducer sits outside the runtime use cases. It copies only
 public aggregate inputs, recomputes the four suite reports, derives inventory

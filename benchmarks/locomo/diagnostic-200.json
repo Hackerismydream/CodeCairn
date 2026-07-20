@@ -30,7 +30,8 @@
     "judge_model": "deepseek-v4-flash",
     "judge_votes": 3,
     "top_k": 20,
-    "max_workers": 10
+    "max_workers": 10,
+    "ingest_max_workers": 1
   },
   "gates": {
     "required_scored_questions_per_variant": 200,

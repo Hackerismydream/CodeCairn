@@ -4,6 +4,7 @@ import hashlib
 import json
 import shutil
 import threading
+from contextlib import suppress
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
@@ -259,8 +260,14 @@ class CapturingTextModel(FakeAnswerModel):
         return ModelResponse(text=text, model=self.model_id)
 
 
-class ConcurrentIngestMemory(FakeMemory):
-    barrier = threading.Barrier(2)
+class StagedConcurrencyMemory(FakeMemory):
+    lock = threading.Lock()
+    ingest_barrier = threading.Barrier(2)
+    recall_barrier = threading.Barrier(2)
+    active_ingests = 0
+    max_active_ingests = 0
+    active_recalls = 0
+    max_active_recalls = 0
 
     def ingest(
         self,
@@ -268,8 +275,33 @@ class ConcurrentIngestMemory(FakeMemory):
         *,
         dataset_sha256: str,
     ) -> ConversationIngestResult:
-        self.barrier.wait(timeout=2)
-        return super().ingest(conversation, dataset_sha256=dataset_sha256)
+        with self.lock:
+            type(self).active_ingests += 1
+            type(self).max_active_ingests = max(
+                type(self).max_active_ingests,
+                type(self).active_ingests,
+            )
+        try:
+            with suppress(threading.BrokenBarrierError):
+                self.ingest_barrier.wait(timeout=0.2)
+            return super().ingest(conversation, dataset_sha256=dataset_sha256)
+        finally:
+            with self.lock:
+                type(self).active_ingests -= 1
+
+    def recall(self, question: str, *, limit: int) -> RecallResult:
+        with self.lock:
+            type(self).active_recalls += 1
+            type(self).max_active_recalls = max(
+                type(self).max_active_recalls,
+                type(self).active_recalls,
+            )
+        try:
+            self.recall_barrier.wait(timeout=2)
+            return super().recall(question, limit=limit)
+        finally:
+            with self.lock:
+                type(self).active_recalls -= 1
 
 
 def test_loader_preserves_sessions_speakers_timestamps_and_all_categories() -> None:
@@ -343,8 +375,9 @@ def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
         judge_model=judge,
     )
 
-    assert len(roots) == 2
+    assert len(roots) == 4
     assert len(set(roots)) == 2
+    assert all(roots.count(root) == 2 for root in set(roots))
     assert all(root.is_relative_to(artifact.run_dir / "runtime") for root in roots)
     assert artifact.summary["scored"] is True
     assert artifact.summary["question_artifact_count"] == 4
@@ -503,6 +536,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "judge_votes": 3,
                 "top_k": 20,
                 "max_workers": 1,
+                "ingest_max_workers": 1,
             },
             "gates": {
                 "required_scored_questions_per_variant": 2,
@@ -565,6 +599,21 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         "hierarchy_vs_hierarchy_no_neighbors": 0.0,
     }
     assert (tmp_path / "ablation-report.json").is_file()
+
+    episode_manifest_path = run_paths["episode-only"] / "manifest.json"
+    episode_manifest = json.loads(episode_manifest_path.read_text(encoding="utf-8"))
+    episode_manifest["max_workers"] = 2
+    episode_manifest_path.write_text(json.dumps(episode_manifest), encoding="utf-8")
+    with pytest.raises(ValueError, match="max_workers"):
+        build_locomo_ablation_report(
+            LoCoMoAblationConfig(
+                question_set_path=definition_path,
+                episode_only_run=run_paths["episode-only"],
+                hierarchy_no_neighbors_run=run_paths["hierarchy-no-neighbors"],
+                hierarchy_run=run_paths["hierarchy"],
+                output_path=tmp_path / "drifted-ablation-report.json",
+            )
+        )
 
 
 def test_locomo_marks_retrieval_identity_mismatch_as_infrastructure_failure(
@@ -897,8 +946,13 @@ def test_smoke_run_is_explicitly_unscored_and_never_calls_a_judge(tmp_path: Path
     assert answer.calls == 2
 
 
-def test_run_processes_isolated_conversations_with_bounded_parallelism(tmp_path: Path) -> None:
-    ConcurrentIngestMemory.barrier = threading.Barrier(2)
+def test_run_serializes_memory_bound_ingest_then_parallelizes_questions(tmp_path: Path) -> None:
+    StagedConcurrencyMemory.ingest_barrier = threading.Barrier(2)
+    StagedConcurrencyMemory.recall_barrier = threading.Barrier(2)
+    StagedConcurrencyMemory.active_ingests = 0
+    StagedConcurrencyMemory.max_active_ingests = 0
+    StagedConcurrencyMemory.active_recalls = 0
+    StagedConcurrencyMemory.max_active_recalls = 0
     artifact = run_locomo(
         LoCoMoRunConfig(
             dataset_path=FIXTURE,
@@ -909,14 +963,17 @@ def test_run_processes_isolated_conversations_with_bounded_parallelism(tmp_path:
             max_workers=2,
             expected_dataset_sha256=None,
         ),
-        memory_factory=ConcurrentIngestMemory,
+        memory_factory=StagedConcurrencyMemory,
         answer_model=FakeAnswerModel(),
         judge_model=None,
     )
 
     assert artifact.summary["question_artifact_count"] == 2
+    assert StagedConcurrencyMemory.max_active_ingests == 1
+    assert StagedConcurrencyMemory.max_active_recalls == 2
     manifest = (artifact.run_dir / "manifest.json").read_text(encoding="utf-8")
     assert '"max_workers": 2' in manifest
+    assert '"ingest_max_workers": 1' in manifest
 
 
 def test_resume_only_fills_missing_question_checkpoints(tmp_path: Path) -> None:

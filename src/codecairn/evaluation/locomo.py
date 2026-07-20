@@ -421,6 +421,7 @@ def run_locomo(
         ),
         "seed": config.seed,
         "max_workers": config.max_workers,
+        "ingest_max_workers": 1,
         "checkpoint_policy": "missing-only",
     }
     if config.resume:
@@ -443,14 +444,22 @@ def run_locomo(
         write_json_exclusive(run_dir / "manifest.json", manifest)
 
     work = list(enumerate(selected))
+    for _, conversation in work:
+        _ingest_conversation(
+            conversation,
+            config=config,
+            dataset_sha256=dataset.sha256,
+            run_dir=run_dir,
+            memory_factory=memory_factory,
+        )
+
     with ThreadPoolExecutor(max_workers=min(config.max_workers, len(work))) as executor:
         tuple(
             executor.map(
-                lambda item: _run_conversation(
+                lambda item: _run_conversation_questions(
                     item[0],
                     item[1],
                     config=config,
-                    dataset_sha256=dataset.sha256,
                     run_dir=run_dir,
                     memory_factory=memory_factory,
                     answer_model=answer_model,
@@ -466,12 +475,40 @@ def run_locomo(
     return LoCoMoRunArtifact(run_dir=run_dir, summary=summary)
 
 
-def _run_conversation(
-    conversation_index: int,
+def _ingest_conversation(
     conversation: LoCoMoConversation,
     *,
     config: LoCoMoRunConfig,
     dataset_sha256: str,
+    run_dir: Path,
+    memory_factory: MemoryFactory,
+) -> None:
+    memory_root = run_dir / "runtime" / conversation.sample_id
+    ingest_path = run_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
+    if ingest_path.exists() and not memory_root.is_dir():
+        raise ValueError(f"LoCoMo ingest checkpoint has no runtime state: {conversation.sample_id}")
+    if ingest_path.exists():
+        return
+    memory_root.mkdir(parents=True, exist_ok=config.resume)
+    memory = memory_factory(memory_root)
+    ingest = memory.ingest(conversation, dataset_sha256=dataset_sha256)
+    write_json_exclusive(
+        ingest_path,
+        {
+            "sample_id": conversation.sample_id,
+            "speaker_a": conversation.speaker_a,
+            "speaker_b": conversation.speaker_b,
+            "memory_root": str(memory_root.relative_to(run_dir)),
+            **asdict(ingest),
+        },
+    )
+
+
+def _run_conversation_questions(
+    conversation_index: int,
+    conversation: LoCoMoConversation,
+    *,
+    config: LoCoMoRunConfig,
     run_dir: Path,
     memory_factory: MemoryFactory,
     answer_model: TextModel,
@@ -480,22 +517,11 @@ def _run_conversation(
 ) -> None:
     memory_root = run_dir / "runtime" / conversation.sample_id
     ingest_path = run_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
-    if ingest_path.exists() and not memory_root.is_dir():
-        raise ValueError(f"LoCoMo ingest checkpoint has no runtime state: {conversation.sample_id}")
-    memory_root.mkdir(parents=True, exist_ok=config.resume)
-    memory = memory_factory(memory_root)
-    if not ingest_path.exists():
-        ingest = memory.ingest(conversation, dataset_sha256=dataset_sha256)
-        write_json_exclusive(
-            ingest_path,
-            {
-                "sample_id": conversation.sample_id,
-                "speaker_a": conversation.speaker_a,
-                "speaker_b": conversation.speaker_b,
-                "memory_root": str(memory_root.relative_to(run_dir)),
-                **asdict(ingest),
-            },
+    if not ingest_path.is_file() or not memory_root.is_dir():
+        raise ValueError(
+            f"LoCoMo conversation is not ready for questions: {conversation.sample_id}"
         )
+    memory = memory_factory(memory_root)
     selected_questions = [
         question
         for question in conversation.questions
