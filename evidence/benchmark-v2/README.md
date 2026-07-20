@@ -19,8 +19,8 @@ metrics or recruiting copy by hand; rebuild it with the command in the manifest.
 | Official LoCoMo sessions ingested | 272 sessions | [raw/locomo/manifest.json](raw/locomo/manifest.json) | [`raw/locomo/checkpoints/ingest/*.json`](raw/locomo/checkpoints/ingest) | `uv run codecairn evidence verify evidence/benchmark-v2` |
 | LoCoMo full completion | 100.00% | [raw/locomo/manifest.json](raw/locomo/manifest.json) | [`raw/locomo/checkpoints/questions/*/*.json`](raw/locomo/checkpoints/questions) | `uv run codecairn evidence verify evidence/benchmark-v2` |
 | LoCoMo answer accuracy | 47.73% | [raw/locomo/manifest.json](raw/locomo/manifest.json) | [`raw/locomo/checkpoints/questions/*/*.json`](raw/locomo/checkpoints/questions) | `uv run codecairn evidence verify evidence/benchmark-v2` |
-| Automated tests | 169 tests | [bundle-manifest.json](bundle-manifest.json) | [`raw/quality/junit.xml`](raw/quality/junit.xml) | `uv run codecairn evidence verify evidence/benchmark-v2` |
-| Statement coverage | 83.85% | [bundle-manifest.json](bundle-manifest.json) | [`raw/quality/coverage.json`](raw/quality/coverage.json) | `uv run codecairn evidence verify evidence/benchmark-v2` |
+| Automated tests | 171 tests | [bundle-manifest.json](bundle-manifest.json) | [`raw/quality/junit.xml`](raw/quality/junit.xml) | `uv run codecairn evidence verify evidence/benchmark-v2` |
+| Statement coverage | 83.53% | [bundle-manifest.json](bundle-manifest.json) | [`raw/quality/coverage.json`](raw/quality/coverage.json) | `uv run codecairn evidence verify evidence/benchmark-v2` |
 
 ## Artifact-derived scale
 
@@ -34,6 +34,7 @@ metrics or recruiting copy by hand; rebuild it with the command in the manifest.
 
 ## Known limitations
 
+- LoCoMo category names were corrected from numeric category identifiers in a label-only report amendment; scores, votes, usage, and source hashes are unchanged.
 - LoCoMo category 5 is adversarial and excluded from the official scored subset.
 - Provider cost is pending where upstream artifacts expose no cost observation.
 - Coding tasks and public fixtures are controlled evaluations, not private production traces.

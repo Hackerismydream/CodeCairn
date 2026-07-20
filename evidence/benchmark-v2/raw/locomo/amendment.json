@@ -1,0 +1,23 @@
+{
+  "corrected_categories": [
+    {
+      "category": 1,
+      "from": "single-hop",
+      "to": "multi-hop"
+    },
+    {
+      "category": 2,
+      "from": "multi-hop",
+      "to": "temporal"
+    },
+    {
+      "category": 4,
+      "from": "temporal",
+      "to": "single-hop"
+    }
+  ],
+  "kind": "locomo_category_label_correction",
+  "numeric_metrics_changed": false,
+  "schema_version": 1,
+  "source_summary_sha256": "deaa577ff85996ec575710adcf57e9152aced8a99e6d83ebb85147df77b02a73"
+}

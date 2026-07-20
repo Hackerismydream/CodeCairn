@@ -1,5 +1,30 @@
 {
   "aggregation_command": "uv run codecairn evidence verify evidence/benchmark-v2",
+  "amendments": [
+    {
+      "corrected_categories": [
+        {
+          "category": 1,
+          "from": "single-hop",
+          "to": "multi-hop"
+        },
+        {
+          "category": 2,
+          "from": "multi-hop",
+          "to": "temporal"
+        },
+        {
+          "category": 4,
+          "from": "temporal",
+          "to": "single-hop"
+        }
+      ],
+      "kind": "locomo_category_label_correction",
+      "numeric_metrics_changed": false,
+      "schema_version": 1,
+      "source_summary_sha256": "deaa577ff85996ec575710adcf57e9152aced8a99e6d83ebb85147df77b02a73"
+    }
+  ],
   "bundle_id": "benchmark-v2",
   "costs": {
     "coding_memory_off": null,
@@ -17,9 +42,10 @@
     "release": "25.3.0",
     "system": "Darwin"
   },
-  "generated_at_utc": "2026-07-19T16:52:55.121328+00:00",
-  "generator_commit": "0487238",
+  "generated_at_utc": "2026-07-20T06:43:25.916428+00:00",
+  "generator_commit": "f6bac17",
   "known_limitations": [
+    "LoCoMo category names were corrected from numeric category identifiers in a label-only report amendment; scores, votes, usage, and source hashes are unchanged.",
     "LoCoMo category 5 is adversarial and excluded from the official scored subset.",
     "Provider cost is pending where upstream artifacts expose no cost observation.",
     "Coding tasks and public fixtures are controlled evaluations, not private production traces.",

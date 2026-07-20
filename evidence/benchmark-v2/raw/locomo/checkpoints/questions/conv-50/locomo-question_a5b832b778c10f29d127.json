@@ -11,7 +11,7 @@
     "uncached_input_tokens": 3210
   },
   "category": 4,
-  "category_name": "temporal",
+  "category_name": "single-hop",
   "judge_votes": [
     {
       "attempt_count": 1,

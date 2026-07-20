@@ -11,7 +11,7 @@
     "uncached_input_tokens": 2657
   },
   "category": 1,
-  "category_name": "single-hop",
+  "category_name": "multi-hop",
   "judge_votes": [
     {
       "attempt_count": 1,
