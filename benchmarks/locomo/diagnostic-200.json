@@ -26,8 +26,8 @@
     }
   ],
   "protocol": {
-    "answer_model": "deepseek-v4-pro",
-    "judge_model": "deepseek-v4-pro",
+    "answer_model": "deepseek-v4-flash",
+    "judge_model": "deepseek-v4-flash",
     "judge_votes": 3,
     "top_k": 20,
     "max_workers": 10

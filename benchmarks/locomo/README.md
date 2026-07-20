@@ -87,8 +87,8 @@ for MODE in episode-only hierarchy-no-neighbors hierarchy; do
     --output-root benchmark_results \
     --root "benchmark_results/runtime-$MODE" \
     --mode full \
-    --model deepseek-v4-pro \
-    --judge-model deepseek-v4-pro \
+    --model deepseek-v4-flash \
+    --judge-model deepseek-v4-flash \
     --max-workers 10
 done
 
