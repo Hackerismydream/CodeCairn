@@ -49,30 +49,34 @@ uv run codecairn import /path/to/session.jsonl \
 uv run codecairn list --repo-key owner/repository --root .codecairn
 ```
 
-Production recall uses local ONNX models: `BAAI/bge-small-en-v1.5` for
-384-dimensional embeddings and `Xenova/ms-marco-MiniLM-L-6-v2` for CrossEncoder
-reranking. Each default points to an immutable Hugging Face artifact commit. The
-first index or recall downloads that snapshot into the configured cache, then
-loads FastEmbed from the resolved local path. A controlled cache and explicit
-model override can be configured without changing durable Markdown truth:
+Production recall uses Alibaba Cloud Model Studio's OpenAI-compatible embedding
+API with `qwen3.7-text-embedding` at 1,024 dimensions. CrossEncoder reranking
+remains local through the pinned `Xenova/ms-marco-MiniLM-L-6-v2` ONNX artifact.
+Configure a DashScope key before starting CodeCairn; a workspace-specific base
+URL can replace the public endpoint without changing durable Markdown truth:
 
 ```bash
+export DASHSCOPE_API_KEY="<your-api-key>"
+export CODECAIRN_EMBEDDING_MODEL="qwen3.7-text-embedding"
+export CODECAIRN_EMBEDDING_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
+export CODECAIRN_EMBEDDING_DIMENSION="1024"
+
 export CODECAIRN_MODEL_CACHE="$HOME/.cache/codecairn/models"
-export CODECAIRN_EMBEDDING_MODEL="BAAI/bge-small-en-v1.5"
-export CODECAIRN_EMBEDDING_SOURCE="qdrant/bge-small-en-v1.5-onnx-q"
-export CODECAIRN_EMBEDDING_REVISION="52398278842ec682c6f32300af41344b1c0b0bb2"
-export CODECAIRN_EMBEDDING_DIMENSION="384"
 export CODECAIRN_RERANKER_MODEL="Xenova/ms-marco-MiniLM-L-6-v2"
 export CODECAIRN_RERANKER_SOURCE="Xenova/ms-marco-MiniLM-L-6-v2"
 export CODECAIRN_RERANKER_REVISION="a09144355adeed5f58c8ed011d209bf8ee5a1fec"
 ```
 
-Any non-default alias, artifact source, or commit requires an explicit declared
-license; custom aliases also require source, immutable 40-character commit, and
-dimension configuration. Changing the artifact commit or FastEmbed version
-re-embeds the disposable LanceDB projection under an inter-process lock.
-The deterministic hashing profile is test-only and is never a production
-fallback.
+The API key is never written to index rows, recall sidecars, or evaluation
+manifests. Changing the endpoint, model, declared provider revision, dimension,
+or Adapter version re-embeds the disposable LanceDB projection under an
+inter-process lock. The provider alias is recorded as `provider-managed`
+because DashScope does not expose an immutable artifact commit for it.
+
+For explicit offline operation, set `CODECAIRN_RETRIEVAL_PROFILE=fastembed` and
+configure the pinned local embedding artifact variables from ADR 0013. The
+deterministic hashing profile is test-only. Neither profile is a silent fallback
+when DashScope is unavailable or unconfigured.
 
 Runtime state is ignored by Git because it can contain source paths, commands,
 and evidence text.

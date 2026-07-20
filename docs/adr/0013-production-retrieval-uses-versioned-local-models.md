@@ -1,5 +1,8 @@
 # Production Retrieval Uses Versioned Local Models
 
+Status: Superseded by ADR 0015 for production embedding. The pinned local
+CrossEncoder and explicit offline embedding profile remain valid.
+
 ## Context
 
 The first recall implementation used deterministic feature hashing for both

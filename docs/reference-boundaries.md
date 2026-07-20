@@ -30,8 +30,9 @@ Public CodeCairn documentation describes CodeCairn directly. When source code is
 copied rather than independently implemented, its license and attribution must
 be reviewed before the code enters the repository.
 
-Embedding and CrossEncoder execution uses the public FastEmbed Adapter surface
-over CodeCairn-resolved local snapshots. Logical aliases, artifact repositories,
-immutable commit revisions, dimensions, and licenses are selected independently
-for CodeCairn; neither the Adapter design nor the ranking contract is copied from
-EverOS.
+The DashScope integration follows the provider's public OpenAI-compatible
+embedding contract and is independently implemented as a synchronous CodeCairn
+Adapter. CrossEncoder execution continues to use FastEmbed over a
+CodeCairn-resolved local snapshot. Provider identities, dimensions, failure
+behavior, and ranking contracts are selected and tested independently for
+CodeCairn; EverOS code is not copied.
