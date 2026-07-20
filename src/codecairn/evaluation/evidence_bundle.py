@@ -159,7 +159,10 @@ def _copy_locomo_report(source: Path, target: Path) -> None:
     amendment = _legacy_locomo_category_amendment(saved, recomputed)
     if amendment is None:
         raise ValueError("Saved source LoCoMo report does not match recomputed data")
-    amendment["source_summary_sha256"] = file_sha256(summary_path)
+    target.mkdir(parents=True, exist_ok=True)
+    source_summary_path = target / "source-summary.json"
+    shutil.copyfile(summary_path, source_summary_path)
+    amendment["source_summary_sha256"] = file_sha256(source_summary_path)
     write_json_exclusive(target / "summary.json", recomputed)
     write_json_exclusive(target / "amendment.json", amendment)
 
@@ -575,8 +578,13 @@ def _aggregate_bundle(
 
 def _load_amendments(locomo_dir: Path) -> list[dict[str, object]]:
     path = locomo_dir / "amendment.json"
+    source_summary_path = locomo_dir / "source-summary.json"
     if not path.exists():
+        if source_summary_path.exists():
+            raise ValueError("LoCoMo source summary requires an amendment")
         return []
+    if not source_summary_path.is_file():
+        raise ValueError("LoCoMo amendment source summary is missing")
     amendment = _required_dict(read_json(path), field="LoCoMo amendment")
     if amendment.get("schema_version") != 1:
         raise ValueError("LoCoMo amendment schema version is invalid")
@@ -591,6 +599,8 @@ def _load_amendments(locomo_dir: Path) -> list[dict[str, object]]:
         or any(character not in "0123456789abcdef" for character in source_sha256)
     ):
         raise ValueError("LoCoMo amendment source summary hash is invalid")
+    if file_sha256(source_summary_path) != source_sha256:
+        raise ValueError("LoCoMo amendment source summary hash does not match")
     corrected = amendment.get("corrected_categories")
     if not isinstance(corrected, list) or not corrected:
         raise ValueError("LoCoMo amendment must list corrected categories")
@@ -606,6 +616,15 @@ def _load_amendments(locomo_dir: Path) -> list[dict[str, object]]:
         if legacy == current or item.get("from") != legacy or item.get("to") != current:
             raise ValueError("LoCoMo amendment category correction mapping is invalid")
         seen_categories.add(category)
+    source_summary = _required_dict(
+        read_json(source_summary_path), field="LoCoMo amendment source summary"
+    )
+    expected = _legacy_locomo_category_amendment(source_summary, report_locomo(locomo_dir))
+    if expected is None:
+        raise ValueError("LoCoMo amendment source summary is not a label-only correction")
+    expected["source_summary_sha256"] = source_sha256
+    if amendment != expected:
+        raise ValueError("LoCoMo amendment does not match its source summary")
     return [amendment]
 
 

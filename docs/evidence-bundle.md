@@ -10,8 +10,10 @@ mapping. The reducer may replace those labels when every numeric field and all
 other report content exactly match the recomputed report. It then publishes a
 `raw/locomo/amendment.json` record containing the source summary hash, each
 label correction, and an explicit declaration that no numeric metric changed.
-Verification validates this amendment against the fixed legacy and current
-mappings; arbitrary report drift is still rejected.
+The original aggregate report is retained as `raw/locomo/source-summary.json`,
+so offline verification can validate both its hash and the exact label-only
+transformation against the fixed legacy and current mappings. Arbitrary report
+drift is still rejected.
 
 ## Build contract
 

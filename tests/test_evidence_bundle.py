@@ -175,7 +175,11 @@ def test_full_locomo_bundle_publishes_accuracy_cny_cost_and_resume_evidence(
     assert isinstance(amendments, list)
     assert amendments[0]["kind"] == "locomo_category_label_correction"
     assert amendments[0]["numeric_metrics_changed"] is False
-    assert len(amendments[0]["source_summary_sha256"]) == 64
+    source_summary_path = artifact.bundle_dir / "raw" / "locomo" / "source-summary.json"
+    source_summary = read_json(source_summary_path)
+    assert isinstance(source_summary, dict)
+    assert source_summary["by_category"]["1"]["name"] == "single-hop"
+    assert amendments[0]["source_summary_sha256"] == file_sha256(source_summary_path)
     assert bundle_manifest["costs"]["locomo"] == {"amount": 0.001, "currency": "CNY"}
     resume = (artifact.bundle_dir / "resume.md").read_text()
     assert "with 3 judge votes each" in resume
