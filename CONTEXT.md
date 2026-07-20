@@ -50,10 +50,10 @@ no-op.
 **Recall Context**: A concise task-shaped Markdown artifact plus JSON sidecar,
 containing ranked Coding Memories and their provenance.
 
-**Retrieval Providers**: One immutable, manifest-recorded embedding and reranker
-configuration shared by indexing and recall. Production resolves learned local
-models from artifact repositories pinned to commit SHAs; deterministic hashing
-and fusion-score ranking are test Adapters.
+**Retrieval Providers**: One manifest-recorded embedding and reranker
+configuration shared by indexing and recall. Production uses the configured
+DashScope embedding endpoint plus a learned local reranker; deterministic
+hashing and fusion-score ranking are test Adapters.
 
 **Evaluation Run**: One immutable execution identified by task, arm, repeat,
 seed, model configuration, workspace snapshot, memory snapshot, and artifacts.

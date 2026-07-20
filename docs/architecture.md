@@ -144,13 +144,15 @@ alternative import, recall, evaluation, or health behavior.
   Parent identifiers and per-document digests are deterministic, and rebuild
   parity checks both memory groups and all projected documents. It is
   disposable.
-- Production vectors and reranker scores come from local ONNX snapshots pinned
-  to immutable Hugging Face artifact commits. Lance rows retain the logical
-  alias, artifact source, commit, dimension, and FastEmbed-sensitive index
-  identity. Changing any identity component re-embeds the projection under an
-  inter-process operation lock before it can be queried. Query sidecars and
-  evaluation manifests retain the effective model identities. Feature hashing
-  and fusion-only ranking are explicit test Adapters, not production fallbacks.
+- Production vectors come from the configured DashScope OpenAI-compatible
+  endpoint; reranker scores come from a local ONNX snapshot pinned to an
+  immutable Hugging Face commit. Lance rows retain the embedding endpoint,
+  model alias, declared provider revision, dimension, and Adapter-sensitive
+  index identity. Changing any identity component re-embeds the projection
+  under an inter-process operation lock before it can be queried. Query
+  sidecars and evaluation manifests retain the effective provider identities
+  without credentials. Feature hashing and fusion-only ranking are explicit
+  test Adapters, not production fallbacks.
 - RecallPlanner searches Episode and AtomicFact documents independently. Its
   deterministic soft route changes candidate-pool sizes without disabling the
   secondary level. AtomicFact hits are max-pooled by parent before four-way RRF,

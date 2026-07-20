@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Iterable
 
+import httpx
 import pytest
 
 import codecairn.memory.embedding as embedding_module
 import codecairn.memory.reranking as reranking_module
 from codecairn.bootstrap import create_retrieval_providers
-from codecairn.memory.embedding import FastEmbedEmbeddingAdapter
+from codecairn.memory.embedding import DashScopeEmbeddingAdapter, FastEmbedEmbeddingAdapter
 from codecairn.memory.model_artifact import fastembed_version
 from codecairn.memory.models import RerankDocument
 from codecairn.memory.reranking import FastEmbedRerankingAdapter
@@ -86,8 +88,8 @@ def test_fastembed_adapters_load_lazily_and_preserve_model_scores(monkeypatch) -
     ]
 
 
-def test_production_retrieval_profile_uses_learned_models_without_loading_them() -> None:
-    providers = create_retrieval_providers(environment={})
+def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> None:
+    providers = create_retrieval_providers(environment={"DASHSCOPE_API_KEY": "secret-key"})
 
     assert providers.public_config == {
         "method": "hybrid-rrf-cross-encoder",
@@ -95,14 +97,13 @@ def test_production_retrieval_profile_uses_learned_models_without_loading_them()
         "tokenizer_parallelism": False,
         "tokenizer_threads": 1,
         "embedding": {
-            "adapter": "fastembed",
-            "adapter_version": fastembed_version(),
-            "adapter_license": "Apache-2.0",
-            "model": "BAAI/bge-small-en-v1.5",
-            "source": "qdrant/bge-small-en-v1.5-onnx-q",
-            "revision": "52398278842ec682c6f32300af41344b1c0b0bb2",
-            "dimension": 384,
-            "license": "MIT",
+            "adapter": "dashscope-openai-compatible",
+            "adapter_version": "1",
+            "model": "qwen3.7-text-embedding",
+            "source": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+            "revision": "provider-managed",
+            "dimension": 1024,
+            "license": "Alibaba Cloud Model Studio service",
         },
         "reranker": {
             "adapter": "fastembed-cross-encoder",
@@ -121,6 +122,169 @@ def test_production_retrieval_profile_uses_learned_models_without_loading_them()
             "matched_facts_per_memory": 3,
             "sibling_facts_per_memory": 2,
         },
+    }
+
+
+def test_dashscope_profile_requires_an_api_key() -> None:
+    with pytest.raises(ValueError, match="CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"):
+        create_retrieval_providers(environment={})
+
+
+def test_qwen37_profile_rejects_an_unsupported_dimension() -> None:
+    with pytest.raises(ValueError, match="must be one of"):
+        create_retrieval_providers(
+            environment={
+                "DASHSCOPE_API_KEY": "secret-key",
+                "CODECAIRN_EMBEDDING_DIMENSION": "384",
+            }
+        )
+
+
+def test_qwen37_profile_rejects_batches_larger_than_the_provider_limit() -> None:
+    with pytest.raises(ValueError, match="must not exceed 20"):
+        create_retrieval_providers(
+            environment={
+                "DASHSCOPE_API_KEY": "secret-key",
+                "CODECAIRN_EMBEDDING_BATCH_SIZE": "21",
+            }
+        )
+
+
+def test_dashscope_adapter_batches_openai_compatible_requests_and_restores_order() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        inputs = json.loads(request.content)["input"]
+        data = [
+            {"index": index, "embedding": [float(index), 1.0, 2.0]}
+            for index in reversed(range(len(inputs)))
+        ]
+        return httpx.Response(200, json={"data": data}, request=request)
+
+    embedder = DashScopeEmbeddingAdapter(
+        api_key="secret-key",
+        model_id="qwen3.7-text-embedding",
+        base_url="https://dashscope.example/compatible-mode/v1/",
+        revision="provider-managed",
+        dimension=3,
+        batch_size=2,
+        retry_backoff_seconds=0,
+        transport=httpx.MockTransport(handler),
+    )
+
+    assert embedder.embed_documents(("one", "two", "three")) == (
+        (0.0, 1.0, 2.0),
+        (1.0, 1.0, 2.0),
+        (0.0, 1.0, 2.0),
+    )
+    assert [request.url.path for request in requests] == [
+        "/compatible-mode/v1/embeddings",
+        "/compatible-mode/v1/embeddings",
+    ]
+    assert [request.headers["authorization"] for request in requests] == [
+        "Bearer secret-key",
+        "Bearer secret-key",
+    ]
+    assert [request.read() for request in requests] == [
+        b'{"model":"qwen3.7-text-embedding","input":["one","two"],"dimensions":3,"encoding_format":"float"}',
+        b'{"model":"qwen3.7-text-embedding","input":["three"],"dimensions":3,"encoding_format":"float"}',
+    ]
+
+
+def test_dashscope_adapter_rejects_wrong_vector_dimensions() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={"data": [{"index": 0, "embedding": [1.0, 2.0]}]},
+            request=request,
+        )
+
+    embedder = DashScopeEmbeddingAdapter(
+        api_key="secret-key",
+        dimension=3,
+        retry_backoff_seconds=0,
+        transport=httpx.MockTransport(handler),
+    )
+
+    with pytest.raises(ValueError, match="returned 2 dimensions; expected 3"):
+        embedder.embed_query("query text")
+
+
+@pytest.mark.parametrize("invalid_value", (True, "1.0"))
+def test_dashscope_adapter_rejects_non_numeric_vector_items(invalid_value: object) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={"data": [{"index": 0, "embedding": [invalid_value, 2.0, 3.0]}]},
+            request=request,
+        )
+
+    embedder = DashScopeEmbeddingAdapter(
+        api_key="secret-key",
+        dimension=3,
+        retry_backoff_seconds=0,
+        transport=httpx.MockTransport(handler),
+    )
+
+    with pytest.raises(ValueError, match="non-numeric"):
+        embedder.embed_query("query text")
+
+
+@pytest.mark.parametrize(
+    ("first_status", "expected_calls"),
+    ((429, 2), (500, 2), (400, 1)),
+)
+def test_dashscope_adapter_retries_only_transient_failures(
+    first_status: int,
+    expected_calls: int,
+) -> None:
+    calls = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return httpx.Response(first_status, json={"error": "failure"}, request=request)
+        return httpx.Response(
+            200,
+            json={"data": [{"index": 0, "embedding": [1.0, 2.0, 3.0]}]},
+            request=request,
+        )
+
+    embedder = DashScopeEmbeddingAdapter(
+        api_key="secret-key",
+        dimension=3,
+        max_attempts=2,
+        retry_backoff_seconds=0,
+        transport=httpx.MockTransport(handler),
+    )
+
+    if first_status == 400:
+        with pytest.raises(httpx.HTTPStatusError):
+            embedder.embed_query("query text")
+    else:
+        assert embedder.embed_query("query text") == (1.0, 2.0, 3.0)
+    assert calls == expected_calls
+
+
+def test_dashscope_public_config_never_contains_the_api_key() -> None:
+    providers = create_retrieval_providers(
+        environment={
+            "CODECAIRN_EMBEDDING_API_KEY": "do-not-persist",
+            "CODECAIRN_EMBEDDING_BASE_URL": "https://workspace.example/compatible-mode/v1/",
+        }
+    )
+
+    assert "do-not-persist" not in str(providers.public_config)
+    assert providers.public_config["embedding"] == {
+        "adapter": "dashscope-openai-compatible",
+        "adapter_version": "1",
+        "model": "qwen3.7-text-embedding",
+        "source": "https://workspace.example/compatible-mode/v1",
+        "revision": "provider-managed",
+        "dimension": 1024,
+        "license": "Alibaba Cloud Model Studio service",
     }
 
 
@@ -150,7 +314,12 @@ def test_recall_mode_rejects_unknown_ablation_names() -> None:
 
 def test_custom_embedding_model_requires_an_explicit_dimension() -> None:
     with pytest.raises(ValueError, match="CODECAIRN_EMBEDDING_DIMENSION"):
-        create_retrieval_providers(environment={"CODECAIRN_EMBEDDING_MODEL": "custom/model"})
+        create_retrieval_providers(
+            environment={
+                "CODECAIRN_RETRIEVAL_PROFILE": "fastembed",
+                "CODECAIRN_EMBEDDING_MODEL": "custom/model",
+            }
+        )
 
 
 def test_embedding_adapter_rejects_a_model_dimension_mismatch(monkeypatch) -> None:
@@ -172,13 +341,19 @@ def test_embedding_adapter_rejects_a_model_dimension_mismatch(monkeypatch) -> No
 
 def test_retrieval_profile_rejects_movable_model_revisions() -> None:
     with pytest.raises(ValueError, match="40-character commit SHA"):
-        create_retrieval_providers(environment={"CODECAIRN_EMBEDDING_REVISION": "main"})
+        create_retrieval_providers(
+            environment={
+                "CODECAIRN_RETRIEVAL_PROFILE": "fastembed",
+                "CODECAIRN_EMBEDDING_REVISION": "main",
+            }
+        )
 
 
 def test_artifact_override_requires_an_explicit_declared_license() -> None:
     with pytest.raises(ValueError, match="CODECAIRN_EMBEDDING_LICENSE"):
         create_retrieval_providers(
             environment={
+                "CODECAIRN_RETRIEVAL_PROFILE": "fastembed",
                 "CODECAIRN_EMBEDDING_SOURCE": "other/compatible-onnx",
                 "CODECAIRN_EMBEDDING_REVISION": "c" * 40,
             }

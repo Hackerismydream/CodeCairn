@@ -10,11 +10,22 @@ from typing import cast
 from codecairn.entrypoints.cli import build_app
 from codecairn.importers.session import SessionImporter
 from codecairn.memory.embedding import (
+    DASHSCOPE_QWEN37_DIMENSIONS,
+    DEFAULT_EMBEDDING_BATCH_SIZE,
     DEFAULT_EMBEDDING_DIMENSION,
     DEFAULT_EMBEDDING_LICENSE,
+    DEFAULT_EMBEDDING_MAX_ATTEMPTS,
     DEFAULT_EMBEDDING_MODEL,
+    DEFAULT_EMBEDDING_RETRY_BACKOFF_SECONDS,
     DEFAULT_EMBEDDING_REVISION,
     DEFAULT_EMBEDDING_SOURCE,
+    DEFAULT_EMBEDDING_TIMEOUT_SECONDS,
+    DEFAULT_FASTEMBED_EMBEDDING_DIMENSION,
+    DEFAULT_FASTEMBED_EMBEDDING_LICENSE,
+    DEFAULT_FASTEMBED_EMBEDDING_MODEL,
+    DEFAULT_FASTEMBED_EMBEDDING_REVISION,
+    DEFAULT_FASTEMBED_EMBEDDING_SOURCE,
+    DashScopeEmbeddingAdapter,
     FastEmbedEmbeddingAdapter,
     HashingEmbedder,
 )
@@ -53,7 +64,7 @@ def create_retrieval_providers(
 ) -> RetrievalProviders:
     """Resolve one fail-closed retrieval configuration without loading model weights."""
     resolved_environment = os.environ if environment is None else environment
-    profile = resolved_environment.get("CODECAIRN_RETRIEVAL_PROFILE", "fastembed")
+    profile = resolved_environment.get("CODECAIRN_RETRIEVAL_PROFILE", "dashscope")
     planner = _recall_planner_config(resolved_environment)
     if profile == "hashing-test":
         return RetrievalProviders(
@@ -64,48 +75,8 @@ def create_retrieval_providers(
             reranker_license="Unreleased CodeCairn test adapter",
             planner=planner,
         )
-    if profile != "fastembed":
+    if profile not in {"dashscope", "fastembed"}:
         raise ValueError(f"Unknown retrieval profile: {profile}")
-    embedding_model = resolved_environment.get(
-        "CODECAIRN_EMBEDDING_MODEL",
-        DEFAULT_EMBEDDING_MODEL,
-    )
-    raw_dimension = resolved_environment.get("CODECAIRN_EMBEDDING_DIMENSION")
-    if raw_dimension is None:
-        if embedding_model != DEFAULT_EMBEDDING_MODEL:
-            raise ValueError("Custom embedding models require CODECAIRN_EMBEDDING_DIMENSION")
-        dimension = DEFAULT_EMBEDDING_DIMENSION
-    else:
-        try:
-            dimension = int(raw_dimension)
-        except ValueError as error:
-            raise ValueError("CODECAIRN_EMBEDDING_DIMENSION must be an integer") from error
-    embedding_revision = _model_revision(
-        environment=resolved_environment,
-        environment_key="CODECAIRN_EMBEDDING_REVISION",
-        model_id=embedding_model,
-        default_model_id=DEFAULT_EMBEDDING_MODEL,
-        default_revision=DEFAULT_EMBEDDING_REVISION,
-    )
-    embedding_source = _model_source(
-        environment=resolved_environment,
-        environment_key="CODECAIRN_EMBEDDING_SOURCE",
-        model_id=embedding_model,
-        default_model_id=DEFAULT_EMBEDDING_MODEL,
-        default_source=DEFAULT_EMBEDDING_SOURCE,
-    )
-    validate_hf_artifact(source_id=embedding_source, revision=embedding_revision)
-    embedding_license = _model_license(
-        environment=resolved_environment,
-        environment_key="CODECAIRN_EMBEDDING_LICENSE",
-        model_id=embedding_model,
-        source_id=embedding_source,
-        revision=embedding_revision,
-        default_model_id=DEFAULT_EMBEDDING_MODEL,
-        default_source_id=DEFAULT_EMBEDDING_SOURCE,
-        default_revision=DEFAULT_EMBEDDING_REVISION,
-        default_license=DEFAULT_EMBEDDING_LICENSE,
-    )
     reranker_model = resolved_environment.get(
         "CODECAIRN_RERANKER_MODEL",
         DEFAULT_RERANKER_MODEL,
@@ -137,6 +108,134 @@ def create_retrieval_providers(
         default_license=DEFAULT_RERANKER_LICENSE,
     )
     cache_dir = resolved_environment.get("CODECAIRN_MODEL_CACHE") or None
+    if profile == "dashscope":
+        embedding_model = resolved_environment.get(
+            "CODECAIRN_EMBEDDING_MODEL",
+            DEFAULT_EMBEDDING_MODEL,
+        )
+        dimension = _integer_environment(
+            environment=resolved_environment,
+            key="CODECAIRN_EMBEDDING_DIMENSION",
+            default=DEFAULT_EMBEDDING_DIMENSION,
+        )
+        if (
+            embedding_model == DEFAULT_EMBEDDING_MODEL
+            and dimension not in DASHSCOPE_QWEN37_DIMENSIONS
+        ):
+            supported = ", ".join(str(item) for item in sorted(DASHSCOPE_QWEN37_DIMENSIONS))
+            raise ValueError(
+                f"CODECAIRN_EMBEDDING_DIMENSION must be one of {supported} "
+                f"for {DEFAULT_EMBEDDING_MODEL}"
+            )
+        batch_size = _integer_environment(
+            environment=resolved_environment,
+            key="CODECAIRN_EMBEDDING_BATCH_SIZE",
+            default=DEFAULT_EMBEDDING_BATCH_SIZE,
+        )
+        if embedding_model == DEFAULT_EMBEDDING_MODEL and batch_size > 20:
+            raise ValueError(
+                f"CODECAIRN_EMBEDDING_BATCH_SIZE must not exceed 20 for {DEFAULT_EMBEDDING_MODEL}"
+            )
+        api_key = resolved_environment.get(
+            "CODECAIRN_EMBEDDING_API_KEY", ""
+        ) or resolved_environment.get(
+            "DASHSCOPE_API_KEY",
+            "",
+        )
+        if not api_key.strip():
+            raise ValueError(
+                "DashScope embedding requires CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"
+            )
+        embedding_source = resolved_environment.get(
+            "CODECAIRN_EMBEDDING_BASE_URL",
+            DEFAULT_EMBEDDING_SOURCE,
+        )
+        embedding_revision = resolved_environment.get(
+            "CODECAIRN_EMBEDDING_REVISION",
+            DEFAULT_EMBEDDING_REVISION,
+        )
+        embedding_license = resolved_environment.get(
+            "CODECAIRN_EMBEDDING_LICENSE",
+            DEFAULT_EMBEDDING_LICENSE,
+        )
+        if not embedding_license.strip():
+            raise ValueError("CODECAIRN_EMBEDDING_LICENSE must not be empty")
+        return RetrievalProviders(
+            profile="dashscope",
+            embedder=DashScopeEmbeddingAdapter(
+                api_key=api_key,
+                model_id=embedding_model,
+                base_url=embedding_source,
+                revision=embedding_revision,
+                dimension=dimension,
+                batch_size=batch_size,
+                timeout_seconds=_float_environment(
+                    environment=resolved_environment,
+                    key="CODECAIRN_EMBEDDING_TIMEOUT_SECONDS",
+                    default=DEFAULT_EMBEDDING_TIMEOUT_SECONDS,
+                ),
+                max_attempts=_integer_environment(
+                    environment=resolved_environment,
+                    key="CODECAIRN_EMBEDDING_MAX_ATTEMPTS",
+                    default=DEFAULT_EMBEDDING_MAX_ATTEMPTS,
+                ),
+                retry_backoff_seconds=_float_environment(
+                    environment=resolved_environment,
+                    key="CODECAIRN_EMBEDDING_RETRY_BACKOFF_SECONDS",
+                    default=DEFAULT_EMBEDDING_RETRY_BACKOFF_SECONDS,
+                ),
+            ),
+            reranker=FastEmbedRerankingAdapter(
+                model_id=reranker_model,
+                source_id=reranker_source,
+                revision=reranker_revision,
+                cache_dir=cache_dir,
+            ),
+            embedding_license=embedding_license,
+            reranker_license=reranker_license,
+            planner=planner,
+        )
+    embedding_model = resolved_environment.get(
+        "CODECAIRN_EMBEDDING_MODEL",
+        DEFAULT_FASTEMBED_EMBEDDING_MODEL,
+    )
+    raw_dimension = resolved_environment.get("CODECAIRN_EMBEDDING_DIMENSION")
+    if raw_dimension is None:
+        if embedding_model != DEFAULT_FASTEMBED_EMBEDDING_MODEL:
+            raise ValueError("Custom embedding models require CODECAIRN_EMBEDDING_DIMENSION")
+        dimension = DEFAULT_FASTEMBED_EMBEDDING_DIMENSION
+    else:
+        dimension = _integer_environment(
+            environment=resolved_environment,
+            key="CODECAIRN_EMBEDDING_DIMENSION",
+            default=DEFAULT_FASTEMBED_EMBEDDING_DIMENSION,
+        )
+    embedding_revision = _model_revision(
+        environment=resolved_environment,
+        environment_key="CODECAIRN_EMBEDDING_REVISION",
+        model_id=embedding_model,
+        default_model_id=DEFAULT_FASTEMBED_EMBEDDING_MODEL,
+        default_revision=DEFAULT_FASTEMBED_EMBEDDING_REVISION,
+    )
+    embedding_source = _model_source(
+        environment=resolved_environment,
+        environment_key="CODECAIRN_EMBEDDING_SOURCE",
+        model_id=embedding_model,
+        default_model_id=DEFAULT_FASTEMBED_EMBEDDING_MODEL,
+        default_source=DEFAULT_FASTEMBED_EMBEDDING_SOURCE,
+    )
+    validate_hf_artifact(source_id=embedding_source, revision=embedding_revision)
+    embedding_license = _model_license(
+        environment=resolved_environment,
+        environment_key="CODECAIRN_EMBEDDING_LICENSE",
+        model_id=embedding_model,
+        source_id=embedding_source,
+        revision=embedding_revision,
+        default_model_id=DEFAULT_FASTEMBED_EMBEDDING_MODEL,
+        default_source_id=DEFAULT_FASTEMBED_EMBEDDING_SOURCE,
+        default_revision=DEFAULT_FASTEMBED_EMBEDDING_REVISION,
+        default_license=DEFAULT_FASTEMBED_EMBEDDING_LICENSE,
+    )
     return RetrievalProviders(
         profile="fastembed",
         embedder=FastEmbedEmbeddingAdapter(
@@ -156,6 +255,36 @@ def create_retrieval_providers(
         reranker_license=reranker_license,
         planner=planner,
     )
+
+
+def _integer_environment(
+    *,
+    environment: Mapping[str, str],
+    key: str,
+    default: int,
+) -> int:
+    raw = environment.get(key)
+    if raw is None:
+        return default
+    try:
+        return int(raw)
+    except ValueError as error:
+        raise ValueError(f"{key} must be an integer") from error
+
+
+def _float_environment(
+    *,
+    environment: Mapping[str, str],
+    key: str,
+    default: float,
+) -> float:
+    raw = environment.get(key)
+    if raw is None:
+        return default
+    try:
+        return float(raw)
+    except ValueError as error:
+        raise ValueError(f"{key} must be numeric") from error
 
 
 def create_runtime(
