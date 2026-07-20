@@ -562,6 +562,23 @@ def _aggregate_bundle(
             "release": platform.release(),
             "machine": platform.machine(),
         }
+    models = {
+        "locomo_answer": locomo_manifest.get("answer_model"),
+        "locomo_judge": locomo_manifest.get("judge_model"),
+        "coding_agent": coding_manifest.get("agent"),
+    }
+    licensing: dict[str, object] = {
+        "locomo": "CC BY-NC 4.0; the dataset itself is not redistributed in this bundle.",
+        "source": "https://github.com/snap-research/locomo",
+    }
+    for key, source_manifest in (
+        ("locomo_retrieval", locomo_manifest),
+        ("retrieval_benchmark", retrieval_manifest),
+    ):
+        retrieval_models = _retrieval_models(source_manifest)
+        if retrieval_models is not None:
+            models[key] = retrieval_models
+            licensing[key] = _retrieval_licenses(source_manifest)
     manifest: dict[str, object] = {
         "schema_version": 1,
         "bundle_id": bundle_dir.name,
@@ -576,13 +593,7 @@ def _aggregate_bundle(
             "recovery": _run_provenance(recovery_manifest, manifest_name="manifest.json"),
             "coding": _run_provenance(coding_manifest, manifest_name="experiment.json"),
         },
-        "models": {
-            "locomo_answer": locomo_manifest.get("answer_model"),
-            "locomo_judge": locomo_manifest.get("judge_model"),
-            "locomo_retrieval": _retrieval_models(locomo_manifest),
-            "retrieval_benchmark": _retrieval_models(retrieval_manifest),
-            "coding_agent": coding_manifest.get("agent"),
-        },
+        "models": models,
         "costs": {
             "locomo": _locomo_cost(locomo),
             "coding_memory_off": _arm(coding, "memory-off").get("total_cost_usd"),
@@ -590,12 +601,7 @@ def _aggregate_bundle(
         },
         "aggregation_command": command,
         "known_limitations": _known_limitations(locomo, amendments=amendments),
-        "licensing": {
-            "locomo": "CC BY-NC 4.0; the dataset itself is not redistributed in this bundle.",
-            "source": "https://github.com/snap-research/locomo",
-            "locomo_retrieval": _retrieval_licenses(locomo_manifest),
-            "retrieval_benchmark": _retrieval_licenses(retrieval_manifest),
-        },
+        "licensing": licensing,
     }
     if amendments:
         manifest["amendments"] = amendments
@@ -1252,7 +1258,10 @@ def _retrieval_models(manifest: dict[str, object]) -> dict[str, object] | None:
     raw = manifest.get("retrieval")
     if not isinstance(raw, dict):
         return None
-    return {name: raw.get(name) for name in ("embedding", "reranker") if raw.get(name) is not None}
+    result = {
+        name: raw.get(name) for name in ("embedding", "reranker") if raw.get(name) is not None
+    }
+    return result or None
 
 
 def _retrieval_licenses(manifest: dict[str, object]) -> dict[str, object] | None:
