@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import math
 import platform
 import shutil
@@ -11,10 +12,17 @@ from typing import cast
 
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
 from codecairn.evaluation.coding import report_coding_runs
-from codecairn.evaluation.locomo import report_locomo
+from codecairn.evaluation.locomo import CATEGORY_NAMES, report_locomo
 from codecairn.evaluation.retrieval import report_recovery, report_retrieval
 
 AGGREGATION_COMMAND = "uv run codecairn evidence verify {bundle_dir}"
+_LEGACY_LOCOMO_CATEGORY_NAMES = {
+    1: "single-hop",
+    2: "multi-hop",
+    3: "open-domain",
+    4: "temporal",
+    5: "adversarial",
+}
 
 
 @dataclass(frozen=True)
@@ -103,15 +111,11 @@ def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
 
 
 def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> None:
-    _assert_equal(
-        read_json(config.locomo_run_dir / "summary.json"),
-        report_locomo(config.locomo_run_dir),
-        field="source LoCoMo report",
-    )
+    _copy_locomo_report(config.locomo_run_dir, target / "raw" / "locomo")
     _copy_named_files(
         config.locomo_run_dir,
         target / "raw" / "locomo",
-        ("manifest.json", "summary.json"),
+        ("manifest.json",),
     )
     _copy_public_locomo_ingests(config.locomo_run_dir, target / "raw" / "locomo")
     _copy_public_locomo_questions(
@@ -141,6 +145,68 @@ def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> No
     quality.mkdir(parents=True, exist_ok=False)
     shutil.copyfile(config.quality_junit_path, quality / "junit.xml")
     shutil.copyfile(config.quality_coverage_path, quality / "coverage.json")
+
+
+def _copy_locomo_report(source: Path, target: Path) -> None:
+    summary_path = source / "summary.json"
+    saved = _required_dict(read_json(summary_path), field="source LoCoMo report")
+    recomputed = report_locomo(source)
+    if saved == recomputed:
+        target.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(summary_path, target / "summary.json")
+        return
+
+    amendment = _legacy_locomo_category_amendment(saved, recomputed)
+    if amendment is None:
+        raise ValueError("Saved source LoCoMo report does not match recomputed data")
+    amendment["source_summary_sha256"] = file_sha256(summary_path)
+    write_json_exclusive(target / "summary.json", recomputed)
+    write_json_exclusive(target / "amendment.json", amendment)
+
+
+def _legacy_locomo_category_amendment(
+    saved: dict[str, object], recomputed: dict[str, object]
+) -> dict[str, object] | None:
+    normalized = copy.deepcopy(saved)
+    categories = normalized.get("by_category")
+    if not isinstance(categories, dict):
+        return None
+    corrected: list[dict[str, object]] = []
+    for raw_category, raw_result in categories.items():
+        if (
+            not isinstance(raw_category, str)
+            or not raw_category.isascii()
+            or not raw_category.isdigit()
+        ):
+            return None
+        category = int(raw_category)
+        if not isinstance(raw_result, dict):
+            return None
+        expected = CATEGORY_NAMES.get(category)
+        legacy = _LEGACY_LOCOMO_CATEGORY_NAMES.get(category)
+        observed = raw_result.get("name")
+        if expected is None or legacy is None or not isinstance(observed, str):
+            return None
+        if observed == expected:
+            continue
+        if observed != legacy:
+            return None
+        raw_result["name"] = expected
+        corrected.append(
+            {
+                "category": category,
+                "from": observed,
+                "to": expected,
+            }
+        )
+    if not corrected or normalized != recomputed:
+        return None
+    return {
+        "schema_version": 1,
+        "kind": "locomo_category_label_correction",
+        "corrected_categories": corrected,
+        "numeric_metrics_changed": False,
+    }
 
 
 def _copy_named_files(source: Path, target: Path, names: tuple[str, ...]) -> None:
@@ -224,6 +290,12 @@ def _copy_public_locomo_questions(source: Path, target: Path) -> None:
                 public[key] = _public_string(raw[key], field=key)
             else:
                 public[key] = raw[key]
+        category = public.get("category")
+        if isinstance(category, int):
+            category_name = CATEGORY_NAMES.get(category)
+            if category_name is None:
+                raise ValueError("LoCoMo category is invalid")
+            public["category_name"] = category_name
         if "answer" in public:
             public["answer"] = _public_model_answer(public["answer"])
         if "judge_votes" in public:
@@ -402,6 +474,7 @@ def _aggregate_bundle(
     locomo_manifest = _required_dict(
         read_json(locomo_dir / "manifest.json"), field="LoCoMo manifest"
     )
+    amendments = _load_amendments(locomo_dir)
     retrieval_manifest = _required_dict(
         read_json(retrieval_dir / "manifest.json"), field="retrieval manifest"
     )
@@ -489,13 +562,51 @@ def _aggregate_bundle(
             "coding_memory_on": _arm(coding, "memory-on").get("total_cost_usd"),
         },
         "aggregation_command": command,
-        "known_limitations": _known_limitations(locomo),
+        "known_limitations": _known_limitations(locomo, amendments=amendments),
         "licensing": {
             "locomo": "CC BY-NC 4.0; the dataset itself is not redistributed in this bundle.",
             "source": "https://github.com/snap-research/locomo",
         },
     }
+    if amendments:
+        manifest["amendments"] = amendments
     return metrics, manifest
+
+
+def _load_amendments(locomo_dir: Path) -> list[dict[str, object]]:
+    path = locomo_dir / "amendment.json"
+    if not path.exists():
+        return []
+    amendment = _required_dict(read_json(path), field="LoCoMo amendment")
+    if amendment.get("schema_version") != 1:
+        raise ValueError("LoCoMo amendment schema version is invalid")
+    if amendment.get("kind") != "locomo_category_label_correction":
+        raise ValueError("LoCoMo amendment kind is invalid")
+    if amendment.get("numeric_metrics_changed") is not False:
+        raise ValueError("LoCoMo category-label amendment cannot change numeric metrics")
+    source_sha256 = amendment.get("source_summary_sha256")
+    if (
+        not isinstance(source_sha256, str)
+        or len(source_sha256) != 64
+        or any(character not in "0123456789abcdef" for character in source_sha256)
+    ):
+        raise ValueError("LoCoMo amendment source summary hash is invalid")
+    corrected = amendment.get("corrected_categories")
+    if not isinstance(corrected, list) or not corrected:
+        raise ValueError("LoCoMo amendment must list corrected categories")
+    seen_categories: set[int] = set()
+    for item in corrected:
+        if not isinstance(item, dict) or set(item) != {"category", "from", "to"}:
+            raise ValueError("LoCoMo amendment category correction is invalid")
+        category = item.get("category")
+        if type(category) is not int or category in seen_categories:
+            raise ValueError("LoCoMo amendment category correction is invalid")
+        legacy = _LEGACY_LOCOMO_CATEGORY_NAMES.get(category)
+        current = CATEGORY_NAMES.get(category)
+        if legacy == current or item.get("from") != legacy or item.get("to") != current:
+            raise ValueError("LoCoMo amendment category correction mapping is invalid")
+        seen_categories.add(category)
+    return [amendment]
 
 
 def _inventory_counts(*, locomo_dir: Path, retrieval_dir: Path, coding_dir: Path) -> dict[str, int]:
@@ -854,11 +965,18 @@ def _locomo_cost(locomo: dict[str, object]) -> dict[str, object] | float | None:
     return float(cost_usd) if isinstance(cost_usd, int | float) else None
 
 
-def _known_limitations(locomo: dict[str, object]) -> list[str]:
+def _known_limitations(
+    locomo: dict[str, object], *, amendments: list[dict[str, object]]
+) -> list[str]:
     limitations: list[str] = []
     if locomo.get("scored") is not True:
         limitations.append(
             "The LoCoMo run is an unscored smoke run; full benchmark accuracy is pending."
+        )
+    if amendments:
+        limitations.append(
+            "LoCoMo category names were corrected from numeric category identifiers in a "
+            "label-only report amendment; scores, votes, usage, and source hashes are unchanged."
         )
     limitations.extend(
         [
@@ -1034,7 +1152,7 @@ def _render_resume_zh(metrics: dict[str, object]) -> str:
     if locomo_report.get("scored") is True:
         locomo_evidence = (
             f"- 在 LoCoMo 官方类别 1-4 的 {counts['locomo_question_run_count']} 问全量评测中, "
-            f"每题执行 {_required_int(locomo_report, 'judge_votes')} 次独立评审且"
+            f"每题执行 {_required_int(locomo_report, 'judge_votes')} 次重复裁判投票且"
             "基础设施失败为 0; LoCoMo 准确率 "
             f"{_claim_value(claims, 'locomo_accuracy', 2)}%, 共导入 "
             f"{counts['locomo_session_count']} 个 session 和 {counts['locomo_turn_count']} 条 turn."

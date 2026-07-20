@@ -323,10 +323,10 @@ def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
     assert artifact.summary["scored_question_count"] == 4
     assert artifact.summary["accuracy"] == 1.0
     assert artifact.summary["by_category"] == {
-        "1": {"accuracy": 1.0, "correct": 1, "count": 1, "name": "single-hop"},
-        "2": {"accuracy": 1.0, "correct": 1, "count": 1, "name": "multi-hop"},
+        "1": {"accuracy": 1.0, "correct": 1, "count": 1, "name": "multi-hop"},
+        "2": {"accuracy": 1.0, "correct": 1, "count": 1, "name": "temporal"},
         "3": {"accuracy": 1.0, "correct": 1, "count": 1, "name": "open-domain"},
-        "4": {"accuracy": 1.0, "correct": 1, "count": 1, "name": "temporal"},
+        "4": {"accuracy": 1.0, "correct": 1, "count": 1, "name": "single-hop"},
     }
     question_files = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))
     first_payload = question_files[0].read_text(encoding="utf-8")

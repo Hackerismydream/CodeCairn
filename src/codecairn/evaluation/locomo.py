@@ -29,10 +29,10 @@ LOCOMO_DATASET_URL = (
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
 CATEGORY_NAMES = {
-    1: "single-hop",
-    2: "multi-hop",
+    1: "multi-hop",
+    2: "temporal",
     3: "open-domain",
-    4: "temporal",
+    4: "single-hop",
     5: "adversarial",
 }
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from codecairn.evaluation.artifacts import read_json, write_json_exclusive
+from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
 from codecairn.evaluation.coding import report_coding_runs
 from codecairn.evaluation.evidence_bundle import (
     EvidenceBundleConfig,
@@ -26,6 +26,7 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
     assert isinstance(private_question, dict)
     private_answer = private_question["answer"]
     assert isinstance(private_answer, dict)
+    private_question["category_name"] = "single-hop"
     private_answer["provider_debug"] = {"authorization": "Bearer must-not-be-public"}
     private_question["judge_votes"] = [
         {
@@ -117,6 +118,7 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
     assert "raw_response" not in public_vote["failed_attempts"][0]
     assert "request_debug" not in public_vote["failed_attempts"][0]
     assert public_vote["attempt_count"] == 2
+    assert public_question["category_name"] == "multi-hop"
     assert len(public_question["source_artifact_sha256"]) == 64
     public_ingest = read_json(
         artifact.bundle_dir / "raw" / "locomo" / "checkpoints" / "ingest" / "conv-1.json"
@@ -141,55 +143,8 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
 def test_full_locomo_bundle_publishes_accuracy_cny_cost_and_resume_evidence(
     tmp_path: Path,
 ) -> None:
-    sources = _make_source_runs(tmp_path / "sources")
+    sources = _make_legacy_full_locomo_source(tmp_path / "sources")
     locomo = sources / "locomo"
-    manifest = read_json(locomo / "manifest.json")
-    assert isinstance(manifest, dict)
-    manifest.update(
-        {
-            "mode": "full",
-            "scored": True,
-            "judge_votes": 3,
-            "judge_response_max_attempts": 3,
-            "judge_response_max_chars": 32_768,
-            "judge_model": {"adapter": "fake", "model": "judge"},
-            "selection": {
-                "categories": [1, 2, 3, 4],
-                "question_counts": {"1": 1, "2": 0, "3": 0, "4": 0},
-            },
-        }
-    )
-    _replace_json(locomo / "manifest.json", manifest)
-    question_path = locomo / "checkpoints" / "questions" / "conv-1" / "question-1.json"
-    question = read_json(question_path)
-    assert isinstance(question, dict)
-    answer = question["answer"]
-    assert isinstance(answer, dict)
-    answer.update(
-        {
-            "cached_input_tokens": 6,
-            "uncached_input_tokens": 4,
-            "reasoning_tokens": 2,
-            "cost_cny": 0.001,
-        }
-    )
-    question["judge_votes"] = [
-        {
-            "vote_index": index,
-            "label": "correct",
-            "attempt_count": 1,
-            "response_chars": 19,
-            "failed_attempts": [],
-            "raw_response": '{"label":"CORRECT"}',
-            "input_tokens": 2,
-            "output_tokens": 1,
-            "known_cost_count": 0,
-            "known_cost_cny_count": 0,
-        }
-        for index in range(3)
-    ]
-    _replace_json(question_path, question)
-    _replace_json(locomo / "summary.json", report_locomo(locomo))
 
     artifact = build_evidence_bundle(
         EvidenceBundleConfig(
@@ -210,14 +165,90 @@ def test_full_locomo_bundle_publishes_accuracy_cny_cost_and_resume_evidence(
     assert isinstance(claims, list)
     accuracy = next(item for item in claims if item["id"] == "locomo_accuracy")
     assert accuracy["value"] == 100.0
+    locomo_metrics = artifact.metrics["locomo"]
+    assert isinstance(locomo_metrics, dict)
+    assert locomo_metrics["by_category"]["1"]["name"] == "multi-hop"
     assert all(item["measurement"] != "LoCoMo accuracy" for item in artifact.metrics["pending"])
     bundle_manifest = read_json(artifact.bundle_dir / "bundle-manifest.json")
     assert isinstance(bundle_manifest, dict)
+    amendments = bundle_manifest["amendments"]
+    assert isinstance(amendments, list)
+    assert amendments[0]["kind"] == "locomo_category_label_correction"
+    assert amendments[0]["numeric_metrics_changed"] is False
+    assert len(amendments[0]["source_summary_sha256"]) == 64
     assert bundle_manifest["costs"]["locomo"] == {"amount": 0.001, "currency": "CNY"}
     resume = (artifact.bundle_dir / "resume.md").read_text()
     assert "with 3 judge votes each" in resume
     assert "LoCoMo accuracy of 100.00%" in resume
-    assert "LoCoMo 准确率 100.00%" in (artifact.bundle_dir / "resume.zh-CN.md").read_text()
+    resume_zh = (artifact.bundle_dir / "resume.zh-CN.md").read_text()
+    assert "LoCoMo 准确率 100.00%" in resume_zh
+    assert "3 次重复裁判投票" in resume_zh
+    assert "独立评审" not in resume_zh
+
+
+def test_bundle_rejects_numeric_drift_disguised_as_a_category_label_amendment(
+    tmp_path: Path,
+) -> None:
+    sources = _make_legacy_full_locomo_source(tmp_path / "sources")
+    summary_path = sources / "locomo" / "summary.json"
+    summary = read_json(summary_path)
+    assert isinstance(summary, dict)
+    summary["accuracy"] = 0.5
+    _replace_json(summary_path, summary)
+
+    with pytest.raises(ValueError, match="source LoCoMo report"):
+        build_evidence_bundle(
+            EvidenceBundleConfig(
+                bundle_id="benchmark-drift-test",
+                output_root=tmp_path / "evidence",
+                locomo_run_dir=sources / "locomo",
+                retrieval_run_dir=sources / "retrieval",
+                recovery_run_dir=sources / "recovery",
+                coding_run_dir=sources / "coding",
+                quality_junit_path=sources / "junit.xml",
+                quality_coverage_path=sources / "coverage.json",
+                repository_root=Path(__file__).parents[1],
+                generator_commit="abc123",
+            )
+        )
+
+
+def test_bundle_rejects_tampered_category_label_amendment(tmp_path: Path) -> None:
+    sources = _make_legacy_full_locomo_source(tmp_path / "sources")
+    artifact = build_evidence_bundle(
+        EvidenceBundleConfig(
+            bundle_id="benchmark-amendment-test",
+            output_root=tmp_path / "evidence",
+            locomo_run_dir=sources / "locomo",
+            retrieval_run_dir=sources / "retrieval",
+            recovery_run_dir=sources / "recovery",
+            coding_run_dir=sources / "coding",
+            quality_junit_path=sources / "junit.xml",
+            quality_coverage_path=sources / "coverage.json",
+            repository_root=Path(__file__).parents[1],
+            generator_commit="abc123",
+        )
+    )
+    amendment_path = artifact.bundle_dir / "raw" / "locomo" / "amendment.json"
+    amendment = read_json(amendment_path)
+    assert isinstance(amendment, dict)
+    corrections = amendment["corrected_categories"]
+    assert isinstance(corrections, list)
+    correction = corrections[0]
+    assert isinstance(correction, dict)
+    correction["to"] = "single-hop"
+    _replace_json(amendment_path, amendment)
+
+    inventory_path = artifact.bundle_dir / "inventory.json"
+    inventory = read_json(inventory_path)
+    assert isinstance(inventory, dict)
+    inventory_files = inventory["files"]
+    assert isinstance(inventory_files, dict)
+    inventory_files["raw/locomo/amendment.json"] = file_sha256(amendment_path)
+    _replace_json(inventory_path, inventory)
+
+    with pytest.raises(ValueError, match="correction mapping"):
+        verify_evidence_bundle(artifact.bundle_dir)
 
 
 def test_bundle_rejects_type_confusion_in_public_locomo_fields(tmp_path: Path) -> None:
@@ -280,6 +311,67 @@ def test_bundle_rejects_nested_data_in_public_locomo_usage_fields(tmp_path: Path
                 generator_commit="abc123",
             )
         )
+
+
+def _make_legacy_full_locomo_source(root: Path) -> Path:
+    sources = _make_source_runs(root)
+    locomo = sources / "locomo"
+    manifest = read_json(locomo / "manifest.json")
+    assert isinstance(manifest, dict)
+    manifest.update(
+        {
+            "mode": "full",
+            "scored": True,
+            "judge_votes": 3,
+            "judge_response_max_attempts": 3,
+            "judge_response_max_chars": 32_768,
+            "judge_model": {"adapter": "fake", "model": "judge"},
+            "selection": {
+                "categories": [1, 2, 3, 4],
+                "question_counts": {"1": 1, "2": 0, "3": 0, "4": 0},
+            },
+        }
+    )
+    _replace_json(locomo / "manifest.json", manifest)
+    question_path = locomo / "checkpoints" / "questions" / "conv-1" / "question-1.json"
+    question = read_json(question_path)
+    assert isinstance(question, dict)
+    answer = question["answer"]
+    assert isinstance(answer, dict)
+    answer.update(
+        {
+            "cached_input_tokens": 6,
+            "uncached_input_tokens": 4,
+            "reasoning_tokens": 2,
+            "cost_cny": 0.001,
+        }
+    )
+    question["judge_votes"] = [
+        {
+            "vote_index": index,
+            "label": "correct",
+            "attempt_count": 1,
+            "response_chars": 19,
+            "failed_attempts": [],
+            "raw_response": '{"label":"CORRECT"}',
+            "input_tokens": 2,
+            "output_tokens": 1,
+            "known_cost_count": 0,
+            "known_cost_cny_count": 0,
+        }
+        for index in range(3)
+    ]
+    _replace_json(question_path, question)
+    _replace_json(locomo / "summary.json", report_locomo(locomo))
+    legacy_summary = read_json(locomo / "summary.json")
+    assert isinstance(legacy_summary, dict)
+    legacy_categories = legacy_summary["by_category"]
+    assert isinstance(legacy_categories, dict)
+    legacy_category_one = legacy_categories["1"]
+    assert isinstance(legacy_category_one, dict)
+    legacy_category_one["name"] = "single-hop"
+    _replace_json(locomo / "summary.json", legacy_summary)
+    return sources
 
 
 def _replace_json(path: Path, value: object) -> None:

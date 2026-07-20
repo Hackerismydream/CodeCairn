@@ -5,6 +5,14 @@ The reducer treats saved suite summaries as assertions: it recomputes LoCoMo,
 retrieval, recovery, and CodingMemoryBench reports from their raw JSON inputs
 and rejects the build if any saved summary differs.
 
+The only compatibility exception is a known historical LoCoMo category-label
+mapping. The reducer may replace those labels when every numeric field and all
+other report content exactly match the recomputed report. It then publishes a
+`raw/locomo/amendment.json` record containing the source summary hash, each
+label correction, and an explicit declaration that no numeric metric changed.
+Verification validates this amendment against the fixed legacy and current
+mappings; arbitrary report drift is still rejected.
+
 ## Build contract
 
 The build requires four completed immutable run directories plus JUnit and
@@ -62,6 +70,11 @@ limitations.
 
 ## Interpretation rules
 
+- Category IDs follow the public LoCoMo evaluator: 1 is multi-hop, 2 is
+  temporal, 3 is open-domain, 4 is single-hop, and 5 is adversarial. Full
+  accuracy covers the selected answerable categories 1-4; adversarial questions
+  are reported separately when selected rather than silently treated as
+  answerable questions.
 - LoCoMo smoke validates full-dataset ingestion and a small end-to-end question
   path. It is always unscored and must never be presented as LoCoMo accuracy.
 - A full LoCoMo bundle publishes accuracy only when the question checkpoints
