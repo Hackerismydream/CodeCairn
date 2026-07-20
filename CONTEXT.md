@@ -32,7 +32,16 @@ not against LLM-provided labels.
 event cursors, stable episode identities, memory identities, and failures.
 
 **Markdown Truth**: One atomic, parseable Markdown artifact per Coding Memory.
-It is the authoritative recoverable representation.
+It contains the complete deterministic Evidence Fact snapshot and is the
+authoritative recoverable representation.
+
+**Recall Episode**: The rebuildable parent search document projected from one
+Coding Memory. It is not a second durable Task Episode or another source of
+truth.
+
+**Atomic Fact Document**: A rebuildable child search document projected from
+one Evidence Fact inside Markdown truth. Its parent is the Recall Episode for
+that Coding Memory.
 
 **Index Queue**: SQLite-backed outbox of Markdown revisions waiting to be
 indexed. Claims use atomic leases and a successful unchanged content hash is a
@@ -50,6 +59,7 @@ seed, model configuration, workspace snapshot, memory snapshot, and artifacts.
 2. Committed cursors advance only after their complete durable write set commits.
 3. Quotes must be exact source substrings; roles and outcomes come from events.
 4. Verified Fix requires both change evidence and successful verification.
-5. An index can be deleted and deterministically rebuilt from Markdown truth.
+5. An index can be deleted and deterministically rebuilt from Markdown truth,
+   with both memory-level and parent-child document parity.
 6. Evaluation reports are pure readers and never mutate runtime state.
 7. Memory-off runs cannot read from or write to memory-on state.

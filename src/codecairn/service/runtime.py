@@ -5,7 +5,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Literal, Protocol
 
-from codecairn.memory.evidence import EvidenceGate
+from codecairn.memory.evidence import EvidenceGate, collect_evidence_facts
 from codecairn.memory.models import (
     AgentTrace,
     CodingMemory,
@@ -133,7 +133,11 @@ class MemoryRuntime:
             checkpoint=checkpoint,
         )
         episodes = segment_tasks(trace, repo_key=repo_key)
-        candidates = extract_failed_commands(episodes, repo_key=repo_key)
+        facts = collect_evidence_facts(episodes, repo_key=repo_key)
+        candidates = tuple(
+            replace(candidate, facts=_facts_for_memory(candidate, facts))
+            for candidate in extract_failed_commands(episodes, repo_key=repo_key)
+        )
         persisted = tuple(self._markdown.write(candidate) for candidate in candidates)
 
         committed_raw_event_index = trace.raw_event_count - 1
@@ -255,6 +259,18 @@ class MemoryRuntime:
             )
             raise
         self._state.finish_recovery(audit_id, status="completed")
+
+
+def _facts_for_memory(
+    memory: CodingMemory,
+    facts: tuple[EvidenceFact, ...],
+) -> tuple[EvidenceFact, ...]:
+    evidence = set(memory.evidence)
+    return tuple(
+        fact
+        for fact in facts
+        if fact.episode_id == memory.episode_id and set(fact.evidence).issubset(evidence)
+    )
 
 
 def _next_resume_checkpoint(trace: AgentTrace) -> tuple[int, str, tuple[str, ...], int]:

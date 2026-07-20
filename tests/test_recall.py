@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
-from codecairn.memory.models import CodingMemory, EvidenceReference, IndexCandidate
+from codecairn.memory.models import CodingMemory, EvidenceFact, EvidenceReference, IndexCandidate
 from codecairn.service.recall import RecallEngine
 from codecairn.storage.lance import LanceMemoryIndex
 
@@ -138,6 +139,34 @@ def test_lancedb_fts_candidate_is_independent_of_vector_shortlist(tmp_path: Path
 
     assert [item.memory_id for item in vector] == ["memory-decoy"]
     assert [item.memory_id for item in lexical_candidates] == ["memory-lexical"]
+
+
+def test_episode_recall_does_not_search_atomic_fact_only_text(tmp_path: Path) -> None:
+    index = LanceMemoryIndex(tmp_path / "index.lancedb")
+    base = _memory("memory-hierarchical")
+    fact = EvidenceFact(
+        fact_id="fact-child-only",
+        repo_key=base.repo_key,
+        episode_id=base.episode_id,
+        kind="repository_rule",
+        text="childonlytoken",
+        role=None,
+        evidence=base.evidence,
+    )
+    memory = replace(base, facts=(fact,))
+    markdown = '---\nfacts: [{"text": "childonlytoken"}]\n---\n\n# Memory\n'
+
+    index.upsert(memory, markdown=markdown)
+
+    assert (
+        index.lexical_candidates(
+            repo_key=memory.repo_key,
+            query="childonlytoken",
+            limit=5,
+        )
+        == ()
+    )
+    assert len(index.document_fingerprints()) == 2
 
 
 def _memory(

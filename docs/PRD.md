@@ -65,6 +65,7 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 38. As an evaluator, I want memory-off runs physically isolated from memory state, so that the comparison cannot be contaminated.
 39. As a recruiter, I want reports generated from checked-in manifests and aggregate inputs, so that resume numbers are verifiable.
 40. As a maintainer, I want tests for corruption repair, worker interruption, queue replay, concurrent import, and repository isolation, so that recovery claims survive failure injection.
+41. As an auditor, I want rebuild parity to cover Recall Episode parents and AtomicFact children, so that a missing child cannot hide behind a matching memory count.
 
 ## Implementation Decisions
 
@@ -83,10 +84,13 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 - Evidence Facts are derived by code. The LLM may reference fact identifiers and
   author summaries, but cannot author provenance fields.
 - Markdown truth uses same-directory temporary files, flush, fsync, atomic
-  replace, and containment checks.
+  replace, and containment checks. It stores complete deterministic fact
+  snapshots with each Coding Memory.
 - SQLite owns import state, audit rows, memory metadata, and a transactional
   index outbox whose uniqueness includes repository namespace.
 - LanceDB is mandatory in the completed version 1 but is never authoritative.
+  It projects each Coding Memory into one Recall Episode parent plus its
+  AtomicFact children.
 - Hybrid retrieval unions lexical and vector candidates before reranking.
 - Recall Context is Markdown first with a structured JSON sidecar.
 - CLI and HTTP are presentation adapters over shared use-case interfaces.

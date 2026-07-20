@@ -46,6 +46,7 @@ GateDecisionReason = Literal[
 ]
 IndexOperation = Literal["upsert", "delete"]
 CandidateSource = Literal["lexical", "vector"]
+RecallDocumentKind = Literal["episode", "atomic_fact"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -135,6 +136,36 @@ class CodingMemory:
     fact_ids: tuple[str, ...] = ()
     markdown_path: str | None = None
     content_sha256: str | None = None
+    facts: tuple[EvidenceFact, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class RecallDocument:
+    document_id: str
+    repo_key: str
+    memory_id: str
+    document_kind: RecallDocumentKind
+    parent_document_id: str
+    source_episode_id: str
+    fact_id: str
+    content_sha256: str
+    document_sha256: str
+    memory_type: MemoryType
+    title: str
+    summary: str
+    content: str
+    child_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class RecallDocumentFingerprint:
+    repo_key: str
+    memory_id: str
+    document_id: str
+    document_kind: RecallDocumentKind
+    parent_document_id: str
+    fact_id: str
+    document_sha256: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -274,6 +305,9 @@ class RebuildReport:
     truth_count: int
     index_count: int
     parity: bool
+    truth_document_count: int = 0
+    index_document_count: int = 0
+    document_parity: bool = True
 
 
 @dataclass(frozen=True, slots=True)

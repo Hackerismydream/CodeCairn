@@ -9,6 +9,7 @@ from codecairn.entrypoints.cli import build_app
 from codecairn.importers.session import SessionImporter
 from codecairn.memory.embedding import HashingEmbedder
 from codecairn.memory.evidence import EvidenceGate
+from codecairn.memory.projection import fingerprint, project_recall_documents
 from codecairn.service.application import (
     ApplicationOperations,
     CodeCairnApplication,
@@ -57,7 +58,8 @@ class _LocalOperations(ApplicationOperations):
         self._root = root.resolve()
 
     def doctor(self) -> dict[str, object]:
-        truth = MarkdownMemoryStore(self._root).scan()
+        truth_store = MarkdownMemoryStore(self._root)
+        truth = truth_store.scan()
         state = SQLiteState(self._root / "state.sqlite3")
         ledger = state.operational_counts()
         queue = create_cascade(self._root).health()
@@ -65,19 +67,31 @@ class _LocalOperations(ApplicationOperations):
             (memory.repo_key, memory.memory_id, memory.content_sha256 or "")
             for memory in truth.memories
         }
+        truth_document_fingerprints = {
+            fingerprint(document)
+            for memory in truth.memories
+            for document in project_recall_documents(
+                memory,
+                markdown=truth_store.read_markdown(memory),
+            )
+        }
         index_path = self._root / "index.lancedb"
         index_error: str | None = None
         try:
-            index_fingerprints = (
-                LanceMemoryIndex(index_path).fingerprints() if index_path.exists() else set()
-            )
+            index = LanceMemoryIndex(index_path)
+            if index_path.exists():
+                index_fingerprints, index_document_fingerprints = index.fingerprint_snapshot()
+            else:
+                index_fingerprints, index_document_fingerprints = set(), set()
         except Exception as error:
             index_fingerprints = set()
+            index_document_fingerprints = set()
             index_error = type(error).__name__
         markdown_ready = not truth.issues
         index_ready = (
             index_error is None
             and index_fingerprints == truth_fingerprints
+            and index_document_fingerprints == truth_document_fingerprints
             and queue.pending == 0
             and queue.leased == 0
             and queue.failed == 0
@@ -104,6 +118,8 @@ class _LocalOperations(ApplicationOperations):
                 "ready": index_ready,
                 "fingerprint_count": len(index_fingerprints),
                 "truth_fingerprint_count": len(truth_fingerprints),
+                "document_fingerprint_count": len(index_document_fingerprints),
+                "truth_document_fingerprint_count": len(truth_document_fingerprints),
                 "error_type": index_error,
             },
             "providers": provider_status,

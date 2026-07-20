@@ -3,7 +3,7 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from codecairn.bootstrap import app, create_cascade
+from codecairn.bootstrap import app, create_cascade, create_runtime
 
 FIXTURE = Path(__file__).parent / "fixtures" / "codex" / "failed_command.jsonl"
 CLAUDE_FIXTURE = Path(__file__).parent / "fixtures" / "claude" / "failed_command.jsonl"
@@ -154,6 +154,21 @@ def test_cli_exposes_doctor_and_evaluation_run_report(tmp_path: Path) -> None:
     )
     assert reported.exit_code == 0, reported.output
     assert json.loads(reported.stdout) == json.loads(executed.stdout)
+
+
+def test_doctor_verifies_the_hierarchical_document_projection(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    create_runtime(root).import_session(FIXTURE, repo_key="acme/widgets")
+    create_cascade(root).run_until_idle(worker_id="test")
+
+    doctor = CliRunner().invoke(app, ["doctor", "--root", str(root)])
+
+    assert doctor.exit_code == 0, doctor.output
+    diagnostics = json.loads(doctor.stdout)
+    assert diagnostics["status"] == "healthy"
+    assert diagnostics["index"]["ready"] is True
+    assert diagnostics["index"]["document_fingerprint_count"] == 4
+    assert diagnostics["index"]["truth_document_fingerprint_count"] == 4
 
 
 def test_cli_help_lists_complete_public_surface() -> None:

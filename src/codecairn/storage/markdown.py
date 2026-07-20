@@ -11,6 +11,9 @@ from typing import cast, get_args
 
 from codecairn.memory.models import (
     CodingMemory,
+    EvidenceFact,
+    EvidenceFactKind,
+    EvidenceFactStatus,
     EvidenceReference,
     MemoryRepairPlan,
     MemoryRepairReason,
@@ -20,6 +23,8 @@ from codecairn.memory.models import (
 )
 
 _MEMORY_TYPES = frozenset(get_args(MemoryType))
+_EVIDENCE_FACT_KINDS = frozenset(get_args(EvidenceFactKind))
+_EVIDENCE_FACT_STATUSES = frozenset(get_args(EvidenceFactStatus))
 _MAX_MARKDOWN_BYTES = 64 * 1024 * 1024
 _SAFE_BODY: dict[MemoryType, tuple[str, str]] = {
     "debug_episode": ("Debug Episode", "A debugging episode backed by cited raw events."),
@@ -46,7 +51,8 @@ class MarkdownMemoryStore:
     def write(self, memory: CodingMemory) -> CodingMemory:
         path = self._path_for(memory)
         content = _render(memory)
-        content_sha256 = hashlib.sha256(content.encode()).hexdigest()
+        content_bytes = _validated_markdown_bytes(content)
+        content_sha256 = hashlib.sha256(content_bytes).hexdigest()
         path.parent.mkdir(parents=True, exist_ok=True)
         existing_sha256 = _file_sha256(path)
         if existing_sha256 is None:
@@ -54,7 +60,7 @@ class MarkdownMemoryStore:
             existing_sha256 = _file_sha256(path)
         if existing_sha256 != content_sha256:
             existing = self.read(path)
-            if _semantic_identity(existing) != _semantic_identity(memory):
+            if not _same_immutable_memory(existing, memory):
                 raise ValueError(f"Conflicting immutable memory: {memory.memory_id}")
             return existing
         return replace(
@@ -109,9 +115,7 @@ class MarkdownMemoryStore:
                 reason="unparsable",
                 observed_sha256=observed_sha256,
             )
-        if observed_sha256 != expected_sha256 or _semantic_identity(restored) != _semantic_identity(
-            memory
-        ):
+        if observed_sha256 != expected_sha256 or not _same_immutable_memory(restored, memory):
             return _repair_plan(
                 memory,
                 reason="hash_mismatch",
@@ -126,7 +130,8 @@ class MarkdownMemoryStore:
         if current_plan != plan:
             raise ValueError(f"Markdown changed during recovery: {memory.memory_id}")
         content = _render(memory)
-        content_sha256 = hashlib.sha256(content.encode()).hexdigest()
+        content_bytes = _validated_markdown_bytes(content)
+        content_sha256 = hashlib.sha256(content_bytes).hexdigest()
         if content_sha256 != plan.expected_sha256:
             raise ValueError(
                 f"Committed recovery state conflicts with Markdown: {memory.memory_id}"
@@ -147,27 +152,9 @@ class MarkdownMemoryStore:
         if source is None:
             raise FileNotFoundError(resolved)
         content = source.decode("utf-8")
-        attributes = _parse_frontmatter(content)
-        evidence = _parse_evidence(attributes["evidence"])
-        memory_type = _required_str(attributes, "memory_type")
-        if memory_type not in _MEMORY_TYPES:
-            raise ValueError(f"Unknown memory type: {memory_type!r}")
-        return CodingMemory(
-            memory_id=_required_str(attributes, "memory_id"),
-            repo_key=_required_str(attributes, "repo_key"),
-            memory_type=cast(MemoryType, memory_type),
-            title=_required_str(attributes, "title"),
-            summary=_required_str(attributes, "summary"),
-            episode_id=_required_str(attributes, "episode_id"),
-            command=_optional_str(attributes, "command"),
-            exit_code=_optional_int(attributes, "exit_code"),
-            evidence=evidence,
-            fact_ids=_optional_string_tuple(attributes, "fact_ids"),
-            markdown_path=str(resolved),
-            content_sha256=hashlib.sha256(content.encode()).hexdigest(),
-        )
+        return _memory_from_content(resolved, content)
 
-    def read_markdown(self, memory: CodingMemory) -> str:
+    def read_projection(self, memory: CodingMemory) -> tuple[CodingMemory, str]:
         path = self._committed_path(memory)
         source = _read_markdown_bytes(path)
         if source is None:
@@ -175,7 +162,15 @@ class MarkdownMemoryStore:
         observed_sha256 = hashlib.sha256(source).hexdigest()
         if observed_sha256 != _required_content_sha256(memory):
             raise ValueError(f"Markdown changed after reconciliation: {memory.memory_id}")
-        return source.decode("utf-8")
+        content = source.decode("utf-8")
+        restored = _memory_from_content(path, content)
+        if (restored.repo_key, restored.memory_id) != (memory.repo_key, memory.memory_id):
+            raise ValueError("Markdown truth changed its committed memory identity")
+        return restored, content
+
+    def read_markdown(self, memory: CodingMemory) -> str:
+        _restored, content = self.read_projection(memory)
+        return content
 
     def scan(self) -> TruthScan:
         memories: dict[tuple[str, str], CodingMemory] = {}
@@ -233,7 +228,33 @@ class MarkdownMemoryStore:
         return path
 
 
+def _memory_from_content(resolved: Path, content: str) -> CodingMemory:
+    attributes = _parse_frontmatter(content)
+    evidence = _parse_evidence(attributes["evidence"])
+    memory_type = _required_str(attributes, "memory_type")
+    if memory_type not in _MEMORY_TYPES:
+        raise ValueError(f"Unknown memory type: {memory_type!r}")
+    memory = CodingMemory(
+        memory_id=_required_str(attributes, "memory_id"),
+        repo_key=_required_str(attributes, "repo_key"),
+        memory_type=cast(MemoryType, memory_type),
+        title=_required_str(attributes, "title"),
+        summary=_required_str(attributes, "summary"),
+        episode_id=_required_str(attributes, "episode_id"),
+        command=_optional_str(attributes, "command"),
+        exit_code=_optional_int(attributes, "exit_code"),
+        evidence=evidence,
+        fact_ids=_optional_string_tuple(attributes, "fact_ids"),
+        facts=_parse_facts(attributes.get("facts", [])),
+        markdown_path=str(resolved),
+        content_sha256=hashlib.sha256(content.encode()).hexdigest(),
+    )
+    _validate_facts(memory)
+    return memory
+
+
 def _render(memory: CodingMemory) -> str:
+    _validate_facts(memory)
     evidence = [_evidence_dict(item) for item in memory.evidence]
     heading, description = _SAFE_BODY[memory.memory_type]
     result = (
@@ -242,6 +263,11 @@ def _render(memory: CodingMemory) -> str:
         else ""
     )
     fact_ids = f"fact_ids: {json.dumps(memory.fact_ids)}\n" if memory.fact_ids else ""
+    facts = (
+        f"facts: {json.dumps([_fact_dict(fact) for fact in memory.facts], sort_keys=True)}\n"
+        if memory.facts
+        else ""
+    )
     return (
         "---\n"
         f"memory_id: {json.dumps(memory.memory_id)}\n"
@@ -254,6 +280,7 @@ def _render(memory: CodingMemory) -> str:
         f"exit_code: {json.dumps(memory.exit_code)}\n"
         f"evidence: {json.dumps(evidence, sort_keys=True)}\n"
         f"{fact_ids}"
+        f"{facts}"
         "---\n\n"
         f"# {heading}\n\n"
         f"{description}\n\n"
@@ -273,6 +300,19 @@ def _evidence_dict(evidence: EvidenceReference) -> dict[str, object]:
         "raw_event_index": evidence.raw_event_index,
         "raw_event_type": evidence.raw_event_type,
         "call_id": evidence.call_id,
+    }
+
+
+def _fact_dict(fact: EvidenceFact) -> dict[str, object]:
+    return {
+        "fact_id": fact.fact_id,
+        "repo_key": fact.repo_key,
+        "episode_id": fact.episode_id,
+        "kind": fact.kind,
+        "text": fact.text,
+        "role": fact.role,
+        "evidence": [_evidence_dict(item) for item in fact.evidence],
+        "status": fact.status,
     }
 
 
@@ -323,6 +363,34 @@ def _parse_evidence(value: object) -> tuple[EvidenceReference, ...]:
             )
         )
     return tuple(evidence)
+
+
+def _parse_facts(value: object) -> tuple[EvidenceFact, ...]:
+    if not isinstance(value, list):
+        raise ValueError("Memory facts must be a list")
+    facts: list[EvidenceFact] = []
+    for position, item in enumerate(value):
+        if not isinstance(item, dict):
+            raise ValueError(f"Memory fact at position {position} is not an object")
+        kind = _required_str(item, "kind")
+        if kind not in _EVIDENCE_FACT_KINDS:
+            raise ValueError(f"Unknown evidence fact kind: {kind!r}")
+        status = _optional_str(item, "status")
+        if status is not None and status not in _EVIDENCE_FACT_STATUSES:
+            raise ValueError(f"Unknown evidence fact status: {status!r}")
+        facts.append(
+            EvidenceFact(
+                fact_id=_required_str(item, "fact_id"),
+                repo_key=_required_str(item, "repo_key"),
+                episode_id=_required_str(item, "episode_id"),
+                kind=cast(EvidenceFactKind, kind),
+                text=_required_str(item, "text"),
+                role=_optional_str(item, "role"),
+                evidence=_parse_evidence(item.get("evidence")),
+                status=cast(EvidenceFactStatus | None, status),
+            )
+        )
+    return tuple(facts)
 
 
 def _required_str(values: dict[str, object], key: str) -> str:
@@ -411,7 +479,7 @@ def _fsync_directory(path: Path) -> None:
         os.close(directory_descriptor)
 
 
-def _semantic_identity(memory: CodingMemory) -> tuple[object, ...]:
+def _core_semantic_identity(memory: CodingMemory) -> tuple[object, ...]:
     evidence = tuple(
         (
             item.provider,
@@ -435,6 +503,56 @@ def _semantic_identity(memory: CodingMemory) -> tuple[object, ...]:
         memory.fact_ids,
         evidence,
     )
+
+
+def _same_immutable_memory(existing: CodingMemory, candidate: CodingMemory) -> bool:
+    if _core_semantic_identity(existing) != _core_semantic_identity(candidate):
+        return False
+    return (
+        not existing.facts
+        or not candidate.facts
+        or _fact_semantic_identity(existing.facts) == _fact_semantic_identity(candidate.facts)
+    )
+
+
+def _fact_semantic_identity(facts: tuple[EvidenceFact, ...]) -> tuple[object, ...]:
+    return tuple(
+        (
+            fact.fact_id,
+            fact.repo_key,
+            fact.episode_id,
+            fact.kind,
+            fact.text,
+            fact.role,
+            fact.status,
+            tuple(
+                (
+                    item.provider,
+                    item.session_id,
+                    item.raw_event_sha256,
+                    item.raw_event_index,
+                    item.raw_event_type,
+                    item.call_id,
+                )
+                for item in fact.evidence
+            ),
+        )
+        for fact in facts
+    )
+
+
+def _validate_facts(memory: CodingMemory) -> None:
+    fact_ids = tuple(fact.fact_id for fact in memory.facts)
+    if len(fact_ids) != len(set(fact_ids)):
+        raise ValueError("Memory facts must have unique fact IDs")
+    if memory.fact_ids and memory.facts and memory.fact_ids != fact_ids:
+        raise ValueError("Memory fact IDs must match the persisted fact snapshot")
+    evidence = set(memory.evidence)
+    for fact in memory.facts:
+        if fact.repo_key != memory.repo_key:
+            raise ValueError("Memory facts must belong to the same repository")
+        if not fact.evidence or not set(fact.evidence).issubset(evidence):
+            raise ValueError("Memory facts must cite the memory evidence")
 
 
 def _file_sha256(path: Path) -> str | None:
@@ -475,6 +593,13 @@ def _read_markdown_bytes(path: Path, *, missing_ok: bool = False) -> bytes | Non
             f"Markdown source exceeds the {_MAX_MARKDOWN_BYTES}-byte limit: {path}"
         )
     return source
+
+
+def _validated_markdown_bytes(content: str) -> bytes:
+    encoded = content.encode()
+    if len(encoded) > _MAX_MARKDOWN_BYTES:
+        raise ValueError(f"Memory Markdown exceeds the {_MAX_MARKDOWN_BYTES}-byte limit")
+    return encoded
 
 
 def _required_content_sha256(memory: CodingMemory) -> str:

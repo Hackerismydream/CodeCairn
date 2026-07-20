@@ -43,6 +43,12 @@ def test_imports_codex_failed_command_as_auditable_memory(tmp_path: Path) -> Non
     assert memory.exit_code == 1
     assert [evidence.raw_event_index for evidence in memory.evidence] == [2, 3]
     assert {evidence.call_id for evidence in memory.evidence} == {"call-test-001"}
+    assert {fact.kind for fact in memory.facts} == {
+        "action",
+        "episode_outcome",
+        "verification",
+    }
+    assert all(fact.episode_id == memory.episode_id for fact in memory.facts)
 
     markdown = Path(memory.markdown_path).read_text(encoding="utf-8")
     assert "# Failed Command" in markdown
@@ -50,9 +56,75 @@ def test_imports_codex_failed_command_as_auditable_memory(tmp_path: Path) -> Non
     assert 'repo_key: "acme/widgets"' in markdown
     assert '"raw_event_index": 2' in markdown
     assert '"raw_event_index": 3' in markdown
+    assert '"kind": "verification"' in markdown
 
     restored = MarkdownMemoryStore(tmp_path / "runtime").read(Path(memory.markdown_path))
     assert restored == memory
+
+
+def test_runtime_migrates_legacy_memory_rows_without_losing_data(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    root.mkdir()
+    evidence = [
+        {
+            "provider": "codex",
+            "session_id": "legacy-session",
+            "source_path": "/observed/legacy.jsonl",
+            "raw_event_sha256": "c" * 64,
+            "raw_event_index": 2,
+            "raw_event_type": "response_item",
+            "call_id": "legacy-call",
+        }
+    ]
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        connection.execute(
+            """
+            CREATE TABLE memories (
+                repo_key TEXT NOT NULL,
+                memory_id TEXT NOT NULL,
+                memory_type TEXT NOT NULL,
+                title TEXT NOT NULL,
+                summary TEXT NOT NULL,
+                episode_id TEXT NOT NULL,
+                command TEXT,
+                exit_code INTEGER,
+                evidence_json TEXT NOT NULL,
+                fact_ids_json TEXT NOT NULL DEFAULT '[]',
+                markdown_path TEXT NOT NULL,
+                content_sha256 TEXT NOT NULL,
+                PRIMARY KEY (repo_key, memory_id)
+            )
+            """
+        )
+        connection.execute(
+            """
+            INSERT INTO memories VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                "acme/widgets",
+                "memory_legacy",
+                "failed_command",
+                "Failed Command",
+                "A legacy memory remains readable.",
+                "episode_legacy",
+                "pytest",
+                1,
+                json.dumps(evidence),
+                "[]",
+                str(root / "legacy.md"),
+                "d" * 64,
+            ),
+        )
+
+    runtime = create_runtime(root)
+
+    memory = runtime.list_memories(repo_key="acme/widgets")[0]
+    assert memory.memory_id == "memory_legacy"
+    assert memory.command == "pytest"
+    assert memory.facts == ()
+    with sqlite3.connect(root / "state.sqlite3") as connection:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(memories)")}
+    assert "facts_json" in columns
 
 
 def test_imports_claude_failed_command_through_the_shared_runtime(tmp_path: Path) -> None:

@@ -7,6 +7,7 @@ from typing import Literal, cast
 
 from codecairn.memory.models import (
     CodingMemory,
+    EvidenceFact,
     EvidenceReference,
     GateAudit,
     GateDecision,
@@ -378,8 +379,8 @@ class SQLiteState:
             rows = connection.execute(
                 """
                 SELECT memory_id, memory_type, title, summary, episode_id,
-                       command, exit_code, evidence_json, fact_ids_json, markdown_path,
-                       content_sha256
+                       command, exit_code, evidence_json, fact_ids_json, facts_json,
+                       markdown_path, content_sha256
                 FROM memories
                 WHERE repo_key = ?
                 ORDER BY memory_id
@@ -393,8 +394,8 @@ class SQLiteState:
             row = connection.execute(
                 """
                 SELECT memory_id, memory_type, title, summary, episode_id,
-                       command, exit_code, evidence_json, fact_ids_json, markdown_path,
-                       content_sha256
+                       command, exit_code, evidence_json, fact_ids_json, facts_json,
+                       markdown_path, content_sha256
                 FROM memories
                 WHERE repo_key = ? AND memory_id = ?
                 """,
@@ -407,8 +408,8 @@ class SQLiteState:
             rows = connection.execute(
                 """
                 SELECT repo_key, memory_id, memory_type, title, summary, episode_id,
-                       command, exit_code, evidence_json, fact_ids_json, markdown_path,
-                       content_sha256
+                       command, exit_code, evidence_json, fact_ids_json, facts_json,
+                       markdown_path, content_sha256
                 FROM memories
                 ORDER BY repo_key, memory_id
                 """
@@ -638,6 +639,22 @@ class SQLiteState:
                 """
             )
 
+    def requeue_index_revisions(self, fingerprints: set[tuple[str, str, str]]) -> None:
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("DELETE FROM index_state")
+            connection.executemany(
+                """
+                INSERT INTO index_queue (
+                    repo_key, memory_id, content_sha256, operation, status
+                ) VALUES (?, ?, ?, 'upsert', 'pending')
+                ON CONFLICT(repo_key, memory_id, content_sha256, operation)
+                WHERE status IN ('pending', 'leased')
+                DO NOTHING
+                """,
+                sorted(fingerprints),
+            )
+
     def retry_failed_index_jobs(self) -> int:
         with self._connect() as connection:
             cursor = connection.execute(
@@ -666,6 +683,7 @@ class SQLiteState:
                     exit_code INTEGER,
                     evidence_json TEXT NOT NULL,
                     fact_ids_json TEXT NOT NULL DEFAULT '[]',
+                    facts_json TEXT NOT NULL DEFAULT '[]',
                     markdown_path TEXT NOT NULL,
                     content_sha256 TEXT NOT NULL,
                     PRIMARY KEY (repo_key, memory_id)
@@ -774,6 +792,10 @@ class SQLiteState:
                 connection.execute(
                     "ALTER TABLE memories ADD COLUMN fact_ids_json TEXT NOT NULL DEFAULT '[]'"
                 )
+            if "facts_json" not in memory_columns:
+                connection.execute(
+                    "ALTER TABLE memories ADD COLUMN facts_json TEXT NOT NULL DEFAULT '[]'"
+                )
             gate_columns = {
                 row["name"]
                 for row in connection.execute("PRAGMA table_info(gate_audit)").fetchall()
@@ -824,6 +846,19 @@ def _evidence_dict(evidence: EvidenceReference) -> dict[str, object]:
     }
 
 
+def _fact_dict(fact: EvidenceFact) -> dict[str, object]:
+    return {
+        "fact_id": fact.fact_id,
+        "repo_key": fact.repo_key,
+        "episode_id": fact.episode_id,
+        "kind": fact.kind,
+        "text": fact.text,
+        "role": fact.role,
+        "evidence": [_evidence_dict(item) for item in fact.evidence],
+        "status": fact.status,
+    }
+
+
 def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
     if memory.markdown_path is None or memory.content_sha256 is None:
         raise ValueError("Cannot commit a memory before Markdown persistence")
@@ -831,9 +866,9 @@ def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
         """
         INSERT INTO memories (
             repo_key, memory_id, memory_type, title, summary,
-            episode_id, command, exit_code, evidence_json, fact_ids_json,
+            episode_id, command, exit_code, evidence_json, fact_ids_json, facts_json,
             markdown_path, content_sha256
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(repo_key, memory_id) DO NOTHING
         """,
         (
@@ -847,6 +882,7 @@ def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
             memory.exit_code,
             json.dumps([_evidence_dict(item) for item in memory.evidence]),
             json.dumps(memory.fact_ids),
+            json.dumps([_fact_dict(fact) for fact in memory.facts]),
             memory.markdown_path,
             memory.content_sha256,
         ),
@@ -878,7 +914,7 @@ def _update_truth_memory(connection: sqlite3.Connection, memory: CodingMemory) -
         """
         UPDATE memories
         SET memory_type = ?, title = ?, summary = ?, episode_id = ?,
-            command = ?, exit_code = ?, evidence_json = ?, fact_ids_json = ?,
+            command = ?, exit_code = ?, evidence_json = ?, fact_ids_json = ?, facts_json = ?,
             markdown_path = ?, content_sha256 = ?
         WHERE repo_key = ? AND memory_id = ?
         """,
@@ -891,6 +927,7 @@ def _update_truth_memory(connection: sqlite3.Connection, memory: CodingMemory) -
             memory.exit_code,
             json.dumps([_evidence_dict(item) for item in memory.evidence]),
             json.dumps(memory.fact_ids),
+            json.dumps([_fact_dict(fact) for fact in memory.facts]),
             markdown_path,
             memory.content_sha256,
             memory.repo_key,
@@ -960,6 +997,19 @@ def _parse_string_tuple(value: str, *, field: str) -> tuple[str, ...]:
 
 def _memory_from_row(repo_key: str, row: sqlite3.Row) -> CodingMemory:
     evidence = tuple(EvidenceReference(**item) for item in json.loads(row["evidence_json"]))
+    facts = tuple(
+        EvidenceFact(
+            fact_id=item["fact_id"],
+            repo_key=item["repo_key"],
+            episode_id=item["episode_id"],
+            kind=item["kind"],
+            text=item["text"],
+            role=item["role"],
+            evidence=tuple(EvidenceReference(**reference) for reference in item["evidence"]),
+            status=item["status"],
+        )
+        for item in json.loads(row["facts_json"])
+    )
     return CodingMemory(
         memory_id=row["memory_id"],
         repo_key=repo_key,
@@ -971,6 +1021,7 @@ def _memory_from_row(repo_key: str, row: sqlite3.Row) -> CodingMemory:
         exit_code=row["exit_code"],
         evidence=evidence,
         fact_ids=_parse_string_tuple(row["fact_ids_json"], field="memory fact IDs"),
+        facts=facts,
         markdown_path=row["markdown_path"],
         content_sha256=row["content_sha256"],
     )

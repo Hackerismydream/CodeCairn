@@ -30,6 +30,8 @@ Codex / Claude Code JSONL
                     |
               Mini Cascade
                     |
+       Episode -> AtomicFact projection
+                    |
        BM25 union vector candidates
                     |
                  rerank
@@ -60,9 +62,9 @@ after an explicitly configured redactor runs. A configured byte limit is
 checked before the remote-model port is called, and strict schema parsing keeps
 model output from supplying evidence fields. The Evidence Gate resolves every
 proposed fact identifier against the repository-scoped deterministic fact set.
-Accepted memories persist fact identifiers in Markdown and SQLite; accepted and
-rejected proposals both create SQLite gate-audit rows with their proposal,
-resolved references, and reason.
+Accepted memories persist both fact identifiers and complete deterministic fact
+snapshots in Markdown and SQLite; accepted and rejected proposals both create
+SQLite gate-audit rows with their proposal, resolved references, and reason.
 
 Command results become verification facts only when deterministic command
 classification identifies a test, lint, type-check, or build invocation.
@@ -113,10 +115,24 @@ alternative import, recall, evaluation, or health behavior.
   source location; recovery may resolve or repair live locators without
   rewriting memory identity.
 - SQLite owns transactions, cursors, audit, leases, and the index outbox.
+- Existing SQLite repositories migrate online with an empty `facts_json`
+  default. Legacy Markdown without a fact snapshot remains readable and loses
+  no memory-level data.
 - Import checkpoints hash the stable event prefix and replay only the final
   active Task Episode. Markdown recovery is atomic, hash-verified, and recorded
   through resumable SQLite audit rows.
-- LanceDB owns vector and lexical search material only. It is disposable.
+- Cascade workers reparse the committed Markdown artifact for both the parent
+  narrative and fact snapshot; SQLite metadata cannot author AtomicFact index
+  rows. Oversized Markdown is rejected before any durable file is created.
+- LanceDB owns vector and lexical search material only. Each Coding Memory is
+  projected into one Episode document and zero or more AtomicFact children.
+  Parent identifiers and per-document digests are deterministic, and rebuild
+  parity checks both memory groups and all projected documents. It is
+  disposable.
+- The current recall engine still searches Episode documents only. AtomicFact
+  text is excluded from Episode search content, so it cannot affect flat
+  ranking before routing exists. AtomicFact routing, neighbor expansion, and
+  hierarchical planning belong to the later RecallPlanner milestone.
 
 ## Reference policy
 

@@ -26,7 +26,7 @@ def _evidence(index: int) -> EvidenceReference:
     )
 
 
-def test_verified_fix_requires_a_successful_verification_after_the_change() -> None:
+def test_verified_fix_requires_a_successful_verification_after_the_change(tmp_path: Path) -> None:
     changed = EvidenceFact(
         fact_id="fact-change",
         repo_key="acme/widgets",
@@ -64,6 +64,13 @@ def test_verified_fix_requires_a_successful_verification_after_the_change() -> N
     assert decision.memory is not None
     assert decision.memory.memory_type == "verified_fix"
     assert decision.memory.fact_ids == (changed.fact_id, verified.fact_id)
+    assert decision.memory.facts == (changed, verified)
+
+    runtime = create_runtime(tmp_path / "runtime")
+    persisted = runtime.evaluate_proposal(proposal, facts=(changed, verified))
+
+    assert persisted.accepted is True
+    assert runtime.list_memories(repo_key="acme/widgets")[0].facts == (changed, verified)
 
 
 def test_verified_fix_rejects_a_failed_verification() -> None:

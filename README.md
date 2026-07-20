@@ -36,9 +36,11 @@ Agent Trace. Deterministic Evidence Facts and type-specific gates accept
 grounded User Preference and Repository Convention proposals while recording
 rejections for audit. Verified Fix additionally requires a file change followed
 by a successful test, lint, type-check, or build command; Debug Episode connects
-one task, action, and observed outcome. Repeated imports validate the committed
-prefix, resume from the active Task Episode, and repair committed Markdown
-through an audited recovery path:
+one task, action, and observed outcome. Complete Evidence Fact snapshots remain
+inside Markdown truth and rebuild into a Recall Episode plus AtomicFact child
+documents in LanceDB. Repeated imports validate the committed prefix, resume
+from the active Task Episode, and repair committed Markdown through an audited
+recovery path:
 
 ```bash
 uv run codecairn import /path/to/session.jsonl \

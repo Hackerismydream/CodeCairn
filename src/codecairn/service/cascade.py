@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import Protocol
+from typing import Protocol, cast
 
 from codecairn.memory.models import (
     CodingMemory,
     IndexHealth,
     IndexJob,
     RebuildReport,
+    RecallDocumentFingerprint,
     ReconcileReport,
     TruthScan,
 )
+from codecairn.memory.projection import fingerprint, project_recall_documents
 
 
 class MemoryTruth(Protocol):
@@ -94,8 +96,8 @@ class MiniCascade:
                 if memory is None or memory.content_sha256 != job.content_sha256:
                     self._state.complete_index_job(job, update_fingerprint=False)
                     return True
-                markdown = self._truth.read_markdown(memory)
-                self._index.upsert(memory, markdown=markdown)
+                truth_memory, markdown = _read_projection(self._truth, memory)
+                self._index.upsert(truth_memory, markdown=markdown)
             self._state.complete_index_job(job)
         except Exception as exc:
             self._state.fail_index_job(job, error_type=type(exc).__name__)
@@ -126,18 +128,91 @@ class MiniCascade:
             (memory.repo_key, memory.memory_id, memory.content_sha256 or "")
             for memory in scan.memories
         }
+        truth_documents = {
+            fingerprint(document)
+            for memory, markdown in payload
+            for document in project_recall_documents(memory, markdown=markdown)
+        }
         self._index.replace_all(payload)
-        indexed = self._index.fingerprints()
-        self._state.replace_index_state(indexed)
+        indexed, indexed_documents = _fingerprint_snapshot(self._index)
+        document_parity = indexed_documents == truth_documents
+        parity = indexed == truth and document_parity
+        if parity:
+            self._state.replace_index_state(indexed)
+        else:
+            _requeue_index_revisions(self._state, truth)
         return RebuildReport(
             truth_count=len(truth),
             index_count=len(indexed),
-            parity=indexed == truth,
+            truth_document_count=len(truth_documents),
+            index_document_count=len(indexed_documents),
+            document_parity=document_parity,
+            parity=parity,
         )
 
     def index_fingerprints(self) -> set[tuple[str, str, str]]:
         return self._index.fingerprints()
 
+    def index_document_fingerprints(self) -> set[RecallDocumentFingerprint]:
+        return _document_fingerprints(self._index)
+
 
 def _system_clock_ms() -> int:
     return time.time_ns() // 1_000_000
+
+
+def _document_fingerprints(index: MemoryIndex) -> set[RecallDocumentFingerprint]:
+    method = getattr(index, "document_fingerprints", None)
+    if not callable(method):
+        return set()
+    result = method()
+    if not isinstance(result, set):
+        raise TypeError("Memory index document fingerprints must be a set")
+    return cast(set[RecallDocumentFingerprint], result)
+
+
+def _fingerprint_snapshot(
+    index: MemoryIndex,
+) -> tuple[set[tuple[str, str, str]], set[RecallDocumentFingerprint]]:
+    method = getattr(index, "fingerprint_snapshot", None)
+    if not callable(method):
+        return index.fingerprints(), _document_fingerprints(index)
+    result = method()
+    if (
+        not isinstance(result, tuple)
+        or len(result) != 2
+        or not all(isinstance(item, set) for item in result)
+    ):
+        raise TypeError("Memory index fingerprint snapshot must contain two sets")
+    memory_fingerprints, document_fingerprints = result
+    return (
+        cast(set[tuple[str, str, str]], memory_fingerprints),
+        cast(set[RecallDocumentFingerprint], document_fingerprints),
+    )
+
+
+def _requeue_index_revisions(
+    state: CascadeState,
+    fingerprints: set[tuple[str, str, str]],
+) -> None:
+    method = getattr(state, "requeue_index_revisions", None)
+    if callable(method):
+        method(fingerprints)
+
+
+def _read_projection(
+    truth: MemoryTruth,
+    memory: CodingMemory,
+) -> tuple[CodingMemory, str]:
+    method = getattr(truth, "read_projection", None)
+    if not callable(method):
+        return memory, truth.read_markdown(memory)
+    result = method(memory)
+    if (
+        not isinstance(result, tuple)
+        or len(result) != 2
+        or not isinstance(result[0], CodingMemory)
+        or not isinstance(result[1], str)
+    ):
+        raise TypeError("Memory truth projection must contain a memory and Markdown")
+    return result

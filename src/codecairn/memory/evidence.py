@@ -517,6 +517,7 @@ def _accept(proposal: MemoryProposal, facts: tuple[EvidenceFact, ...]) -> GateDe
         exit_code=None,
         evidence=evidence,
         fact_ids=fact_ids,
+        facts=facts,
     )
     return GateDecision(
         proposal_id=proposal.proposal_id,

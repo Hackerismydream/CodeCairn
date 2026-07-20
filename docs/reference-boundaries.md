@@ -20,10 +20,11 @@ through a manifest containing only hashes and aggregate counts.
 
 ## EverOS
 
-EverOS is a mechanism-level reference for Markdown atomicity, locking, index
-rebuilds, queue observability, and LoCoMo orchestration. It is not a source for
-CodeCairn's Coding Agent Trace, Evidence Gate, task segmentation, Recall Context
-contract, or coding-task evaluation runner.
+EverOS is a mechanism-level reference for Markdown atomicity, locking,
+hierarchical search projections, index rebuilds, queue observability, and LoCoMo
+orchestration. It is not a source for CodeCairn's Coding Agent Trace, Evidence
+Gate, task segmentation, Recall Context contract, or coding-task evaluation
+runner.
 
 Public CodeCairn documentation describes CodeCairn directly. When source code is
 copied rather than independently implemented, its license and attribution must
