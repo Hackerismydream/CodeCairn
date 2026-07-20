@@ -52,8 +52,9 @@ uv run codecairn list --repo-key owner/repository --root .codecairn
 Production recall uses Alibaba Cloud Model Studio's OpenAI-compatible embedding
 API with `qwen3.7-text-embedding` at 1,024 dimensions. CrossEncoder reranking
 remains local through the pinned `Xenova/ms-marco-MiniLM-L-6-v2` ONNX artifact.
-Configure a DashScope key before starting CodeCairn; a workspace-specific base
-URL can replace the public endpoint without changing durable Markdown truth:
+Configure a DashScope key before indexing or recall; offline commands such as
+evidence verification do not require provider credentials. A workspace-specific
+base URL can replace the public endpoint without changing durable Markdown truth:
 
 ```bash
 export DASHSCOPE_API_KEY="<your-api-key>"

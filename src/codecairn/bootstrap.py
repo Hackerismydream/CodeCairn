@@ -142,10 +142,6 @@ def create_retrieval_providers(
             "DASHSCOPE_API_KEY",
             "",
         )
-        if not api_key.strip():
-            raise ValueError(
-                "DashScope embedding requires CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"
-            )
         embedding_source = resolved_environment.get(
             "CODECAIRN_EMBEDDING_BASE_URL",
             DEFAULT_EMBEDDING_SOURCE,

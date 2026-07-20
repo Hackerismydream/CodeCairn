@@ -131,9 +131,11 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
     }
 
 
-def test_dashscope_profile_requires_an_api_key() -> None:
+def test_dashscope_profile_defers_the_api_key_guard_until_embedding_is_used() -> None:
+    providers = create_retrieval_providers(environment={})
+
     with pytest.raises(ValueError, match="CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"):
-        create_retrieval_providers(environment={})
+        providers.embedder.embed_query("query text")
 
 
 def test_qwen37_profile_rejects_an_unsupported_dimension() -> None:

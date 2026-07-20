@@ -113,8 +113,6 @@ class DashScopeEmbeddingAdapter:
         retry_backoff_seconds: float = DEFAULT_EMBEDDING_RETRY_BACKOFF_SECONDS,
         transport: httpx.BaseTransport | None = None,
     ) -> None:
-        if not api_key.strip():
-            raise ValueError("DashScope embedding api_key must not be empty")
         if not model_id.strip():
             raise ValueError("Embedding model ID must not be empty")
         parsed_url = httpx.URL(base_url)
@@ -147,9 +145,11 @@ class DashScopeEmbeddingAdapter:
         self._batch_size = batch_size
         self._max_attempts = max_attempts
         self._retry_backoff_seconds = retry_backoff_seconds
+        self._configured = bool(api_key.strip())
+        headers = {"Authorization": f"Bearer {api_key}"} if self._configured else {}
         self._client = httpx.Client(
             base_url=f"{self._source_id}/",
-            headers={"Authorization": f"Bearer {api_key}"},
+            headers=headers,
             timeout=timeout_seconds,
             transport=transport,
         )
@@ -230,6 +230,10 @@ class DashScopeEmbeddingAdapter:
         return tuple(indexed[index] for index in range(len(texts)))
 
     def _post(self, payload: dict[str, object]) -> httpx.Response:
+        if not self._configured:
+            raise ValueError(
+                "DashScope embedding requires CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"
+            )
         for attempt in range(1, self._max_attempts + 1):
             try:
                 response = self._client.post("embeddings", json=payload)
