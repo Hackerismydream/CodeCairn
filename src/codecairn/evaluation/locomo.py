@@ -228,7 +228,9 @@ class CodeCairnConversationMemory:
                     accepted += 1
                 else:
                     rejected += 1
-        self._cascade.run_until_idle(worker_id=f"locomo-{conversation.sample_id}")
+        rebuild = self._cascade.rebuild()
+        if not rebuild.parity:
+            raise ValueError("LoCoMo bulk index projection failed rebuild parity")
         return ConversationIngestResult(
             session_count=len(conversation.sessions),
             turn_count=turn_count,

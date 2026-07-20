@@ -66,6 +66,9 @@ three-layer ablation frozen in `diagnostic-200.json`. The selector takes 50
 questions from each scored category with a dataset-pinned SHA-256 ordering; its
 expected selection digest prevents a seed, loader, or question-identity change
 from silently moving the diagnostic set. Question text is not redistributed.
+Initial conversation ingestion uses the same Markdown truth and rebuild parity
+contract as production recovery, but projects all Episode and AtomicFact
+documents in embedding batches instead of issuing one ONNX call per memory.
 
 Run the same commit, answer model, judge model, vote count, and top-k under the
 three declared recall modes. Each command must include:
