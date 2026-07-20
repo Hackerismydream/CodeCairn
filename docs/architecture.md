@@ -32,7 +32,11 @@ Codex / Claude Code JSONL
                     |
        Episode -> AtomicFact projection
                     |
-       BM25 union learned-vector candidates
+       soft parent/child query routing
+                    |
+       four-way BM25/vector candidate union
+                    |
+       fact-to-parent MaxSim + neighbor expansion
                     |
            CrossEncoder rerank
                     |
@@ -136,10 +140,13 @@ alternative import, recall, evaluation, or health behavior.
   inter-process operation lock before it can be queried. Query sidecars and
   evaluation manifests retain the effective model identities. Feature hashing
   and fusion-only ranking are explicit test Adapters, not production fallbacks.
-- The current recall engine still searches Episode documents only. AtomicFact
-  text is excluded from Episode search content, so it cannot affect flat
-  ranking before routing exists. AtomicFact routing, neighbor expansion, and
-  hierarchical planning belong to the later RecallPlanner milestone.
+- RecallPlanner searches Episode and AtomicFact documents independently. Its
+  deterministic soft route changes candidate-pool sizes without disabling the
+  secondary level. AtomicFact hits are max-pooled by parent before four-way RRF,
+  and matched facts plus bounded same-Episode chronological neighbors are sent
+  to the CrossEncoder and emitted with source-memory attribution. The retrieval
+  manifest freezes `episode-only`, `hierarchy-no-neighbors`, or `hierarchy` so
+  the 200-question diagnostic can measure each added layer.
 
 ## Reference policy
 

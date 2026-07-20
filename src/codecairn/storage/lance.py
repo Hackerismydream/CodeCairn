@@ -170,6 +170,21 @@ class LanceMemoryIndex:
         vector: tuple[float, ...],
         limit: int,
     ) -> tuple[IndexCandidate, ...]:
+        return self.document_vector_candidates(
+            repo_key=repo_key,
+            vector=vector,
+            document_kind="episode",
+            limit=limit,
+        )
+
+    def document_vector_candidates(
+        self,
+        *,
+        repo_key: str,
+        vector: tuple[float, ...],
+        document_kind: RecallDocumentKind,
+        limit: int,
+    ) -> tuple[IndexCandidate, ...]:
         _validate_vector(vector, dimension=self._embedder.dimension)
         with self._operation_lock:
             table = self._table(create=False)
@@ -179,19 +194,15 @@ class LanceMemoryIndex:
                 list[dict[str, object]],
                 table.search(list(vector), query_type="vector")
                 .where(
-                    f"repo_key = {_sql_literal(repo_key)} AND document_kind = 'episode'",
+                    f"repo_key = {_sql_literal(repo_key)} "
+                    f"AND document_kind = {_sql_literal(document_kind)}",
                     prefilter=True,
                 )
                 .limit(limit)
                 .to_list(),
             )
         return tuple(
-            IndexCandidate(
-                repo_key=str(row["repo_key"]),
-                memory_id=str(row["memory_id"]),
-                score=1.0 / (1.0 + _required_float(row["_distance"])),
-            )
-            for row in rows
+            _candidate(row, score=1.0 / (1.0 + _required_float(row["_distance"]))) for row in rows
         )
 
     def lexical_candidates(
@@ -199,6 +210,21 @@ class LanceMemoryIndex:
         *,
         repo_key: str,
         query: str,
+        limit: int,
+    ) -> tuple[IndexCandidate, ...]:
+        return self.document_lexical_candidates(
+            repo_key=repo_key,
+            query=query,
+            document_kind="episode",
+            limit=limit,
+        )
+
+    def document_lexical_candidates(
+        self,
+        *,
+        repo_key: str,
+        query: str,
+        document_kind: RecallDocumentKind,
         limit: int,
     ) -> tuple[IndexCandidate, ...]:
         with self._operation_lock:
@@ -210,20 +236,14 @@ class LanceMemoryIndex:
                 list[dict[str, object]],
                 table.search(query, query_type="fts", fts_columns="content")
                 .where(
-                    f"repo_key = {_sql_literal(repo_key)} AND document_kind = 'episode'",
+                    f"repo_key = {_sql_literal(repo_key)} "
+                    f"AND document_kind = {_sql_literal(document_kind)}",
                     prefilter=True,
                 )
                 .limit(limit)
                 .to_list(),
             )
-        return tuple(
-            IndexCandidate(
-                repo_key=str(row["repo_key"]),
-                memory_id=str(row["memory_id"]),
-                score=_required_float(row["_score"]),
-            )
-            for row in rows
-        )
+        return tuple(_candidate(row, score=_required_float(row["_score"])) for row in rows)
 
     def _connection(self) -> DBConnection:
         self._path.mkdir(parents=True, exist_ok=True)
@@ -446,6 +466,21 @@ def _required_float(value: object) -> float:
     if not math.isfinite(result):
         raise ValueError("LanceDB returned a non-finite search score")
     return result
+
+
+def _candidate(row: dict[str, object], *, score: float) -> IndexCandidate:
+    return IndexCandidate(
+        repo_key=str(row["repo_key"]),
+        memory_id=str(row["memory_id"]),
+        score=score,
+        document_id=str(row["document_id"]),
+        document_kind=cast(RecallDocumentKind, str(row["document_kind"])),
+        parent_document_id=str(row["parent_document_id"]),
+        fact_id=str(row["fact_id"]),
+        title=str(row["title"]),
+        summary=str(row["summary"]),
+        content=str(row["content"]),
+    )
 
 
 def _sql_literal(value: str) -> str:

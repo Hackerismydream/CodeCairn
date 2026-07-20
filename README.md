@@ -134,6 +134,11 @@ overrides. Health reports configuration state only and never emits credentials.
 DeepSeek supplies LoCoMo answers and judge votes; local learned models supply
 embedding and reranking. Run manifests record both configurations separately.
 
+Hierarchical recall defaults to `CODECAIRN_RECALL_MODE=hierarchy`. Reproducible
+ablations may select `episode-only` or `hierarchy-no-neighbors`; the effective
+mode and deterministic router contract are included in the retrieval manifest
+and every query sidecar.
+
 The six versioned routes cover import, memory list, recall, evaluation run,
 evaluation report, and health. Every error response has the same shape and an
 `x-request-id` response header:

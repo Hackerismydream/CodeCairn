@@ -43,4 +43,5 @@ full rebuild from Markdown creates the canonical hierarchy.
 - PR1 does not alter ranking: vector and lexical search still filter to Recall
   Episode documents, whose search content omits the serialized fact snapshot.
 - AtomicFact query routing, neighbor expansion, and hierarchical planning can
-  be added later without another storage migration.
+  be added without another storage migration. ADR 0014 records that later
+  ranking decision.

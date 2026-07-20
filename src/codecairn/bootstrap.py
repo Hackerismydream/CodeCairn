@@ -5,6 +5,7 @@ import shutil
 from collections.abc import Mapping
 from dataclasses import asdict
 from pathlib import Path
+from typing import cast
 
 from codecairn.entrypoints.cli import build_app
 from codecairn.importers.session import SessionImporter
@@ -20,6 +21,7 @@ from codecairn.memory.embedding import (
 from codecairn.memory.evidence import EvidenceGate
 from codecairn.memory.model_artifact import validate_hf_artifact
 from codecairn.memory.projection import fingerprint, project_recall_documents
+from codecairn.memory.recall_planner import RecallPlannerConfig, RecallPlannerMode
 from codecairn.memory.reranking import (
     DEFAULT_RERANKER_LICENSE,
     DEFAULT_RERANKER_MODEL,
@@ -51,6 +53,7 @@ def create_retrieval_providers(
     """Resolve one fail-closed retrieval configuration without loading model weights."""
     resolved_environment = os.environ if environment is None else environment
     profile = resolved_environment.get("CODECAIRN_RETRIEVAL_PROFILE", "fastembed")
+    planner = _recall_planner_config(resolved_environment)
     if profile == "hashing-test":
         return RetrievalProviders(
             profile="hashing-test",
@@ -58,6 +61,7 @@ def create_retrieval_providers(
             reranker=FusionScoreRerankingAdapter(),
             embedding_license="Unreleased CodeCairn test adapter",
             reranker_license="Unreleased CodeCairn test adapter",
+            planner=planner,
         )
     if profile != "fastembed":
         raise ValueError(f"Unknown retrieval profile: {profile}")
@@ -149,6 +153,7 @@ def create_retrieval_providers(
         ),
         embedding_license=embedding_license,
         reranker_license=reranker_license,
+        planner=planner,
     )
 
 
@@ -172,6 +177,7 @@ def create_runtime(
             state=state,
             embedder=providers.embedder,
             reranker=providers.reranker,
+            planner_config=providers.planner,
             retrieval_config_sha256=providers.config_sha256,
         ),
     )
@@ -193,6 +199,13 @@ def create_cascade(
         state=SQLiteState(resolved / "state.sqlite3"),
         index=index,
     )
+
+
+def _recall_planner_config(environment: Mapping[str, str]) -> RecallPlannerConfig:
+    value = environment.get("CODECAIRN_RECALL_MODE", "hierarchy")
+    if value not in {"episode-only", "hierarchy-no-neighbors", "hierarchy"}:
+        raise ValueError(f"Unknown recall mode: {value}")
+    return RecallPlannerConfig.for_mode(cast(RecallPlannerMode, value))
 
 
 def _model_revision(

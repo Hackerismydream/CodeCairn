@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 from codecairn.memory.embedding import EmbeddingProvider
 from codecairn.memory.model_artifact import fastembed_version
+from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.memory.reranking import RerankingProvider
 
 RetrievalProfile = Literal["fastembed", "hashing-test"]
@@ -21,6 +22,7 @@ class RetrievalProviders:
     reranker: RerankingProvider
     embedding_license: str
     reranker_license: str
+    planner: RecallPlannerConfig = field(default_factory=RecallPlannerConfig)
 
     @property
     def config_sha256(self) -> str:
@@ -46,6 +48,7 @@ class RetrievalProviders:
                     "revision": self.reranker.revision,
                     "license": self.reranker_license,
                 },
+                "planner": self.planner.public_config,
             }
         return {
             "method": "hybrid-rrf-cross-encoder",
@@ -68,6 +71,7 @@ class RetrievalProviders:
                 "revision": self.reranker.revision,
                 "license": self.reranker_license,
             },
+            "planner": self.planner.public_config,
         }
 
 

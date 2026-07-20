@@ -66,6 +66,9 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 39. As a recruiter, I want reports generated from checked-in manifests and aggregate inputs, so that resume numbers are verifiable.
 40. As a maintainer, I want tests for corruption repair, worker interruption, queue replay, concurrent import, and repository isolation, so that recovery claims survive failure injection.
 41. As an auditor, I want rebuild parity to cover Recall Episode parents and AtomicFact children, so that a missing child cannot hide behind a matching memory count.
+42. As a coding-agent user, I want exact AtomicFact matches lifted to their parent memory, so that a compressed summary cannot hide the detail I asked for.
+43. As an auditor, I want query route, hierarchy-level candidates, and matched facts in the sidecar, so that a recall decision can be replayed.
+44. As a user, I want bounded chronological neighbors from the same episode, so that a recalled detail retains its immediate context without leaking another repository or task.
 
 ## Implementation Decisions
 
@@ -91,8 +94,10 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 - LanceDB is mandatory in the completed version 1 but is never authoritative.
   It projects each Coding Memory into one Recall Episode parent plus its
   AtomicFact children.
-- Hybrid retrieval unions lexical and learned-vector candidates before a
-  CrossEncoder reranker. Logical model aliases, artifact repositories, immutable
+- Hybrid retrieval searches Episode and AtomicFact projections independently,
+  max-pools child hits to their parents, and unions four lexical and learned-vector
+  rankings before a CrossEncoder reranker. A deterministic soft route changes pool
+  sizes but never hard-disables the secondary level. Logical model aliases, artifact repositories, immutable
   commit revisions, dimensions, and Adapter versions are recorded in index rows
   and evaluation artifacts; hashing is a test-only Adapter.
 - Recall Context is Markdown first with a structured JSON sidecar.

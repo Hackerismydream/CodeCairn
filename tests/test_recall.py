@@ -14,6 +14,7 @@ from codecairn.memory.models import (
     RerankDocument,
     RerankScore,
 )
+from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.service.recall import RecallEngine
 from codecairn.storage.lance import LanceMemoryIndex
 
@@ -112,6 +113,30 @@ class CandidateIndex:
             IndexCandidate(repo_key=repo_key, memory_id="memory-a", score=2.0),
         )
 
+    def document_vector_candidates(
+        self,
+        *,
+        repo_key: str,
+        vector: tuple[float, ...],
+        document_kind: str,
+        limit: int,
+    ) -> tuple[IndexCandidate, ...]:
+        if document_kind == "atomic_fact":
+            return ()
+        return self.vector_candidates(repo_key=repo_key, vector=vector, limit=limit)
+
+    def document_lexical_candidates(
+        self,
+        *,
+        repo_key: str,
+        query: str,
+        document_kind: str,
+        limit: int,
+    ) -> tuple[IndexCandidate, ...]:
+        if document_kind == "atomic_fact":
+            return ()
+        return self.lexical_candidates(repo_key=repo_key, query=query, limit=limit)
+
 
 class MemoryState:
     def __init__(self, memories: tuple[CodingMemory, ...]) -> None:
@@ -121,6 +146,13 @@ class MemoryState:
     def get_memory(self, *, repo_key: str, memory_id: str) -> CodingMemory | None:
         self.requested.append((repo_key, memory_id))
         return self._memories.get((repo_key, memory_id))
+
+    def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
+        return tuple(
+            memory
+            for (memory_repo_key, _memory_id), memory in self._memories.items()
+            if memory_repo_key == repo_key
+        )
 
 
 def test_hybrid_recall_unions_candidates_before_deterministic_reranking() -> None:
@@ -279,6 +311,112 @@ def test_episode_recall_does_not_search_atomic_fact_only_text(tmp_path: Path) ->
     assert len(index.document_fingerprints()) == 2
 
 
+def test_hierarchical_recall_lifts_atomic_fact_hits_to_the_parent_memory(
+    tmp_path: Path,
+) -> None:
+    index = LanceMemoryIndex(tmp_path / "index.lancedb", embedder=FixedEmbedder())
+    base = _memory("memory-hierarchical", summary="Parent text omits the rare token")
+    fact = EvidenceFact(
+        fact_id="fact-child-only",
+        repo_key=base.repo_key,
+        episode_id=base.episode_id,
+        kind="repository_rule",
+        text="childonlytoken",
+        role=None,
+        evidence=base.evidence,
+    )
+    memory = replace(base, facts=(fact,))
+    index.upsert(memory, markdown="# Parent without the queried term")
+    engine = RecallEngine(
+        index=index,
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        planner_config=RecallPlannerConfig.for_mode("hierarchy-no-neighbors"),
+        clock_ns=lambda: 0,
+    )
+
+    result = engine.recall("childonlytoken", repo_key=memory.repo_key, limit=1)
+
+    assert [item.memory_id for item in result.sidecar.ranked] == [memory.memory_id]
+    assert result.sidecar.atomic_fact_lexical_candidate_count == 1
+    assert {match.source for match in result.sidecar.ranked[0].matched_documents} >= {
+        "atomic_fact_lexical"
+    }
+    assert [snippet.relation for snippet in result.sidecar.ranked[0].snippets] == ["matched"]
+    assert "childonlytoken" in result.markdown
+
+
+def test_hierarchical_recall_expands_only_adjacent_memories_in_the_same_episode() -> None:
+    class FactOnlyIndex(CandidateIndex):
+        def document_vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return ()
+
+        def document_lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            if document_kind == "episode":
+                return ()
+            return (
+                IndexCandidate(
+                    repo_key=repo_key,
+                    memory_id="memory-b",
+                    document_id="fact-document-b",
+                    document_kind="atomic_fact",
+                    parent_document_id="episode-document-b",
+                    fact_id="fact-b",
+                    score=7.0,
+                ),
+            )
+
+    before = _memory_with_fact(
+        "memory-a", fact_id="fact-a", fact_text="Alice booked the venue.", event_index=1
+    )
+    matched = _memory_with_fact(
+        "memory-b", fact_id="fact-b", fact_text="Bob chose blue flowers.", event_index=2
+    )
+    after = _memory_with_fact(
+        "memory-c", fact_id="fact-c", fact_text="Carol ordered the cake.", event_index=3
+    )
+    unrelated = _memory_with_fact(
+        "memory-d",
+        fact_id="fact-d",
+        fact_text="This must remain isolated.",
+        event_index=4,
+        episode_id="episode-other",
+    )
+    engine = RecallEngine(
+        index=FactOnlyIndex(),
+        state=MemoryState((before, matched, after, unrelated)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    )
+
+    result = engine.recall("Who chose the flowers?", repo_key="acme/widgets", limit=1)
+
+    snippets = result.sidecar.ranked[0].snippets
+    assert [(item.source_memory_id, item.relation) for item in snippets] == [
+        ("memory-b", "matched"),
+        ("memory-a", "neighbor"),
+        ("memory-c", "neighbor"),
+    ]
+    assert result.sidecar.neighbor_expansion_count == 2
+    assert "Alice booked the venue." in result.markdown
+    assert "Carol ordered the cake." in result.markdown
+    assert "This must remain isolated." not in result.markdown
+
+
 def test_lancedb_reembeds_existing_documents_when_the_model_identity_changes(
     tmp_path: Path,
 ) -> None:
@@ -351,6 +489,8 @@ def _memory(
     *,
     title: str = "Memory",
     summary: str = "Summary",
+    episode_id: str = "episode-1",
+    event_index: int = 1,
 ) -> CodingMemory:
     return CodingMemory(
         memory_id=memory_id,
@@ -358,7 +498,7 @@ def _memory(
         memory_type="repository_convention",
         title=title,
         summary=summary,
-        episode_id="episode-1",
+        episode_id=episode_id,
         command=None,
         exit_code=None,
         evidence=(
@@ -367,10 +507,40 @@ def _memory(
                 session_id="session-1",
                 source_path="/private/session.jsonl",
                 raw_event_sha256="a" * 64,
-                raw_event_index=1,
+                raw_event_index=event_index,
                 raw_event_type="response_item",
             ),
         ),
         content_sha256=(memory_id.encode().hex() + "0" * 64)[:64],
         markdown_path=f"/runtime/{memory_id}.md",
+    )
+
+
+def _memory_with_fact(
+    memory_id: str,
+    *,
+    fact_id: str,
+    fact_text: str,
+    event_index: int,
+    episode_id: str = "episode-1",
+) -> CodingMemory:
+    base = _memory(
+        memory_id,
+        summary=fact_text,
+        episode_id=episode_id,
+        event_index=event_index,
+    )
+    return replace(
+        base,
+        facts=(
+            EvidenceFact(
+                fact_id=fact_id,
+                repo_key=base.repo_key,
+                episode_id=base.episode_id,
+                kind="user_quote",
+                text=fact_text,
+                role="user",
+                evidence=base.evidence,
+            ),
+        ),
     )

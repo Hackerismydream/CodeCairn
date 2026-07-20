@@ -47,6 +47,14 @@ GateDecisionReason = Literal[
 IndexOperation = Literal["upsert", "delete"]
 CandidateSource = Literal["lexical", "vector"]
 RecallDocumentKind = Literal["episode", "atomic_fact"]
+RecallRoute = Literal["episode_first", "fact_first"]
+RecallDocumentSource = Literal[
+    "episode_lexical",
+    "episode_vector",
+    "atomic_fact_lexical",
+    "atomic_fact_vector",
+]
+RecallSnippetRelation = Literal["matched", "sibling", "neighbor"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -315,6 +323,35 @@ class IndexCandidate:
     repo_key: str
     memory_id: str
     score: float
+    document_id: str = ""
+    document_kind: RecallDocumentKind = "episode"
+    parent_document_id: str = ""
+    fact_id: str = ""
+    title: str = ""
+    summary: str = ""
+    content: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class RecallMatch:
+    document_id: str
+    document_kind: RecallDocumentKind
+    source: RecallDocumentSource
+    score: float
+    rank: int
+    fact_id: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class RecallSnippet:
+    relation: RecallSnippetRelation
+    source_memory_id: str
+    source_uri: str
+    fact_id: str
+    text: str
+    source_title: str
+    source_summary: str
+    raw_event_index: int | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -357,6 +394,8 @@ class RankedRecall:
     final_score: float
     evidence: tuple[RecallEvidence, ...]
     reranker_score: float | None = None
+    matched_documents: tuple[RecallMatch, ...] = ()
+    snippets: tuple[RecallSnippet, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -375,6 +414,12 @@ class RecallSidecar:
     embedding_source: str | None = None
     embedding_revision: str | None = None
     retrieval_config_sha256: str | None = None
+    recall_route: RecallRoute = "episode_first"
+    episode_vector_candidate_count: int = 0
+    episode_lexical_candidate_count: int = 0
+    atomic_fact_vector_candidate_count: int = 0
+    atomic_fact_lexical_candidate_count: int = 0
+    neighbor_expansion_count: int = 0
 
 
 @dataclass(frozen=True, slots=True)

@@ -109,7 +109,39 @@ def test_production_retrieval_profile_uses_learned_models_without_loading_them()
             "revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
             "license": "Apache-2.0",
         },
+        "planner": {
+            "mode": "hierarchy",
+            "router": "deterministic-cues-v1",
+            "hard_route_cutoff": False,
+            "neighbor_window": 1,
+            "matched_facts_per_memory": 3,
+            "sibling_facts_per_memory": 2,
+        },
     }
+
+
+def test_recall_mode_selects_an_auditable_ablation_configuration() -> None:
+    providers = create_retrieval_providers(
+        environment={
+            "CODECAIRN_RETRIEVAL_PROFILE": "hashing-test",
+            "CODECAIRN_RECALL_MODE": "episode-only",
+        }
+    )
+
+    assert providers.planner.atomic_fact_enabled is False
+    assert providers.public_config["planner"] == {
+        "mode": "episode-only",
+        "router": "deterministic-cues-v1",
+        "hard_route_cutoff": False,
+        "neighbor_window": 0,
+        "matched_facts_per_memory": 3,
+        "sibling_facts_per_memory": 2,
+    }
+
+
+def test_recall_mode_rejects_unknown_ablation_names() -> None:
+    with pytest.raises(ValueError, match="Unknown recall mode"):
+        create_retrieval_providers(environment={"CODECAIRN_RECALL_MODE": "experimental"})
 
 
 def test_custom_embedding_model_requires_an_explicit_dimension() -> None:
