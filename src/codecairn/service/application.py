@@ -23,6 +23,7 @@ class EvaluationRunRequest:
     max_workers: int = 1
     resume: bool = False
     question_set_path: Path | None = None
+    execution_phase: Literal["all", "ingest", "questions"] = "all"
 
 
 @dataclass(frozen=True, slots=True)

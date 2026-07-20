@@ -34,6 +34,22 @@ def test_episode_only_ablation_disables_children_without_a_hard_query_route() ->
     assert plan.expand_neighbors is False
 
 
+def test_diagnostic_top_k_uses_bounded_route_aware_candidate_pools() -> None:
+    planner = RecallPlanner()
+
+    fact_first = planner.plan("When did it happen?", limit=20)
+    episode_first = planner.plan("Summarize the debugging approach", limit=20)
+
+    assert (
+        fact_first.episode_candidate_limit,
+        fact_first.atomic_fact_candidate_limit,
+    ) == (20, 40)
+    assert (
+        episode_first.episode_candidate_limit,
+        episode_first.atomic_fact_candidate_limit,
+    ) == (40, 20)
+
+
 def test_neighbor_expansion_requires_the_full_hierarchy_mode() -> None:
     with pytest.raises(ValueError, match="Only hierarchy mode"):
         RecallPlannerConfig(mode="hierarchy-no-neighbors", neighbor_window=1)

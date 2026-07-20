@@ -68,11 +68,11 @@ expected selection digest prevents a seed, loader, or question-identity change
 from silently moving the diagnostic set. Question text is not redistributed.
 Initial conversation ingestion uses the same Markdown truth and rebuild parity
 contract as production recovery, but projects all Episode and AtomicFact
-documents in embedding batches instead of issuing one ONNX call per memory.
-Ingestion and index rebuilding are serialized to bound Arrow/LanceDB peak
-memory. FastEmbed ONNX sessions use one manifest-recorded inference thread and
-disable tokenizer parallelism. After all ten ingest checkpoints exist, one
-caller thread performs every local retrieval while DeepSeek answer and judge
+documents through bounded Qwen embedding batches. Ingestion and index rebuilding
+are serialized to bound Arrow/LanceDB peak memory. The local CrossEncoder uses
+one manifest-recorded inference thread and disables tokenizer parallelism.
+After all ten ingest checkpoints exist, a fresh process runs the question phase;
+one caller thread performs every local retrieval while DeepSeek answer and judge
 calls are pipelined in a separate pool at `--max-workers`; this avoids one set
 of LanceDB, Arrow, and ONNX native caches per API worker. The manifest records
 the requested API concurrency, `ingest_max_workers = 1`,
@@ -93,23 +93,37 @@ for MODE in episode-only hierarchy-no-neighbors hierarchy; do
   CODECAIRN_RECALL_MODE="$MODE" uv run codecairn eval run locomo \
     benchmarks/locomo/data/locomo10.json \
     --question-set benchmarks/locomo/diagnostic-200.json \
-    --run-id "locomo-diagnostic-200-v5-$MODE" \
+    --run-id "locomo-diagnostic-200-v6-$MODE" \
     --repository-commit "$COMMIT" \
     --output-root benchmark_results \
-    --root "benchmark_results/runtime-v5-$MODE" \
+    --root "benchmark_results/runtime-v6-$MODE" \
     --mode full \
     --model deepseek-v4-flash \
     --judge-model deepseek-v4-flash \
-    --max-workers 10
+    --max-workers 10 \
+    --execution-phase ingest
+  CODECAIRN_RECALL_MODE="$MODE" uv run codecairn eval run locomo \
+    benchmarks/locomo/data/locomo10.json \
+    --question-set benchmarks/locomo/diagnostic-200.json \
+    --run-id "locomo-diagnostic-200-v6-$MODE" \
+    --repository-commit "$COMMIT" \
+    --output-root benchmark_results \
+    --root "benchmark_results/runtime-v6-$MODE" \
+    --mode full \
+    --model deepseek-v4-flash \
+    --judge-model deepseek-v4-flash \
+    --max-workers 10 \
+    --execution-phase questions \
+    --resume
 done
 
 uv run codecairn eval compare-locomo \
   benchmarks/locomo/diagnostic-200.json \
-  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v5-episode-only \
+  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v6-episode-only \
   --hierarchy-no-neighbors-run \
-    benchmark_results/locomo/locomo-diagnostic-200-v5-hierarchy-no-neighbors \
-  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v5-hierarchy \
-  --output benchmark_results/locomo/locomo-diagnostic-200-v5-report.json
+    benchmark_results/locomo/locomo-diagnostic-200-v6-hierarchy-no-neighbors \
+  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v6-hierarchy \
+  --output benchmark_results/locomo/locomo-diagnostic-200-v6-report.json
 ```
 
 The comparison gate requires 200 scored questions and zero infrastructure

@@ -36,9 +36,13 @@ Codex / Claude Code JSONL
                     |
        four-way BM25/vector candidate union
                     |
-       fact-to-parent MaxSim + neighbor expansion
+             fact-to-parent MaxSim
                     |
-           CrossEncoder rerank
+      matched-fact CrossEncoder rerank
+                    |
+              top-k selection
+                    |
+        budgeted neighbor enrichment
                     |
          Recall Context + sidecar
 ```
@@ -88,7 +92,7 @@ Each run has an isolated workspace and immutable manifest. LoCoMo is a benchmark
 adapter over the memory interface; coding-task A/B is a separate agent execution
 adapter over the evaluation interface.
 
-LoCoMo runs in two bounded phases. Conversation ingestion and index rebuilding
+LoCoMo runs in two process-isolatable phases. Conversation ingestion and index rebuilding
 are serialized because each rebuild materializes Arrow and LanceDB batches and
 is the memory-bound stage. FastEmbed ONNX sessions use one inference thread and
 disable tokenizer parallelism to bound per-process model memory. Once all
@@ -100,7 +104,10 @@ same thread avoids per-worker native caches even though calls were already
 serialized. The manifest records `ingest_max_workers = 1`,
 `retrieval_max_workers = 1`, and `retrieval_thread_count = 1`; tokenizer
 settings are also part of the retrieval configuration, so the resource-safety
-contract is auditable.
+contract is auditable. Evidence runs use `--execution-phase ingest` followed by
+a fresh `--execution-phase questions --resume` process. The immutable manifest
+and missing-only checkpoints join the phases; native indexing state is not
+required to survive into question execution.
 Malformed structured judge output is retried within the same vote with a
 deterministic attempt-specific prompt and seed, up to the manifest-recorded
 attempt and response-length limits. Every attempt is retained for audit and
@@ -155,11 +162,14 @@ alternative import, recall, evaluation, or health behavior.
   test Adapters, not production fallbacks.
 - RecallPlanner searches Episode and AtomicFact documents independently. Its
   deterministic soft route changes candidate-pool sizes without disabling the
-  secondary level. AtomicFact hits are max-pooled by parent before four-way RRF,
-  and matched facts plus bounded same-Episode chronological neighbors are sent
-  to the CrossEncoder and emitted with source-memory attribution. The retrieval
-  manifest freezes `episode-only`, `hierarchy-no-neighbors`, or `hierarchy` so
-  the 200-question diagnostic can measure each added layer.
+  secondary level. The primary level uses a 2x candidate multiplier and the
+  secondary level uses 1x, with manifest-recorded minimums. AtomicFact hits are
+  max-pooled by parent before four-way RRF. Matched and sibling facts reach the
+  CrossEncoder, then only top-k parents receive same-Episode chronological
+  neighbors under one global 20-snippet budget. Every snippet retains
+  source-memory attribution. The retrieval manifest freezes `episode-only`,
+  `hierarchy-no-neighbors`, or `hierarchy` so the 200-question diagnostic can
+  measure each added layer.
 
 ## Reference policy
 

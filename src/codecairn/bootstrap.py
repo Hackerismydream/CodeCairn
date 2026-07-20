@@ -627,6 +627,7 @@ class _LocalOperations(ApplicationOperations):
                 resume=request.resume,
                 retrieval_config=self._retrieval.public_config,
                 question_set_path=request.question_set_path,
+                execution_phase=request.execution_phase,
             ),
             memory_factory=memory_factory,
             answer_model=answer_model,

@@ -40,6 +40,7 @@ CATEGORY_NAMES = {
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 
 RunMode = Literal["full", "smoke"]
+ExecutionPhase = Literal["all", "ingest", "questions"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -149,6 +150,7 @@ class LoCoMoRunConfig:
     expected_dataset_sha256: str | None = LOCOMO_DATASET_SHA256
     retrieval_config: dict[str, object] | None = None
     question_set_path: Path | None = None
+    execution_phase: ExecutionPhase = "all"
 
 
 @dataclass(frozen=True, slots=True)
@@ -424,6 +426,7 @@ def run_locomo(
         "ingest_max_workers": 1,
         "retrieval_max_workers": 1,
         "retrieval_thread_count": 1,
+        "execution_phase_contract": "process-isolated-ingest-then-questions-v1",
         "checkpoint_policy": "missing-only",
     }
     if config.resume:
@@ -446,13 +449,32 @@ def run_locomo(
         write_json_exclusive(run_dir / "manifest.json", manifest)
 
     work = list(enumerate(selected))
-    for _, conversation in work:
-        _ingest_conversation(
-            conversation,
-            config=config,
-            dataset_sha256=dataset.sha256,
+    if config.execution_phase != "questions":
+        for _, conversation in work:
+            _ingest_conversation(
+                conversation,
+                config=config,
+                dataset_sha256=dataset.sha256,
+                run_dir=run_dir,
+                memory_factory=memory_factory,
+            )
+
+    if config.execution_phase == "ingest":
+        return LoCoMoRunArtifact(
             run_dir=run_dir,
-            memory_factory=memory_factory,
+            summary={
+                "schema_version": 1,
+                "suite": "locomo",
+                "run_id": config.run_id,
+                "execution_phase": "ingest",
+                "ingest_checkpoint_count": len(
+                    tuple((run_dir / "checkpoints" / "ingest").glob("*.json"))
+                ),
+                "question_artifact_count": len(
+                    tuple((run_dir / "checkpoints" / "questions").glob("*/*.json"))
+                ),
+                "complete": False,
+            },
         )
 
     with ThreadPoolExecutor(max_workers=config.max_workers) as executor:
@@ -1300,6 +1322,10 @@ def _validate_config(config: LoCoMoRunConfig, *, judge_model: TextModel | None) 
         raise ValueError("Full LoCoMo runs require a judge model")
     if config.max_workers < 1:
         raise ValueError("max_workers must be positive")
+    if config.execution_phase not in {"all", "ingest", "questions"}:
+        raise ValueError("execution_phase must be all, ingest, or questions")
+    if config.execution_phase == "questions" and not config.resume:
+        raise ValueError("The questions execution phase requires resume=True")
 
 
 def _validate_retrieval_sidecar(

@@ -36,7 +36,18 @@
     "max_workers": 10,
     "ingest_max_workers": 1,
     "retrieval_max_workers": 1,
-    "retrieval_thread_count": 1
+    "retrieval_thread_count": 1,
+    "execution_phase_contract": "process-isolated-ingest-then-questions-v1",
+    "embedding_adapter": "dashscope-openai-compatible",
+    "embedding_model": "qwen3.7-text-embedding",
+    "embedding_dimension": 1024,
+    "reranker_model": "Xenova/ms-marco-MiniLM-L-6-v2",
+    "primary_candidate_multiplier": 2,
+    "secondary_candidate_multiplier": 1,
+    "minimum_primary_candidates": 40,
+    "minimum_secondary_candidates": 20,
+    "neighbor_snippet_budget": 20,
+    "enrichment_order": "rerank-then-top-k-then-neighbors-v1"
   },
   "gates": {
     "required_scored_questions_per_variant": 200,

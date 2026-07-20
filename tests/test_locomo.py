@@ -459,6 +459,47 @@ def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
         report_locomo(artifact.run_dir)
 
 
+def test_locomo_supports_process_isolated_ingest_and_question_phases(tmp_path: Path) -> None:
+    config = LoCoMoRunConfig(
+        dataset_path=FIXTURE,
+        output_root=tmp_path / "runs",
+        run_id="locomo-phase-isolation-test",
+        repository_commit="abc123",
+        expected_dataset_sha256=None,
+        retrieval_config=FAKE_RETRIEVAL_CONFIG,
+        execution_phase="ingest",
+    )
+
+    ingest = run_locomo(
+        config,
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+
+    assert ingest.summary == {
+        "schema_version": 1,
+        "suite": "locomo",
+        "run_id": config.run_id,
+        "execution_phase": "ingest",
+        "ingest_checkpoint_count": 2,
+        "question_artifact_count": 0,
+        "complete": False,
+    }
+    assert not (ingest.run_dir / "summary.json").exists()
+
+    questions = run_locomo(
+        replace(config, execution_phase="questions", resume=True),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+
+    assert questions.summary["completed_question_count"] == 4
+    assert questions.summary["question_artifact_count"] == 4
+    assert (questions.run_dir / "summary.json").is_file()
+
+
 def test_frozen_question_set_selects_exact_strata_and_reports_retrieval_diagnostics(
     tmp_path: Path,
 ) -> None:
@@ -582,6 +623,17 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "ingest_max_workers": 1,
                 "retrieval_max_workers": 1,
                 "retrieval_thread_count": 1,
+                "execution_phase_contract": "process-isolated-ingest-then-questions-v1",
+                "embedding_adapter": None,
+                "embedding_model": "test/embedding",
+                "embedding_dimension": 3,
+                "reranker_model": "test/reranker",
+                "primary_candidate_multiplier": 2,
+                "secondary_candidate_multiplier": 1,
+                "minimum_primary_candidates": 40,
+                "minimum_secondary_candidates": 20,
+                "neighbor_snippet_budget": 20,
+                "enrichment_order": "rerank-then-top-k-then-neighbors-v1",
             },
             "gates": {
                 "required_scored_questions_per_variant": 2,
@@ -596,7 +648,15 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
     for mode in ("episode-only", "hierarchy-no-neighbors", "hierarchy"):
         retrieval_config = {
             **FAKE_RETRIEVAL_CONFIG,
-            "planner": {"mode": mode},
+            "planner": {
+                "mode": mode,
+                "primary_candidate_multiplier": 2,
+                "secondary_candidate_multiplier": 1,
+                "minimum_primary_candidates": 40,
+                "minimum_secondary_candidates": 20,
+                "neighbor_snippet_budget": 20,
+                "enrichment_order": "rerank-then-top-k-then-neighbors-v1",
+            },
         }
 
         class ConfiguredMemory(FakeMemory):

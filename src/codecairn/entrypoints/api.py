@@ -48,6 +48,7 @@ class EvaluationRequest(BaseModel):
     max_workers: int = Field(default=1, ge=1, le=16)
     resume: bool = False
     question_set_path: Path | None = None
+    execution_phase: Literal["all", "ingest", "questions"] = "all"
 
 
 class _ApiError(Exception):
@@ -234,6 +235,12 @@ def create_app(
                 code="invalid_run_id",
                 message="Evaluation run id contains unsafe characters",
             )
+        if request.suite != "locomo" and request.execution_phase != "all":
+            raise _ApiError(
+                status_code=422,
+                code="invalid_execution_phase",
+                message="Execution phases are supported only for LoCoMo",
+            )
         suite_root = resolved_artifact_root / request.suite
         if suite_root.exists() and not suite_root.resolve(strict=True).is_relative_to(
             resolved_artifact_root
@@ -256,6 +263,7 @@ def create_app(
                 max_workers=request.max_workers,
                 resume=request.resume,
                 question_set_path=question_set_path,
+                execution_phase=request.execution_phase,
             )
         )
 

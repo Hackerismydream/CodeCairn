@@ -135,13 +135,28 @@ official DeepSeek endpoint, exporting only `DEEPSEEK_API_KEY` defaults both
 roles to `deepseek-v4-pro` with thinking enabled; role-level model, endpoint,
 key, profile, and reasoning-effort variables remain available for controlled
 overrides. Health reports configuration state only and never emits credentials.
-DeepSeek supplies LoCoMo answers and judge votes; local learned models supply
-embedding and reranking. Run manifests record both configurations separately.
+DeepSeek supplies LoCoMo answers and judge votes; DashScope supplies Qwen
+embeddings and a pinned local model supplies CrossEncoder reranking. Run
+manifests record all configurations separately.
 
 Hierarchical recall defaults to `CODECAIRN_RECALL_MODE=hierarchy`. Reproducible
 ablations may select `episode-only` or `hierarchy-no-neighbors`; the effective
 mode and deterministic router contract are included in the retrieval manifest
 and every query sidecar.
+
+Resource-sensitive LoCoMo evidence runs separate index construction from
+question execution so native indexing state is released between phases:
+
+```bash
+codecairn eval run locomo data/locomo10.json \
+  --run-id <run-id> --repository-commit <commit> \
+  --question-set benchmarks/locomo/diagnostic-200.json \
+  --execution-phase ingest
+codecairn eval run locomo data/locomo10.json \
+  --run-id <run-id> --repository-commit <commit> \
+  --question-set benchmarks/locomo/diagnostic-200.json \
+  --execution-phase questions --resume
+```
 
 The six versioned routes cover import, memory list, recall, evaluation run,
 evaluation report, and health. Every error response has the same shape and an

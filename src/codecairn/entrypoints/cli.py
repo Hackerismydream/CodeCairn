@@ -87,6 +87,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         judge_model: Annotated[str | None, typer.Option("--judge-model")] = None,
         max_workers: Annotated[int, typer.Option("--max-workers", min=1)] = 1,
         resume: Annotated[bool, typer.Option("--resume")] = False,
+        execution_phase: Annotated[str, typer.Option("--execution-phase")] = "all",
         question_set: Annotated[
             Path | None,
             typer.Option("--question-set", exists=True, dir_okay=False, readable=True),
@@ -95,6 +96,16 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         """Execute one immutable evaluation suite run."""
         if mode not in {"full", "smoke"}:
             raise typer.BadParameter("mode must be 'full' or 'smoke'", param_hint="--mode")
+        if execution_phase not in {"all", "ingest", "questions"}:
+            raise typer.BadParameter(
+                "execution-phase must be 'all', 'ingest', or 'questions'",
+                param_hint="--execution-phase",
+            )
+        if suite != "locomo" and execution_phase != "all":
+            raise typer.BadParameter(
+                "execution-phase is supported only for LoCoMo",
+                param_hint="--execution-phase",
+            )
         result = application_factory(root).run_evaluation(
             EvaluationRunRequest(
                 suite=_evaluation_suite(suite),
@@ -108,6 +119,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 max_workers=max_workers,
                 resume=resume,
                 question_set_path=question_set,
+                execution_phase=cast(Literal["all", "ingest", "questions"], execution_phase),
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))

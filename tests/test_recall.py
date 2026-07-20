@@ -417,6 +417,81 @@ def test_hierarchical_recall_expands_only_adjacent_memories_in_the_same_episode(
     assert "This must remain isolated." not in result.markdown
 
 
+def test_neighbor_context_is_added_only_after_reranking_and_top_k_selection() -> None:
+    class CapturingReranker:
+        model_id = "test/capturing-reranker"
+        source_id = "test/capturing-reranker-source"
+        revision = "test-v1"
+
+        def __init__(self) -> None:
+            self.documents: tuple[RerankDocument, ...] = ()
+
+        def rerank(
+            self,
+            query: str,
+            documents: tuple[RerankDocument, ...],
+        ) -> tuple[RerankScore, ...]:
+            self.documents = documents
+            return tuple(
+                RerankScore(
+                    memory_id=document.memory_id,
+                    score=2.0 if document.memory_id == "memory-b" else 1.0,
+                )
+                for document in documents
+            )
+
+    before = _memory_with_fact(
+        "memory-a", fact_id="fact-a", fact_text="Alice booked the venue.", event_index=1
+    )
+    selected = _memory_with_fact(
+        "memory-b", fact_id="fact-b", fact_text="Bob chose blue flowers.", event_index=2
+    )
+    reranker = CapturingReranker()
+    engine = RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState((before, selected)),
+        embedder=FixedEmbedder(),
+        reranker=reranker,
+        clock_ns=lambda: 0,
+    )
+
+    result = engine.recall("Who chose the flowers?", repo_key="acme/widgets", limit=1)
+
+    assert all("neighbor:" not in document.text for document in reranker.documents)
+    assert [item.memory_id for item in result.sidecar.ranked] == ["memory-b"]
+    snippet_relations = [
+        (item.source_memory_id, item.relation) for item in result.sidecar.ranked[0].snippets
+    ]
+    assert snippet_relations == [("memory-a", "neighbor")]
+    assert result.sidecar.neighbor_expansion_count == 1
+
+
+def test_neighbor_context_obeys_one_global_snippet_budget() -> None:
+    selected = _memory_with_fact(
+        "memory-a", fact_id="fact-a", fact_text="Selected fact.", event_index=1
+    )
+    first_neighbor = _memory_with_fact(
+        "memory-b", fact_id="fact-b", fact_text="First neighbor.", event_index=2
+    )
+    second_neighbor = _memory_with_fact(
+        "memory-c", fact_id="fact-c", fact_text="Second neighbor.", event_index=3
+    )
+    engine = RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState((selected, first_neighbor, second_neighbor)),
+        embedder=FixedEmbedder(),
+        planner_config=RecallPlannerConfig(neighbor_window=2, neighbor_snippet_budget=1),
+        clock_ns=lambda: 0,
+    )
+
+    result = engine.recall("repository convention", repo_key="acme/widgets", limit=1)
+
+    assert result.sidecar.neighbor_expansion_count == 1
+    assert [(item.source_memory_id, item.text) for item in result.sidecar.ranked[0].snippets] == [
+        ("memory-b", "First neighbor.")
+    ]
+
+
 def test_lancedb_reembeds_existing_documents_when_the_model_identity_changes(
     tmp_path: Path,
 ) -> None:

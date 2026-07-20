@@ -172,6 +172,7 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
         "ingest_max_workers",
         "retrieval_max_workers",
         "retrieval_thread_count",
+        "execution_phase_contract",
     )
     for variant, manifest in manifests.items():
         for field in fields:
@@ -189,6 +190,22 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
         ):
             if retrieval.get(field) != reference_retrieval.get(field):
                 raise ValueError(f"{variant} changes the frozen retrieval field: {field}")
+        planner = _dict(retrieval.get("planner"), field=f"{variant} planner")
+        reference_planner = _dict(reference_retrieval.get("planner"), field="hierarchy planner")
+        for field in (
+            "router",
+            "hard_route_cutoff",
+            "primary_candidate_multiplier",
+            "secondary_candidate_multiplier",
+            "minimum_primary_candidates",
+            "minimum_secondary_candidates",
+            "neighbor_snippet_budget",
+            "enrichment_order",
+            "matched_facts_per_memory",
+            "sibling_facts_per_memory",
+        ):
+            if planner.get(field) != reference_planner.get(field):
+                raise ValueError(f"{variant} changes the frozen planner field: {field}")
 
 
 def _validate_definition_protocol(
@@ -199,6 +216,9 @@ def _validate_definition_protocol(
     answer = _dict(manifest.get("answer_model"), field="answer model")
     judge = _dict(manifest.get("judge_model"), field="judge model")
     retrieval = _dict(manifest.get("retrieval"), field="retrieval")
+    embedding = _dict(retrieval.get("embedding"), field="embedding")
+    reranker = _dict(retrieval.get("reranker"), field="reranker")
+    planner = _dict(retrieval.get("planner"), field="planner")
     observed = {
         "answer_model": answer.get("model"),
         "judge_model": judge.get("model"),
@@ -211,6 +231,17 @@ def _validate_definition_protocol(
         "ingest_max_workers": manifest.get("ingest_max_workers"),
         "retrieval_max_workers": manifest.get("retrieval_max_workers"),
         "retrieval_thread_count": manifest.get("retrieval_thread_count"),
+        "execution_phase_contract": manifest.get("execution_phase_contract"),
+        "embedding_adapter": embedding.get("adapter"),
+        "embedding_model": embedding.get("model"),
+        "embedding_dimension": embedding.get("dimension"),
+        "reranker_model": reranker.get("model"),
+        "primary_candidate_multiplier": planner.get("primary_candidate_multiplier"),
+        "secondary_candidate_multiplier": planner.get("secondary_candidate_multiplier"),
+        "minimum_primary_candidates": planner.get("minimum_primary_candidates"),
+        "minimum_secondary_candidates": planner.get("minimum_secondary_candidates"),
+        "neighbor_snippet_budget": planner.get("neighbor_snippet_budget"),
+        "enrichment_order": planner.get("enrichment_order"),
     }
     for field, value in observed.items():
         if value != protocol.get(field):

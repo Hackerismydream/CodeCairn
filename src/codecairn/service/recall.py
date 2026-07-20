@@ -140,14 +140,23 @@ class RecallEngine:
                 ("atomic_fact_vector", atomic_vector),
             ),
         )
-        ranked, neighbor_expansion_count = self._attach_snippets(
+        ranked, _ = self._attach_snippets(
             ranked,
             repo_key=repo_key,
-            expand_neighbors=plan.expand_neighbors,
+            expand_neighbors=False,
         )
         ranked = self._rerank(normalized_query, ranked)
+        selected_ranked = ranked[:limit]
+        neighbor_expansion_count = 0
+        if plan.expand_neighbors:
+            selected_ranked, neighbor_expansion_count = self._attach_snippets(
+                selected_ranked,
+                repo_key=repo_key,
+                expand_neighbors=True,
+                neighbor_snippet_budget=plan.neighbor_snippet_budget,
+            )
         selected = tuple(
-            replace(item, rank=rank) for rank, item in enumerate(ranked[:limit], start=1)
+            replace(item, rank=rank) for rank, item in enumerate(selected_ranked, start=1)
         )
         latency_ms = round((self._clock_ns() - started) / 1_000_000, 3)
         sidecar = RecallSidecar(
@@ -301,6 +310,7 @@ class RecallEngine:
         *,
         repo_key: str,
         expand_neighbors: bool,
+        neighbor_snippet_budget: int = 0,
     ) -> tuple[list[RankedRecall], int]:
         memories = self._state.list_memories(repo_key=repo_key)
         memory_map = {memory.memory_id: memory for memory in memories}
@@ -311,6 +321,7 @@ class RecallEngine:
             group.sort(key=_chronology_key)
 
         neighbor_count = 0
+        remaining_neighbor_budget = neighbor_snippet_budget
         enriched: list[RankedRecall] = []
         for item in ranked:
             candidate_memory = memory_map.get(item.memory_id)
@@ -334,8 +345,10 @@ class RecallEngine:
                     window=self._planner.config.neighbor_window,
                     facts_per_neighbor=self._planner.config.matched_facts_per_memory,
                 )
-                snippets = _deduplicate_snippets((*snippets, *neighbors))
-                neighbor_count += sum(snippet.relation == "neighbor" for snippet in snippets)
+                bounded_neighbors = neighbors[:remaining_neighbor_budget]
+                remaining_neighbor_budget -= len(bounded_neighbors)
+                snippets = _deduplicate_snippets((*snippets, *bounded_neighbors))
+                neighbor_count += len(bounded_neighbors)
             enriched.append(replace(item, snippets=snippets))
         return enriched, neighbor_count
 
