@@ -7,6 +7,7 @@ from typing import Protocol, cast
 
 from codecairn.memory.model_artifact import (
     FASTEMBED_INFERENCE_THREADS,
+    configure_fastembed_process,
     download_hf_snapshot,
     validate_hf_artifact,
 )
@@ -133,6 +134,7 @@ def _load_fastembed_reranker(
     revision: str,
     cache_dir: str | None,
 ) -> _FastEmbedReranker:
+    configure_fastembed_process()
     from fastembed.rerank.cross_encoder import TextCrossEncoder
 
     snapshot = download_hf_snapshot(

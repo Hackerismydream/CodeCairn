@@ -90,13 +90,14 @@ adapter over the evaluation interface.
 
 LoCoMo runs in two bounded phases. Conversation ingestion and index rebuilding
 are serialized because each rebuild materializes Arrow and LanceDB batches and
-is the memory-bound stage. FastEmbed ONNX sessions use one inference thread to
-bound per-process model memory, and this setting is part of the retrieval
-manifest. Once all ingest checkpoints exist, questions run in
-parallel across isolated conversation roots up to the manifest-recorded
-`max_workers`; retrieval, answer generation, and repeated judge calls within
-one conversation retain deterministic order. The manifest records
-`ingest_max_workers = 1` so this resource-safety contract is auditable.
+is the memory-bound stage. FastEmbed ONNX sessions use one inference thread and
+disable tokenizer parallelism to bound per-process model memory. Once all
+ingest checkpoints exist, local retrieval is serialized while answer and judge
+requests run in parallel across isolated conversation roots up to the
+manifest-recorded `max_workers`; repeated calls within one conversation retain
+deterministic order. The manifest records `ingest_max_workers = 1` and
+`retrieval_max_workers = 1`, and the tokenizer settings are part of the
+retrieval configuration, so the resource-safety contract is auditable.
 Malformed structured judge output is retried within the same vote with a
 deterministic attempt-specific prompt and seed, up to the manifest-recorded
 attempt and response-length limits. Every attempt is retained for audit and

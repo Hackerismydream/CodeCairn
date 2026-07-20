@@ -10,6 +10,7 @@ from typing import Protocol, cast
 
 from codecairn.memory.model_artifact import (
     FASTEMBED_INFERENCE_THREADS,
+    configure_fastembed_process,
     download_hf_snapshot,
     fastembed_version,
     validate_hf_artifact,
@@ -174,6 +175,7 @@ def _load_fastembed_model(
     revision: str,
     cache_dir: str | None,
 ) -> _FastEmbedModel:
+    configure_fastembed_process()
     from fastembed import TextEmbedding
 
     snapshot = download_hf_snapshot(

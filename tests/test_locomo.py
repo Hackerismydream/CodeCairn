@@ -34,6 +34,8 @@ FIXTURE = Path(__file__).parent / "fixtures" / "locomo" / "synthetic.json"
 FAKE_RETRIEVAL_CONFIG: dict[str, object] = {
     "method": "hybrid-rrf-cross-encoder",
     "inference_threads": 1,
+    "tokenizer_parallelism": False,
+    "tokenizer_threads": 1,
     "embedding": {
         "model": "test/embedding",
         "source": "test/embedding-source",
@@ -298,11 +300,45 @@ class StagedConcurrencyMemory(FakeMemory):
                 type(self).active_recalls,
             )
         try:
-            self.recall_barrier.wait(timeout=2)
+            with suppress(threading.BrokenBarrierError):
+                self.recall_barrier.wait(timeout=0.2)
             return super().recall(question, limit=limit)
         finally:
             with self.lock:
                 type(self).active_recalls -= 1
+
+
+class ConcurrentAnswerModel(FakeAnswerModel):
+    lock = threading.Lock()
+    barrier = threading.Barrier(2)
+    active_calls = 0
+    max_active_calls = 0
+
+    def generate(
+        self,
+        *,
+        system: str,
+        user: str,
+        seed: int,
+        response_format: str = "text",
+    ) -> ModelResponse:
+        with self.lock:
+            type(self).active_calls += 1
+            type(self).max_active_calls = max(
+                type(self).max_active_calls,
+                type(self).active_calls,
+            )
+        try:
+            self.barrier.wait(timeout=2)
+            return super().generate(
+                system=system,
+                user=user,
+                seed=seed,
+                response_format=response_format,
+            )
+        finally:
+            with self.lock:
+                type(self).active_calls -= 1
 
 
 def test_loader_preserves_sessions_speakers_timestamps_and_all_categories() -> None:
@@ -537,8 +573,11 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "judge_votes": 3,
                 "top_k": 20,
                 "inference_threads": 1,
+                "tokenizer_parallelism": False,
+                "tokenizer_threads": 1,
                 "max_workers": 1,
                 "ingest_max_workers": 1,
+                "retrieval_max_workers": 1,
             },
             "gates": {
                 "required_scored_questions_per_variant": 2,
@@ -955,6 +994,9 @@ def test_run_serializes_memory_bound_ingest_then_parallelizes_questions(tmp_path
     StagedConcurrencyMemory.max_active_ingests = 0
     StagedConcurrencyMemory.active_recalls = 0
     StagedConcurrencyMemory.max_active_recalls = 0
+    ConcurrentAnswerModel.barrier = threading.Barrier(2)
+    ConcurrentAnswerModel.active_calls = 0
+    ConcurrentAnswerModel.max_active_calls = 0
     artifact = run_locomo(
         LoCoMoRunConfig(
             dataset_path=FIXTURE,
@@ -966,16 +1008,18 @@ def test_run_serializes_memory_bound_ingest_then_parallelizes_questions(tmp_path
             expected_dataset_sha256=None,
         ),
         memory_factory=StagedConcurrencyMemory,
-        answer_model=FakeAnswerModel(),
+        answer_model=ConcurrentAnswerModel(),
         judge_model=None,
     )
 
     assert artifact.summary["question_artifact_count"] == 2
     assert StagedConcurrencyMemory.max_active_ingests == 1
-    assert StagedConcurrencyMemory.max_active_recalls == 2
+    assert StagedConcurrencyMemory.max_active_recalls == 1
+    assert ConcurrentAnswerModel.max_active_calls == 2
     manifest = (artifact.run_dir / "manifest.json").read_text(encoding="utf-8")
     assert '"max_workers": 2' in manifest
     assert '"ingest_max_workers": 1' in manifest
+    assert '"retrieval_max_workers": 1' in manifest
 
 
 def test_resume_only_fills_missing_question_checkpoints(tmp_path: Path) -> None:

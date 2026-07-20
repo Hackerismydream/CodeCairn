@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from threading import Lock
 from typing import Literal, Protocol, cast
 
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
@@ -422,6 +423,7 @@ def run_locomo(
         "seed": config.seed,
         "max_workers": config.max_workers,
         "ingest_max_workers": 1,
+        "retrieval_max_workers": 1,
         "checkpoint_policy": "missing-only",
     }
     if config.resume:
@@ -453,6 +455,7 @@ def run_locomo(
             memory_factory=memory_factory,
         )
 
+    retrieval_lock = Lock()
     with ThreadPoolExecutor(max_workers=min(config.max_workers, len(work))) as executor:
         tuple(
             executor.map(
@@ -465,6 +468,7 @@ def run_locomo(
                     answer_model=answer_model,
                     judge_model=judge_model,
                     selected_question_ids=selected_question_ids,
+                    retrieval_lock=retrieval_lock,
                 ),
                 work,
             )
@@ -514,6 +518,7 @@ def _run_conversation_questions(
     answer_model: TextModel,
     judge_model: TextModel | None,
     selected_question_ids: set[str] | None,
+    retrieval_lock: Lock,
 ) -> None:
     memory_root = run_dir / "runtime" / conversation.sample_id
     ingest_path = run_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
@@ -557,6 +562,7 @@ def _run_conversation_questions(
             retrieval_config=config.retrieval_config,
             top_k=config.top_k,
             seed=seed,
+            retrieval_lock=retrieval_lock,
         )
         write_json_exclusive(
             question_path,
@@ -864,9 +870,11 @@ def _run_question(
     retrieval_config: dict[str, object] | None,
     top_k: int,
     seed: int,
+    retrieval_lock: Lock,
 ) -> dict[str, object]:
     try:
-        recall = memory.recall(question.question, limit=top_k)
+        with retrieval_lock:
+            recall = memory.recall(question.question, limit=top_k)
         _validate_retrieval_sidecar(
             recall,
             query=question.question,

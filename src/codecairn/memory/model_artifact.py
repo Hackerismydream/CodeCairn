@@ -1,11 +1,19 @@
 from __future__ import annotations
 
+import os
 import re
 from importlib.metadata import version
 
 _HF_COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 _FASTEMBED_VERSION = version("fastembed")
 FASTEMBED_INFERENCE_THREADS = 1
+FASTEMBED_TOKENIZER_PARALLELISM = False
+FASTEMBED_TOKENIZER_THREADS = 1
+
+
+def configure_fastembed_process() -> None:
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    os.environ["RAYON_NUM_THREADS"] = str(FASTEMBED_TOKENIZER_THREADS)
 
 
 def validate_hf_artifact(*, source_id: str, revision: str) -> None:

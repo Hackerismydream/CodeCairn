@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from collections.abc import Iterable
 
 import pytest
@@ -91,6 +92,8 @@ def test_production_retrieval_profile_uses_learned_models_without_loading_them()
     assert providers.public_config == {
         "method": "hybrid-rrf-cross-encoder",
         "inference_threads": 1,
+        "tokenizer_parallelism": False,
+        "tokenizer_threads": 1,
         "embedding": {
             "adapter": "fastembed",
             "adapter_version": fastembed_version(),
@@ -207,6 +210,8 @@ def test_fastembed_loaders_use_resolved_snapshot_paths_and_eager_inner_loading(
     monkeypatch.setattr(reranking_module, "download_hf_snapshot", download)
     monkeypatch.setattr(fastembed, "TextEmbedding", embedding_constructor)
     monkeypatch.setattr(cross_encoder_module, "TextCrossEncoder", reranker_constructor)
+    monkeypatch.delenv("TOKENIZERS_PARALLELISM", raising=False)
+    monkeypatch.delenv("RAYON_NUM_THREADS", raising=False)
 
     embedding_module._load_fastembed_model(
         "test/embedding",
@@ -247,3 +252,5 @@ def test_fastembed_loaders_use_resolved_snapshot_paths_and_eager_inner_loading(
             },
         ),
     ]
+    assert os.environ["TOKENIZERS_PARALLELISM"] == "false"
+    assert os.environ["RAYON_NUM_THREADS"] == "1"

@@ -70,11 +70,12 @@ Initial conversation ingestion uses the same Markdown truth and rebuild parity
 contract as production recovery, but projects all Episode and AtomicFact
 documents in embedding batches instead of issuing one ONNX call per memory.
 Ingestion and index rebuilding are serialized to bound Arrow/LanceDB peak
-memory. FastEmbed ONNX sessions use one manifest-recorded inference thread,
-which avoids per-process thread-pool arenas dominating the 16 GB reference
-machine. After all ten ingest checkpoints exist, question answering remains
-parallel across conversations at `--max-workers`; the manifest records both
-the requested question concurrency and `ingest_max_workers = 1`.
+memory. FastEmbed ONNX sessions use one manifest-recorded inference thread and
+disable tokenizer parallelism. After all ten ingest checkpoints exist, local
+retrieval remains serialized while DeepSeek answer and judge calls are
+pipelined across conversations at `--max-workers`; the manifest records the
+requested API concurrency, `ingest_max_workers = 1`, and
+`retrieval_max_workers = 1`.
 
 Run the same commit, answer model, judge model, vote count, and top-k under the
 three declared recall modes. Each command must include:
@@ -91,7 +92,7 @@ for MODE in episode-only hierarchy-no-neighbors hierarchy; do
   CODECAIRN_RECALL_MODE="$MODE" uv run codecairn eval run locomo \
     benchmarks/locomo/data/locomo10.json \
     --question-set benchmarks/locomo/diagnostic-200.json \
-    --run-id "locomo-diagnostic-200-v3-$MODE" \
+    --run-id "locomo-diagnostic-200-v4-$MODE" \
     --repository-commit "$COMMIT" \
     --output-root benchmark_results \
     --root "benchmark_results/runtime-$MODE" \
@@ -103,11 +104,11 @@ done
 
 uv run codecairn eval compare-locomo \
   benchmarks/locomo/diagnostic-200.json \
-  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v3-episode-only \
+  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v4-episode-only \
   --hierarchy-no-neighbors-run \
-    benchmark_results/locomo/locomo-diagnostic-200-v3-hierarchy-no-neighbors \
-  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v3-hierarchy \
-  --output benchmark_results/locomo/locomo-diagnostic-200-v3-report.json
+    benchmark_results/locomo/locomo-diagnostic-200-v4-hierarchy-no-neighbors \
+  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v4-hierarchy \
+  --output benchmark_results/locomo/locomo-diagnostic-200-v4-report.json
 ```
 
 The comparison gate requires 200 scored questions and zero infrastructure
