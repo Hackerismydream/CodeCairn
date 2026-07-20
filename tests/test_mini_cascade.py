@@ -11,7 +11,7 @@ import pyarrow as pa  # type: ignore[import-untyped]
 import pytest
 
 from codecairn.bootstrap import create_cascade, create_runtime
-from codecairn.memory.embedding import VECTOR_DIMENSION
+from codecairn.memory.embedding import VECTOR_DIMENSION, HashingEmbedder
 from codecairn.memory.models import CodingMemory, RebuildReport, RecallDocumentFingerprint
 from codecairn.memory.projection import fingerprint, project_recall_documents
 from codecairn.service.cascade import MemoryIndex, MiniCascade
@@ -375,7 +375,7 @@ def test_legacy_flat_lancedb_row_migrates_without_losing_the_memory(tmp_path: Pa
         data=pa.Table.from_pylist([row], schema=schema),
     )
 
-    index = LanceMemoryIndex(index_path)
+    index = LanceMemoryIndex(index_path, embedder=HashingEmbedder())
 
     assert index.fingerprints() == {("acme/widgets", "memory_legacy", "e" * 64)}
     documents = index.document_fingerprints()
@@ -419,4 +419,4 @@ def test_document_fingerprints_reject_atomic_fact_content_tampering(tmp_path: Pa
     )
 
     with pytest.raises(ValueError, match="document digest"):
-        LanceMemoryIndex(index_path).document_fingerprints()
+        LanceMemoryIndex(index_path, embedder=HashingEmbedder()).document_fingerprints()

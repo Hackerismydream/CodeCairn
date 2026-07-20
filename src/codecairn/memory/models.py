@@ -318,6 +318,19 @@ class IndexCandidate:
 
 
 @dataclass(frozen=True, slots=True)
+class RerankDocument:
+    memory_id: str
+    text: str
+    fusion_score: float
+
+
+@dataclass(frozen=True, slots=True)
+class RerankScore:
+    memory_id: str
+    score: float
+
+
+@dataclass(frozen=True, slots=True)
 class RecallEvidence:
     provider: str
     session_id: str
@@ -343,6 +356,7 @@ class RankedRecall:
     lexical_rank: int | None
     final_score: float
     evidence: tuple[RecallEvidence, ...]
+    reranker_score: float | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -354,6 +368,13 @@ class RecallSidecar:
     vector_candidate_count: int
     lexical_candidate_count: int
     ranked: tuple[RankedRecall, ...]
+    reranker_model: str | None = None
+    reranker_source: str | None = None
+    reranker_revision: str | None = None
+    embedding_model: str | None = None
+    embedding_source: str | None = None
+    embedding_revision: str | None = None
+    retrieval_config_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

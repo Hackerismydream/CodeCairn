@@ -87,6 +87,11 @@ def test_retrieval_evaluation_uses_fixed_labels_and_immutable_per_query_artifact
     query_payload = json.loads(query_files[0].read_text(encoding="utf-8"))
     assert query_payload["relevant_keys"] != ["tests", "money", "secrets"]
     assert query_payload["rankings"][0]["candidate_sources"]
+    assert query_payload["rankings"][0]["reranker_score"] is not None
+    assert query_payload["embedding_model"] == "test/hashing-sha256-v1"
+    assert query_payload["reranker_model"] == "test/rrf-score-v1"
+    assert query_payload["limit"] == 10
+    assert len(query_payload["retrieval_config_sha256"]) == 64
     assert "latency_ms" in query_payload
 
     before = {path: path.stat().st_mtime_ns for path in artifact.run_dir.rglob("*")}
@@ -95,6 +100,11 @@ def test_retrieval_evaluation_uses_fixed_labels_and_immutable_per_query_artifact
     assert after == before
     with pytest.raises(FileExistsError):
         run_retrieval_evaluation(config)
+
+    query_payload["retrieval_config_sha256"] = "0" * 64
+    query_files[0].write_text(json.dumps(query_payload), encoding="utf-8")
+    with pytest.raises(ValueError, match="configuration hash"):
+        report_retrieval(artifact.run_dir)
 
 
 def test_retrieval_labels_cannot_mark_repository_membership_as_relevance(

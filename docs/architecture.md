@@ -32,9 +32,9 @@ Codex / Claude Code JSONL
                     |
        Episode -> AtomicFact projection
                     |
-       BM25 union vector candidates
+       BM25 union learned-vector candidates
                     |
-                 rerank
+           CrossEncoder rerank
                     |
          Recall Context + sidecar
 ```
@@ -129,6 +129,13 @@ alternative import, recall, evaluation, or health behavior.
   Parent identifiers and per-document digests are deterministic, and rebuild
   parity checks both memory groups and all projected documents. It is
   disposable.
+- Production vectors and reranker scores come from local ONNX snapshots pinned
+  to immutable Hugging Face artifact commits. Lance rows retain the logical
+  alias, artifact source, commit, dimension, and FastEmbed-sensitive index
+  identity. Changing any identity component re-embeds the projection under an
+  inter-process operation lock before it can be queried. Query sidecars and
+  evaluation manifests retain the effective model identities. Feature hashing
+  and fusion-only ranking are explicit test Adapters, not production fallbacks.
 - The current recall engine still searches Episode documents only. AtomicFact
   text is excluded from Episode search content, so it cannot affect flat
   ranking before routing exists. AtomicFact routing, neighbor expansion, and

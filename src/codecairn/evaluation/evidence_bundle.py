@@ -271,6 +271,7 @@ def _copy_public_locomo_questions(source: Path, target: Path) -> None:
         "status",
         "phase",
         "error_type",
+        "retrieval",
         "answer",
         "judge_votes",
     )
@@ -301,6 +302,8 @@ def _copy_public_locomo_questions(source: Path, target: Path) -> None:
             public["category_name"] = category_name
         if "answer" in public:
             public["answer"] = _public_model_answer(public["answer"])
+        if "retrieval" in public:
+            public["retrieval"] = _public_locomo_retrieval(public["retrieval"])
         if "judge_votes" in public:
             public["judge_votes"] = _public_judge_votes(public["judge_votes"])
         public["source_artifact_sha256"] = file_sha256(path)
@@ -319,6 +322,25 @@ _PUBLIC_USAGE_FIELDS = (
     "known_cost_count",
     "known_cost_cny_count",
 )
+
+
+def _public_locomo_retrieval(value: object) -> dict[str, object]:
+    retrieval = _required_dict(value, field="LoCoMo retrieval sidecar")
+    fields = (
+        "repo_key",
+        "limit",
+        "latency_ms",
+        "vector_candidate_count",
+        "lexical_candidate_count",
+        "reranker_model",
+        "reranker_source",
+        "reranker_revision",
+        "embedding_model",
+        "embedding_source",
+        "embedding_revision",
+        "retrieval_config_sha256",
+    )
+    return {field: retrieval.get(field) for field in fields}
 
 
 def _public_model_answer(value: object) -> dict[str, object]:
@@ -557,6 +579,8 @@ def _aggregate_bundle(
         "models": {
             "locomo_answer": locomo_manifest.get("answer_model"),
             "locomo_judge": locomo_manifest.get("judge_model"),
+            "locomo_retrieval": _retrieval_models(locomo_manifest),
+            "retrieval_benchmark": _retrieval_models(retrieval_manifest),
             "coding_agent": coding_manifest.get("agent"),
         },
         "costs": {
@@ -569,6 +593,8 @@ def _aggregate_bundle(
         "licensing": {
             "locomo": "CC BY-NC 4.0; the dataset itself is not redistributed in this bundle.",
             "source": "https://github.com/snap-research/locomo",
+            "locomo_retrieval": _retrieval_licenses(locomo_manifest),
+            "retrieval_benchmark": _retrieval_licenses(retrieval_manifest),
         },
     }
     if amendments:
@@ -1220,6 +1246,28 @@ def _run_provenance(manifest: dict[str, object], *, manifest_name: str) -> dict[
         "repository_commit": manifest.get("repository_commit"),
         "manifest": manifest_name,
     }
+
+
+def _retrieval_models(manifest: dict[str, object]) -> dict[str, object] | None:
+    raw = manifest.get("retrieval")
+    if not isinstance(raw, dict):
+        return None
+    return {name: raw.get(name) for name in ("embedding", "reranker") if raw.get(name) is not None}
+
+
+def _retrieval_licenses(manifest: dict[str, object]) -> dict[str, object] | None:
+    models = _retrieval_models(manifest)
+    if not models:
+        return None
+    licenses: dict[str, object] = {}
+    for name, raw in models.items():
+        if not isinstance(raw, dict):
+            continue
+        licenses[name] = {
+            "adapter": raw.get("adapter_license"),
+            "model": raw.get("license"),
+        }
+    return licenses or None
 
 
 def _claim_map(metrics: dict[str, object]) -> dict[str, dict[str, object]]:

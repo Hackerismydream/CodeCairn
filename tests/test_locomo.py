@@ -22,8 +22,23 @@ from codecairn.evaluation.locomo import (
 )
 from codecairn.evaluation.model import ModelResponse
 from codecairn.memory.models import RecallResult, RecallSidecar
+from codecairn.memory.retrieval import retrieval_config_sha256
 
 FIXTURE = Path(__file__).parent / "fixtures" / "locomo" / "synthetic.json"
+FAKE_RETRIEVAL_CONFIG: dict[str, object] = {
+    "method": "hybrid-rrf-cross-encoder",
+    "embedding": {
+        "model": "test/embedding",
+        "source": "test/embedding-source",
+        "revision": "a" * 40,
+        "dimension": 3,
+    },
+    "reranker": {
+        "model": "test/reranker",
+        "source": "test/reranker-source",
+        "revision": "b" * 40,
+    },
+}
 
 
 class FakeMemory:
@@ -55,6 +70,13 @@ class FakeMemory:
                 vector_candidate_count=1,
                 lexical_candidate_count=1,
                 ranked=(),
+                reranker_model="test/reranker",
+                reranker_source="test/reranker-source",
+                reranker_revision="b" * 40,
+                embedding_model="test/embedding",
+                embedding_source="test/embedding-source",
+                embedding_revision="a" * 40,
+                retrieval_config_sha256=retrieval_config_sha256(FAKE_RETRIEVAL_CONFIG),
             ),
         )
 
@@ -306,6 +328,7 @@ def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
         run_id="locomo-full-test",
         repository_commit="abc123",
         expected_dataset_sha256=None,
+        retrieval_config=FAKE_RETRIEVAL_CONFIG,
     )
 
     artifact = run_locomo(
@@ -328,6 +351,8 @@ def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
         "3": {"accuracy": 1.0, "correct": 1, "count": 1, "name": "open-domain"},
         "4": {"accuracy": 1.0, "correct": 1, "count": 1, "name": "single-hop"},
     }
+    manifest = json.loads((artifact.run_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["retrieval"] == {**FAKE_RETRIEVAL_CONFIG, "top_k": 20}
     question_files = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))
     first_payload = question_files[0].read_text(encoding="utf-8")
     assert '"judge_votes"' in first_payload
@@ -348,6 +373,52 @@ def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
             answer_model=answer,
             judge_model=judge,
         )
+
+    tampered = json.loads(question_files[0].read_text(encoding="utf-8"))
+    tampered["retrieval"]["retrieval_config_sha256"] = "0" * 64
+    question_files[0].write_text(json.dumps(tampered), encoding="utf-8")
+    with pytest.raises(ValueError, match="configuration hash"):
+        report_locomo(artifact.run_dir)
+
+
+def test_locomo_marks_retrieval_identity_mismatch_as_infrastructure_failure(
+    tmp_path: Path,
+) -> None:
+    config = LoCoMoRunConfig(
+        dataset_path=FIXTURE,
+        output_root=tmp_path / "runs",
+        run_id="locomo-retrieval-mismatch",
+        repository_commit="abc123",
+        mode="smoke",
+        expected_dataset_sha256=None,
+        retrieval_config={
+            "method": "hybrid-rrf-cross-encoder",
+            "embedding": {
+                "model": "different/embedding",
+                "source": "different/embedding-source",
+                "revision": "c" * 40,
+            },
+            "reranker": {
+                "model": "test/reranker",
+                "source": "test/reranker-source",
+                "revision": "b" * 40,
+            },
+        },
+    )
+
+    artifact = run_locomo(
+        config,
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=None,
+    )
+
+    assert artifact.summary["infrastructure_failed_count"] == 2
+    records = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))
+    payload = json.loads(records[0].read_text(encoding="utf-8"))
+    assert payload["status"] == "infrastructure_failed"
+    assert payload["phase"] == "retrieval"
+    assert payload["error_type"] == "ValueError"
 
 
 def test_full_run_retries_malformed_judge_output_and_accounts_for_every_attempt(

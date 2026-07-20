@@ -29,3 +29,9 @@ runner.
 Public CodeCairn documentation describes CodeCairn directly. When source code is
 copied rather than independently implemented, its license and attribution must
 be reviewed before the code enters the repository.
+
+Embedding and CrossEncoder execution uses the public FastEmbed Adapter surface
+over CodeCairn-resolved local snapshots. Logical aliases, artifact repositories,
+immutable commit revisions, dimensions, and licenses are selected independently
+for CodeCairn; neither the Adapter design nor the ranking contract is copied from
+EverOS.

@@ -9,8 +9,11 @@ description = "Auditable long-term memory runtime for coding agents."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+  "fastembed>=0.8,<0.9",
   "fastapi>=0.115,<1.0",
+  "filelock>=3.20,<4.0",
   "httpx>=0.28,<1.0",
+  "huggingface-hub>=1.24,<2.0",
   "lancedb>=0.34,<0.35",
   "pydantic>=2.9,<3.0",
   "pyarrow>=25,<26",

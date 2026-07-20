@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
+from dataclasses import replace
+from math import isfinite
 from typing import Protocol, cast
 from urllib.parse import quote
 
@@ -14,7 +16,10 @@ from codecairn.memory.models import (
     RecallEvidence,
     RecallResult,
     RecallSidecar,
+    RerankDocument,
+    RerankScore,
 )
+from codecairn.memory.reranking import RerankingProvider
 
 _RRF_K = 60
 _MAX_LIMIT = 20
@@ -52,11 +57,15 @@ class RecallEngine:
         index: RecallIndex,
         state: RecallState,
         embedder: EmbeddingProvider,
+        reranker: RerankingProvider | None = None,
+        retrieval_config_sha256: str | None = None,
         clock_ns: Callable[[], int] | None = None,
     ) -> None:
         self._index = index
         self._state = state
         self._embedder = embedder
+        self._reranker = reranker
+        self._retrieval_config_sha256 = retrieval_config_sha256
         self._clock_ns = clock_ns or time.perf_counter_ns
 
     def recall(self, query: str, *, repo_key: str, limit: int = 5) -> RecallResult:
@@ -75,7 +84,7 @@ class RecallEngine:
         vector = _safe_candidates(
             self._index.vector_candidates(
                 repo_key=repo_key,
-                vector=self._embedder.embed(normalized_query),
+                vector=self._embedder.embed_query(normalized_query),
                 limit=candidate_limit,
             ),
             repo_key=repo_key,
@@ -138,7 +147,7 @@ class RecallEngine:
                     ),
                 )
             )
-        ranked.sort(key=lambda item: (-item.final_score, item.memory_id))
+        ranked = self._rerank(normalized_query, ranked)
         selected = tuple(
             _with_rank(item, rank=rank) for rank, item in enumerate(ranked[:limit], start=1)
         )
@@ -151,11 +160,50 @@ class RecallEngine:
             vector_candidate_count=len(vector),
             lexical_candidate_count=len(lexical),
             ranked=selected,
+            reranker_model=None if self._reranker is None else self._reranker.model_id,
+            reranker_source=None if self._reranker is None else self._reranker.source_id,
+            reranker_revision=None if self._reranker is None else self._reranker.revision,
+            embedding_model=self._embedder.model_id,
+            embedding_source=self._embedder.source_id,
+            embedding_revision=self._embedder.revision,
+            retrieval_config_sha256=self._retrieval_config_sha256,
         )
         return RecallResult(
             markdown=_render_context(normalized_query, repo_key=repo_key, ranked=selected),
             sidecar=sidecar,
         )
+
+    def _rerank(self, query: str, ranked: list[RankedRecall]) -> list[RankedRecall]:
+        fusion_scores = {item.memory_id: item.final_score for item in ranked}
+        if self._reranker is None:
+            ranked.sort(key=lambda item: (-item.final_score, item.memory_id))
+            return ranked
+        documents = tuple(
+            RerankDocument(
+                memory_id=item.memory_id,
+                text=f"{item.title}\n{item.summary}",
+                fusion_score=item.final_score,
+            )
+            for item in ranked
+        )
+        scores = self._reranker.rerank(query, documents)
+        score_map = _validated_rerank_scores(scores, documents=documents)
+        rescored = [
+            replace(
+                item,
+                final_score=round(score_map[item.memory_id], 12),
+                reranker_score=round(score_map[item.memory_id], 12),
+            )
+            for item in ranked
+        ]
+        rescored.sort(
+            key=lambda item: (
+                -item.final_score,
+                -fusion_scores[item.memory_id],
+                item.memory_id,
+            )
+        )
+        return rescored
 
 
 def _safe_candidates(
@@ -165,6 +213,8 @@ def _safe_candidates(
 ) -> tuple[IndexCandidate, ...]:
     best: dict[str, IndexCandidate] = {}
     for candidate in candidates:
+        if not isfinite(candidate.score):
+            raise ValueError("Recall index returned a non-finite candidate score")
         if candidate.repo_key != repo_key:
             continue
         prior = best.get(candidate.memory_id)
@@ -198,7 +248,28 @@ def _with_rank(item: RankedRecall, *, rank: int) -> RankedRecall:
         lexical_rank=item.lexical_rank,
         final_score=item.final_score,
         evidence=item.evidence,
+        reranker_score=item.reranker_score,
     )
+
+
+def _validated_rerank_scores(
+    scores: tuple[RerankScore, ...],
+    *,
+    documents: tuple[RerankDocument, ...],
+) -> dict[str, float]:
+    expected = {document.memory_id for document in documents}
+    observed: dict[str, float] = {}
+    for score in scores:
+        if score.memory_id in observed:
+            raise ValueError("Reranker returned a duplicate memory ID")
+        if score.memory_id not in expected:
+            raise ValueError("Reranker returned an unknown memory ID")
+        if not isfinite(score.score):
+            raise ValueError("Reranker returned a non-finite score")
+        observed[score.memory_id] = score.score
+    if observed.keys() != expected:
+        raise ValueError("Reranker did not score every candidate")
+    return observed
 
 
 def _render_context(

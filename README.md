@@ -49,6 +49,31 @@ uv run codecairn import /path/to/session.jsonl \
 uv run codecairn list --repo-key owner/repository --root .codecairn
 ```
 
+Production recall uses local ONNX models: `BAAI/bge-small-en-v1.5` for
+384-dimensional embeddings and `Xenova/ms-marco-MiniLM-L-6-v2` for CrossEncoder
+reranking. Each default points to an immutable Hugging Face artifact commit. The
+first index or recall downloads that snapshot into the configured cache, then
+loads FastEmbed from the resolved local path. A controlled cache and explicit
+model override can be configured without changing durable Markdown truth:
+
+```bash
+export CODECAIRN_MODEL_CACHE="$HOME/.cache/codecairn/models"
+export CODECAIRN_EMBEDDING_MODEL="BAAI/bge-small-en-v1.5"
+export CODECAIRN_EMBEDDING_SOURCE="qdrant/bge-small-en-v1.5-onnx-q"
+export CODECAIRN_EMBEDDING_REVISION="52398278842ec682c6f32300af41344b1c0b0bb2"
+export CODECAIRN_EMBEDDING_DIMENSION="384"
+export CODECAIRN_RERANKER_MODEL="Xenova/ms-marco-MiniLM-L-6-v2"
+export CODECAIRN_RERANKER_SOURCE="Xenova/ms-marco-MiniLM-L-6-v2"
+export CODECAIRN_RERANKER_REVISION="a09144355adeed5f58c8ed011d209bf8ee5a1fec"
+```
+
+Any non-default alias, artifact source, or commit requires an explicit declared
+license; custom aliases also require source, immutable 40-character commit, and
+dimension configuration. Changing the artifact commit or FastEmbed version
+re-embeds the disposable LanceDB projection under an inter-process lock.
+The deterministic hashing profile is test-only and is never a production
+fallback.
+
 Runtime state is ignored by Git because it can contain source paths, commands,
 and evidence text.
 
@@ -106,6 +131,8 @@ official DeepSeek endpoint, exporting only `DEEPSEEK_API_KEY` defaults both
 roles to `deepseek-v4-pro` with thinking enabled; role-level model, endpoint,
 key, profile, and reasoning-effort variables remain available for controlled
 overrides. Health reports configuration state only and never emits credentials.
+DeepSeek supplies LoCoMo answers and judge votes; local learned models supply
+embedding and reranking. Run manifests record both configurations separately.
 
 The six versioned routes cover import, memory list, recall, evaluation run,
 evaluation report, and health. Every error response has the same shape and an

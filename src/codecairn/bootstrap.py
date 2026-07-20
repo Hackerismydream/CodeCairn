@@ -2,14 +2,33 @@
 
 import os
 import shutil
+from collections.abc import Mapping
 from dataclasses import asdict
 from pathlib import Path
 
 from codecairn.entrypoints.cli import build_app
 from codecairn.importers.session import SessionImporter
-from codecairn.memory.embedding import HashingEmbedder
+from codecairn.memory.embedding import (
+    DEFAULT_EMBEDDING_DIMENSION,
+    DEFAULT_EMBEDDING_LICENSE,
+    DEFAULT_EMBEDDING_MODEL,
+    DEFAULT_EMBEDDING_REVISION,
+    DEFAULT_EMBEDDING_SOURCE,
+    FastEmbedEmbeddingAdapter,
+    HashingEmbedder,
+)
 from codecairn.memory.evidence import EvidenceGate
+from codecairn.memory.model_artifact import validate_hf_artifact
 from codecairn.memory.projection import fingerprint, project_recall_documents
+from codecairn.memory.reranking import (
+    DEFAULT_RERANKER_LICENSE,
+    DEFAULT_RERANKER_MODEL,
+    DEFAULT_RERANKER_REVISION,
+    DEFAULT_RERANKER_SOURCE,
+    FastEmbedRerankingAdapter,
+    FusionScoreRerankingAdapter,
+)
+from codecairn.memory.retrieval import RetrievalProviders
 from codecairn.service.application import (
     ApplicationOperations,
     CodeCairnApplication,
@@ -25,11 +44,124 @@ from codecairn.storage.markdown import MarkdownMemoryStore
 from codecairn.storage.sqlite import SQLiteState
 
 
-def create_runtime(root: Path) -> MemoryRuntime:
+def create_retrieval_providers(
+    *,
+    environment: Mapping[str, str] | None = None,
+) -> RetrievalProviders:
+    """Resolve one fail-closed retrieval configuration without loading model weights."""
+    resolved_environment = os.environ if environment is None else environment
+    profile = resolved_environment.get("CODECAIRN_RETRIEVAL_PROFILE", "fastembed")
+    if profile == "hashing-test":
+        return RetrievalProviders(
+            profile="hashing-test",
+            embedder=HashingEmbedder(),
+            reranker=FusionScoreRerankingAdapter(),
+            embedding_license="Unreleased CodeCairn test adapter",
+            reranker_license="Unreleased CodeCairn test adapter",
+        )
+    if profile != "fastembed":
+        raise ValueError(f"Unknown retrieval profile: {profile}")
+    embedding_model = resolved_environment.get(
+        "CODECAIRN_EMBEDDING_MODEL",
+        DEFAULT_EMBEDDING_MODEL,
+    )
+    raw_dimension = resolved_environment.get("CODECAIRN_EMBEDDING_DIMENSION")
+    if raw_dimension is None:
+        if embedding_model != DEFAULT_EMBEDDING_MODEL:
+            raise ValueError("Custom embedding models require CODECAIRN_EMBEDDING_DIMENSION")
+        dimension = DEFAULT_EMBEDDING_DIMENSION
+    else:
+        try:
+            dimension = int(raw_dimension)
+        except ValueError as error:
+            raise ValueError("CODECAIRN_EMBEDDING_DIMENSION must be an integer") from error
+    embedding_revision = _model_revision(
+        environment=resolved_environment,
+        environment_key="CODECAIRN_EMBEDDING_REVISION",
+        model_id=embedding_model,
+        default_model_id=DEFAULT_EMBEDDING_MODEL,
+        default_revision=DEFAULT_EMBEDDING_REVISION,
+    )
+    embedding_source = _model_source(
+        environment=resolved_environment,
+        environment_key="CODECAIRN_EMBEDDING_SOURCE",
+        model_id=embedding_model,
+        default_model_id=DEFAULT_EMBEDDING_MODEL,
+        default_source=DEFAULT_EMBEDDING_SOURCE,
+    )
+    validate_hf_artifact(source_id=embedding_source, revision=embedding_revision)
+    embedding_license = _model_license(
+        environment=resolved_environment,
+        environment_key="CODECAIRN_EMBEDDING_LICENSE",
+        model_id=embedding_model,
+        source_id=embedding_source,
+        revision=embedding_revision,
+        default_model_id=DEFAULT_EMBEDDING_MODEL,
+        default_source_id=DEFAULT_EMBEDDING_SOURCE,
+        default_revision=DEFAULT_EMBEDDING_REVISION,
+        default_license=DEFAULT_EMBEDDING_LICENSE,
+    )
+    reranker_model = resolved_environment.get(
+        "CODECAIRN_RERANKER_MODEL",
+        DEFAULT_RERANKER_MODEL,
+    )
+    reranker_revision = _model_revision(
+        environment=resolved_environment,
+        environment_key="CODECAIRN_RERANKER_REVISION",
+        model_id=reranker_model,
+        default_model_id=DEFAULT_RERANKER_MODEL,
+        default_revision=DEFAULT_RERANKER_REVISION,
+    )
+    reranker_source = _model_source(
+        environment=resolved_environment,
+        environment_key="CODECAIRN_RERANKER_SOURCE",
+        model_id=reranker_model,
+        default_model_id=DEFAULT_RERANKER_MODEL,
+        default_source=DEFAULT_RERANKER_SOURCE,
+    )
+    validate_hf_artifact(source_id=reranker_source, revision=reranker_revision)
+    reranker_license = _model_license(
+        environment=resolved_environment,
+        environment_key="CODECAIRN_RERANKER_LICENSE",
+        model_id=reranker_model,
+        source_id=reranker_source,
+        revision=reranker_revision,
+        default_model_id=DEFAULT_RERANKER_MODEL,
+        default_source_id=DEFAULT_RERANKER_SOURCE,
+        default_revision=DEFAULT_RERANKER_REVISION,
+        default_license=DEFAULT_RERANKER_LICENSE,
+    )
+    cache_dir = resolved_environment.get("CODECAIRN_MODEL_CACHE") or None
+    return RetrievalProviders(
+        profile="fastembed",
+        embedder=FastEmbedEmbeddingAdapter(
+            model_id=embedding_model,
+            source_id=embedding_source,
+            revision=embedding_revision,
+            dimension=dimension,
+            cache_dir=cache_dir,
+        ),
+        reranker=FastEmbedRerankingAdapter(
+            model_id=reranker_model,
+            source_id=reranker_source,
+            revision=reranker_revision,
+            cache_dir=cache_dir,
+        ),
+        embedding_license=embedding_license,
+        reranker_license=reranker_license,
+    )
+
+
+def create_runtime(
+    root: Path,
+    *,
+    retrieval: RetrievalProviders | None = None,
+) -> MemoryRuntime:
     """Build the local Markdown plus SQLite runtime behind service ports."""
     resolved = root.resolve()
+    providers = retrieval or create_retrieval_providers()
     state = SQLiteState(resolved / "state.sqlite3")
-    index = LanceMemoryIndex(resolved / "index.lancedb")
+    index = LanceMemoryIndex(resolved / "index.lancedb", embedder=providers.embedder)
     return MemoryRuntime(
         importer=SessionImporter(),
         memory_store=MarkdownMemoryStore(resolved),
@@ -38,31 +170,100 @@ def create_runtime(root: Path) -> MemoryRuntime:
         recall_engine=RecallEngine(
             index=index,
             state=state,
-            embedder=HashingEmbedder(),
+            embedder=providers.embedder,
+            reranker=providers.reranker,
+            retrieval_config_sha256=providers.config_sha256,
         ),
     )
 
 
-def create_cascade(root: Path, *, index: MemoryIndex | None = None) -> MiniCascade:
+def create_cascade(
+    root: Path,
+    *,
+    index: MemoryIndex | None = None,
+    retrieval: RetrievalProviders | None = None,
+) -> MiniCascade:
     """Build the recoverable Markdown-to-LanceDB synchronization service."""
     resolved = root.resolve()
+    if index is None:
+        providers = retrieval or create_retrieval_providers()
+        index = LanceMemoryIndex(resolved / "index.lancedb", embedder=providers.embedder)
     return MiniCascade(
         truth=MarkdownMemoryStore(resolved),
         state=SQLiteState(resolved / "state.sqlite3"),
-        index=index or LanceMemoryIndex(resolved / "index.lancedb"),
+        index=index,
     )
 
 
+def _model_revision(
+    *,
+    environment: Mapping[str, str],
+    environment_key: str,
+    model_id: str,
+    default_model_id: str,
+    default_revision: str,
+) -> str:
+    configured = environment.get(environment_key)
+    if configured is not None:
+        return configured
+    if model_id != default_model_id:
+        raise ValueError(f"Custom model {model_id} requires {environment_key}")
+    return default_revision
+
+
+def _model_source(
+    *,
+    environment: Mapping[str, str],
+    environment_key: str,
+    model_id: str,
+    default_model_id: str,
+    default_source: str,
+) -> str:
+    configured = environment.get(environment_key)
+    if configured is not None:
+        return configured
+    if model_id != default_model_id:
+        raise ValueError(f"Custom model {model_id} requires {environment_key}")
+    return default_source
+
+
+def _model_license(
+    *,
+    environment: Mapping[str, str],
+    environment_key: str,
+    model_id: str,
+    source_id: str,
+    revision: str,
+    default_model_id: str,
+    default_source_id: str,
+    default_revision: str,
+    default_license: str,
+) -> str:
+    configured = environment.get(environment_key)
+    if configured is not None:
+        if not configured.strip():
+            raise ValueError(f"{environment_key} must not be empty")
+        return configured
+    if (model_id, source_id, revision) != (
+        default_model_id,
+        default_source_id,
+        default_revision,
+    ):
+        raise ValueError(f"Custom model artifact {source_id}@{revision} requires {environment_key}")
+    return default_license
+
+
 class _LocalOperations(ApplicationOperations):
-    def __init__(self, root: Path) -> None:
+    def __init__(self, root: Path, *, retrieval: RetrievalProviders) -> None:
         self._root = root.resolve()
+        self._retrieval = retrieval
 
     def doctor(self) -> dict[str, object]:
         truth_store = MarkdownMemoryStore(self._root)
         truth = truth_store.scan()
         state = SQLiteState(self._root / "state.sqlite3")
         ledger = state.operational_counts()
-        queue = create_cascade(self._root).health()
+        queue = create_cascade(self._root, retrieval=self._retrieval).health()
         truth_fingerprints = {
             (memory.repo_key, memory.memory_id, memory.content_sha256 or "")
             for memory in truth.memories
@@ -78,7 +279,7 @@ class _LocalOperations(ApplicationOperations):
         index_path = self._root / "index.lancedb"
         index_error: str | None = None
         try:
-            index = LanceMemoryIndex(index_path)
+            index = LanceMemoryIndex(index_path, embedder=self._retrieval.embedder)
             if index_path.exists():
                 index_fingerprints, index_document_fingerprints = index.fingerprint_snapshot()
             else:
@@ -97,7 +298,7 @@ class _LocalOperations(ApplicationOperations):
             and queue.failed == 0
             and queue.stale == 0
         )
-        provider_status = _provider_status()
+        provider_status = _provider_status(retrieval=self._retrieval)
         status = (
             "healthy"
             if markdown_ready and index_ready and ledger.pending_recovery_count == 0
@@ -249,8 +450,8 @@ class _LocalOperations(ApplicationOperations):
 
         def memory_factory(root: Path) -> CodeCairnConversationMemory:
             return CodeCairnConversationMemory(
-                runtime=create_runtime(root),
-                cascade=create_cascade(root),
+                runtime=create_runtime(root, retrieval=self._retrieval),
+                cascade=create_cascade(root, retrieval=self._retrieval),
                 repo_key=f"locomo/{root.name}",
             )
 
@@ -263,6 +464,7 @@ class _LocalOperations(ApplicationOperations):
                 mode=request.mode,
                 max_workers=request.max_workers,
                 resume=request.resume,
+                retrieval_config=self._retrieval.public_config,
             ),
             memory_factory=memory_factory,
             answer_model=answer_model,
@@ -273,13 +475,14 @@ class _LocalOperations(ApplicationOperations):
 
 def create_application(root: Path) -> CodeCairnApplication:
     resolved = root.resolve()
+    retrieval = create_retrieval_providers()
     return CodeCairnApplication(
-        runtime=create_runtime(resolved),
-        operations=_LocalOperations(resolved),
+        runtime=create_runtime(resolved, retrieval=retrieval),
+        operations=_LocalOperations(resolved, retrieval=retrieval),
     )
 
 
-def _provider_status() -> dict[str, object]:
+def _provider_status(*, retrieval: RetrievalProviders) -> dict[str, object]:
     codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
     answer_configured = _provider_role_configured("ANSWER")
     judge_configured = _provider_role_configured("JUDGE")
@@ -295,6 +498,7 @@ def _provider_status() -> dict[str, object]:
             "answer_configured": answer_configured,
             "judge_configured": judge_configured,
         },
+        "retrieval": retrieval.public_config,
     }
 
 

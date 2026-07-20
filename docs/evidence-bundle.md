@@ -38,9 +38,10 @@ The output is exclusive: an existing bundle directory is never overwritten.
 The reducer copies manifests, query records, recovery checks, normalized coding
 traces, public verifier results, and normalized LoCoMo ingest/question
 checkpoints. Public LoCoMo question records retain category, status, generated
-answer, normalized judge labels, retry metadata, usage, and the original
-artifact hash while excluding raw judge responses, the dataset question, gold
-answer, evidence text, retrieval query, and recalled conversation content.
+answer, normalized judge labels, retry metadata, usage, the non-content
+retrieval identity sidecar, and the original artifact hash while excluding raw
+judge responses, the dataset question, gold answer, evidence text, retrieval
+query, ranked memories, and recalled conversation content.
 Public ingest records retain only identifiers, aggregate counts, and the
 original artifact hash, excluding speaker names and runtime paths. Public
 verifier records retain outcome, timing, output
@@ -67,8 +68,10 @@ provenance fields:
 - `aggregation_command`: the public command that recomputes the claim.
 
 The generated manifest also records the dependency-lock hash, source commits,
-models, available cost observations, local environment, licenses, and known
-limitations.
+answer, judge, coding-agent, embedding, and reranker models, available cost
+observations, local environment, model and adapter licenses, and known
+limitations. Retrieval model records preserve both the logical FastEmbed alias
+and the immutable Hugging Face artifact source plus commit revision.
 
 ## Interpretation rules
 

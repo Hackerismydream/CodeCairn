@@ -9,10 +9,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
-from codecairn.bootstrap import create_cascade, create_runtime
+from codecairn.bootstrap import create_cascade, create_retrieval_providers, create_runtime
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
 from codecairn.memory.evidence import collect_repository_rule_fact
 from codecairn.memory.models import MemoryProposal
+from codecairn.memory.retrieval import retrieval_config_sha256
 from codecairn.memory.trace import stable_id
 from codecairn.service.cascade import MiniCascade
 from codecairn.storage.lance import LanceMemoryIndex
@@ -77,6 +78,7 @@ def run_retrieval_evaluation(config: RetrievalRunConfig) -> RetrievalRunArtifact
     _validate_relevance(corpus, queries)
     run_dir = (config.output_root / config.run_id).resolve()
     run_dir.mkdir(parents=True, exist_ok=False)
+    retrieval = create_retrieval_providers()
     manifest = {
         "schema_version": 1,
         "suite": "retrieval",
@@ -88,12 +90,13 @@ def run_retrieval_evaluation(config: RetrievalRunConfig) -> RetrievalRunArtifact
         "corpus_count": len(corpus),
         "query_count": len(queries),
         "top_k": config.top_k,
+        "retrieval": retrieval.public_config,
         "metrics": ["Recall@1", "Recall@5", "MRR", "irrelevant@5", "P95 latency"],
     }
     write_json_exclusive(run_dir / "manifest.json", manifest)
 
     runtime_root = run_dir / "runtime"
-    runtime = create_runtime(runtime_root)
+    runtime = create_runtime(runtime_root, retrieval=retrieval)
     memory_ids: dict[str, str] = {}
     entries_by_key = {entry.key: entry for entry in corpus}
     for entry in corpus:
@@ -115,7 +118,7 @@ def run_retrieval_evaluation(config: RetrievalRunConfig) -> RetrievalRunArtifact
         if decision.memory is None:
             raise ValueError(f"Retrieval corpus memory was rejected: {entry.key}")
         memory_ids[entry.key] = decision.memory.memory_id
-    create_cascade(runtime_root).run_until_idle(worker_id="retrieval-eval")
+    create_cascade(runtime_root, retrieval=retrieval).run_until_idle(worker_id="retrieval-eval")
     write_json_exclusive(
         run_dir / "corpus.json",
         {
@@ -155,6 +158,7 @@ def run_retrieval_evaluation(config: RetrievalRunConfig) -> RetrievalRunArtifact
                     "lexical_score": ranked.lexical_score,
                     "lexical_rank": ranked.lexical_rank,
                     "final_score": ranked.final_score,
+                    "reranker_score": ranked.reranker_score,
                     "content_sha256": ranked.content_sha256,
                 }
             )
@@ -169,6 +173,14 @@ def run_retrieval_evaluation(config: RetrievalRunConfig) -> RetrievalRunArtifact
                 "latency_ms": result.sidecar.latency_ms,
                 "vector_candidate_count": result.sidecar.vector_candidate_count,
                 "lexical_candidate_count": result.sidecar.lexical_candidate_count,
+                "limit": result.sidecar.limit,
+                "embedding_model": result.sidecar.embedding_model,
+                "embedding_source": result.sidecar.embedding_source,
+                "embedding_revision": result.sidecar.embedding_revision,
+                "reranker_model": result.sidecar.reranker_model,
+                "reranker_source": result.sidecar.reranker_source,
+                "reranker_revision": result.sidecar.reranker_revision,
+                "retrieval_config_sha256": result.sidecar.retrieval_config_sha256,
                 "repository_isolation_violation": isolation_violation,
                 "rankings": rankings,
             },
@@ -180,6 +192,7 @@ def run_retrieval_evaluation(config: RetrievalRunConfig) -> RetrievalRunArtifact
 
 def report_retrieval(run_dir: Path) -> dict[str, object]:
     manifest = _required_dict(read_json(run_dir / "manifest.json"), field="manifest")
+    retrieval_contract = _report_retrieval_contract(manifest)
     records = [
         _required_dict(read_json(path), field="query artifact")
         for path in sorted((run_dir / "queries").glob("*.json"))
@@ -191,6 +204,7 @@ def report_retrieval(run_dir: Path) -> dict[str, object]:
     latencies: list[float] = []
     isolation_violations = 0
     for record in records:
+        _validate_report_retrieval(record, contract=retrieval_contract)
         relevant = _required_string_set(record.get("relevant_keys"), field="relevant_keys")
         raw_rankings = record.get("rankings")
         if not isinstance(raw_rankings, list):
@@ -230,10 +244,47 @@ def report_retrieval(run_dir: Path) -> dict[str, object]:
     }
 
 
+def _report_retrieval_contract(
+    manifest: dict[str, object],
+) -> tuple[dict[str, object], int, str] | None:
+    raw = manifest.get("retrieval")
+    if not isinstance(raw, dict) or not all(
+        isinstance(raw.get(name), dict) for name in ("embedding", "reranker")
+    ):
+        return None
+    top_k = _required_int(manifest, "top_k")
+    return raw, top_k, retrieval_config_sha256(cast(dict[str, object], raw))
+
+
+def _validate_report_retrieval(
+    record: dict[str, object],
+    *,
+    contract: tuple[dict[str, object], int, str] | None,
+) -> None:
+    if contract is None:
+        return
+    retrieval_config, top_k, config_sha256 = contract
+    if record.get("limit") != top_k:
+        raise ValueError("Retrieval query limit does not match its manifest")
+    if record.get("retrieval_config_sha256") != config_sha256:
+        raise ValueError("Retrieval query configuration hash does not match its manifest")
+    for provider_name in ("embedding", "reranker"):
+        expected = _required_dict(
+            retrieval_config.get(provider_name),
+            field=f"retrieval {provider_name}",
+        )
+        for identity_field in ("model", "source", "revision"):
+            if record.get(f"{provider_name}_{identity_field}") != expected.get(identity_field):
+                raise ValueError(
+                    f"Retrieval {provider_name} {identity_field} does not match its manifest"
+                )
+
+
 def run_recovery_suite(config: RecoveryRunConfig) -> RecoveryRunArtifact:
     _validate_run_identity(config.run_id, repository_commit=config.repository_commit)
     run_dir = (config.output_root / config.run_id).resolve()
     run_dir.mkdir(parents=True, exist_ok=False)
+    retrieval = create_retrieval_providers()
     write_json_exclusive(
         run_dir / "manifest.json",
         {
@@ -243,6 +294,7 @@ def run_recovery_suite(config: RecoveryRunConfig) -> RecoveryRunArtifact:
             "created_at_utc": datetime.now(UTC).isoformat(),
             "repository_commit": config.repository_commit,
             "source_fixture_sha256": file_sha256(config.source_fixture),
+            "retrieval": retrieval.public_config,
         },
     )
     checks: dict[str, bool] = {}
@@ -252,7 +304,7 @@ def run_recovery_suite(config: RecoveryRunConfig) -> RecoveryRunArtifact:
     source = run_dir / "workspace" / "session.jsonl"
     source.parent.mkdir(parents=True, exist_ok=False)
     shutil.copyfile(config.source_fixture, source)
-    runtime = create_runtime(import_root)
+    runtime = create_runtime(import_root, retrieval=retrieval)
     initial = runtime.import_session(source, repo_key="acme/widgets")
     repeated = runtime.import_session(source, repo_key="acme/widgets")
     checks["import_idempotency"] = (
@@ -275,7 +327,7 @@ def run_recovery_suite(config: RecoveryRunConfig) -> RecoveryRunArtifact:
     )
     details["append_resume"] = asdict(appended)
 
-    cascade = create_cascade(import_root)
+    cascade = create_cascade(import_root, retrieval=retrieval)
     cascade.run_until_idle(worker_id="recovery-index")
     truth = {
         (memory.repo_key, memory.memory_id, memory.content_sha256 or "")
@@ -284,14 +336,14 @@ def run_recovery_suite(config: RecoveryRunConfig) -> RecoveryRunArtifact:
     }
     index_path = import_root / "index.lancedb"
     shutil.rmtree(index_path)
-    rebuild = create_cascade(import_root).rebuild()
+    rebuild = create_cascade(import_root, retrieval=retrieval).rebuild()
     checks["index_rebuild_parity"] = rebuild.parity and (
-        create_cascade(import_root).index_fingerprints() == truth
+        create_cascade(import_root, retrieval=retrieval).index_fingerprints() == truth
     )
     details["index_rebuild"] = asdict(rebuild)
 
     replay_root = run_dir / "runtime" / "queue-replay"
-    replay_runtime = create_runtime(replay_root)
+    replay_runtime = create_runtime(replay_root, retrieval=retrieval)
     replay_runtime.import_session(config.source_fixture, repo_key="acme/replay")
     replay_state = SQLiteState(replay_root / "state.sqlite3")
     interrupted = replay_state.claim_index_job(
@@ -302,7 +354,7 @@ def run_recovery_suite(config: RecoveryRunConfig) -> RecoveryRunArtifact:
     replay = MiniCascade(
         truth=MarkdownMemoryStore(replay_root),
         state=replay_state,
-        index=LanceMemoryIndex(replay_root / "index.lancedb"),
+        index=LanceMemoryIndex(replay_root / "index.lancedb", embedder=retrieval.embedder),
         clock_ms=lambda: 1_010,
         lease_ms=10,
     )
@@ -314,13 +366,13 @@ def run_recovery_suite(config: RecoveryRunConfig) -> RecoveryRunArtifact:
     )
 
     corrupt_root = run_dir / "runtime" / "corruption"
-    corrupt_runtime = create_runtime(corrupt_root)
+    corrupt_runtime = create_runtime(corrupt_root, retrieval=retrieval)
     corrupt_runtime.import_session(config.source_fixture, repo_key="acme/corrupt")
     corrupt_memory = corrupt_runtime.list_memories(repo_key="acme/corrupt")[0]
     if corrupt_memory.markdown_path is None:
         raise ValueError("Recovery fixture did not persist Markdown")
     Path(corrupt_memory.markdown_path).write_bytes(b"corrupt markdown\xff")
-    corrupt_cascade = create_cascade(corrupt_root)
+    corrupt_cascade = create_cascade(corrupt_root, retrieval=retrieval)
     reconcile = corrupt_cascade.reconcile()
     checks["corruption_detection"] = reconcile.corrupt == 1 and (
         corrupt_cascade.health().stale == 1
@@ -480,6 +532,13 @@ def _required_str(record: dict[str, object], field: str) -> str:
     value = record.get(field)
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{field} must be a non-empty string")
+    return value
+
+
+def _required_int(record: dict[str, object], field: str) -> int:
+    value = record.get(field)
+    if type(value) is not int:
+        raise ValueError(f"{field} must be an integer")
     return value
 
 

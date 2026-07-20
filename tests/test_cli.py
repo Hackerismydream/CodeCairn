@@ -120,6 +120,7 @@ def test_cli_exposes_doctor_and_evaluation_run_report(tmp_path: Path) -> None:
     assert diagnostics["index_queue"]["pending"] == 0
     assert diagnostics["index"]["ready"] is True
     assert "codex_cli" in diagnostics["providers"]
+    assert diagnostics["providers"]["retrieval"]["embedding"]["adapter"] == "hashing-test"
 
     executed = runner.invoke(
         app,

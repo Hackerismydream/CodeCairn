@@ -50,6 +50,11 @@ no-op.
 **Recall Context**: A concise task-shaped Markdown artifact plus JSON sidecar,
 containing ranked Coding Memories and their provenance.
 
+**Retrieval Providers**: One immutable, manifest-recorded embedding and reranker
+configuration shared by indexing and recall. Production resolves learned local
+models from artifact repositories pinned to commit SHAs; deterministic hashing
+and fusion-score ranking are test Adapters.
+
 **Evaluation Run**: One immutable execution identified by task, arm, repeat,
 seed, model configuration, workspace snapshot, memory snapshot, and artifacts.
 
@@ -63,3 +68,5 @@ seed, model configuration, workspace snapshot, memory snapshot, and artifacts.
    with both memory-level and parent-child document parity.
 6. Evaluation reports are pure readers and never mutate runtime state.
 7. Memory-off runs cannot read from or write to memory-on state.
+8. An index cannot mix vectors from different embedding model identities or
+   dimensions.

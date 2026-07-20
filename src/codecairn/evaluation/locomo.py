@@ -19,6 +19,7 @@ from codecairn.memory.models import (
     MemoryProposal,
     RecallResult,
 )
+from codecairn.memory.retrieval import retrieval_config_sha256
 from codecairn.memory.trace import stable_id
 from codecairn.service.cascade import MiniCascade
 from codecairn.service.runtime import MemoryRuntime
@@ -119,6 +120,7 @@ class LoCoMoRunConfig:
     max_workers: int = 1
     resume: bool = False
     expected_dataset_sha256: str | None = LOCOMO_DATASET_SHA256
+    retrieval_config: dict[str, object] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -289,7 +291,10 @@ def run_locomo(
             "categories": list(config.categories),
             "question_counts": {str(key): value for key, value in sorted(question_counts.items())},
         },
-        "retrieval": {"method": "hybrid-rrf", "top_k": config.top_k},
+        "retrieval": {
+            **(config.retrieval_config or {"method": "hybrid-rrf"}),
+            "top_k": config.top_k,
+        },
         "answer_model": answer_model.public_config,
         "judge_model": None if judge_model is None else judge_model.public_config,
         "judge_votes": config.judge_votes if config.mode == "full" else 0,
@@ -403,6 +408,7 @@ def _run_conversation(
             judge_response_max_chars=(
                 config.judge_response_max_chars if config.mode == "full" else 0
             ),
+            retrieval_config=config.retrieval_config,
             top_k=config.top_k,
             seed=seed,
         )
@@ -418,6 +424,7 @@ def _manifest_signature(manifest: dict[str, object]) -> dict[str, object]:
 
 def report_locomo(run_dir: Path) -> dict[str, object]:
     manifest = _required_dict(read_json(run_dir / "manifest.json"), field="run manifest")
+    retrieval_contract = _report_retrieval_contract(manifest)
     mode = _required_str(manifest, "mode")
     expected_votes = _required_int(manifest, "judge_votes")
     expected_retry_attempts = 0
@@ -449,6 +456,7 @@ def report_locomo(run_dir: Path) -> dict[str, object]:
     completed_questions = 0
     categories: dict[int, list[bool]] = {}
     for record in records:
+        _validate_report_retrieval(record, contract=retrieval_contract)
         for response_key in ("answer",):
             response = record.get(response_key)
             if isinstance(response, dict):
@@ -652,11 +660,19 @@ def _run_question(
     judge_votes: int,
     judge_response_max_attempts: int,
     judge_response_max_chars: int,
+    retrieval_config: dict[str, object] | None,
     top_k: int,
     seed: int,
 ) -> dict[str, object]:
     try:
         recall = memory.recall(question.question, limit=top_k)
+        _validate_retrieval_sidecar(
+            recall,
+            query=question.question,
+            repo_key=f"locomo/{conversation.sample_id}",
+            top_k=top_k,
+            retrieval_config=retrieval_config,
+        )
     except Exception as exc:
         return {
             "schema_version": 1,
@@ -1030,6 +1046,88 @@ def _validate_config(config: LoCoMoRunConfig, *, judge_model: TextModel | None) 
         raise ValueError("Full LoCoMo runs require a judge model")
     if config.max_workers < 1:
         raise ValueError("max_workers must be positive")
+
+
+def _validate_retrieval_sidecar(
+    recall: RecallResult,
+    *,
+    query: str,
+    repo_key: str,
+    top_k: int,
+    retrieval_config: dict[str, object] | None,
+) -> None:
+    if (
+        recall.sidecar.query != query.strip()
+        or recall.sidecar.repo_key != repo_key
+        or recall.sidecar.limit != top_k
+    ):
+        raise ValueError("LoCoMo retrieval request does not match its sidecar")
+    if retrieval_config is None:
+        return
+    expected_config_sha256 = retrieval_config_sha256(retrieval_config)
+    if recall.sidecar.retrieval_config_sha256 != expected_config_sha256:
+        raise ValueError("LoCoMo retrieval configuration does not match the run manifest")
+    for provider_name in ("embedding", "reranker"):
+        expected = _required_dict(
+            retrieval_config.get(provider_name),
+            field=f"retrieval {provider_name}",
+        )
+        for identity_field in ("model", "source", "revision"):
+            expected_value = _required_str(expected, identity_field)
+            actual_value = getattr(recall.sidecar, f"{provider_name}_{identity_field}")
+            if actual_value != expected_value:
+                raise ValueError(
+                    f"LoCoMo {provider_name} {identity_field} does not match the run manifest"
+                )
+
+
+def _report_retrieval_contract(
+    manifest: dict[str, object],
+) -> tuple[dict[str, object], int, str] | None:
+    retrieval = _required_dict(manifest.get("retrieval"), field="retrieval manifest")
+    if not all(isinstance(retrieval.get(name), dict) for name in ("embedding", "reranker")):
+        return None
+    top_k = _required_int(retrieval, "top_k")
+    provider_config = {key: value for key, value in retrieval.items() if key != "top_k"}
+    return provider_config, top_k, retrieval_config_sha256(provider_config)
+
+
+def _validate_report_retrieval(
+    record: dict[str, object],
+    *,
+    contract: tuple[dict[str, object], int, str] | None,
+) -> None:
+    if contract is None:
+        return
+    provider_config, top_k, config_sha256 = contract
+    raw = record.get("retrieval")
+    if (
+        raw is None
+        and record.get("status") == "infrastructure_failed"
+        and record.get("phase") == "retrieval"
+    ):
+        return
+    retrieval = _required_dict(raw, field="question retrieval sidecar")
+    sample_id = _required_str(record, "sample_id")
+    if retrieval.get("repo_key") != f"locomo/{sample_id}":
+        raise ValueError("LoCoMo retrieval sidecar repository does not match its sample")
+    if retrieval.get("limit") != top_k:
+        raise ValueError("LoCoMo retrieval sidecar limit does not match its manifest")
+    if retrieval.get("retrieval_config_sha256") != config_sha256:
+        raise ValueError("LoCoMo retrieval sidecar configuration hash does not match its manifest")
+    question = record.get("question")
+    if isinstance(question, str) and retrieval.get("query") != question.strip():
+        raise ValueError("LoCoMo retrieval sidecar query does not match its question")
+    for provider_name in ("embedding", "reranker"):
+        expected = _required_dict(
+            provider_config.get(provider_name),
+            field=f"retrieval {provider_name}",
+        )
+        for identity_field in ("model", "source", "revision"):
+            if retrieval.get(f"{provider_name}_{identity_field}") != expected.get(identity_field):
+                raise ValueError(
+                    f"LoCoMo {provider_name} {identity_field} does not match its manifest"
+                )
 
 
 def _required_dict(value: object, *, field: str) -> dict[str, object]:

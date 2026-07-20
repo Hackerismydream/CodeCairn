@@ -13,6 +13,7 @@ from codecairn.evaluation.evidence_bundle import (
 )
 from codecairn.evaluation.locomo import report_locomo
 from codecairn.evaluation.retrieval import report_recovery, report_retrieval
+from codecairn.memory.retrieval import retrieval_config_sha256
 
 
 def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
@@ -88,6 +89,16 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
         "rejected_memory_count": 0,
         "retrieval_query_count": 1,
     }
+    bundle_manifest = read_json(artifact.bundle_dir / "bundle-manifest.json")
+    assert isinstance(bundle_manifest, dict)
+    assert bundle_manifest["models"]["locomo_retrieval"]["embedding"]["revision"] == "a" * 40
+    assert bundle_manifest["models"]["retrieval_benchmark"]["reranker"]["source"] == (
+        "test/reranker-source"
+    )
+    assert bundle_manifest["licensing"]["retrieval_benchmark"] == {
+        "embedding": {"adapter": "Apache-2.0", "model": "MIT"},
+        "reranker": {"adapter": "Apache-2.0", "model": "Apache-2.0"},
+    }
     assert verify_evidence_bundle(artifact.bundle_dir)["verified"] is True
     assert "LoCoMo accuracy: pending" in (artifact.bundle_dir / "resume.md").read_text()
     assert "由 0% 提升至 100%" in (artifact.bundle_dir / "resume.zh-CN.md").read_text()
@@ -107,10 +118,15 @@ def test_bundle_recomputes_metrics_copy_and_hashes_from_public_artifacts(
             "question",
             "golden_answer",
             "recall_markdown",
-            "retrieval",
         }
         & public_question.keys()
     )
+    public_retrieval = public_question["retrieval"]
+    assert public_retrieval["retrieval_config_sha256"] == retrieval_config_sha256(
+        _test_retrieval_config()
+    )
+    assert "query" not in public_retrieval
+    assert "ranked" not in public_retrieval
     public_vote = public_question["judge_votes"][0]
     assert "provider_debug" not in public_question["answer"]
     assert "raw_response" not in public_vote
@@ -396,6 +412,7 @@ def _make_source_runs(root: Path) -> Path:
             "repository_commit": "commit-locomo",
             "answer_model": {"adapter": "fake", "model": "answer"},
             "judge_model": None,
+            "retrieval": {**_test_retrieval_config(), "top_k": 20},
             "dataset": {
                 "conversation_count": 1,
                 "session_count": 1,
@@ -421,6 +438,7 @@ def _make_source_runs(root: Path) -> Path:
     write_json_exclusive(
         locomo / "checkpoints" / "questions" / "conv-1" / "question-1.json",
         {
+            "sample_id": "conv-1",
             "status": "completed",
             "category": 1,
             "question": "What private detail was discussed?",
@@ -428,6 +446,18 @@ def _make_source_runs(root: Path) -> Path:
             "recall_markdown": "# Recall Context\n\nPrivate source conversation.\n",
             "retrieval": {
                 "query": "What private detail was discussed?",
+                "repo_key": "locomo/conv-1",
+                "limit": 20,
+                "latency_ms": 1.0,
+                "vector_candidate_count": 1,
+                "lexical_candidate_count": 1,
+                "embedding_model": "test/embedding",
+                "embedding_source": "test/embedding-source",
+                "embedding_revision": "a" * 40,
+                "reranker_model": "test/reranker",
+                "reranker_source": "test/reranker-source",
+                "reranker_revision": "b" * 40,
+                "retrieval_config_sha256": retrieval_config_sha256(_test_retrieval_config()),
                 "ranked": [{"quote": "Private source conversation."}],
             },
             "answer": {
@@ -450,7 +480,9 @@ def _make_source_runs(root: Path) -> Path:
             "suite": "retrieval",
             "run_id": "retrieval-test",
             "query_count": 1,
+            "top_k": 10,
             "repository_commit": "commit-retrieval",
+            "retrieval": _test_retrieval_config(),
         },
     )
     write_json_exclusive(retrieval / "corpus.json", [])
@@ -460,6 +492,14 @@ def _make_source_runs(root: Path) -> Path:
             "schema_version": 1,
             "query_id": "q-1",
             "relevant_keys": ["memory-1"],
+            "limit": 10,
+            "embedding_model": "test/embedding",
+            "embedding_source": "test/embedding-source",
+            "embedding_revision": "a" * 40,
+            "reranker_model": "test/reranker",
+            "reranker_source": "test/reranker-source",
+            "reranker_revision": "b" * 40,
+            "retrieval_config_sha256": retrieval_config_sha256(_test_retrieval_config()),
             "rankings": [{"key": "memory-1"}, {"key": "other"}],
             "latency_ms": 5.0,
             "repository_isolation_violation": False,
@@ -510,6 +550,31 @@ def _make_source_runs(root: Path) -> Path:
         encoding="utf-8",
     )
     return root
+
+
+def _test_retrieval_config() -> dict[str, object]:
+    return {
+        "method": "hybrid-rrf-cross-encoder",
+        "embedding": {
+            "adapter": "fastembed",
+            "adapter_version": "0.8.0",
+            "adapter_license": "Apache-2.0",
+            "model": "test/embedding",
+            "source": "test/embedding-source",
+            "revision": "a" * 40,
+            "dimension": 384,
+            "license": "MIT",
+        },
+        "reranker": {
+            "adapter": "fastembed-cross-encoder",
+            "adapter_version": "0.8.0",
+            "adapter_license": "Apache-2.0",
+            "model": "test/reranker",
+            "source": "test/reranker-source",
+            "revision": "b" * 40,
+            "license": "Apache-2.0",
+        },
+    }
 
 
 def _write_coding_run(root: Path, *, arm: str, outcome: str, tokens: int, steps: int) -> None:

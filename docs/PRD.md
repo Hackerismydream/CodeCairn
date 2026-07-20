@@ -91,7 +91,10 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 - LanceDB is mandatory in the completed version 1 but is never authoritative.
   It projects each Coding Memory into one Recall Episode parent plus its
   AtomicFact children.
-- Hybrid retrieval unions lexical and vector candidates before reranking.
+- Hybrid retrieval unions lexical and learned-vector candidates before a
+  CrossEncoder reranker. Logical model aliases, artifact repositories, immutable
+  commit revisions, dimensions, and Adapter versions are recorded in index rows
+  and evaluation artifacts; hashing is a test-only Adapter.
 - Recall Context is Markdown first with a structured JSON sidecar.
 - CLI and HTTP are presentation adapters over shared use-case interfaces.
 - Evaluation uses immutable suite, task, and run manifests. Report generation is
