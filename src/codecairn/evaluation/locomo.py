@@ -6,11 +6,10 @@ import math
 import re
 from collections import Counter
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from threading import Lock
 from typing import Literal, Protocol, cast
 
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
@@ -424,6 +423,7 @@ def run_locomo(
         "max_workers": config.max_workers,
         "ingest_max_workers": 1,
         "retrieval_max_workers": 1,
+        "retrieval_thread_count": 1,
         "checkpoint_policy": "missing-only",
     }
     if config.resume:
@@ -455,24 +455,23 @@ def run_locomo(
             memory_factory=memory_factory,
         )
 
-    retrieval_lock = Lock()
-    with ThreadPoolExecutor(max_workers=min(config.max_workers, len(work))) as executor:
-        tuple(
-            executor.map(
-                lambda item: _run_conversation_questions(
-                    item[0],
-                    item[1],
-                    config=config,
-                    run_dir=run_dir,
-                    memory_factory=memory_factory,
-                    answer_model=answer_model,
-                    judge_model=judge_model,
-                    selected_question_ids=selected_question_ids,
-                    retrieval_lock=retrieval_lock,
-                ),
-                work,
+    with ThreadPoolExecutor(max_workers=config.max_workers) as executor:
+        in_flight: set[Future[None]] = set()
+        for conversation_index, conversation in work:
+            _schedule_conversation_questions(
+                conversation_index,
+                conversation,
+                config=config,
+                run_dir=run_dir,
+                memory_factory=memory_factory,
+                answer_model=answer_model,
+                judge_model=judge_model,
+                selected_question_ids=selected_question_ids,
+                executor=executor,
+                in_flight=in_flight,
             )
-        )
+        for future in in_flight:
+            future.result()
 
     summary = report_locomo(run_dir)
     write_json_exclusive(run_dir / "summary.json", summary)
@@ -508,7 +507,7 @@ def _ingest_conversation(
     )
 
 
-def _run_conversation_questions(
+def _schedule_conversation_questions(
     conversation_index: int,
     conversation: LoCoMoConversation,
     *,
@@ -518,7 +517,8 @@ def _run_conversation_questions(
     answer_model: TextModel,
     judge_model: TextModel | None,
     selected_question_ids: set[str] | None,
-    retrieval_lock: Lock,
+    executor: ThreadPoolExecutor,
+    in_flight: set[Future[None]],
 ) -> None:
     memory_root = run_dir / "runtime" / conversation.sample_id
     ingest_path = run_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
@@ -546,28 +546,37 @@ def _run_conversation_questions(
         if question_path.exists():
             continue
         seed = config.seed + conversation_index * 10_000 + question_index
-        record = _run_question(
+        recall = _recall_question(
             conversation,
             question,
             memory=memory,
-            answer_model=answer_model,
-            judge_model=judge_model,
-            judge_votes=config.judge_votes if config.mode == "full" else 0,
-            judge_response_max_attempts=(
-                config.judge_response_max_attempts if config.mode == "full" else 0
-            ),
-            judge_response_max_chars=(
-                config.judge_response_max_chars if config.mode == "full" else 0
-            ),
             retrieval_config=config.retrieval_config,
             top_k=config.top_k,
-            seed=seed,
-            retrieval_lock=retrieval_lock,
         )
-        write_json_exclusive(
-            question_path,
-            record,
+        in_flight.add(
+            executor.submit(
+                _complete_question,
+                conversation,
+                question,
+                recall=recall,
+                answer_model=answer_model,
+                judge_model=judge_model,
+                judge_votes=config.judge_votes if config.mode == "full" else 0,
+                judge_response_max_attempts=(
+                    config.judge_response_max_attempts if config.mode == "full" else 0
+                ),
+                judge_response_max_chars=(
+                    config.judge_response_max_chars if config.mode == "full" else 0
+                ),
+                seed=seed,
+                question_path=question_path,
+            )
         )
+        if len(in_flight) >= config.max_workers:
+            completed, _pending = wait(in_flight, return_when=FIRST_COMPLETED)
+            for future in completed:
+                future.result()
+            in_flight.difference_update(completed)
 
 
 def _manifest_signature(manifest: dict[str, object]) -> dict[str, object]:
@@ -857,24 +866,16 @@ def _valid_judge_vote_retry_metadata(
     return True
 
 
-def _run_question(
+def _recall_question(
     conversation: LoCoMoConversation,
     question: LoCoMoQuestion,
     *,
     memory: ConversationMemory,
-    answer_model: TextModel,
-    judge_model: TextModel | None,
-    judge_votes: int,
-    judge_response_max_attempts: int,
-    judge_response_max_chars: int,
     retrieval_config: dict[str, object] | None,
     top_k: int,
-    seed: int,
-    retrieval_lock: Lock,
-) -> dict[str, object]:
+) -> RecallResult | dict[str, object]:
     try:
-        with retrieval_lock:
-            recall = memory.recall(question.question, limit=top_k)
+        recall = memory.recall(question.question, limit=top_k)
         _validate_retrieval_sidecar(
             recall,
             query=question.question,
@@ -882,6 +883,7 @@ def _run_question(
             top_k=top_k,
             retrieval_config=retrieval_config,
         )
+        return recall
     except Exception as exc:
         return {
             "schema_version": 1,
@@ -893,6 +895,49 @@ def _run_question(
             "error_type": type(exc).__name__,
             "judge_votes": [],
         }
+
+
+def _complete_question(
+    conversation: LoCoMoConversation,
+    question: LoCoMoQuestion,
+    *,
+    recall: RecallResult | dict[str, object],
+    answer_model: TextModel,
+    judge_model: TextModel | None,
+    judge_votes: int,
+    judge_response_max_attempts: int,
+    judge_response_max_chars: int,
+    seed: int,
+    question_path: Path,
+) -> None:
+    record = _run_question(
+        conversation,
+        question,
+        recall=recall,
+        answer_model=answer_model,
+        judge_model=judge_model,
+        judge_votes=judge_votes,
+        judge_response_max_attempts=judge_response_max_attempts,
+        judge_response_max_chars=judge_response_max_chars,
+        seed=seed,
+    )
+    write_json_exclusive(question_path, record)
+
+
+def _run_question(
+    conversation: LoCoMoConversation,
+    question: LoCoMoQuestion,
+    *,
+    recall: RecallResult | dict[str, object],
+    answer_model: TextModel,
+    judge_model: TextModel | None,
+    judge_votes: int,
+    judge_response_max_attempts: int,
+    judge_response_max_chars: int,
+    seed: int,
+) -> dict[str, object]:
+    if isinstance(recall, dict):
+        return recall
     try:
         answer = answer_model.generate(
             system=(

@@ -7,6 +7,7 @@ import threading
 from contextlib import suppress
 from dataclasses import dataclass, field, replace
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 
@@ -271,6 +272,7 @@ class StagedConcurrencyMemory(FakeMemory):
     max_active_ingests = 0
     active_recalls = 0
     max_active_recalls = 0
+    recall_thread_ids: ClassVar[set[int]] = set()
 
     def ingest(
         self,
@@ -295,6 +297,7 @@ class StagedConcurrencyMemory(FakeMemory):
     def recall(self, question: str, *, limit: int) -> RecallResult:
         with self.lock:
             type(self).active_recalls += 1
+            type(self).recall_thread_ids.add(threading.get_ident())
             type(self).max_active_recalls = max(
                 type(self).max_active_recalls,
                 type(self).active_recalls,
@@ -578,6 +581,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "max_workers": 1,
                 "ingest_max_workers": 1,
                 "retrieval_max_workers": 1,
+                "retrieval_thread_count": 1,
             },
             "gates": {
                 "required_scored_questions_per_variant": 2,
@@ -994,6 +998,7 @@ def test_run_serializes_memory_bound_ingest_then_parallelizes_questions(tmp_path
     StagedConcurrencyMemory.max_active_ingests = 0
     StagedConcurrencyMemory.active_recalls = 0
     StagedConcurrencyMemory.max_active_recalls = 0
+    StagedConcurrencyMemory.recall_thread_ids = set()
     ConcurrentAnswerModel.barrier = threading.Barrier(2)
     ConcurrentAnswerModel.active_calls = 0
     ConcurrentAnswerModel.max_active_calls = 0
@@ -1015,11 +1020,13 @@ def test_run_serializes_memory_bound_ingest_then_parallelizes_questions(tmp_path
     assert artifact.summary["question_artifact_count"] == 2
     assert StagedConcurrencyMemory.max_active_ingests == 1
     assert StagedConcurrencyMemory.max_active_recalls == 1
+    assert len(StagedConcurrencyMemory.recall_thread_ids) == 1
     assert ConcurrentAnswerModel.max_active_calls == 2
     manifest = (artifact.run_dir / "manifest.json").read_text(encoding="utf-8")
     assert '"max_workers": 2' in manifest
     assert '"ingest_max_workers": 1' in manifest
     assert '"retrieval_max_workers": 1' in manifest
+    assert '"retrieval_thread_count": 1' in manifest
 
 
 def test_resume_only_fills_missing_question_checkpoints(tmp_path: Path) -> None:

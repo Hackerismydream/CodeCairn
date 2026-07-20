@@ -171,6 +171,7 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
         "max_workers",
         "ingest_max_workers",
         "retrieval_max_workers",
+        "retrieval_thread_count",
     )
     for variant, manifest in manifests.items():
         for field in fields:
@@ -209,6 +210,7 @@ def _validate_definition_protocol(
         "max_workers": manifest.get("max_workers"),
         "ingest_max_workers": manifest.get("ingest_max_workers"),
         "retrieval_max_workers": manifest.get("retrieval_max_workers"),
+        "retrieval_thread_count": manifest.get("retrieval_thread_count"),
     }
     for field, value in observed.items():
         if value != protocol.get(field):

@@ -35,7 +35,8 @@
     "tokenizer_threads": 1,
     "max_workers": 10,
     "ingest_max_workers": 1,
-    "retrieval_max_workers": 1
+    "retrieval_max_workers": 1,
+    "retrieval_thread_count": 1
   },
   "gates": {
     "required_scored_questions_per_variant": 200,
