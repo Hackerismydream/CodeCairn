@@ -242,12 +242,19 @@ class RecallEngine:
         )
         neighbor_expansion_count = 0
         if plan.expand_neighbors:
+            temporal_exploration_ids = {
+                item.memory_id
+                for item in selected_ranked
+                if item.memory_id not in core_memory_ids
+                and _matches_temporal_prefix(item, plan.query_sketch.temporal_prefixes)
+            }
             selected_ranked, neighbor_expansion_count = self._attach_snippets(
                 selected_ranked,
                 repo_key=repo_key,
                 expand_neighbors=True,
                 neighbor_window=plan.neighbor_window,
                 neighbor_snippet_budget=plan.neighbor_snippet_budget,
+                priority_memory_ids=temporal_exploration_ids,
             )
         selected = tuple(
             replace(item, rank=rank) for rank, item in enumerate(selected_ranked, start=1)
@@ -486,6 +493,7 @@ class RecallEngine:
         expand_neighbors: bool,
         neighbor_window: int | None = None,
         neighbor_snippet_budget: int = 0,
+        priority_memory_ids: set[str] | None = None,
     ) -> tuple[list[RankedRecall], int]:
         memory_map = {
             item.memory_id: memory
@@ -507,8 +515,33 @@ class RecallEngine:
                 group.sort(key=_chronology_key)
                 episode_groups[memory.episode_id] = group
 
-        neighbor_count = 0
-        remaining_neighbor_budget = neighbor_snippet_budget
+        allocated_neighbors: dict[str, tuple[RecallSnippet, ...]] = {}
+        if expand_neighbors:
+            priorities = priority_memory_ids or set()
+            allocation_order = sorted(
+                ranked,
+                key=lambda item: item.memory_id not in priorities,
+            )
+            remaining_neighbor_budget = neighbor_snippet_budget
+            for item in allocation_order:
+                candidate_memory = memory_map.get(item.memory_id)
+                if candidate_memory is None or remaining_neighbor_budget == 0:
+                    continue
+                neighbors = _neighbor_snippets(
+                    candidate_memory,
+                    group=episode_groups.get(candidate_memory.episode_id, []),
+                    window=(
+                        self._planner.config.neighbor_window
+                        if neighbor_window is None
+                        else neighbor_window
+                    ),
+                    facts_per_neighbor=self._planner.config.matched_facts_per_memory,
+                )
+                bounded = neighbors[:remaining_neighbor_budget]
+                allocated_neighbors[item.memory_id] = bounded
+                remaining_neighbor_budget -= len(bounded)
+
+        neighbor_count = sum(len(items) for items in allocated_neighbors.values())
         enriched: list[RankedRecall] = []
         for item in ranked:
             candidate_memory = memory_map.get(item.memory_id)
@@ -526,20 +559,9 @@ class RecallEngine:
                 sibling_limit=self._planner.config.sibling_facts_per_memory,
             )
             if expand_neighbors:
-                neighbors = _neighbor_snippets(
-                    candidate_memory,
-                    group=episode_groups.get(candidate_memory.episode_id, []),
-                    window=(
-                        self._planner.config.neighbor_window
-                        if neighbor_window is None
-                        else neighbor_window
-                    ),
-                    facts_per_neighbor=self._planner.config.matched_facts_per_memory,
+                snippets = _deduplicate_snippets(
+                    (*snippets, *allocated_neighbors.get(item.memory_id, ()))
                 )
-                bounded_neighbors = neighbors[:remaining_neighbor_budget]
-                remaining_neighbor_budget -= len(bounded_neighbors)
-                snippets = _deduplicate_snippets((*snippets, *bounded_neighbors))
-                neighbor_count += len(bounded_neighbors)
             enriched.append(replace(item, snippets=snippets))
         return enriched, neighbor_count
 

@@ -379,6 +379,76 @@ def test_temporal_exploration_lane_reserves_an_explicit_month_candidate() -> Non
     assert "memory-20" in {item.memory_id for item in selected}
 
 
+def test_priority_memory_receives_neighbor_budget_before_higher_ranked_item() -> None:
+    first = _memory_with_fact(
+        "memory-first",
+        fact_id="fact-first",
+        fact_text="First matched fact.",
+        event_index=1,
+        episode_id="episode-first",
+    )
+    first_neighbor = _memory_with_fact(
+        "memory-first-neighbor",
+        fact_id="fact-first-neighbor",
+        fact_text="First neighbor.",
+        event_index=2,
+        episode_id=first.episode_id,
+    )
+    priority = _memory_with_fact(
+        "memory-priority",
+        fact_id="fact-priority",
+        fact_text="Priority matched fact.",
+        event_index=3,
+        episode_id="episode-priority",
+    )
+    priority_neighbor = _memory_with_fact(
+        "memory-priority-neighbor",
+        fact_id="fact-priority-neighbor",
+        fact_text="Priority neighbor.",
+        event_index=4,
+        episode_id=priority.episode_id,
+    )
+
+    def ranked_item(memory: CodingMemory, *, rank: int) -> RankedRecall:
+        return RankedRecall(
+            rank=rank,
+            memory_id=memory.memory_id,
+            memory_type=memory.memory_type,
+            title=memory.title,
+            summary=memory.summary,
+            source_uri=f"codecairn://memory/{memory.memory_id}",
+            content_sha256=memory.content_sha256,
+            candidate_sources=("vector",),
+            vector_score=1.0,
+            vector_rank=rank,
+            lexical_score=None,
+            lexical_rank=None,
+            final_score=1.0,
+            evidence=(),
+        )
+
+    ranked = [ranked_item(first, rank=1), ranked_item(priority, rank=2)]
+    engine = RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState((first, first_neighbor, priority, priority_neighbor)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    )
+
+    enriched, neighbor_count = engine._attach_snippets(
+        ranked,
+        repo_key="acme/widgets",
+        expand_neighbors=True,
+        neighbor_window=1,
+        neighbor_snippet_budget=1,
+        priority_memory_ids={priority.memory_id},
+    )
+
+    assert neighbor_count == 1
+    assert enriched[0].snippets == ()
+    assert [item.text for item in enriched[1].snippets] == ["Priority neighbor."]
+
+
 def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
     class TemporalIndex(CandidateIndex):
         def __init__(self) -> None:
