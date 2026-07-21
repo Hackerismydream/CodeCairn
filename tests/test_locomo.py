@@ -561,10 +561,46 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert "preserve uncertainty and logical alternatives" in model.system_prompt.casefold()
     assert inferred.plan.route == "inference"
 
+    temporal_item = RankedRecall(
+        rank=1,
+        memory_id="memory-temporal",
+        memory_type="user_preference",
+        title="Tim and John",
+        summary="2023-12-06T17:34:00+00:00 — Tim and John conversation",
+        source_uri="codecairn://memory/memory-temporal",
+        content_sha256="b" * 64,
+        candidate_sources=("lexical",),
+        vector_score=None,
+        vector_rank=None,
+        lexical_score=1.0,
+        lexical_rank=1,
+        final_score=1.0,
+        evidence=(),
+        snippets=(
+            RecallSnippet(
+                relation="matched",
+                source_memory_id="memory-temporal",
+                source_uri="codecairn://memory/memory-temporal",
+                fact_id="fact-violin",
+                text="Tim has been playing the violin for about four months now.",
+                source_title="Tim and John",
+                source_summary="2023-12-06T17:34:00+00:00 — Tim and John conversation",
+                raw_event_index=1,
+            ),
+        ),
+    )
+    temporal_recall = replace(
+        recall,
+        sidecar=replace(recall.sidecar, ranked=(temporal_item,)),
+    )
     temporal = EvidenceAnswerSynthesizer().synthesize(
         conversation,
-        replace(question, question="When did they attend the concert?"),
-        recall=recall,
+        replace(
+            question,
+            question="When did Tim start playing the violin?",
+            category=2,
+        ),
+        recall=temporal_recall,
         model=model,
         seed=7,
     )
@@ -573,6 +609,10 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert "closest matching event" in model.system_prompt.casefold()
     assert "adjacent exchange" in model.system_prompt.casefold()
     assert "unrelated qualifier" in model.system_prompt.casefold()
+    assert model.user_payload is not None
+    hints = model.user_payload["temporal_hints"]
+    assert isinstance(hints, list)
+    assert hints[0]["resolved_time"] == "2023-08"
     assert temporal.plan.route == "temporal"
 
     listed = EvidenceAnswerSynthesizer().synthesize(
@@ -630,6 +670,7 @@ def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
     }
     manifest = json.loads((artifact.run_dir / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["retrieval"] == {**FAKE_RETRIEVAL_CONFIG, "top_k": 20}
+    assert manifest["judge_contract"] == "locomo-generous-semantic-equivalence-v1"
     question_files = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))
     first_payload = question_files[0].read_text(encoding="utf-8")
     assert '"judge_votes"' in first_payload
@@ -1208,7 +1249,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "query-routed-answer-planner-v9",
+                "answer_evidence_contract": "query-routed-answer-planner-v10",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,
@@ -1703,9 +1744,13 @@ def test_answer_and_judge_prompts_treat_benchmark_content_as_untrusted_data(
         if "generated_answer" in payload:
             assert response_format == "json"
             assert set(payload) == {"generated_answer", "gold_answer", "question"}
+            assert "generous semantic equivalence" in system.casefold()
         else:
             assert response_format == "text"
-            assert set(payload) == {"memory_context", "question", "speakers"}
+            assert set(payload) in (
+                {"memory_context", "question", "speakers"},
+                {"memory_context", "question", "speakers", "temporal_hints"},
+            )
             assert "inspect the whole supplied context" in system.casefold()
             assert "only after checking every supplied item" in system.casefold()
             assert "ordinary common-sense inferences" not in system.casefold()
