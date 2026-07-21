@@ -229,6 +229,7 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
         "retrieval_max_workers",
         "retrieval_thread_count",
         "execution_phase_contract",
+        "question_worker",
         "corpus",
         "query_vectors",
     )
@@ -277,6 +278,8 @@ def _validate_definition_protocol(
     embedding = _dict(retrieval.get("embedding"), field="embedding")
     reranker = _dict(retrieval.get("reranker"), field="reranker")
     planner = _dict(retrieval.get("planner"), field="planner")
+    raw_worker = manifest.get("question_worker")
+    worker = {} if raw_worker is None else _dict(raw_worker, field="question worker")
     observed = {
         "answer_model": answer.get("model"),
         "judge_model": judge.get("model"),
@@ -290,6 +293,13 @@ def _validate_definition_protocol(
         "retrieval_max_workers": manifest.get("retrieval_max_workers"),
         "retrieval_thread_count": manifest.get("retrieval_thread_count"),
         "execution_phase_contract": manifest.get("execution_phase_contract"),
+        "worker_contract": worker.get("name"),
+        "worker_max_rss_bytes": worker.get("max_rss_bytes"),
+        "worker_stall_timeout_seconds": worker.get("stall_timeout_seconds"),
+        "worker_poll_interval_seconds": worker.get("poll_interval_seconds"),
+        "worker_rss_poll_interval_seconds": worker.get("rss_poll_interval_seconds"),
+        "worker_progress_signal": worker.get("progress_signal"),
+        "worker_publish_policy": worker.get("publish_policy"),
         "embedding_adapter": embedding.get("adapter"),
         "embedding_model": embedding.get("model"),
         "embedding_dimension": embedding.get("dimension"),

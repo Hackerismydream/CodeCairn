@@ -102,6 +102,9 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
             Path | None,
             typer.Option("--query-vectors", exists=True, file_okay=False, readable=True),
         ] = None,
+        expected_dataset_sha256: Annotated[
+            str | None, typer.Option("--expected-dataset-sha256")
+        ] = None,
     ) -> None:
         """Execute one immutable evaluation suite run."""
         if mode not in {"full", "smoke", "retrieval"}:
@@ -141,6 +144,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 execution_phase=cast(Literal["all", "ingest", "questions"], execution_phase),
                 corpus_path=corpus,
                 query_vectors_path=query_vectors,
+                expected_dataset_sha256=expected_dataset_sha256,
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))

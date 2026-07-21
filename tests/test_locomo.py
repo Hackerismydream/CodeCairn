@@ -18,6 +18,7 @@ from codecairn.evaluation.locomo import (
     ConversationIngestResult,
     FrozenQueryEmbeddingAdapter,
     LoCoMoConversation,
+    LoCoMoConversationWork,
     LoCoMoCorpusConfig,
     LoCoMoQueryVectorConfig,
     LoCoMoRunConfig,
@@ -27,6 +28,7 @@ from codecairn.evaluation.locomo import (
     load_locomo_question_set,
     report_locomo,
     run_locomo,
+    run_locomo_conversation_questions,
 )
 from codecairn.evaluation.locomo_ablation import (
     LoCoMoAblationConfig,
@@ -576,6 +578,107 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
     }
 
 
+def test_shared_corpus_delegates_each_conversation_to_an_injected_worker(
+    tmp_path: Path,
+) -> None:
+    corpus = build_locomo_corpus(
+        LoCoMoCorpusConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "corpora",
+            corpus_id="worker-corpus",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+        ),
+        memory_factory=FakeMemory,
+    )
+    delegated: list[str] = []
+
+    def worker(work: LoCoMoConversationWork) -> None:
+        delegated.append(work.conversation.sample_id)
+        run_locomo_conversation_questions(
+            work.conversation_index,
+            work.conversation,
+            config=work.config,
+            run_dir=work.run_dir,
+            corpus_dir=work.corpus_dir,
+            memory_factory=FakeMemory,
+            answer_model=None,
+            judge_model=None,
+            selected_question_ids=set(work.question_ids),
+        )
+
+    run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="delegated-run",
+            repository_commit="abc123",
+            mode="retrieval",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+            corpus_path=corpus.corpus_dir,
+            execution_phase="questions",
+        ),
+        memory_factory=FakeMemory,
+        answer_model=None,
+        judge_model=None,
+        question_worker=worker,
+    )
+
+    assert delegated == ["conv-test-1", "conv-test-2"]
+
+
+def test_delegated_shared_corpus_never_opens_runtime_in_parent(tmp_path: Path) -> None:
+    corpus = build_locomo_corpus(
+        LoCoMoCorpusConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "corpora",
+            corpus_id="parent-lightweight-corpus",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+        ),
+        memory_factory=FakeMemory,
+    )
+
+    def forbidden_parent_memory_factory(_root: Path) -> FakeMemory:
+        raise AssertionError("parent process must not open a shared-corpus runtime")
+
+    def worker(work: LoCoMoConversationWork) -> None:
+        run_locomo_conversation_questions(
+            work.conversation_index,
+            work.conversation,
+            config=work.config,
+            run_dir=work.run_dir,
+            corpus_dir=work.corpus_dir,
+            memory_factory=FakeMemory,
+            answer_model=None,
+            judge_model=None,
+            selected_question_ids=set(work.question_ids),
+        )
+
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="parent-lightweight-run",
+            repository_commit="abc123",
+            mode="retrieval",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+            corpus_path=corpus.corpus_dir,
+            execution_phase="questions",
+        ),
+        memory_factory=forbidden_parent_memory_factory,
+        answer_model=None,
+        judge_model=None,
+        question_worker=worker,
+    )
+
+    assert artifact.summary["completed_question_count"] == 4
+
+
 def test_shared_corpus_run_rejects_any_file_mutation(tmp_path: Path) -> None:
     class MutatingMemory(FakeMemory):
         def recall(self, question: str, *, limit: int) -> RecallResult:
@@ -845,6 +948,13 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "retrieval_max_workers": 1,
                 "retrieval_thread_count": 1,
                 "execution_phase_contract": "process-isolated-ingest-then-questions-v1",
+                "worker_contract": None,
+                "worker_max_rss_bytes": None,
+                "worker_stall_timeout_seconds": None,
+                "worker_poll_interval_seconds": None,
+                "worker_rss_poll_interval_seconds": None,
+                "worker_progress_signal": None,
+                "worker_publish_policy": None,
                 "embedding_adapter": None,
                 "embedding_model": "test/embedding",
                 "embedding_dimension": 3,
@@ -1135,6 +1245,55 @@ def test_report_rejects_retry_metadata_that_exceeds_the_manifest_limit(tmp_path:
     assert report["question_artifact_count"] == 4
     assert report["scored_question_count"] == 3
     assert report["infrastructure_failed_count"] == 1
+
+
+def test_report_rejects_missing_question_checkpoint_from_manifest_inventory(
+    tmp_path: Path,
+) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-missing-question-inventory",
+            repository_commit="abc123",
+            mode="retrieval",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=None,
+        judge_model=None,
+    )
+    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
+    question_path.unlink()
+
+    with pytest.raises(ValueError, match="inventory is incomplete"):
+        report_locomo(artifact.run_dir)
+
+
+def test_report_rejects_question_checkpoint_whose_identity_differs_from_its_path(
+    tmp_path: Path,
+) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-mismatched-question-inventory",
+            repository_commit="abc123",
+            mode="retrieval",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=None,
+        judge_model=None,
+    )
+    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
+    record = json.loads(question_path.read_text(encoding="utf-8"))
+    record["question_id"] = "locomo-question_wrong"
+    question_path.unlink()
+    write_json_exclusive(question_path, record)
+
+    with pytest.raises(ValueError, match="path does not match"):
+        report_locomo(artifact.run_dir)
 
 
 def test_report_rejects_judge_responses_longer_than_the_manifest_limit(tmp_path: Path) -> None:

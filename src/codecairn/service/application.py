@@ -26,6 +26,7 @@ class EvaluationRunRequest:
     execution_phase: Literal["all", "ingest", "questions"] = "all"
     corpus_path: Path | None = None
     query_vectors_path: Path | None = None
+    expected_dataset_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

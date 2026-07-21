@@ -75,7 +75,14 @@ per question selection and fail closed on a miss; scored runs cannot silently
 call the embedding provider. The local CrossEncoder uses one manifest-recorded
 inference thread and disables tokenizer parallelism. One caller thread performs
 every local retrieval while DeepSeek answer and judge calls are pipelined in a
-separate pool at `--max-workers`.
+separate pool at `--max-workers`. Shared-corpus runs execute one conversation
+per fresh Python process. Each worker verifies the frozen artifacts, queries an
+isolated copy of that conversation runtime, and publishes its whole checkpoint
+directory only after the 1 GiB RSS gate and exact question inventory pass.
+The coordinator writes a start receipt before launching workers and a matching
+completion receipt on every handled exit; an unmatched start receipt makes the
+run ineligible for reporting. Failed attempts freeze checkpoint hashes, so a
+resume can reuse verified completed questions without repeating paid calls.
 
 Run the same commit, answer model, judge model, vote count, and top-k under the
 three declared recall modes. Each command must include:
@@ -131,6 +138,15 @@ uv run codecairn eval compare-locomo \
   --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v7-hierarchy \
   --output benchmark_results/locomo/locomo-diagnostic-200-v7-report.json
 ```
+
+The worker coordinator polls durable checkpoints every 250 ms and samples live
+RSS once per second. It also checks the
+child's reported `ru_maxrss`, records a liveness heartbeat, and stops a worker
+after 600 seconds without a new durable question checkpoint. These fail-closed defaults can be tightened with
+`CODECAIRN_EVAL_MAX_RSS_BYTES`, `CODECAIRN_EVAL_WORKER_STALL_SECONDS`, and
+`CODECAIRN_EVAL_WORKER_POLL_SECONDS`. The independent live-RSS cadence is
+configured with `CODECAIRN_EVAL_WORKER_RSS_POLL_SECONDS`; changing any of these
+values changes the run manifest and therefore cannot be hidden by `--resume`.
 
 The comparison gate requires 200 scored questions and zero infrastructure
 failures per variant. Hierarchy without temporal neighbors must improve at

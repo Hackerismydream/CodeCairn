@@ -3,9 +3,10 @@
 ## Status
 
 Accepted. Shared corpus publication, stable truth/index fingerprints, frozen
-query vectors, retrieval-only runs, and cross-variant identity checks are
-implemented. Process resource telemetry, watchdog enforcement, and the public
-evidence-bundle migration remain required before publishing a full result.
+query vectors, retrieval-only runs, cross-variant identity checks, exec-isolated
+conversation workers, RSS receipts, and durable-checkpoint watchdog enforcement
+are implemented. The public evidence-bundle migration remains required before
+publishing a full result.
 
 ## Context
 
@@ -226,8 +227,9 @@ Each recall variant has its own run directory:
 ```text
 benchmark_results/locomo/runs/<run-id>/
   manifest.json
-  checkpoints/questions/<question-id>.json
-  recall-sidecars/<question-id>.json
+  checkpoints/questions/<conversation-id>/<question-id>.json
+  resources/conversations/<conversation-id>.attempt-<n>.json
+  workers/<conversation-id>/attempt-<n>/
   summary.json
   resource-usage.json
 ```
@@ -246,6 +248,16 @@ Question checkpoints are append-only and missing-only on resume. Existing
 successful checkpoints are not overwritten. Failed or infrastructure-error
 records remain evidence and are not counted as scored answers.
 
+For shared-corpus runs, the coordinator never opens a Lance or SQLite runtime.
+It validates only artifact manifests and streamed tree hashes, then launches one
+fresh exec worker for each eligible conversation. The worker copies only that
+conversation's runtime into its attempt directory, validates the logical corpus
+snapshot there, and writes question checkpoints into staging. SQLite uses WAL
+mode and changes its main database file during initialization, so this transient
+copy is required even for logically read-only recall. The coordinator atomically
+renames the complete conversation checkpoint directory only after exit status,
+live RSS, child `ru_maxrss`, and exact question-ID inventory all pass.
+
 The ablation comparison verifier rejects variants unless all of them have the
 same corpus content SHA-256, query-vector content SHA-256, question-selection
 SHA-256, answer model, judge model, judge-vote count, scoring contract, top-k,
@@ -256,10 +268,11 @@ declared by the frozen variant matrix may differ.
 
 ### Stage 0: offline preflight
 
-No provider call is allowed until preflight verifies configuration, dataset
-hashes, artifact output containment, free disk, corpus compatibility, query
-selection, expected request counts, and maximum cost envelopes. Preflight
-prints the planned paid-call counts and exits non-zero on drift.
+No provider call is allowed until the runner verifies configuration, dataset
+hashes, artifact output containment, corpus compatibility, and query selection,
+and the operator verifies free disk, expected request counts, and the manual
+cost envelope. Automated provider-price and free-disk preflight are future
+work; this protocol must not represent those checks as runner-enforced.
 
 ### Stage 1: 20-question retrieval canary
 
@@ -275,8 +288,8 @@ The canary passes only when:
 - every question has a finite score set and a complete Recall Sidecar;
 - hierarchy retrieval p95 is at most 5,000 ms and maximum latency is at most
   15,000 ms;
-- maximum resident set size is at most 896 MiB as a soft gate and never exceeds
-  the 1,024 MiB hard-stop limit;
+- every conversation worker's maximum resident set size is at most 896 MiB as a
+  soft gate and never exceeds the 1,024 MiB hard-stop limit;
 - post-run corpus fingerprints are unchanged.
 
 Failure stops the ladder before any 200-question answer or judge calls.
@@ -289,11 +302,13 @@ The diagnostic keeps 50 questions from each scored category and evaluates:
 2. `hierarchy-no-neighbors`;
 3. `hierarchy`, with the global post-ranking 20-snippet neighbor budget.
 
-Variants execute sequentially in separate processes. Retrieval uses one worker
-to keep latency measurements interpretable. Answer and judge calls may use the
-frozen bounded concurrency of ten. The three-variant run therefore performs
-document ingestion once, query embedding once per question, and independent
-retrieval/answer/judge work per variant.
+Variants execute sequentially. Within each variant, conversations execute
+sequentially in fresh processes so Lance and Arrow native allocator high-water
+marks cannot accumulate across all ten runtimes. Retrieval uses one caller
+thread per worker to keep latency measurements interpretable. Answer and judge
+calls may use the frozen bounded concurrency of ten inside that worker. The
+three-variant run therefore performs document ingestion once, query embedding
+once per question, and independent retrieval/answer/judge work per variant.
 
 The core hierarchy is promoted only when:
 
@@ -333,7 +348,10 @@ explicit evidence need. It is not part of the default cost envelope.
 
 ## Resource and Cost Gates
 
-The following are launch limits, not expected performance claims:
+The following are protocol limits, not expected performance claims. RSS and the
+per-worker durable-checkpoint deadline are runner-enforced. Cost and stage wall
+time remain operator promotion gates until a separate accounting change adds
+provider-price preflight and stage deadlines to the runner.
 
 | Stage | Soft target | Hard gate |
 |---|---:|---:|
@@ -343,17 +361,27 @@ The following are launch limits, not expected performance claims:
 | 200-question ablation paid inference | CNY 6 | CNY 10 |
 | 200-question ablation wall time | 90 min | 120 min |
 | Full selected-policy paid inference | CNY 18 | CNY 25 |
-| Any process maximum RSS | 896 MiB | 1,024 MiB |
+| Completed worker or finalizing coordinator maximum RSS | 896 MiB | 1,024 MiB |
 
-Cost preflight uses provider-reported or locally measured token counts and the
-pinned price snapshot recorded in the run manifest. A hard estimate breach
-prevents launch. Runtime accounting stops scheduling new paid work before the
-cap can be exceeded; in-flight calls are allowed to finish and are preserved.
+Before a paid 200-question or full run, the operator records a price snapshot,
+estimates input/output tokens, and refuses promotion when the corresponding
+hard cost or wall-time gate is exceeded. These checks are not yet automatic;
+artifacts must not claim that the runner enforced them.
 
-Corpus construction, query-vector construction, and every recall variant run
-in separate processes. Variants are sequential, not concurrent. A watchdog
-terminates a stage after ten minutes without a new durable checkpoint. This
+Corpus construction and query-vector construction run separately. Recall
+variants are sequential, not concurrent, and each variant uses one fresh exec
+worker per conversation. A watchdog terminates a worker after ten minutes
+without a new durable question checkpoint; the separate heartbeat records
+worker liveness without resetting that progress deadline. The coordinator
+samples live RSS once per second, then also
+gates on the child's final `ru_maxrss` to cover peaks between samples. This
 limits native-memory accumulation and makes failure boundaries observable.
+Each coordinator invocation writes an immutable start identity before worker
+launch and a separate completion receipt on handled success or failure. A hard
+exit leaves an unmatched start receipt, which blocks summary publication rather
+than allowing a later resume to erase the missing RSS evidence. Worker and
+partial-checkpoint receipts are bound to that coordinator PID and to per-file
+checkpoint hashes.
 
 The RSS envelope was calibrated on 2026-07-21 after the first production
 retrieval canary. Corpus construction peaked at 359.5 MiB, while a bounded
@@ -438,13 +466,19 @@ This saves calls but leaves corpus identity implicit and permits a later run to
 observe mutations. It is useful as an upstream mechanism reference, not as the
 CodeCairn evidence contract.
 
-### Copy the corpus directory for every variant
+### Copy the whole corpus directory for every variant
 
 Copies avoid shared writes but add roughly one corpus-sized disk copy per
 variant and make identity harder to prove. A read-only interface plus pre/post
 fingerprint verification gives stronger evidence with less storage. A
 filesystem snapshot may remain an emergency adapter for a store that mutates
 during reads, but snapshots must share the same verified content identity.
+
+The implemented worker protocol does not make a full variant-sized copy. It
+copies only one 7--12 MiB conversation runtime into a transient attempt
+directory, verifies it against the immutable corpus snapshot, and removes the
+runtime copy after the worker exits. Failed staging checkpoints and receipts
+remain for audit, while rejected work is never published as completed output.
 
 ### Run all variants concurrently
 

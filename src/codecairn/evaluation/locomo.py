@@ -5,8 +5,12 @@ import gc
 import hashlib
 import json
 import math
+import os
 import re
+import resource
+import signal
 import struct
+import sys
 from collections import Counter
 from collections.abc import Callable
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
@@ -51,6 +55,10 @@ _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 
 RunMode = Literal["full", "smoke", "retrieval"]
 ExecutionPhase = Literal["all", "ingest", "questions"]
+
+
+class _CoordinatorTermination(Exception):
+    """Turn SIGTERM into a recoverable failed coordinator attempt."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -211,6 +219,19 @@ class LoCoMoQueryVectorArtifact:
 
 
 MemoryFactory = Callable[[Path], ConversationMemory]
+
+
+@dataclass(frozen=True, slots=True)
+class LoCoMoConversationWork:
+    conversation: LoCoMoConversation
+    conversation_index: int
+    config: LoCoMoRunConfig
+    run_dir: Path
+    corpus_dir: Path
+    question_ids: tuple[str, ...]
+
+
+QuestionWorker = Callable[[LoCoMoConversationWork], None]
 
 
 class CodeCairnConversationMemory:
@@ -524,6 +545,7 @@ def _load_locomo_corpus(
     selected: tuple[LoCoMoConversation, ...],
     retrieval_config: dict[str, object] | None,
     memory_factory: MemoryFactory,
+    verify_runtime: bool = True,
 ) -> dict[str, object]:
     corpus_dir = path.resolve()
     if not corpus_dir.is_dir():
@@ -568,13 +590,70 @@ def _load_locomo_corpus(
         memory_root = (corpus_dir / relative_root).resolve()
         if not memory_root.is_relative_to(corpus_dir) or not memory_root.is_dir():
             raise ValueError("LoCoMo corpus ingest checkpoint has no runtime state")
-        snapshots = _required_dict(content.get("corpus_snapshots"), field="corpus snapshots")
-        expected_snapshot = _required_dict(
-            snapshots.get(conversation.sample_id), field="conversation corpus snapshot"
-        )
-        if memory_factory(memory_root).corpus_snapshot() != expected_snapshot:
-            raise ValueError("LoCoMo corpus runtime fingerprints do not match its manifest")
+        if verify_runtime:
+            _validate_conversation_corpus_snapshot(
+                corpus_dir,
+                conversation,
+                ingest=ingest,
+                content=content,
+                memory_factory=memory_factory,
+            )
     return manifest
+
+
+def validate_locomo_corpus_conversation(
+    path: Path,
+    conversation: LoCoMoConversation,
+    *,
+    expected_content_sha256: str,
+    memory_factory: MemoryFactory,
+    runtime_root: Path | None = None,
+) -> ConversationMemory:
+    """Open and verify exactly one conversation runtime inside an exec worker."""
+    corpus_dir = path.resolve()
+    manifest = _required_dict(read_json(corpus_dir / "manifest.json"), field="corpus manifest")
+    content = _required_dict(manifest.get("content"), field="corpus content")
+    content_sha256 = _required_str(manifest, "content_sha256")
+    if content_sha256 != expected_content_sha256 or _canonical_sha256(content) != content_sha256:
+        raise ValueError("LoCoMo worker corpus content digest does not match")
+    ingest_path = corpus_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
+    ingest = _required_dict(read_json(ingest_path), field="corpus ingest checkpoint")
+    return _validate_conversation_corpus_snapshot(
+        corpus_dir,
+        conversation,
+        ingest=ingest,
+        content=content,
+        memory_factory=memory_factory,
+        runtime_root=runtime_root,
+    )
+
+
+def _validate_conversation_corpus_snapshot(
+    corpus_dir: Path,
+    conversation: LoCoMoConversation,
+    *,
+    ingest: dict[str, object],
+    content: dict[str, object],
+    memory_factory: MemoryFactory,
+    runtime_root: Path | None = None,
+) -> ConversationMemory:
+    if ingest.get("sample_id") != conversation.sample_id:
+        raise ValueError("LoCoMo corpus ingest checkpoint targets a different conversation")
+    relative_root = _required_str(ingest, "memory_root")
+    expected_memory_root = (corpus_dir / relative_root).resolve()
+    if not expected_memory_root.is_relative_to(corpus_dir):
+        raise ValueError("LoCoMo corpus ingest checkpoint escapes the corpus")
+    memory_root = expected_memory_root if runtime_root is None else runtime_root.resolve()
+    if not memory_root.is_dir():
+        raise ValueError("LoCoMo corpus ingest checkpoint has no runtime state")
+    snapshots = _required_dict(content.get("corpus_snapshots"), field="corpus snapshots")
+    expected_snapshot = _required_dict(
+        snapshots.get(conversation.sample_id), field="conversation corpus snapshot"
+    )
+    memory = memory_factory(memory_root)
+    if memory.corpus_snapshot() != expected_snapshot:
+        raise ValueError("LoCoMo corpus runtime fingerprints do not match its manifest")
+    return memory
 
 
 def _corpus_embedding_contract(
@@ -737,7 +816,7 @@ def build_locomo_query_vectors(
 class FrozenQueryEmbeddingAdapter:
     """Read exact query vectors from an immutable artifact and fail closed."""
 
-    def __init__(self, vector_set_dir: Path) -> None:
+    def __init__(self, vector_set_dir: Path, *, load_vectors: bool = True) -> None:
         self._vector_set_dir = vector_set_dir.resolve()
         manifest = _required_dict(
             read_json(self._vector_set_dir / "manifest.json"),
@@ -765,6 +844,10 @@ class FrozenQueryEmbeddingAdapter:
         self._index_identity = _required_str(embedding, "index_identity")
         self._dimension = _required_int(embedding, "dimension")
         self._vectors: dict[str, tuple[float, ...]] = {}
+        self._vectors_loaded = load_vectors
+        if not load_vectors:
+            _validate_query_vector_artifact_streaming(self._vector_set_dir)
+            return
         observed_question_ids: list[str] = []
         for line in vectors_path.read_text(encoding="utf-8").splitlines():
             record = _required_dict(json.loads(line), field="query-vector record")
@@ -812,6 +895,8 @@ class FrozenQueryEmbeddingAdapter:
         return self._index_identity
 
     def embed_query(self, text: str) -> tuple[float, ...]:
+        if not self._vectors_loaded:
+            raise RuntimeError("Frozen LoCoMo query vectors were opened metadata-only")
         payload_sha256 = hashlib.sha256(_normalize_query(text).encode()).hexdigest()
         try:
             return self._vectors[payload_sha256]
@@ -829,8 +914,7 @@ def _load_query_vector_manifest(
     question_ids: set[str],
     retrieval_config: dict[str, object] | None,
 ) -> dict[str, object]:
-    FrozenQueryEmbeddingAdapter(path)
-    manifest = _required_dict(read_json(path.resolve() / "manifest.json"), field="query manifest")
+    manifest = _validate_query_vector_artifact_streaming(path)
     if manifest.get("dataset_sha256") != dataset_sha256:
         raise ValueError("LoCoMo query vectors target a different dataset")
     selection_sha256 = hashlib.sha256(
@@ -845,6 +929,58 @@ def _load_query_vector_manifest(
     for field in ("model", "source", "revision", "dimension"):
         if observed_embedding.get(field) != expected_embedding.get(field):
             raise ValueError(f"LoCoMo query-vector embedding {field} does not match the run")
+    return manifest
+
+
+def _validate_query_vector_artifact_streaming(path: Path) -> dict[str, object]:
+    vector_set_dir = path.resolve()
+    manifest = _required_dict(
+        read_json(vector_set_dir / "manifest.json"), field="query-vector manifest"
+    )
+    if (
+        manifest.get("schema_version") != 1
+        or manifest.get("artifact_kind") != "locomo-query-vectors"
+        or manifest.get("status") != "complete"
+    ):
+        raise ValueError("LoCoMo query-vector manifest is not a complete supported artifact")
+    content = _required_dict(manifest.get("content"), field="query-vector content")
+    content_sha256 = _required_str(manifest, "content_sha256")
+    if _canonical_sha256(content) != content_sha256:
+        raise ValueError("LoCoMo query-vector content digest does not match")
+    if vector_set_dir.name != f"queries-{content_sha256[:16]}":
+        raise ValueError("LoCoMo query-vector directory does not match its content digest")
+    vectors_path = vector_set_dir / "vectors.jsonl"
+    if file_sha256(vectors_path) != _required_str(manifest, "vectors_sha256"):
+        raise ValueError("LoCoMo query-vector payload digest does not match")
+    embedding = _required_dict(manifest.get("embedding"), field="query-vector embedding")
+    dimension = _required_int(embedding, "dimension")
+    observed_question_ids: list[str] = []
+    payload_digests: dict[str, str] = {}
+    with vectors_path.open(encoding="utf-8") as handle:
+        for line in handle:
+            record = _required_dict(json.loads(line), field="query-vector record")
+            observed_question_ids.append(_required_str(record, "question_id"))
+            payload_sha256 = _required_str(record, "query_payload_sha256")
+            if record.get("encoding") != "f32le-base64":
+                raise ValueError("LoCoMo query-vector encoding is unsupported")
+            if _required_int(record, "dimension") != dimension:
+                raise ValueError("LoCoMo query-vector dimension does not match its manifest")
+            try:
+                raw = base64.b64decode(_required_str(record, "vector"), validate=True)
+                vector = tuple(struct.unpack(f"<{dimension}f", raw))
+            except (ValueError, struct.error) as error:
+                raise ValueError("LoCoMo query-vector payload is invalid") from error
+            _validate_frozen_vector(vector, dimension=dimension)
+            vector_sha256 = hashlib.sha256(raw).hexdigest()
+            existing = payload_digests.get(payload_sha256)
+            if existing is not None and existing != vector_sha256:
+                raise ValueError("LoCoMo duplicate query payload has conflicting vectors")
+            payload_digests[payload_sha256] = vector_sha256
+    if (
+        manifest.get("question_count") != len(observed_question_ids)
+        or content.get("question_ids") != observed_question_ids
+    ):
+        raise ValueError("LoCoMo query-vector record count or identity does not match")
     return manifest
 
 
@@ -876,8 +1012,12 @@ def run_locomo(
     memory_factory: MemoryFactory,
     answer_model: TextModel | None,
     judge_model: TextModel | None,
+    question_worker: QuestionWorker | None = None,
+    question_worker_contract: dict[str, object] | None = None,
 ) -> LoCoMoRunArtifact:
     _validate_config(config, judge_model=judge_model)
+    if question_worker is None and question_worker_contract is not None:
+        raise ValueError("LoCoMo question worker contract requires a worker")
     dataset = load_locomo_dataset(config.dataset_path)
     if (
         config.expected_dataset_sha256 is not None
@@ -891,12 +1031,21 @@ def run_locomo(
     )
     selected_question_ids = None if question_set is None else set(question_set.question_ids)
     selected = _select_conversations(dataset, config.conversation_ids)
+    question_ids_by_conversation: dict[str, tuple[str, ...]] = {}
+    for conversation in selected:
+        conversation_question_ids = tuple(
+            question.question_id
+            for question in conversation.questions
+            if question.category in config.categories
+            and (selected_question_ids is None or question.question_id in selected_question_ids)
+        )
+        if config.mode == "smoke":
+            conversation_question_ids = conversation_question_ids[:1]
+        question_ids_by_conversation[conversation.sample_id] = conversation_question_ids
     eligible_question_ids = {
-        question.question_id
-        for conversation in selected
-        for question in conversation.questions
-        if question.category in config.categories
-        and (selected_question_ids is None or question.question_id in selected_question_ids)
+        question_id
+        for question_ids in question_ids_by_conversation.values()
+        for question_id in question_ids
     }
     if question_set is not None and eligible_question_ids != set(question_set.question_ids):
         raise ValueError(
@@ -911,6 +1060,7 @@ def run_locomo(
             selected=selected,
             retrieval_config=config.retrieval_config,
             memory_factory=memory_factory,
+            verify_runtime=question_worker is None,
         )
     )
     corpus_tree_snapshot = (
@@ -975,6 +1125,10 @@ def run_locomo(
             "conversation_ids": [item.sample_id for item in selected],
             "categories": list(config.categories),
             "question_counts": {str(key): value for key, value in sorted(question_counts.items())},
+            "question_ids_by_conversation": {
+                conversation_id: list(question_ids)
+                for conversation_id, question_ids in question_ids_by_conversation.items()
+            },
             "question_set": None if question_set is None else question_set.public_manifest,
         },
         "retrieval": {
@@ -1017,8 +1171,13 @@ def run_locomo(
         "execution_phase_contract": (
             "process-isolated-ingest-then-questions-v1"
             if corpus is None
-            else "verified-shared-corpus-v1"
+            else (
+                "verified-shared-corpus-v1"
+                if question_worker_contract is None
+                else _required_str(question_worker_contract, "name")
+            )
         ),
+        "question_worker": question_worker_contract,
         "checkpoint_policy": "missing-only",
     }
     if config.resume:
@@ -1069,6 +1228,93 @@ def run_locomo(
             },
         )
 
+    coordinator_attempt: int | None = None
+    previous_sigterm_handler = signal.getsignal(signal.SIGTERM)
+    if question_worker_contract is not None:
+        signal.signal(signal.SIGTERM, _raise_coordinator_termination)
+        try:
+            coordinator_attempt = _start_coordinator_resource_attempt(run_dir, manifest=manifest)
+        except BaseException:
+            signal.signal(signal.SIGTERM, previous_sigterm_handler)
+            raise
+    coordinator_status = "failed"
+    summary: dict[str, object]
+    try:
+        if corpus is not None and question_worker is not None:
+            for conversation_index, conversation in work:
+                question_worker(
+                    LoCoMoConversationWork(
+                        conversation=conversation,
+                        conversation_index=conversation_index,
+                        config=config,
+                        run_dir=run_dir,
+                        corpus_dir=cast(Path, config.corpus_path),
+                        question_ids=question_ids_by_conversation[conversation.sample_id],
+                    )
+                )
+        else:
+            _run_question_phase_in_process(
+                work,
+                config=config,
+                run_dir=run_dir,
+                corpus_dir=None if corpus is None else config.corpus_path,
+                memory_factory=memory_factory,
+                answer_model=answer_model,
+                judge_model=judge_model,
+                selected_question_ids=selected_question_ids,
+            )
+
+        if corpus is not None:
+            current_corpus_snapshot = _directory_snapshot(cast(Path, config.corpus_path).resolve())
+            if _directory_sha256(current_corpus_snapshot) != cast(str, corpus_tree_sha256):
+                changed = _changed_snapshot_paths(
+                    cast(tuple[tuple[str, str], ...], corpus_tree_snapshot),
+                    current_corpus_snapshot,
+                )
+                raise ValueError(
+                    "LoCoMo corpus files changed during the read-only run: "
+                    + ", ".join(changed[:5])
+                )
+        if query_vectors is not None:
+            _load_query_vector_manifest(
+                cast(Path, config.query_vectors_path),
+                dataset_sha256=dataset.sha256,
+                question_ids=eligible_question_ids,
+                retrieval_config=config.retrieval_config,
+            )
+        summary = report_locomo(run_dir, _include_worker_resources=False)
+        coordinator_status = "completed"
+    finally:
+        if coordinator_attempt is not None:
+            signal.signal(signal.SIGTERM, signal.SIG_IGN)
+            try:
+                _finish_coordinator_resource_attempt(
+                    run_dir,
+                    manifest=manifest,
+                    attempt=coordinator_attempt,
+                    status=coordinator_status,
+                )
+            finally:
+                signal.signal(signal.SIGTERM, previous_sigterm_handler)
+    if coordinator_attempt is not None:
+        worker_resources = _report_worker_resources(run_dir, manifest=manifest)
+        if worker_resources is not None:
+            summary["worker_resources"] = worker_resources
+    write_json_exclusive(run_dir / "summary.json", summary)
+    return LoCoMoRunArtifact(run_dir=run_dir, summary=summary)
+
+
+def _run_question_phase_in_process(
+    work: list[tuple[int, LoCoMoConversation]],
+    *,
+    config: LoCoMoRunConfig,
+    run_dir: Path,
+    corpus_dir: Path | None,
+    memory_factory: MemoryFactory,
+    answer_model: TextModel | None,
+    judge_model: TextModel | None,
+    selected_question_ids: set[str] | None,
+) -> None:
     with ThreadPoolExecutor(max_workers=config.max_workers) as executor:
         in_flight: set[Future[None]] = set()
         for conversation_index, conversation in work:
@@ -1077,7 +1323,7 @@ def run_locomo(
                 conversation,
                 config=config,
                 run_dir=run_dir,
-                corpus_dir=None if corpus is None else config.corpus_path,
+                corpus_dir=corpus_dir,
                 memory_factory=memory_factory,
                 answer_model=answer_model,
                 judge_model=judge_model,
@@ -1089,26 +1335,36 @@ def run_locomo(
         for future in in_flight:
             future.result()
 
-    summary = report_locomo(run_dir)
-    write_json_exclusive(run_dir / "summary.json", summary)
-    if corpus is not None:
-        current_corpus_snapshot = _directory_snapshot(cast(Path, config.corpus_path).resolve())
-        if _directory_sha256(current_corpus_snapshot) != cast(str, corpus_tree_sha256):
-            changed = _changed_snapshot_paths(
-                cast(tuple[tuple[str, str], ...], corpus_tree_snapshot),
-                current_corpus_snapshot,
-            )
-            raise ValueError(
-                "LoCoMo corpus files changed during the read-only run: " + ", ".join(changed[:5])
-            )
-    if query_vectors is not None:
-        _load_query_vector_manifest(
-            cast(Path, config.query_vectors_path),
-            dataset_sha256=dataset.sha256,
-            question_ids=eligible_question_ids,
-            retrieval_config=config.retrieval_config,
+
+def run_locomo_conversation_questions(
+    conversation_index: int,
+    conversation: LoCoMoConversation,
+    *,
+    config: LoCoMoRunConfig,
+    run_dir: Path,
+    corpus_dir: Path,
+    memory_factory: MemoryFactory,
+    answer_model: TextModel | None,
+    judge_model: TextModel | None,
+    selected_question_ids: set[str] | None,
+) -> None:
+    with ThreadPoolExecutor(max_workers=config.max_workers) as executor:
+        in_flight: set[Future[None]] = set()
+        _schedule_conversation_questions(
+            conversation_index,
+            conversation,
+            config=config,
+            run_dir=run_dir,
+            corpus_dir=corpus_dir,
+            memory_factory=memory_factory,
+            answer_model=answer_model,
+            judge_model=judge_model,
+            selected_question_ids=selected_question_ids,
+            executor=executor,
+            in_flight=in_flight,
         )
-    return LoCoMoRunArtifact(run_dir=run_dir, summary=summary)
+        for future in in_flight:
+            future.result()
 
 
 def _ingest_conversation(
@@ -1225,8 +1481,10 @@ def _manifest_signature(manifest: dict[str, object]) -> dict[str, object]:
     return {key: value for key, value in manifest.items() if key != "created_at_utc"}
 
 
-def report_locomo(run_dir: Path) -> dict[str, object]:
-    manifest = _required_dict(read_json(run_dir / "manifest.json"), field="run manifest")
+def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> dict[str, object]:
+    manifest = _required_dict(
+        read_json(_locomo_artifact_child(run_dir, "manifest.json")), field="run manifest"
+    )
     retrieval_contract = _report_retrieval_contract(manifest)
     raw_selection = manifest.get("selection")
     diagnostic_question_set = (
@@ -1244,10 +1502,13 @@ def report_locomo(run_dir: Path) -> dict[str, object]:
         expected_response_chars = _required_int(manifest, "judge_response_max_chars")
         if expected_response_chars < 1:
             raise ValueError("judge_response_max_chars must be positive")
+    question_root = _locomo_artifact_child(run_dir, "checkpoints", "questions")
+    question_paths = sorted(question_root.glob("*/*.json"))
+    _validate_locomo_artifact_paths(run_dir, question_paths)
     records = [
-        _required_dict(read_json(path), field="question checkpoint")
-        for path in sorted((run_dir / "checkpoints" / "questions").glob("*/*.json"))
+        _required_dict(read_json(path), field="question checkpoint") for path in question_paths
     ]
+    _validate_question_inventory(manifest, question_paths=question_paths, records=records)
     total_input_tokens = 0
     total_cached_input_tokens = 0
     total_uncached_input_tokens = 0
@@ -1436,7 +1697,552 @@ def report_locomo(run_dir: Path) -> dict[str, object]:
                 for field, total in sorted(candidate_totals.items())
             },
         }
+    if _include_worker_resources:
+        worker_resources = _report_worker_resources(run_dir, manifest=manifest)
+        if worker_resources is not None:
+            report["worker_resources"] = worker_resources
     return report
+
+
+def _validate_question_inventory(
+    manifest: dict[str, object],
+    *,
+    question_paths: list[Path],
+    records: list[dict[str, object]],
+) -> None:
+    raw_selection = manifest.get("selection")
+    if raw_selection is None:
+        return
+    selection = _required_dict(raw_selection, field="run selection")
+    raw_inventory = selection.get("question_ids_by_conversation")
+    if raw_inventory is None:
+        return
+    inventory = _required_dict(raw_inventory, field="question inventory")
+    conversation_ids = selection.get("conversation_ids")
+    if not isinstance(conversation_ids, list) or any(
+        not isinstance(item, str) for item in conversation_ids
+    ):
+        raise ValueError("LoCoMo run conversation inventory is invalid")
+    if set(inventory) != set(cast(list[str], conversation_ids)):
+        raise ValueError("LoCoMo question inventory has different conversations")
+    expected: set[tuple[str, str]] = set()
+    for conversation_id, raw_question_ids in inventory.items():
+        if not isinstance(raw_question_ids, list) or any(
+            not isinstance(item, str) or not item for item in raw_question_ids
+        ):
+            raise ValueError("LoCoMo question inventory has invalid question IDs")
+        question_ids = cast(list[str], raw_question_ids)
+        if len(question_ids) != len(set(question_ids)):
+            raise ValueError("LoCoMo question inventory contains duplicate question IDs")
+        expected.update((conversation_id, question_id) for question_id in question_ids)
+    actual: list[tuple[str, str]] = []
+    for path, record in zip(question_paths, records, strict=True):
+        sample_id = _required_str(record, "sample_id")
+        question_id = _required_str(record, "question_id")
+        if path.parent.name != sample_id or path.stem != question_id:
+            raise ValueError("LoCoMo question checkpoint path does not match its record")
+        actual.append((sample_id, question_id))
+    if len(actual) != len(set(actual)):
+        raise ValueError("LoCoMo question checkpoints contain duplicate question IDs")
+    if set(actual) != expected:
+        raise ValueError("LoCoMo question checkpoint inventory is incomplete or contains extras")
+
+
+def _locomo_artifact_child(run_dir: Path, *parts: str) -> Path:
+    root = run_dir.resolve()
+    current = root
+    for part in parts:
+        raw = Path(part)
+        if raw.is_absolute() or len(raw.parts) != 1 or part in {"", ".", ".."}:
+            raise ValueError("LoCoMo artifact path has an unsafe component")
+        current /= part
+        if current.is_symlink():
+            raise ValueError("LoCoMo artifact path must not traverse a symlink")
+    resolved = current.resolve()
+    if not resolved.is_relative_to(root):
+        raise ValueError("LoCoMo artifact path escapes the run directory")
+    return resolved
+
+
+def _validate_locomo_artifact_paths(run_dir: Path, paths: list[Path]) -> None:
+    root = run_dir.resolve()
+    for path in paths:
+        if path.is_symlink() or not path.resolve().is_relative_to(root):
+            raise ValueError("LoCoMo artifact file must not be a symlink or escape the run")
+
+
+def _report_worker_resources(
+    run_dir: Path,
+    *,
+    manifest: dict[str, object],
+) -> dict[str, object] | None:
+    raw_contract = manifest.get("question_worker")
+    if raw_contract is None:
+        return None
+    contract = _required_dict(raw_contract, field="question worker contract")
+    max_rss_bytes = _required_int(contract, "max_rss_bytes")
+    selection = _required_dict(manifest.get("selection"), field="run selection")
+    raw_inventory = _required_dict(
+        selection.get("question_ids_by_conversation"), field="worker question inventory"
+    )
+    conversation_ids = [
+        conversation_id
+        for conversation_id, raw_question_ids in raw_inventory.items()
+        if isinstance(raw_question_ids, list) and raw_question_ids
+    ]
+    manifest_sha256 = file_sha256(_locomo_artifact_child(run_dir, "manifest.json"))
+    receipt_root = _locomo_artifact_child(run_dir, "resources", "conversations")
+    receipt_paths = sorted(receipt_root.glob("*.json"))
+    _validate_locomo_artifact_paths(run_dir, receipt_paths)
+    receipt_entries = [
+        (path, _required_dict(read_json(path), field="worker resource receipt"))
+        for path in receipt_paths
+    ]
+    _validate_worker_attempt_receipt_coverage(
+        run_dir,
+        conversation_ids=conversation_ids,
+        receipt_paths=receipt_paths,
+    )
+    for path, receipt in receipt_entries:
+        _validate_report_worker_receipt(
+            path,
+            receipt,
+            run_dir=run_dir,
+            manifest_sha256=manifest_sha256,
+            inventory=raw_inventory,
+            max_rss_bytes=max_rss_bytes,
+        )
+    receipts = [receipt for _path, receipt in receipt_entries]
+    accepted = [receipt for receipt in receipts if receipt.get("accepted") is True]
+    accepted_ids = [_required_str(receipt, "conversation_id") for receipt in accepted]
+    if len(accepted_ids) != len(set(accepted_ids)) or set(accepted_ids) != set(conversation_ids):
+        raise ValueError("LoCoMo worker receipts do not cover the selected conversations exactly")
+    rss_values = [_required_int(receipt, "max_rss_bytes") for receipt in receipts]
+    if any(value > max_rss_bytes for value in rss_values) or any(
+        receipt.get("termination_reason") == "rss_limit" for receipt in receipts
+    ):
+        raise ValueError("LoCoMo worker attempt exceeds the run RSS gate")
+    coordinator_root = _locomo_artifact_child(run_dir, "resources", "coordinators")
+    coordinator_start_root = _locomo_artifact_child(run_dir, "resources", "coordinator-starts")
+    coordinator_paths = _coordinator_resource_paths(coordinator_root)
+    coordinator_start_paths = _coordinator_start_paths(coordinator_start_root)
+    _validate_locomo_artifact_paths(run_dir, coordinator_paths)
+    _validate_locomo_artifact_paths(run_dir, coordinator_start_paths)
+    if not coordinator_paths or len(coordinator_paths) != len(coordinator_start_paths):
+        raise ValueError("LoCoMo run has an incomplete coordinator resource attempt")
+    coordinators: list[dict[str, object]] = []
+    coordinator_pids: set[int] = set()
+    for expected_attempt, (start_path, path) in enumerate(
+        zip(coordinator_start_paths, coordinator_paths, strict=True), start=1
+    ):
+        start_receipt = _required_dict(read_json(start_path), field="coordinator start receipt")
+        coordinator = _required_dict(read_json(path), field="coordinator resource receipt")
+        coordinator_rss = _required_int(coordinator, "max_rss_bytes")
+        coordinator_pid = _required_int(coordinator, "pid")
+        starting_rss = _required_int(start_receipt, "starting_max_rss_bytes")
+        if (
+            start_path.name != f"start-{expected_attempt}.json"
+            or path.name != f"attempt-{expected_attempt}.json"
+            or start_receipt.get("schema_version") != 1
+            or start_receipt.get("attempt") != expected_attempt
+            or start_receipt.get("pid") != coordinator_pid
+            or start_receipt.get("run_manifest_sha256") != manifest_sha256
+            or start_receipt.get("rss_limit_bytes") != max_rss_bytes
+            or starting_rss < 1
+            or starting_rss > max_rss_bytes
+            or coordinator.get("schema_version") != 1
+            or coordinator.get("attempt") != expected_attempt
+            or coordinator.get("status") not in {"completed", "failed"}
+            or coordinator.get("run_manifest_sha256") != manifest_sha256
+            or coordinator.get("rss_limit_bytes") != max_rss_bytes
+            or coordinator.get("start_receipt_sha256") != file_sha256(start_path)
+            or coordinator_rss < 1
+            or coordinator_rss > max_rss_bytes
+        ):
+            raise ValueError("LoCoMo coordinator resource receipt violates the run contract")
+        coordinators.append(coordinator)
+        coordinator_pids.add(coordinator_pid)
+    if coordinators[-1].get("status") != "completed":
+        raise ValueError("LoCoMo run has no successful final coordinator attempt")
+    if any(_required_int(receipt, "parent_pid") not in coordinator_pids for receipt in receipts):
+        raise ValueError("LoCoMo worker receipt is not bound to a coordinator attempt")
+    coordinator_rss_values = [
+        _required_int(coordinator, "max_rss_bytes") for coordinator in coordinators
+    ]
+    return {
+        "contract": contract,
+        "worker_contract": _required_str(contract, "name"),
+        "attempt_count": len(receipts),
+        "worker_count": len(accepted),
+        "accepted_worker_count": len(accepted),
+        "max_worker_rss_bytes": max(rss_values, default=0),
+        "coordinator_attempt_count": len(coordinators),
+        "failed_coordinator_attempt_count": sum(
+            coordinator.get("status") == "failed" for coordinator in coordinators
+        ),
+        "coordinators": coordinators,
+        "max_coordinator_rss_bytes": max(coordinator_rss_values),
+        "max_process_rss_bytes": max([*coordinator_rss_values, *rss_values]),
+        "failed_attempt_count": len(receipts) - len(accepted),
+        "accepted_workers": accepted,
+    }
+
+
+def _validate_report_worker_receipt(
+    path: Path,
+    receipt: dict[str, object],
+    *,
+    run_dir: Path,
+    manifest_sha256: str,
+    inventory: dict[str, object],
+    max_rss_bytes: int,
+) -> None:
+    conversation_id = _required_str(receipt, "conversation_id")
+    attempt = _required_int(receipt, "attempt")
+    parent_pid = _required_int(receipt, "parent_pid")
+    worker_started = receipt.get("worker_started")
+    worker_pid = receipt.get("worker_pid")
+    observed = _required_int(receipt, "observed_max_rss_bytes")
+    maximum = _required_int(receipt, "max_rss_bytes")
+    reported = receipt.get("reported_max_rss_bytes")
+    accepted = receipt.get("accepted")
+    expected_question_ids = inventory.get(conversation_id)
+    expected_path = f"{conversation_id}.attempt-{attempt}.json"
+    if (
+        receipt.get("schema_version") != 1
+        or type(accepted) is not bool
+        or type(worker_started) is not bool
+        or conversation_id not in inventory
+        or attempt < 1
+        or path.name != expected_path
+        or parent_pid < 1
+        or (
+            worker_started is True
+            and (type(worker_pid) is not int or worker_pid < 1 or parent_pid == worker_pid)
+        )
+        or (worker_started is False and worker_pid is not None)
+        or observed < 0
+        or (reported is not None and (type(reported) is not int or reported < 1))
+        or maximum != max(observed, reported if reported is not None else 0)
+        or receipt.get("rss_limit_bytes") != max_rss_bytes
+        or receipt.get("run_manifest_sha256") != manifest_sha256
+        or receipt.get("expected_question_ids") != expected_question_ids
+    ):
+        raise ValueError("LoCoMo worker resource receipt does not match the run contract")
+    spec_path = _locomo_artifact_child(
+        run_dir, "workers", conversation_id, f"attempt-{attempt}", "spec.json"
+    )
+    if not spec_path.is_file() or receipt.get("spec_sha256") != file_sha256(spec_path):
+        raise ValueError("LoCoMo worker resource receipt has no matching spec")
+    spec = _required_dict(read_json(spec_path), field="worker spec")
+    identity_path = _locomo_artifact_child(
+        run_dir, "workers", conversation_id, f"attempt-{attempt}", "worker.json"
+    )
+    if spec.get("parent_pid") != parent_pid:
+        raise ValueError("LoCoMo worker spec changes its launch parent")
+    if worker_started is True:
+        if not identity_path.is_file():
+            raise ValueError("LoCoMo worker resource receipt has no matching process identity")
+        identity = _required_dict(read_json(identity_path), field="worker identity")
+        if (
+            identity.get("schema_version") != 1
+            or identity.get("pid") != worker_pid
+            or identity.get("parent_pid") != parent_pid
+            or identity.get("spec_sha256") != file_sha256(spec_path)
+        ):
+            raise ValueError("LoCoMo worker process identity does not match its launch parent")
+    elif identity_path.exists():
+        raise ValueError("LoCoMo unstarted worker attempt unexpectedly has a process identity")
+    raw_resource_path = _locomo_artifact_child(
+        run_dir,
+        "workers",
+        conversation_id,
+        f"attempt-{attempt}",
+        "worker-receipt.json",
+    )
+    if raw_resource_path.is_file():
+        raw_resource = _required_dict(read_json(raw_resource_path), field="raw worker receipt")
+        if (
+            raw_resource.get("conversation_id") != conversation_id
+            or raw_resource.get("parent_pid") != parent_pid
+            or raw_resource.get("pid") != worker_pid
+        ):
+            raise ValueError("LoCoMo raw worker receipt changes its process identity")
+    elif worker_started is False and (
+        observed != 0
+        or reported is not None
+        or maximum != 0
+        or receipt.get("returncode") is not None
+        or receipt.get("termination_reason") != "coordinator_terminated_before_worker_start"
+    ):
+        raise ValueError("LoCoMo unstarted worker receipt has invalid resource evidence")
+    if receipt.get("reused_question_sources") != spec.get("reused_question_sources", []):
+        raise ValueError("LoCoMo worker resource receipt changes checkpoint provenance")
+    question_dir = (
+        _locomo_artifact_child(run_dir, "checkpoints", "questions", conversation_id)
+        if accepted is True
+        else _locomo_artifact_child(
+            run_dir,
+            "workers",
+            conversation_id,
+            f"attempt-{attempt}",
+            "run",
+            "checkpoints",
+            "questions",
+            conversation_id,
+        )
+    )
+    if receipt.get("question_checkpoint_sha256") != _question_checkpoint_artifact_sha256(
+        question_dir
+    ) or receipt.get("completed_question_checkpoints") != _question_checkpoint_artifact_files(
+        question_dir,
+        conversation_id=conversation_id,
+        expected_question_ids=cast(list[str], expected_question_ids),
+    ):
+        raise ValueError("LoCoMo worker receipt checkpoint evidence has changed")
+    if accepted is False:
+        if receipt.get("status") != "failed":
+            raise ValueError("Rejected LoCoMo worker receipt must have failed status")
+        return
+    if (
+        worker_started is not True
+        or receipt.get("status") != "completed"
+        or receipt.get("returncode") != 0
+        or receipt.get("termination_reason") is not None
+        or type(reported) is not int
+    ):
+        raise ValueError("Accepted LoCoMo worker receipt has invalid completion evidence")
+    marker_path = _locomo_artifact_child(
+        run_dir, "workers", conversation_id, f"attempt-{attempt}", "publish.json"
+    )
+    if (
+        not marker_path.is_file()
+        or receipt.get("publish_marker_sha256") != file_sha256(marker_path)
+        or receipt.get("question_checkpoint_sha256")
+        != _question_checkpoint_artifact_sha256(question_dir)
+    ):
+        raise ValueError("Accepted LoCoMo worker receipt is not bound to its checkpoints")
+    marker = _required_dict(read_json(marker_path), field="worker publish marker")
+    monitor_path = _locomo_artifact_child(
+        run_dir, "workers", conversation_id, f"attempt-{attempt}", "monitor.json"
+    )
+    if (
+        marker.get("conversation_id") != conversation_id
+        or marker.get("attempt") != attempt
+        or marker.get("question_ids") != expected_question_ids
+        or marker.get("question_checkpoint_sha256") != receipt.get("question_checkpoint_sha256")
+        or marker.get("run_manifest_sha256") != manifest_sha256
+        or marker.get("spec_sha256") != receipt.get("spec_sha256")
+        or not monitor_path.is_file()
+        or not raw_resource_path.is_file()
+        or marker.get("monitor_sha256") != file_sha256(monitor_path)
+        or marker.get("worker_receipt_sha256") != file_sha256(raw_resource_path)
+    ):
+        raise ValueError("LoCoMo worker publish marker does not match its receipt")
+
+
+def _validate_worker_attempt_receipt_coverage(
+    run_dir: Path,
+    *,
+    conversation_ids: list[str],
+    receipt_paths: list[Path],
+) -> None:
+    actual = {path.name for path in receipt_paths}
+    expected: set[str] = set()
+    for conversation_id in conversation_ids:
+        worker_root = _locomo_artifact_child(run_dir, "workers", conversation_id)
+        if not worker_root.exists():
+            continue
+        if not worker_root.is_dir() or worker_root.is_symlink():
+            raise ValueError("LoCoMo worker root is not a safe directory")
+        for attempt_dir in worker_root.glob("attempt-*"):
+            if attempt_dir.is_symlink() or not attempt_dir.is_dir():
+                raise ValueError("LoCoMo worker attempt is not a safe directory")
+            number = attempt_dir.name.removeprefix("attempt-")
+            if not number.isdigit() or int(number) < 1:
+                raise ValueError("LoCoMo worker attempt has an invalid name")
+            durable_evidence = any(
+                (attempt_dir / name).exists()
+                for name in (
+                    "spec.json",
+                    "worker.json",
+                    "monitor.json",
+                    "worker-receipt.json",
+                    "publish.json",
+                )
+            )
+            if not durable_evidence:
+                continue
+            expected.add(f"{conversation_id}.attempt-{int(number)}.json")
+    if actual != expected:
+        raise ValueError("LoCoMo worker attempts are not covered by resource receipts exactly")
+
+
+def _question_checkpoint_artifact_sha256(question_dir: Path) -> str:
+    digest = hashlib.sha256()
+    paths = sorted(question_dir.glob("*.json"))
+    if any(path.is_symlink() or not path.resolve().is_relative_to(question_dir) for path in paths):
+        raise ValueError("LoCoMo question checkpoint file escapes its directory")
+    for path in paths:
+        digest.update(path.name.encode())
+        digest.update(b"\0")
+        digest.update(bytes.fromhex(file_sha256(path)))
+    return digest.hexdigest()
+
+
+def _coordinator_resource_paths(root: Path) -> list[Path]:
+    numbered: list[tuple[int, Path]] = []
+    for path in root.glob("attempt-*.json"):
+        number = path.stem.removeprefix("attempt-")
+        if not number.isdigit() or int(number) < 1:
+            raise ValueError("LoCoMo coordinator resource receipt has an invalid name")
+        numbered.append((int(number), path))
+    return [path for _number, path in sorted(numbered)]
+
+
+def _coordinator_start_paths(root: Path) -> list[Path]:
+    numbered: list[tuple[int, Path]] = []
+    for path in root.glob("start-*.json"):
+        number = path.stem.removeprefix("start-")
+        if not number.isdigit() or int(number) < 1:
+            raise ValueError("LoCoMo coordinator start receipt has an invalid name")
+        numbered.append((int(number), path))
+    return [path for _number, path in sorted(numbered)]
+
+
+def _question_checkpoint_artifact_files(
+    question_dir: Path,
+    *,
+    conversation_id: str,
+    expected_question_ids: list[str],
+) -> dict[str, str]:
+    expected = set(expected_question_ids)
+    completed: dict[str, str] = {}
+    paths = sorted(question_dir.glob("*.json"))
+    if any(path.is_symlink() or not path.resolve().is_relative_to(question_dir) for path in paths):
+        raise ValueError("LoCoMo question checkpoint file escapes its directory")
+    for path in paths:
+        if path.stem not in expected:
+            continue
+        try:
+            record = _required_dict(read_json(path), field="question checkpoint")
+        except (OSError, ValueError):
+            continue
+        if record.get("sample_id") == conversation_id and record.get("question_id") == path.stem:
+            completed[path.stem] = file_sha256(path)
+    return completed
+
+
+def _start_coordinator_resource_attempt(
+    run_dir: Path,
+    *,
+    manifest: dict[str, object],
+) -> int:
+    contract = _required_dict(manifest.get("question_worker"), field="question worker contract")
+    max_rss_bytes = _required_int(contract, "max_rss_bytes")
+    start_root = _locomo_artifact_child(run_dir, "resources", "coordinator-starts")
+    existing = _coordinator_start_paths(start_root)
+    coordinator_root = _locomo_artifact_child(run_dir, "resources", "coordinators")
+    completed = _coordinator_resource_paths(coordinator_root)
+    _validate_locomo_artifact_paths(run_dir, existing)
+    _validate_locomo_artifact_paths(run_dir, completed)
+    if len(existing) != len(completed):
+        raise ValueError("LoCoMo has an incomplete coordinator attempt; use a new run_id")
+    for path in completed:
+        prior = _required_dict(read_json(path), field="coordinator resource receipt")
+        if _required_int(prior, "max_rss_bytes") > max_rss_bytes:
+            raise MemoryError("A prior LoCoMo coordinator exceeded the RSS gate; use a new run_id")
+    attempt = len(existing) + 1
+    start_path = _locomo_artifact_child(
+        run_dir, "resources", "coordinator-starts", f"start-{attempt}.json"
+    )
+    observed = _self_max_rss_bytes()
+    try:
+        write_json_exclusive(
+            start_path,
+            {
+                "schema_version": 1,
+                "attempt": attempt,
+                "pid": os.getpid(),
+                "starting_max_rss_bytes": observed,
+                "rss_limit_bytes": max_rss_bytes,
+                "run_manifest_sha256": file_sha256(
+                    _locomo_artifact_child(run_dir, "manifest.json")
+                ),
+            },
+        )
+    except BaseException:
+        if start_path.is_file():
+            signal.signal(signal.SIGTERM, signal.SIG_IGN)
+            _finish_coordinator_resource_attempt(
+                run_dir,
+                manifest=manifest,
+                attempt=attempt,
+                status="failed",
+            )
+        raise
+    if observed > max_rss_bytes:
+        _finish_coordinator_resource_attempt(
+            run_dir,
+            manifest=manifest,
+            attempt=attempt,
+            status="failed",
+        )
+        raise MemoryError("LoCoMo coordinator exceeded the RSS gate before worker launch")
+    return attempt
+
+
+def _raise_coordinator_termination(_signum: int, _frame: object) -> None:
+    # The first SIGTERM enters Python cleanup; repeated termination must not tear the receipt write.
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    raise _CoordinatorTermination("LoCoMo coordinator received SIGTERM")
+
+
+def _finish_coordinator_resource_attempt(
+    run_dir: Path,
+    *,
+    manifest: dict[str, object],
+    attempt: int,
+    status: str,
+) -> None:
+    if status not in {"completed", "failed"}:
+        raise ValueError("LoCoMo coordinator status is invalid")
+    contract = _required_dict(manifest.get("question_worker"), field="question worker contract")
+    max_rss_bytes = _required_int(contract, "max_rss_bytes")
+    start_path = _locomo_artifact_child(
+        run_dir, "resources", "coordinator-starts", f"start-{attempt}.json"
+    )
+    start = _required_dict(read_json(start_path), field="coordinator start receipt")
+    if start.get("pid") != os.getpid() or start.get("attempt") != attempt:
+        raise ValueError("LoCoMo coordinator start receipt does not match this process")
+    receipt_path = _locomo_artifact_child(
+        run_dir, "resources", "coordinators", f"attempt-{attempt}.json"
+    )
+    observed = _self_max_rss_bytes()
+    recorded_status = "failed" if observed > max_rss_bytes else status
+    write_json_exclusive(
+        receipt_path,
+        {
+            "schema_version": 1,
+            "attempt": attempt,
+            "pid": os.getpid(),
+            "status": recorded_status,
+            "max_rss_bytes": observed,
+            "rss_limit_bytes": max_rss_bytes,
+            "run_manifest_sha256": file_sha256(_locomo_artifact_child(run_dir, "manifest.json")),
+            "start_receipt_sha256": file_sha256(start_path),
+        },
+    )
+    if observed > max_rss_bytes:
+        raise MemoryError("LoCoMo coordinator exceeded the RSS gate")
+
+
+def _self_max_rss_bytes() -> int:
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    observed = int(usage.ru_maxrss)
+    if sys.platform != "darwin":
+        observed *= 1024
+    return observed
 
 
 def _nearest_rank(values: list[float], *, percentile: float) -> float | None:
@@ -1947,8 +2753,7 @@ def _select_conversations(
 
 
 def _validate_config(config: LoCoMoRunConfig, *, judge_model: TextModel | None) -> None:
-    if _SAFE_ID.fullmatch(config.run_id) is None:
-        raise ValueError("run_id must be a safe path segment")
+    validate_locomo_run_id(config.run_id)
     if not config.repository_commit.strip():
         raise ValueError("repository_commit must not be empty")
     if config.mode not in {"full", "smoke", "retrieval"}:
@@ -1977,6 +2782,12 @@ def _validate_config(config: LoCoMoRunConfig, *, judge_model: TextModel | None) 
         raise ValueError("Shared-corpus LoCoMo runs require execution_phase=questions")
     if config.execution_phase == "questions" and config.corpus_path is None and not config.resume:
         raise ValueError("The questions execution phase requires resume=True")
+
+
+def validate_locomo_run_id(run_id: str) -> None:
+    """Reject run identifiers before they are used in filesystem paths."""
+    if _SAFE_ID.fullmatch(run_id) is None:
+        raise ValueError("run_id must be a safe path segment")
 
 
 def _validate_retrieval_sidecar(
