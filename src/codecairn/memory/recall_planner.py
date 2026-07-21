@@ -143,6 +143,8 @@ class RecallPlan:
     route: RecallRoute
     episode_candidate_limit: int
     atomic_fact_candidate_limit: int
+    core_episode_candidate_limit: int
+    core_atomic_fact_candidate_limit: int
     rerank_candidate_limit: int
     core_rerank_candidate_limit: int
     exploration_result_limit: int
@@ -188,6 +190,16 @@ class RecallPlanner:
         )
         episode_limit = primary_limit if route == "episode_first" else secondary_limit
         fact_limit = primary_limit if route == "fact_first" else secondary_limit
+        core_episode_limit = (
+            self.config.minimum_primary_candidates
+            if route == "episode_first"
+            else self.config.minimum_secondary_candidates
+        )
+        core_fact_limit = (
+            self.config.minimum_primary_candidates
+            if route == "fact_first"
+            else self.config.minimum_secondary_candidates
+        )
         if not self.config.atomic_fact_enabled:
             fact_limit = 0
         return RecallPlan(
@@ -195,6 +207,8 @@ class RecallPlanner:
             route=route,
             episode_candidate_limit=episode_limit,
             atomic_fact_candidate_limit=fact_limit,
+            core_episode_candidate_limit=core_episode_limit,
+            core_atomic_fact_candidate_limit=core_fact_limit,
             rerank_candidate_limit=rerank_limit,
             core_rerank_candidate_limit=core_rerank_limit,
             exploration_result_limit=exploration_result_limit,

@@ -144,14 +144,47 @@ class RecallEngine:
                 limit=plan.atomic_fact_candidate_limit,
             )
 
-        ranked = self._fuse(
+        sources: tuple[tuple[RecallDocumentSource, tuple[IndexCandidate, ...]], ...] = (
+            ("episode_lexical", episode_lexical),
+            ("episode_vector", episode_vector),
+            ("atomic_fact_lexical", atomic_lexical),
+            ("atomic_fact_vector", atomic_vector),
+        )
+        core_ranked = self._fuse(
             repo_key=repo_key,
             sources=(
-                ("episode_lexical", episode_lexical),
-                ("episode_vector", episode_vector),
-                ("atomic_fact_lexical", atomic_lexical),
-                ("atomic_fact_vector", atomic_vector),
+                ("episode_lexical", episode_lexical[: plan.core_episode_candidate_limit]),
+                ("episode_vector", episode_vector[: plan.core_episode_candidate_limit]),
+                (
+                    "atomic_fact_lexical",
+                    atomic_lexical[: plan.core_atomic_fact_candidate_limit],
+                ),
+                (
+                    "atomic_fact_vector",
+                    atomic_vector[: plan.core_atomic_fact_candidate_limit],
+                ),
             ),
+        )
+        core_ranked, _core_entity_posting_count = self._expand_entity_postings(
+            core_ranked,
+            repo_key=repo_key,
+            anchors=plan.query_sketch.anchors,
+        )
+        core_ranked, _core_neighbor_count = self._attach_snippets(
+            core_ranked,
+            repo_key=repo_key,
+            expand_neighbors=False,
+        )
+        core_ranked, _core_covered, _core_missing = _coverage_select(
+            core_ranked,
+            coverage_slots=plan.query_sketch.coverage_slots,
+            limit=plan.core_rerank_candidate_limit,
+        )
+        core_memory_ids = {item.memory_id for item in core_ranked}
+
+        ranked = self._fuse(
+            repo_key=repo_key,
+            sources=sources,
         )
         ranked, entity_posting_candidate_count = self._expand_entity_postings(
             ranked,
@@ -163,12 +196,6 @@ class RecallEngine:
             repo_key=repo_key,
             expand_neighbors=False,
         )
-        core_ranked, _core_covered, _core_missing = _coverage_select(
-            ranked,
-            coverage_slots=plan.query_sketch.coverage_slots,
-            limit=plan.core_rerank_candidate_limit,
-        )
-        core_memory_ids = {item.memory_id for item in core_ranked}
         ranked = self._rerank(
             normalized_query,
             ranked,

@@ -43,17 +43,21 @@ def test_diagnostic_top_k_uses_bounded_route_aware_candidate_pools() -> None:
     assert (
         fact_first.episode_candidate_limit,
         fact_first.atomic_fact_candidate_limit,
+        fact_first.core_episode_candidate_limit,
+        fact_first.core_atomic_fact_candidate_limit,
         fact_first.rerank_candidate_limit,
         fact_first.core_rerank_candidate_limit,
         fact_first.exploration_result_limit,
-    ) == (128, 128, 96, 32, 4)
+    ) == (128, 128, 20, 40, 96, 32, 4)
     assert (
         episode_first.episode_candidate_limit,
         episode_first.atomic_fact_candidate_limit,
+        episode_first.core_episode_candidate_limit,
+        episode_first.core_atomic_fact_candidate_limit,
         episode_first.rerank_candidate_limit,
         episode_first.core_rerank_candidate_limit,
         episode_first.exploration_result_limit,
-    ) == (128, 128, 96, 32, 4)
+    ) == (128, 128, 40, 20, 96, 32, 4)
 
 
 def test_small_top_k_keeps_adaptive_candidate_budgets_bounded() -> None:
@@ -65,17 +69,21 @@ def test_small_top_k_keeps_adaptive_candidate_budgets_bounded() -> None:
     assert (
         fact_first.episode_candidate_limit,
         fact_first.atomic_fact_candidate_limit,
+        fact_first.core_episode_candidate_limit,
+        fact_first.core_atomic_fact_candidate_limit,
         fact_first.rerank_candidate_limit,
         fact_first.core_rerank_candidate_limit,
         fact_first.exploration_result_limit,
-    ) == (35, 40, 32, 32, 0)
+    ) == (35, 40, 20, 40, 32, 32, 0)
     assert (
         episode_first.episode_candidate_limit,
         episode_first.atomic_fact_candidate_limit,
+        episode_first.core_episode_candidate_limit,
+        episode_first.core_atomic_fact_candidate_limit,
         episode_first.rerank_candidate_limit,
         episode_first.core_rerank_candidate_limit,
         episode_first.exploration_result_limit,
-    ) == (40, 35, 32, 32, 0)
+    ) == (40, 35, 40, 20, 32, 32, 0)
 
 
 def test_neighbor_expansion_requires_the_full_hierarchy_mode() -> None:
