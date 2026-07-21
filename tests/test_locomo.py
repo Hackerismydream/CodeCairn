@@ -511,6 +511,7 @@ def test_locomo_supports_process_isolated_ingest_and_question_phases(tmp_path: P
 def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Path) -> None:
     class CountingMemory(FakeMemory):
         ingest_calls = 0
+        snapshot_calls = 0
 
         def ingest(
             self,
@@ -520,6 +521,10 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
         ) -> ConversationIngestResult:
             type(self).ingest_calls += 1
             return super().ingest(conversation, dataset_sha256=dataset_sha256)
+
+        def corpus_snapshot(self) -> dict[str, object]:
+            type(self).snapshot_calls += 1
+            return super().corpus_snapshot()
 
     corpus = build_locomo_corpus(
         LoCoMoCorpusConfig(
@@ -534,6 +539,7 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
     )
 
     assert CountingMemory.ingest_calls == 2
+    assert CountingMemory.snapshot_calls == 2
     run_dirs: list[Path] = []
     for run_id in ("shared-corpus-first", "shared-corpus-second"):
         run = run_locomo(
@@ -555,6 +561,7 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
         run_dirs.append(run.run_dir)
 
     assert CountingMemory.ingest_calls == 2
+    assert CountingMemory.snapshot_calls == 6
     assert all(not (run_dir / "runtime").exists() for run_dir in run_dirs)
     manifests = [
         json.loads((run_dir / "manifest.json").read_text(encoding="utf-8")) for run_dir in run_dirs
@@ -562,6 +569,43 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
     assert {manifest["corpus"]["content_sha256"] for manifest in manifests} == {
         corpus.content_sha256
     }
+
+
+def test_shared_corpus_run_rejects_any_file_mutation(tmp_path: Path) -> None:
+    class MutatingMemory(FakeMemory):
+        def recall(self, question: str, *, limit: int) -> RecallResult:
+            (self.root / "unexpected-write").write_text("mutated", encoding="utf-8")
+            return super().recall(question, limit=limit)
+
+    corpus = build_locomo_corpus(
+        LoCoMoCorpusConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "corpora",
+            corpus_id="mutation-corpus",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+        ),
+        memory_factory=MutatingMemory,
+    )
+
+    with pytest.raises(ValueError, match="changed during the read-only run"):
+        run_locomo(
+            LoCoMoRunConfig(
+                dataset_path=FIXTURE,
+                output_root=tmp_path / "runs",
+                run_id="mutating-run",
+                repository_commit="abc123",
+                mode="smoke",
+                expected_dataset_sha256=None,
+                retrieval_config=FAKE_RETRIEVAL_CONFIG,
+                corpus_path=corpus.corpus_dir,
+                execution_phase="questions",
+            ),
+            memory_factory=MutatingMemory,
+            answer_model=FakeAnswerModel(),
+            judge_model=None,
+        )
 
 
 def test_frozen_query_vectors_fail_closed_without_provider_fallback(tmp_path: Path) -> None:

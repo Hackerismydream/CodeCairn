@@ -588,6 +588,23 @@ def _canonical_sha256(value: object) -> str:
     return hashlib.sha256(canonical_json(value).encode()).hexdigest()
 
 
+def _directory_sha256(root: Path) -> str:
+    """Stream one deterministic tree digest without materializing corpus rows."""
+    digest = hashlib.sha256()
+    for path in sorted(root.rglob("*")):
+        if path.is_symlink():
+            raise ValueError("LoCoMo corpus must not contain symbolic links")
+        if not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix().encode()
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        with path.open("rb") as handle:
+            while chunk := handle.read(1024 * 1024):
+                digest.update(chunk)
+    return digest.hexdigest()
+
+
 def build_locomo_query_vectors(
     config: LoCoMoQueryVectorConfig,
     *,
@@ -877,6 +894,9 @@ def run_locomo(
             memory_factory=memory_factory,
         )
     )
+    corpus_tree_sha256 = (
+        None if corpus is None else _directory_sha256(cast(Path, config.corpus_path).resolve())
+    )
     query_vectors = (
         None
         if config.query_vectors_path is None
@@ -946,6 +966,7 @@ def run_locomo(
                 "artifact_id": _required_str(corpus, "artifact_id"),
                 "content_sha256": _required_str(corpus, "content_sha256"),
                 "build_contract_sha256": _required_str(corpus, "build_contract_sha256"),
+                "tree_sha256": corpus_tree_sha256,
             }
         ),
         "query_vectors": (
@@ -1047,14 +1068,10 @@ def run_locomo(
 
     summary = report_locomo(run_dir)
     write_json_exclusive(run_dir / "summary.json", summary)
-    if corpus is not None:
-        _load_locomo_corpus(
-            cast(Path, config.corpus_path),
-            dataset=dataset,
-            selected=selected,
-            retrieval_config=config.retrieval_config,
-            memory_factory=memory_factory,
-        )
+    if corpus is not None and _directory_sha256(cast(Path, config.corpus_path).resolve()) != cast(
+        str, corpus_tree_sha256
+    ):
+        raise ValueError("LoCoMo corpus files changed during the read-only run")
     if query_vectors is not None:
         _load_query_vector_manifest(
             cast(Path, config.query_vectors_path),
