@@ -596,6 +596,8 @@ def _directory_sha256(root: Path) -> str:
             raise ValueError("LoCoMo corpus must not contain symbolic links")
         if not path.is_file():
             continue
+        if path.name == ".index.lancedb.lock":
+            continue
         relative = path.relative_to(root).as_posix().encode()
         digest.update(len(relative).to_bytes(8, "big"))
         digest.update(relative)

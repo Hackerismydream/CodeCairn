@@ -526,6 +526,10 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
             type(self).snapshot_calls += 1
             return super().corpus_snapshot()
 
+        def recall(self, question: str, *, limit: int) -> RecallResult:
+            (self.root / ".index.lancedb.lock").touch()
+            return super().recall(question, limit=limit)
+
     corpus = build_locomo_corpus(
         LoCoMoCorpusConfig(
             dataset_path=FIXTURE,
