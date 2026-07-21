@@ -410,7 +410,7 @@ def test_locomo_sessions_ingest_as_real_episode_parents_through_public_interface
     assert {item.evidence[0].provider for item in memories} == {"locomo"}
 
 
-def test_evidence_answer_synthesizer_rejects_unknown_citation_ids() -> None:
+def test_evidence_answer_synthesizer_does_not_invent_citations_for_plain_answers() -> None:
     class CitedAnswerModel(FakeAnswerModel):
         def generate(
             self,
@@ -420,16 +420,8 @@ def test_evidence_answer_synthesizer_rejects_unknown_citation_ids() -> None:
             seed: int,
             response_format: str = "text",
         ) -> ModelResponse:
-            assert response_format == "json"
-            return ModelResponse(
-                text=json.dumps(
-                    {
-                        "answer": "A beagle.",
-                        "evidence_ids": ["E1", "not-allowed"],
-                    }
-                ),
-                model=self.model_id,
-            )
+            assert response_format == "text"
+            return ModelResponse(text="A beagle.", model=self.model_id)
 
     conversation = load_locomo_dataset(FIXTURE).conversations[0]
     ranked = RankedRecall(
@@ -482,28 +474,16 @@ def test_evidence_answer_synthesizer_rejects_unknown_citation_ids() -> None:
     )
 
     assert answer.response.text == "A beagle."
-    assert answer.evidence_ids == ("memory-session",)
-    assert answer.invalid_evidence_ids == ("not-allowed",)
-    assert answer.format == "structured-v1"
+    assert answer.evidence_ids == ()
+    assert answer.invalid_evidence_ids == ()
+    assert answer.format == "unstructured-fallback"
 
 
-@pytest.mark.parametrize(
-    ("question_text", "summary_size", "expected_episode_count", "expected_last_size"),
-    [
-        ("What music?", 1_000, 10, 1_000),
-        ("What activities have Caroline and Melanie tried?", 1_000, 15, 1_000),
-        ("What music?", 10_000, 6, 5_000),
-    ],
-)
-def test_evidence_answer_synthesizer_uses_compact_aliases_for_full_episode_summaries(
-    question_text: str,
-    summary_size: int,
-    expected_episode_count: int,
-    expected_last_size: int,
-) -> None:
+def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     @dataclass
     class CapturingAnswerModel:
         user_payload: dict[str, object] | None = None
+        response_format: str | None = None
 
         @property
         def model_id(self) -> str:
@@ -522,45 +502,11 @@ def test_evidence_answer_synthesizer_uses_compact_aliases_for_full_episode_summa
             response_format: str = "text",
         ) -> ModelResponse:
             self.user_payload = json.loads(user)
-            return ModelResponse(
-                text=json.dumps({"answer": "rock", "evidence_ids": ["E1"]}),
-                model=self.model_id,
-            )
+            self.response_format = response_format
+            return ModelResponse(text="rock", model=self.model_id)
 
-    ranked = tuple(
-        RankedRecall(
-            rank=index + 1,
-            memory_id=f"memory-{index}",
-            memory_type="user_preference",
-            title=f"Session {index}",
-            summary="S" * summary_size,
-            source_uri=f"codecairn://memory/memory-{index}",
-            content_sha256=f"{index:064x}",
-            candidate_sources=("lexical",),
-            vector_score=None,
-            vector_rank=None,
-            lexical_score=1.0,
-            lexical_rank=index + 1,
-            final_score=1.0,
-            evidence=(),
-            snippets=tuple(
-                RecallSnippet(
-                    relation="matched" if fact_index == 0 else "sibling",
-                    source_memory_id=f"memory-{index}",
-                    source_uri=f"codecairn://memory/memory-{index}",
-                    fact_id=f"fact-{index}-{fact_index}",
-                    text="F" * 400,
-                    source_title=f"Session {index}",
-                    source_summary="S" * summary_size,
-                    raw_event_index=fact_index,
-                )
-                for fact_index in range(6)
-            ),
-        )
-        for index in range(20)
-    )
     recall = RecallResult(
-        markdown="# Recall Context\n",
+        markdown="# Recall Context\n" + "X" * 30_000,
         sidecar=RecallSidecar(
             query="What music?",
             repo_key="locomo/test",
@@ -568,13 +514,13 @@ def test_evidence_answer_synthesizer_uses_compact_aliases_for_full_episode_summa
             latency_ms=1.0,
             vector_candidate_count=0,
             lexical_candidate_count=20,
-            ranked=ranked,
+            ranked=(),
         ),
     )
     conversation = load_locomo_dataset(FIXTURE).conversations[0]
     model = CapturingAnswerModel()
 
-    question = replace(conversation.questions[0], question=question_text)
+    question = replace(conversation.questions[0], question="What music?")
     answer = EvidenceAnswerSynthesizer().synthesize(
         conversation,
         question,
@@ -584,93 +530,13 @@ def test_evidence_answer_synthesizer_uses_compact_aliases_for_full_episode_summa
     )
 
     assert model.user_payload is not None
-    blocks = model.user_payload["evidence_blocks"]
-    assert isinstance(blocks, list)
-    assert len(blocks) == expected_episode_count
-    assert blocks[0] == {"context": "S" * summary_size, "id": "E1"}
-    assert blocks[-1] == {
-        "context": "S" * expected_last_size,
-        "id": f"E{expected_episode_count}",
-    }
-    assert model.user_payload["allowed_evidence_ids"] == [
-        f"E{index}" for index in range(1, expected_episode_count + 1)
-    ]
-    assert answer.evidence_ids == ("memory-0",)
-
-
-def test_evidence_answer_synthesizer_limits_temporal_questions_to_five_episodes() -> None:
-    @dataclass
-    class CapturingAnswerModel:
-        user_payload: dict[str, object] | None = None
-
-        @property
-        def model_id(self) -> str:
-            return "capturing-answer"
-
-        @property
-        def public_config(self) -> dict[str, object]:
-            return {"adapter": "fake", "model": self.model_id}
-
-        def generate(
-            self,
-            *,
-            system: str,
-            user: str,
-            seed: int,
-            response_format: str = "text",
-        ) -> ModelResponse:
-            self.user_payload = json.loads(user)
-            return ModelResponse(
-                text=json.dumps({"answer": "May 2023", "evidence_ids": ["E1"]}),
-                model=self.model_id,
-            )
-
-    ranked = tuple(
-        RankedRecall(
-            rank=index + 1,
-            memory_id=f"memory-{index}",
-            memory_type="user_preference",
-            title=f"Session {index}",
-            summary=f"Episode {index}",
-            source_uri=f"codecairn://memory/memory-{index}",
-            content_sha256=f"{index:064x}",
-            candidate_sources=("lexical",),
-            vector_score=None,
-            vector_rank=None,
-            lexical_score=1.0,
-            lexical_rank=index + 1,
-            final_score=1.0,
-            evidence=(),
-        )
-        for index in range(20)
-    )
-    recall = RecallResult(
-        markdown="# Recall Context\n",
-        sidecar=RecallSidecar(
-            query="When did Caroline move?",
-            repo_key="locomo/test",
-            limit=20,
-            latency_ms=1.0,
-            vector_candidate_count=0,
-            lexical_candidate_count=20,
-            ranked=ranked,
-        ),
-    )
-    conversation = load_locomo_dataset(FIXTURE).conversations[0]
-    question = replace(conversation.questions[0], question="When did Caroline move?")
-    model = CapturingAnswerModel()
-
-    EvidenceAnswerSynthesizer().synthesize(
-        conversation,
-        question,
-        recall=recall,
-        model=model,
-        seed=7,
-    )
-
-    assert model.user_payload is not None
-    assert len(model.user_payload["evidence_blocks"]) == 5
-    assert model.user_payload["allowed_evidence_ids"] == ["E1", "E2", "E3", "E4", "E5"]
+    assert set(model.user_payload) == {"memory_context", "question", "speakers"}
+    assert len(model.user_payload["memory_context"]) == 24_000
+    assert model.response_format == "text"
+    assert answer.response.text == "rock"
+    assert answer.evidence_ids == ()
+    assert answer.invalid_evidence_ids == ()
+    assert answer.format == "unstructured-fallback"
 
 
 def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
@@ -1213,7 +1079,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "adaptive-episode-summary-alias-v3",
+                "answer_evidence_contract": "bounded-attributed-markdown-v4",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,
@@ -1705,20 +1571,14 @@ def test_answer_and_judge_prompts_treat_benchmark_content_as_untrusted_data(
         assert "untrusted data" in system
         payload = json.loads(user)
         assert isinstance(payload, dict)
-        assert response_format == "json"
         if "generated_answer" in payload:
+            assert response_format == "json"
             assert set(payload) == {"generated_answer", "gold_answer", "question"}
         else:
-            assert set(payload) == {
-                "allowed_evidence_ids",
-                "evidence_blocks",
-                "memory_context_fallback",
-                "question",
-                "speakers",
-            }
-            assert "inspect every supplied episode" in system
-            assert "enumerate every distinct supported item" in system
-            assert "match the requested granularity" in system.casefold()
+            assert response_format == "text"
+            assert set(payload) == {"memory_context", "question", "speakers"}
+            assert "inspect the whole supplied context" in system.casefold()
+            assert "for list questions include every supported item" in system.casefold()
 
 
 def test_smoke_run_is_explicitly_unscored_and_never_calls_a_judge(tmp_path: Path) -> None:
