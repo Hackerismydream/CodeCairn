@@ -163,16 +163,24 @@ class RecallEngine:
             repo_key=repo_key,
             expand_neighbors=False,
         )
+        core_ranked, _core_covered, _core_missing = _coverage_select(
+            ranked,
+            coverage_slots=plan.query_sketch.coverage_slots,
+            limit=plan.core_rerank_candidate_limit,
+        )
+        core_memory_ids = {item.memory_id for item in core_ranked}
         ranked = self._rerank(
             normalized_query,
             ranked,
             coverage_slots=plan.query_sketch.coverage_slots,
             candidate_limit=plan.rerank_candidate_limit,
         )
-        selected_ranked, covered_slots, missing_slots = _coverage_select(
+        selected_ranked, covered_slots, missing_slots = _core_preserving_select(
             ranked,
+            core_memory_ids=core_memory_ids,
             coverage_slots=plan.query_sketch.coverage_slots,
             limit=limit,
+            exploration_limit=plan.exploration_result_limit,
         )
         neighbor_expansion_count = 0
         if plan.expand_neighbors:
@@ -568,6 +576,37 @@ def _coverage_select(
             selected.append(item)
     covered = tuple(slot for slot in coverage_slots if slot not in uncovered)
     missing = tuple(slot for slot in coverage_slots if slot in uncovered)
+    return selected, covered, missing
+
+
+def _core_preserving_select(
+    ranked: list[RankedRecall],
+    *,
+    core_memory_ids: set[str],
+    coverage_slots: tuple[str, ...],
+    limit: int,
+    exploration_limit: int,
+) -> tuple[list[RankedRecall], tuple[str, ...], tuple[str, ...]]:
+    reserved_core_limit = max(0, limit - exploration_limit)
+    core = [item for item in ranked if item.memory_id in core_memory_ids]
+    selected, _covered, missing = _coverage_select(
+        core,
+        coverage_slots=coverage_slots,
+        limit=reserved_core_limit,
+    )
+    selected_ids = {item.memory_id for item in selected}
+    remaining = [item for item in ranked if item.memory_id not in selected_ids]
+    fill, _fill_covered, _fill_missing = _coverage_select(
+        remaining,
+        coverage_slots=missing,
+        limit=limit - len(selected),
+    )
+    selected.extend(fill)
+    _ordered, covered, missing = _coverage_select(
+        selected,
+        coverage_slots=coverage_slots,
+        limit=len(selected),
+    )
     return selected, covered, missing
 
 

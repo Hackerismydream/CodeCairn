@@ -264,6 +264,82 @@ def test_coverage_selection_keeps_evidence_for_distinct_named_anchors() -> None:
     assert result.sidecar.missing_slots == ()
 
 
+def test_expanded_rerank_pool_preserves_a_stable_core_lane() -> None:
+    class ExpandedIndex(CandidateIndex):
+        def document_vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            if document_kind == "atomic_fact":
+                return ()
+            return tuple(
+                IndexCandidate(
+                    repo_key=repo_key,
+                    memory_id=f"memory-{rank:02d}",
+                    score=float(48 - rank),
+                )
+                for rank in range(min(limit, 48))
+            )
+
+        def document_lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return self.document_vector_candidates(
+                repo_key=repo_key,
+                vector=(),
+                document_kind=document_kind,
+                limit=limit,
+            )
+
+    class ExplorerFirstReranker:
+        model_id = "test/explorer-first"
+        source_id = "test/explorer-first-source"
+        revision = "test-v1"
+
+        def rerank(
+            self,
+            query: str,
+            documents: tuple[RerankDocument, ...],
+        ) -> tuple[RerankScore, ...]:
+            return tuple(
+                RerankScore(
+                    memory_id=document.memory_id,
+                    score=100.0 if int(document.memory_id.rsplit("-", 1)[1]) >= 32 else 1.0,
+                )
+                for document in documents
+            )
+
+    memories = tuple(
+        _memory(
+            f"memory-{rank:02d}",
+            summary=f"Candidate {rank}",
+            episode_id=f"episode-{rank:02d}",
+            event_index=rank,
+        )
+        for rank in range(48)
+    )
+    result = RecallEngine(
+        index=ExpandedIndex(),
+        state=MemoryState(memories),
+        embedder=FixedEmbedder(),
+        reranker=ExplorerFirstReranker(),
+        clock_ns=lambda: 0,
+    ).recall("repository convention", repo_key="acme/widgets", limit=20)
+
+    selected = [item.memory_id for item in result.sidecar.ranked]
+    assert selected[:16] == [f"memory-{rank:02d}" for rank in range(16)]
+    assert selected[16:] == [f"memory-{rank:02d}" for rank in range(32, 36)]
+
+
 def test_empty_recall_reports_partial_completion() -> None:
     class EmptyIndex(CandidateIndex):
         def vector_candidates(

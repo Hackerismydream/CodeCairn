@@ -44,12 +44,16 @@ def test_diagnostic_top_k_uses_bounded_route_aware_candidate_pools() -> None:
         fact_first.episode_candidate_limit,
         fact_first.atomic_fact_candidate_limit,
         fact_first.rerank_candidate_limit,
-    ) == (128, 128, 96)
+        fact_first.core_rerank_candidate_limit,
+        fact_first.exploration_result_limit,
+    ) == (128, 128, 96, 32, 4)
     assert (
         episode_first.episode_candidate_limit,
         episode_first.atomic_fact_candidate_limit,
         episode_first.rerank_candidate_limit,
-    ) == (128, 128, 96)
+        episode_first.core_rerank_candidate_limit,
+        episode_first.exploration_result_limit,
+    ) == (128, 128, 96, 32, 4)
 
 
 def test_small_top_k_keeps_adaptive_candidate_budgets_bounded() -> None:
@@ -62,12 +66,16 @@ def test_small_top_k_keeps_adaptive_candidate_budgets_bounded() -> None:
         fact_first.episode_candidate_limit,
         fact_first.atomic_fact_candidate_limit,
         fact_first.rerank_candidate_limit,
-    ) == (35, 40, 32)
+        fact_first.core_rerank_candidate_limit,
+        fact_first.exploration_result_limit,
+    ) == (35, 40, 32, 32, 0)
     assert (
         episode_first.episode_candidate_limit,
         episode_first.atomic_fact_candidate_limit,
         episode_first.rerank_candidate_limit,
-    ) == (40, 35, 32)
+        episode_first.core_rerank_candidate_limit,
+        episode_first.exploration_result_limit,
+    ) == (40, 35, 32, 32, 0)
 
 
 def test_neighbor_expansion_requires_the_full_hierarchy_mode() -> None:

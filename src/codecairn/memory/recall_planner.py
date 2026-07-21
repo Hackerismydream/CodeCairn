@@ -67,6 +67,7 @@ class RecallPlannerConfig:
     rerank_candidate_multiplier: int = 5
     minimum_rerank_candidates: int = 32
     maximum_rerank_candidates: int = 96
+    maximum_exploration_results: int = 4
     neighbor_window: int = 1
     neighbor_snippet_budget: int = 20
     matched_facts_per_memory: int = 3
@@ -92,6 +93,8 @@ class RecallPlannerConfig:
             raise ValueError("minimum_rerank_candidates must be positive")
         if self.maximum_rerank_candidates < self.minimum_rerank_candidates:
             raise ValueError("maximum_rerank_candidates must cover the minimum rerank candidates")
+        if self.maximum_exploration_results < 0:
+            raise ValueError("maximum_exploration_results must not be negative")
         if self.neighbor_window < 0:
             raise ValueError("neighbor_window must not be negative")
         if self.neighbor_snippet_budget < 0:
@@ -125,6 +128,7 @@ class RecallPlannerConfig:
             "rerank_candidate_multiplier": self.rerank_candidate_multiplier,
             "minimum_rerank_candidates": self.minimum_rerank_candidates,
             "maximum_rerank_candidates": self.maximum_rerank_candidates,
+            "maximum_exploration_results": self.maximum_exploration_results,
             "neighbor_window": self.neighbor_window,
             "neighbor_snippet_budget": self.neighbor_snippet_budget,
             "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
@@ -140,6 +144,8 @@ class RecallPlan:
     episode_candidate_limit: int
     atomic_fact_candidate_limit: int
     rerank_candidate_limit: int
+    core_rerank_candidate_limit: int
+    exploration_result_limit: int
     expand_neighbors: bool
     neighbor_snippet_budget: int
 
@@ -174,6 +180,12 @@ class RecallPlanner:
                 limit * self.config.rerank_candidate_multiplier,
             ),
         )
+        core_rerank_limit = min(rerank_limit, self.config.minimum_rerank_candidates)
+        exploration_result_limit = (
+            min(self.config.maximum_exploration_results, limit // 5)
+            if rerank_limit > core_rerank_limit
+            else 0
+        )
         episode_limit = primary_limit if route == "episode_first" else secondary_limit
         fact_limit = primary_limit if route == "fact_first" else secondary_limit
         if not self.config.atomic_fact_enabled:
@@ -184,6 +196,8 @@ class RecallPlanner:
             episode_candidate_limit=episode_limit,
             atomic_fact_candidate_limit=fact_limit,
             rerank_candidate_limit=rerank_limit,
+            core_rerank_candidate_limit=core_rerank_limit,
+            exploration_result_limit=exploration_result_limit,
             expand_neighbors=(
                 self.config.neighbor_window > 0 and self.config.neighbor_snippet_budget > 0
             ),
