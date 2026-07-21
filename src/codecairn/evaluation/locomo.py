@@ -307,7 +307,6 @@ class CodeCairnConversationMemory:
         rejected = 0
         turn_count = 0
         for session in conversation.sessions:
-            facts: list[EvidenceFact] = []
             for turn in session.turns:
                 turn_count += 1
                 evidence = _turn_evidence(
@@ -323,46 +322,39 @@ class CodeCairnConversationMemory:
                     turn.dia_id,
                     evidence.raw_event_sha256,
                 )
-                facts.append(
-                    EvidenceFact(
-                        fact_id=fact_id,
-                        repo_key=self._repo_key,
-                        episode_id=stable_id(
-                            "locomo-session",
-                            self._repo_key,
-                            session.session_id,
-                        ),
-                        kind="user_quote",
-                        text=f"{turn.timestamp_iso} — {turn.speaker}: {turn.text}",
-                        role="user",
-                        evidence=(evidence,),
-                    )
+                fact = EvidenceFact(
+                    fact_id=fact_id,
+                    repo_key=self._repo_key,
+                    episode_id=stable_id(
+                        "locomo-session",
+                        self._repo_key,
+                        session.session_id,
+                    ),
+                    kind="user_quote",
+                    text=turn.text,
+                    role="user",
+                    evidence=(evidence,),
                 )
-            if not facts:
-                continue
-            proposal = MemoryProposal(
-                proposal_id=stable_id(
-                    "locomo-session-proposal",
-                    self._repo_key,
-                    session.session_id,
-                    *(fact.fact_id for fact in facts),
-                ),
-                repo_key=self._repo_key,
-                memory_type="user_preference",
-                title=f"Conversation in {session.session_id} at {session.timestamp}",
-                summary="\n".join(
-                    f"{turn.timestamp_iso} — {turn.speaker}: {turn.text}" for turn in session.turns
-                ),
-                fact_ids=tuple(fact.fact_id for fact in facts),
-                quote=session.turns[0].text,
-                quote_role="user",
-                confidence=1.0,
-            )
-            decision = self._runtime.evaluate_proposal(proposal, facts=tuple(facts))
-            if decision.accepted:
-                accepted += 1
-            else:
-                rejected += 1
+                proposal = MemoryProposal(
+                    proposal_id=stable_id(
+                        "locomo-proposal",
+                        self._repo_key,
+                        fact.fact_id,
+                    ),
+                    repo_key=self._repo_key,
+                    memory_type="user_preference",
+                    title=f"{turn.speaker} in {session.session_id}",
+                    summary=f"{turn.timestamp_iso} — {turn.speaker}: {turn.text}",
+                    fact_ids=(fact.fact_id,),
+                    quote=turn.text,
+                    quote_role="user",
+                    confidence=1.0,
+                )
+                decision = self._runtime.evaluate_proposal(proposal, facts=(fact,))
+                if decision.accepted:
+                    accepted += 1
+                else:
+                    rejected += 1
         rebuild = self._cascade.rebuild()
         if not rebuild.parity:
             raise ValueError("LoCoMo bulk index projection failed rebuild parity")
@@ -543,7 +535,7 @@ def build_locomo_corpus(
         "schema_version": 1,
         "dataset_sha256": dataset.sha256,
         "conversation_ids": [conversation.sample_id for conversation in selected],
-        "projection_contract": "locomo-session-episode-v2",
+        "projection_contract": "locomo-turn-child-session-episode-v3",
         "embedding": embedding,
     }
     build_contract_sha256 = _canonical_sha256(build_contract)
