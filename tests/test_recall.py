@@ -379,6 +379,72 @@ def test_temporal_exploration_lane_reserves_an_explicit_month_candidate() -> Non
     assert "memory-20" in {item.memory_id for item in selected}
 
 
+def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
+    class TemporalIndex(CandidateIndex):
+        def __init__(self) -> None:
+            self.lexical_queries: list[tuple[str, str, int]] = []
+
+        def document_vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return ()
+
+        def document_lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            self.lexical_queries.append((document_kind, query, limit))
+            if "2023-10" not in query:
+                return ()
+            return (
+                IndexCandidate(
+                    repo_key=repo_key,
+                    memory_id="memory-october",
+                    score=2.0,
+                    document_id=(
+                        "memory-october" if document_kind == "episode" else "fact-october"
+                    ),
+                    document_kind=document_kind,
+                    fact_id="" if document_kind == "episode" else "fact-october",
+                ),
+            )
+
+    memory = _memory_with_fact(
+        "memory-october",
+        fact_id="fact-october",
+        fact_text="Sam considered kayaking.",
+        event_index=1,
+    )
+    index = TemporalIndex()
+    result = RecallEngine(
+        index=index,
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    ).recall(
+        "Which activity did Sam consider in October 2023?",
+        repo_key="acme/widgets",
+        limit=5,
+    )
+
+    assert any(query.endswith("2023-10") for _, query, _ in index.lexical_queries)
+    assert all(
+        limit <= 32 for _, query, limit in index.lexical_queries if query.endswith("2023-10")
+    )
+    assert result.sidecar.episode_temporal_lexical_candidate_count == 1
+    assert result.sidecar.atomic_fact_temporal_lexical_candidate_count == 1
+    assert result.sidecar.ranked[0].memory_id == "memory-october"
+
+
 def test_empty_recall_reports_partial_completion() -> None:
     class EmptyIndex(CandidateIndex):
         def vector_candidates(

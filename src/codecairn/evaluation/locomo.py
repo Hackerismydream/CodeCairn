@@ -1686,6 +1686,8 @@ def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> d
                 "episode_lexical_candidate_count",
                 "atomic_fact_vector_candidate_count",
                 "atomic_fact_lexical_candidate_count",
+                "episode_temporal_lexical_candidate_count",
+                "atomic_fact_temporal_lexical_candidate_count",
                 "neighbor_expansion_count",
             ):
                 value = retrieval.get(field)

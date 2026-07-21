@@ -36,6 +36,7 @@ _MAX_LIMIT = 20
 _MAX_QUERY_CHARS = 8_000
 _MAX_FUSED_CANDIDATES = 96
 _MAX_ENTITY_POSTING_CANDIDATES = 24
+_MAX_TEMPORAL_LEXICAL_CANDIDATES = 32
 _MAX_RERANK_BUNDLE_CHARS = 2_048
 _ENTITY_TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]*")
 _MODALITY_ORDER: tuple[CandidateSource, ...] = ("lexical", "vector")
@@ -124,8 +125,23 @@ class RecallEngine:
             query=normalized_query,
             limit=plan.episode_candidate_limit,
         )
+        temporal_lexical_query = _temporal_lexical_query(
+            normalized_query,
+            plan.query_sketch.temporal_prefixes,
+        )
+        episode_temporal_lexical: tuple[IndexCandidate, ...] = ()
+        if temporal_lexical_query is not None:
+            episode_temporal_lexical = self._documents(
+                repo_key=repo_key,
+                document_kind="episode",
+                source="episode_temporal_lexical",
+                vector=None,
+                query=temporal_lexical_query,
+                limit=min(plan.episode_candidate_limit, _MAX_TEMPORAL_LEXICAL_CANDIDATES),
+            )
         atomic_vector: tuple[IndexCandidate, ...] = ()
         atomic_lexical: tuple[IndexCandidate, ...] = ()
+        atomic_temporal_lexical: tuple[IndexCandidate, ...] = ()
         if plan.atomic_fact_candidate_limit:
             atomic_vector = self._documents(
                 repo_key=repo_key,
@@ -143,11 +159,25 @@ class RecallEngine:
                 query=normalized_query,
                 limit=plan.atomic_fact_candidate_limit,
             )
+            if temporal_lexical_query is not None:
+                atomic_temporal_lexical = self._documents(
+                    repo_key=repo_key,
+                    document_kind="atomic_fact",
+                    source="atomic_fact_temporal_lexical",
+                    vector=None,
+                    query=temporal_lexical_query,
+                    limit=min(
+                        plan.atomic_fact_candidate_limit,
+                        _MAX_TEMPORAL_LEXICAL_CANDIDATES,
+                    ),
+                )
 
         sources: tuple[tuple[RecallDocumentSource, tuple[IndexCandidate, ...]], ...] = (
             ("episode_lexical", episode_lexical),
+            ("episode_temporal_lexical", episode_temporal_lexical),
             ("episode_vector", episode_vector),
             ("atomic_fact_lexical", atomic_lexical),
+            ("atomic_fact_temporal_lexical", atomic_temporal_lexical),
             ("atomic_fact_vector", atomic_vector),
         )
         core_ranked = self._fuse(
@@ -229,7 +259,12 @@ class RecallEngine:
             limit=limit,
             latency_ms=latency_ms,
             vector_candidate_count=len(episode_vector) + len(atomic_vector),
-            lexical_candidate_count=len(episode_lexical) + len(atomic_lexical),
+            lexical_candidate_count=(
+                len(episode_lexical)
+                + len(atomic_lexical)
+                + len(episode_temporal_lexical)
+                + len(atomic_temporal_lexical)
+            ),
             ranked=selected,
             reranker_model=None if self._reranker is None else self._reranker.model_id,
             reranker_source=None if self._reranker is None else self._reranker.source_id,
@@ -243,6 +278,8 @@ class RecallEngine:
             episode_lexical_candidate_count=len(episode_lexical),
             atomic_fact_vector_candidate_count=len(atomic_vector),
             atomic_fact_lexical_candidate_count=len(atomic_lexical),
+            episode_temporal_lexical_candidate_count=len(episode_temporal_lexical),
+            atomic_fact_temporal_lexical_candidate_count=len(atomic_temporal_lexical),
             neighbor_expansion_count=neighbor_expansion_count,
             entity_posting_candidate_count=entity_posting_candidate_count,
             rerank_bundle_count=len(ranked),
@@ -661,6 +698,15 @@ def _matches_temporal_prefix(
 ) -> bool:
     summary = item.summary.lstrip()
     return any(summary.startswith(prefix) for prefix in temporal_prefixes)
+
+
+def _temporal_lexical_query(
+    query: str,
+    temporal_prefixes: tuple[str, ...],
+) -> str | None:
+    if not temporal_prefixes:
+        return None
+    return " ".join((query, *temporal_prefixes))
 
 
 def _recall_search_text(item: RankedRecall) -> str:

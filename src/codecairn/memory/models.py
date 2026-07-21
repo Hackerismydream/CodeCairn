@@ -50,8 +50,10 @@ RecallDocumentKind = Literal["episode", "atomic_fact"]
 RecallRoute = Literal["episode_first", "fact_first"]
 RecallDocumentSource = Literal[
     "episode_lexical",
+    "episode_temporal_lexical",
     "episode_vector",
     "atomic_fact_lexical",
+    "atomic_fact_temporal_lexical",
     "atomic_fact_vector",
     "entity_posting",
 ]
@@ -420,6 +422,8 @@ class RecallSidecar:
     episode_lexical_candidate_count: int = 0
     atomic_fact_vector_candidate_count: int = 0
     atomic_fact_lexical_candidate_count: int = 0
+    episode_temporal_lexical_candidate_count: int = 0
+    atomic_fact_temporal_lexical_candidate_count: int = 0
     neighbor_expansion_count: int = 0
     entity_posting_candidate_count: int = 0
     rerank_bundle_count: int = 0

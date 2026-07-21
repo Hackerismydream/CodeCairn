@@ -1143,8 +1143,10 @@ def test_frozen_question_set_selects_exact_strata_and_reports_retrieval_diagnost
         "route_counts": {"episode_first": 2},
         "average_counts": {
             "atomic_fact_lexical_candidate_count": 0.0,
+            "atomic_fact_temporal_lexical_candidate_count": 0.0,
             "atomic_fact_vector_candidate_count": 0.0,
             "episode_lexical_candidate_count": 0.0,
+            "episode_temporal_lexical_candidate_count": 0.0,
             "episode_vector_candidate_count": 0.0,
             "neighbor_expansion_count": 0.0,
         },
