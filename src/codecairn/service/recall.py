@@ -126,8 +126,8 @@ class RecallEngine:
             limit=plan.episode_candidate_limit,
         )
         temporal_lexical_query = _temporal_lexical_query(
-            normalized_query,
             plan.query_sketch.temporal_prefixes,
+            plan.query_sketch.anchors,
         )
         episode_temporal_lexical: tuple[IndexCandidate, ...] = ()
         if temporal_lexical_query is not None:
@@ -701,12 +701,12 @@ def _matches_temporal_prefix(
 
 
 def _temporal_lexical_query(
-    query: str,
     temporal_prefixes: tuple[str, ...],
+    anchors: tuple[str, ...],
 ) -> str | None:
     if not temporal_prefixes:
         return None
-    return " ".join((query, *temporal_prefixes))
+    return " ".join((*temporal_prefixes, *anchors))
 
 
 def _recall_search_text(item: RankedRecall) -> str:

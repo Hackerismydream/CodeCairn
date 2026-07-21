@@ -256,6 +256,7 @@ def _query_sketch(query: str) -> QuerySketch:
             match.group(0).casefold()
             for match in _NAMED_ANCHOR.finditer(query)
             if match.group(0) not in _ANCHOR_STOPWORDS
+            and match.group(0).casefold() not in _MONTH_NUMBERS
         )
     )
     lowered = query.casefold()

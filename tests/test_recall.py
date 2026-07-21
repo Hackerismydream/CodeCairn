@@ -403,7 +403,7 @@ def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
             limit: int,
         ) -> tuple[IndexCandidate, ...]:
             self.lexical_queries.append((document_kind, query, limit))
-            if "2023-10" not in query:
+            if not query.startswith("2023-10"):
                 return ()
             return (
                 IndexCandidate(
@@ -436,9 +436,9 @@ def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
         limit=5,
     )
 
-    assert any(query.endswith("2023-10") for _, query, _ in index.lexical_queries)
+    assert any(query == "2023-10 sam" for _, query, _ in index.lexical_queries)
     assert all(
-        limit <= 32 for _, query, limit in index.lexical_queries if query.endswith("2023-10")
+        limit <= 32 for _, query, limit in index.lexical_queries if query.startswith("2023-10")
     )
     assert result.sidecar.episode_temporal_lexical_candidate_count == 1
     assert result.sidecar.atomic_fact_temporal_lexical_candidate_count == 1

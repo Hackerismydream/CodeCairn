@@ -98,6 +98,7 @@ def test_explicit_month_query_reserves_a_temporal_lane_and_wider_neighbors() -> 
     )
 
     assert plan.query_sketch.temporal_prefixes == ("2023-10",)
+    assert plan.query_sketch.anchors == ("sam",)
     assert plan.query_sketch.temporal_op == "point"
     assert plan.neighbor_window == 2
 
