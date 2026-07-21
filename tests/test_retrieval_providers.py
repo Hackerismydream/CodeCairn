@@ -139,6 +139,12 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
             "diverse_matched_facts_per_memory": 1,
             "sibling_facts_per_memory": 2,
             "temporal_sibling_facts_per_memory": 5,
+            "context_renderer": "balanced-evidence-round-robin-v1",
+            "context_max_chars": 22_000,
+            "context_summary_chars": 100,
+            "context_snippet_chars": 160,
+            "context_snippets_per_memory": 5,
+            "context_temporal_snippets_per_memory": 8,
         },
     }
 
@@ -349,6 +355,12 @@ def test_recall_mode_selects_an_auditable_ablation_configuration() -> None:
         "diverse_matched_facts_per_memory": 1,
         "sibling_facts_per_memory": 2,
         "temporal_sibling_facts_per_memory": 5,
+        "context_renderer": "balanced-evidence-round-robin-v1",
+        "context_max_chars": 22_000,
+        "context_summary_chars": 100,
+        "context_snippet_chars": 160,
+        "context_snippets_per_memory": 5,
+        "context_temporal_snippets_per_memory": 8,
     }
 
 

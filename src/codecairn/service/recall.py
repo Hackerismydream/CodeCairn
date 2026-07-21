@@ -314,7 +314,13 @@ class RecallEngine:
             neighbor_window=plan.neighbor_window if plan.expand_neighbors else 0,
         )
         return RecallResult(
-            markdown=_render_context(normalized_query, repo_key=repo_key, ranked=selected),
+            markdown=_render_context(
+                normalized_query,
+                repo_key=repo_key,
+                ranked=selected,
+                temporal_priority_memory_ids=temporal_snippet_priority_ids,
+                config=self._planner.config,
+            ),
             sidecar=sidecar,
         )
 
@@ -1019,37 +1025,112 @@ def _render_context(
     *,
     repo_key: str,
     ranked: tuple[RankedRecall, ...],
+    temporal_priority_memory_ids: set[str],
+    config: RecallPlannerConfig,
 ) -> str:
-    lines = [
+    header = [
         "# Recall Context",
         "",
         f"Task: {_single_line(query, limit=400)}",
         f"Repository: `{_single_line(repo_key, limit=200)}`",
     ]
     if not ranked:
-        lines.extend(("", "No evidence-backed memory matched this task."))
-        return "\n".join(lines) + "\n"
+        header.extend(("", "No evidence-backed memory matched this task."))
+        return "\n".join(header) + "\n"
+
+    bases: list[list[str]] = []
+    snippet_lines: list[tuple[str, ...]] = []
     for item in ranked:
-        lines.extend(
-            (
+        bases.append(
+            [
                 "",
                 f"## {item.rank}. {_single_line(item.title, limit=120)}",
                 "",
-                _single_line(item.summary, limit=240),
+                _single_line(item.summary, limit=config.context_summary_chars),
                 "",
                 f"- Type: `{item.memory_type}`",
                 f"- Source: [{item.memory_id}]({item.source_uri})",
-                f"- Evidence: {len(item.evidence)} cited raw event(s)",
+                "",
+                "Evidence excerpts:",
+            ]
+        )
+        snippets = _context_snippets(
+            item,
+            temporal_priority=item.memory_id in temporal_priority_memory_ids,
+        )
+        snippet_lines.append(
+            tuple(
+                _context_snippet_line(
+                    snippet,
+                    parent_memory_id=item.memory_id,
+                    text_limit=config.context_snippet_chars,
+                )
+                for snippet in snippets
             )
         )
-        if item.snippets:
-            lines.extend(("", "Evidence excerpts:"))
-            for snippet in item.snippets:
-                lines.append(
-                    f"- {snippet.relation}: {_single_line(snippet.text, limit=360)} "
-                    f"([{snippet.source_memory_id}]({snippet.source_uri}))"
-                )
-    return "\n".join(lines) + "\n"
+
+    selected_counts = [0] * len(ranked)
+    base_length = len("\n".join((*header, *(line for block in bases for line in block)))) + 1
+    remaining_chars = max(0, config.context_max_chars - base_length)
+    ordinary_rounds = range(config.context_snippets_per_memory)
+    temporal_rounds = range(
+        config.context_snippets_per_memory,
+        config.context_temporal_snippets_per_memory,
+    )
+    for round_index, temporal_only in (
+        *((round_index, False) for round_index in ordinary_rounds),
+        *((round_index, True) for round_index in temporal_rounds),
+    ):
+        for item_index, item in enumerate(ranked):
+            if temporal_only and item.memory_id not in temporal_priority_memory_ids:
+                continue
+            lines = snippet_lines[item_index]
+            if round_index >= len(lines) or selected_counts[item_index] != round_index:
+                continue
+            line_cost = len(lines[round_index]) + 1
+            if line_cost > remaining_chars:
+                continue
+            selected_counts[item_index] = round_index + 1
+            remaining_chars -= line_cost
+
+    lines = list(header)
+    for base, excerpts, selected_count in zip(
+        bases,
+        snippet_lines,
+        selected_counts,
+        strict=True,
+    ):
+        lines.extend(base)
+        lines.extend(excerpts[:selected_count])
+    rendered = "\n".join(lines) + "\n"
+    if len(rendered) > config.context_max_chars:
+        raise AssertionError("Recall Context exceeded its deterministic character budget")
+    return rendered
+
+
+def _context_snippets(
+    item: RankedRecall,
+    *,
+    temporal_priority: bool,
+) -> tuple[RecallSnippet, ...]:
+    if not temporal_priority:
+        return item.snippets
+    matched = tuple(snippet for snippet in item.snippets if snippet.relation == "matched")
+    siblings = tuple(snippet for snippet in item.snippets if snippet.relation == "sibling")
+    neighbors = tuple(snippet for snippet in item.snippets if snippet.relation == "neighbor")
+    return (*matched[:1], *siblings, *matched[1:], *neighbors)
+
+
+def _context_snippet_line(
+    snippet: RecallSnippet,
+    *,
+    parent_memory_id: str,
+    text_limit: int,
+) -> str:
+    text = _single_line(snippet.text, limit=text_limit)
+    if snippet.source_memory_id == parent_memory_id:
+        return f"- {snippet.relation}: {text}"
+    return f"- {snippet.relation}: {text} ([{snippet.source_memory_id}]({snippet.source_uri}))"
 
 
 def _memory_uri(memory_id: str) -> str:

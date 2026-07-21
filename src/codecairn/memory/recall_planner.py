@@ -94,6 +94,11 @@ class RecallPlannerConfig:
     diverse_matched_facts_per_memory: int = 1
     sibling_facts_per_memory: int = 2
     temporal_sibling_facts_per_memory: int = 5
+    context_max_chars: int = 22_000
+    context_summary_chars: int = 100
+    context_snippet_chars: int = 160
+    context_snippets_per_memory: int = 5
+    context_temporal_snippets_per_memory: int = 8
 
     def __post_init__(self) -> None:
         if self.primary_candidate_multiplier < 1:
@@ -130,6 +135,18 @@ class RecallPlannerConfig:
         if self.temporal_sibling_facts_per_memory < self.sibling_facts_per_memory:
             raise ValueError(
                 "temporal_sibling_facts_per_memory must cover sibling_facts_per_memory"
+            )
+        if self.context_max_chars < 1_000:
+            raise ValueError("context_max_chars must be at least 1000")
+        if self.context_summary_chars < 1:
+            raise ValueError("context_summary_chars must be positive")
+        if self.context_snippet_chars < 1:
+            raise ValueError("context_snippet_chars must be positive")
+        if self.context_snippets_per_memory < 1:
+            raise ValueError("context_snippets_per_memory must be positive")
+        if self.context_temporal_snippets_per_memory < self.context_snippets_per_memory:
+            raise ValueError(
+                "context_temporal_snippets_per_memory must cover context_snippets_per_memory"
             )
         if self.mode != "hierarchy" and self.neighbor_window != 0:
             raise ValueError("Only hierarchy mode may expand temporal neighbors")
@@ -168,6 +185,12 @@ class RecallPlannerConfig:
             "diverse_matched_facts_per_memory": self.diverse_matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
             "temporal_sibling_facts_per_memory": self.temporal_sibling_facts_per_memory,
+            "context_renderer": "balanced-evidence-round-robin-v1",
+            "context_max_chars": self.context_max_chars,
+            "context_summary_chars": self.context_summary_chars,
+            "context_snippet_chars": self.context_snippet_chars,
+            "context_snippets_per_memory": self.context_snippets_per_memory,
+            "context_temporal_snippets_per_memory": (self.context_temporal_snippets_per_memory),
         }
 
 

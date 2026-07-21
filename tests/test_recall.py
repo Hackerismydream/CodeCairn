@@ -13,12 +13,14 @@ from codecairn.memory.models import (
     IndexCandidate,
     RankedRecall,
     RecallMatch,
+    RecallSnippet,
     RerankDocument,
     RerankScore,
 )
 from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.service.recall import RecallEngine
 from codecairn.service.recall import _core_preserving_select as core_preserving_select
+from codecairn.service.recall import _render_context as render_context
 from codecairn.storage.lance import LanceMemoryIndex
 
 
@@ -607,6 +609,63 @@ def test_temporal_priority_uses_a_bounded_local_fact_window() -> None:
         ("fact-0", "sibling"),
         ("fact-5", "sibling"),
     ]
+
+
+def test_context_budget_preserves_every_rank_and_prioritizes_temporal_siblings() -> None:
+    ranked = tuple(
+        RankedRecall(
+            rank=rank,
+            memory_id=f"memory-{rank}",
+            memory_type="repository_convention",
+            title=f"Memory {rank}",
+            summary="S" * 1_000,
+            source_uri=f"codecairn://memory/memory-{rank}",
+            content_sha256=f"{rank:064x}",
+            candidate_sources=("lexical",),
+            vector_score=None,
+            vector_rank=None,
+            lexical_score=1.0,
+            lexical_rank=rank,
+            final_score=1.0 / rank,
+            evidence=(),
+            snippets=tuple(
+                RecallSnippet(
+                    relation=("matched" if index < 2 else "sibling"),
+                    source_memory_id=f"memory-{rank}",
+                    source_uri=f"codecairn://memory/memory-{rank}",
+                    fact_id=f"fact-{rank}-{index}",
+                    text=f"evidence-{rank}-{index}-" + "X" * 1_000,
+                    source_title=f"Memory {rank}",
+                    source_summary="summary",
+                    raw_event_index=index,
+                )
+                for index in range(8)
+            ),
+        )
+        for rank in range(1, 21)
+    )
+
+    rendered = render_context(
+        "When did the event happen?",
+        repo_key="acme/widgets",
+        ranked=ranked,
+        temporal_priority_memory_ids={"memory-1"},
+        config=RecallPlannerConfig(),
+    )
+
+    assert len(rendered) <= 22_000
+    assert "## 20. Memory 20" in rendered
+    assert rendered.count("Evidence excerpts:") == 20
+
+    temporal_rendered = render_context(
+        "When did the event happen?",
+        repo_key="acme/widgets",
+        ranked=ranked[:1],
+        temporal_priority_memory_ids={"memory-1"},
+        config=RecallPlannerConfig(),
+    )
+    assert temporal_rendered.index("evidence-1-0") < temporal_rendered.index("evidence-1-2")
+    assert temporal_rendered.index("evidence-1-2") < temporal_rendered.index("evidence-1-1")
 
 
 def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
