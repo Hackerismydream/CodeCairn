@@ -424,11 +424,13 @@ class RecallSidecar:
     entity_posting_candidate_count: int = 0
     rerank_bundle_count: int = 0
     query_anchors: tuple[str, ...] = ()
+    query_temporal_prefixes: tuple[str, ...] = ()
     covered_slots: tuple[str, ...] = ()
     missing_slots: tuple[str, ...] = ()
     completion: Literal["complete", "partial"] = "complete"
     degraded_stages: tuple[str, ...] = ()
     query_vector_sha256: str | None = None
+    neighbor_window: int = 0
 
 
 @dataclass(frozen=True, slots=True)

@@ -89,3 +89,21 @@ def test_small_top_k_keeps_adaptive_candidate_budgets_bounded() -> None:
 def test_neighbor_expansion_requires_the_full_hierarchy_mode() -> None:
     with pytest.raises(ValueError, match="Only hierarchy mode"):
         RecallPlannerConfig(mode="hierarchy-no-neighbors", neighbor_window=1)
+
+
+def test_explicit_month_query_reserves_a_temporal_lane_and_wider_neighbors() -> None:
+    plan = RecallPlanner().plan(
+        "Which new activity did Sam take up in October 2023?",
+        limit=20,
+    )
+
+    assert plan.query_sketch.temporal_prefixes == ("2023-10",)
+    assert plan.query_sketch.temporal_op == "point"
+    assert plan.neighbor_window == 2
+
+
+def test_non_temporal_query_keeps_the_configured_neighbor_window() -> None:
+    plan = RecallPlanner().plan("What hobby does Sam enjoy?", limit=20)
+
+    assert plan.query_sketch.temporal_prefixes == ()
+    assert plan.neighbor_window == 1

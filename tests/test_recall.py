@@ -11,11 +11,13 @@ from codecairn.memory.models import (
     EvidenceFact,
     EvidenceReference,
     IndexCandidate,
+    RankedRecall,
     RerankDocument,
     RerankScore,
 )
 from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.service.recall import RecallEngine
+from codecairn.service.recall import _core_preserving_select as core_preserving_select
 from codecairn.storage.lance import LanceMemoryIndex
 
 
@@ -338,6 +340,43 @@ def test_expanded_rerank_pool_preserves_a_stable_core_lane() -> None:
     selected = [item.memory_id for item in result.sidecar.ranked]
     assert selected[:16] == [f"memory-{rank:02d}" for rank in range(16)]
     assert selected[16:] == [f"memory-{rank:02d}" for rank in range(32, 36)]
+
+
+def test_temporal_exploration_lane_reserves_an_explicit_month_candidate() -> None:
+    ranked = [
+        RankedRecall(
+            rank=index + 1,
+            memory_id=f"memory-{index:02d}",
+            memory_type="user_preference",
+            title=f"Candidate {index}",
+            summary=(
+                "2023-10-12T10:00:00+00:00 — Sam tried kayaking."
+                if index == 20
+                else f"2023-09-{index + 1:02d}T10:00:00+00:00 — Candidate {index}."
+            ),
+            source_uri=f"codecairn://memory/memory-{index:02d}",
+            content_sha256=f"{index:064x}",
+            candidate_sources=("vector",),
+            vector_score=float(21 - index),
+            vector_rank=index + 1,
+            lexical_score=None,
+            lexical_rank=None,
+            final_score=float(21 - index),
+            evidence=(),
+        )
+        for index in range(21)
+    ]
+
+    selected, _covered, _missing = core_preserving_select(
+        ranked,
+        core_memory_ids={f"memory-{index:02d}" for index in range(20)},
+        coverage_slots=(),
+        temporal_prefixes=("2023-10",),
+        limit=20,
+        exploration_limit=4,
+    )
+
+    assert "memory-20" in {item.memory_id for item in selected}
 
 
 def test_empty_recall_reports_partial_completion() -> None:
@@ -723,14 +762,17 @@ def test_hierarchical_recall_expands_only_adjacent_memories_in_the_same_episode(
     after = _memory_with_fact(
         "memory-c", fact_id="fact-c", fact_text="Carol ordered the cake.", event_index=3
     )
+    second_after = _memory_with_fact(
+        "memory-e", fact_id="fact-e", fact_text="Dana confirmed the date.", event_index=4
+    )
     unrelated = _memory_with_fact(
         "memory-d",
         fact_id="fact-d",
         fact_text="This must remain isolated.",
-        event_index=4,
+        event_index=5,
         episode_id="episode-other",
     )
-    state = MemoryState((before, matched, after, unrelated))
+    state = MemoryState((before, matched, after, second_after, unrelated))
     engine = RecallEngine(
         index=FactOnlyIndex(),
         state=state,
@@ -738,15 +780,17 @@ def test_hierarchical_recall_expands_only_adjacent_memories_in_the_same_episode(
         clock_ns=lambda: 0,
     )
 
-    result = engine.recall("Who chose the flowers?", repo_key="acme/widgets", limit=1)
+    result = engine.recall("When did Bob choose the flowers?", repo_key="acme/widgets", limit=1)
 
     snippets = result.sidecar.ranked[0].snippets
     assert [(item.source_memory_id, item.relation) for item in snippets] == [
         ("memory-b", "matched"),
         ("memory-a", "neighbor"),
         ("memory-c", "neighbor"),
+        ("memory-e", "neighbor"),
     ]
-    assert result.sidecar.neighbor_expansion_count == 2
+    assert result.sidecar.neighbor_expansion_count == 3
+    assert result.sidecar.neighbor_window == 2
     assert "Alice booked the venue." in result.markdown
     assert "Carol ordered the cake." in result.markdown
     assert "This must remain isolated." not in result.markdown

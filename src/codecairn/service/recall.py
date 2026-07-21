@@ -206,6 +206,7 @@ class RecallEngine:
             ranked,
             core_memory_ids=core_memory_ids,
             coverage_slots=plan.query_sketch.coverage_slots,
+            temporal_prefixes=plan.query_sketch.temporal_prefixes,
             limit=limit,
             exploration_limit=plan.exploration_result_limit,
         )
@@ -215,6 +216,7 @@ class RecallEngine:
                 selected_ranked,
                 repo_key=repo_key,
                 expand_neighbors=True,
+                neighbor_window=plan.neighbor_window,
                 neighbor_snippet_budget=plan.neighbor_snippet_budget,
             )
         selected = tuple(
@@ -245,11 +247,13 @@ class RecallEngine:
             entity_posting_candidate_count=entity_posting_candidate_count,
             rerank_bundle_count=len(ranked),
             query_anchors=plan.query_sketch.anchors,
+            query_temporal_prefixes=plan.query_sketch.temporal_prefixes,
             covered_slots=covered_slots,
             missing_slots=missing_slots,
             completion="partial" if missing_slots or not selected else "complete",
             degraded_stages=("no_candidates",) if not selected else (),
             query_vector_sha256=_vector_digest(query_vector),
+            neighbor_window=plan.neighbor_window if plan.expand_neighbors else 0,
         )
         return RecallResult(
             markdown=_render_context(normalized_query, repo_key=repo_key, ranked=selected),
@@ -443,6 +447,7 @@ class RecallEngine:
         *,
         repo_key: str,
         expand_neighbors: bool,
+        neighbor_window: int | None = None,
         neighbor_snippet_budget: int = 0,
     ) -> tuple[list[RankedRecall], int]:
         memory_map = {
@@ -487,7 +492,11 @@ class RecallEngine:
                 neighbors = _neighbor_snippets(
                     candidate_memory,
                     group=episode_groups.get(candidate_memory.episode_id, []),
-                    window=self._planner.config.neighbor_window,
+                    window=(
+                        self._planner.config.neighbor_window
+                        if neighbor_window is None
+                        else neighbor_window
+                    ),
                     facts_per_neighbor=self._planner.config.matched_facts_per_memory,
                 )
                 bounded_neighbors = neighbors[:remaining_neighbor_budget]
@@ -611,6 +620,7 @@ def _core_preserving_select(
     *,
     core_memory_ids: set[str],
     coverage_slots: tuple[str, ...],
+    temporal_prefixes: tuple[str, ...],
     limit: int,
     exploration_limit: int,
 ) -> tuple[list[RankedRecall], tuple[str, ...], tuple[str, ...]]:
@@ -623,6 +633,14 @@ def _core_preserving_select(
     )
     selected_ids = {item.memory_id for item in selected}
     remaining = [item for item in ranked if item.memory_id not in selected_ids]
+    if temporal_prefixes:
+        remaining.sort(
+            key=lambda item: (
+                not _matches_temporal_prefix(item, temporal_prefixes),
+                -item.final_score,
+                item.memory_id,
+            )
+        )
     fill, _fill_covered, _fill_missing = _coverage_select(
         remaining,
         coverage_slots=missing,
@@ -635,6 +653,14 @@ def _core_preserving_select(
         limit=len(selected),
     )
     return selected, covered, missing
+
+
+def _matches_temporal_prefix(
+    item: RankedRecall,
+    temporal_prefixes: tuple[str, ...],
+) -> bool:
+    summary = item.summary.lstrip()
+    return any(summary.startswith(prefix) for prefix in temporal_prefixes)
 
 
 def _recall_search_text(item: RankedRecall) -> str:

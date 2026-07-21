@@ -21,6 +21,25 @@ _EPISODE_CUES = re.compile(
     re.IGNORECASE,
 )
 _NAMED_ANCHOR = re.compile(r"\b[A-Z][A-Za-z0-9_-]{1,63}\b")
+_MONTH_YEAR = re.compile(
+    r"\b(January|February|March|April|May|June|July|August|September|October|"
+    r"November|December)\s+(\d{4})\b",
+    re.IGNORECASE,
+)
+_MONTH_NUMBERS = {
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+}
 _ANCHOR_STOPWORDS = {
     "A",
     "An",
@@ -52,6 +71,7 @@ class QuerySketch:
     set_op: SetOperation
     wants_procedure: bool
     coverage_slots: tuple[str, ...]
+    temporal_prefixes: tuple[str, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -130,7 +150,11 @@ class RecallPlannerConfig:
             "maximum_rerank_candidates": self.maximum_rerank_candidates,
             "maximum_exploration_results": self.maximum_exploration_results,
             "neighbor_window": self.neighbor_window,
+            "temporal_neighbor_window": (
+                max(self.neighbor_window, 2) if self.neighbor_window > 0 else 0
+            ),
             "neighbor_snippet_budget": self.neighbor_snippet_budget,
+            "temporal_lane": "explicit-month-prefix-v1",
             "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
             "matched_facts_per_memory": self.matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
@@ -149,6 +173,7 @@ class RecallPlan:
     core_rerank_candidate_limit: int
     exploration_result_limit: int
     expand_neighbors: bool
+    neighbor_window: int
     neighbor_snippet_budget: int
 
 
@@ -202,6 +227,11 @@ class RecallPlanner:
         )
         if not self.config.atomic_fact_enabled:
             fact_limit = 0
+        temporal_neighbor_window = (
+            max(self.config.neighbor_window, 2)
+            if query_sketch.temporal_op != "none" and self.config.neighbor_window > 0
+            else self.config.neighbor_window
+        )
         return RecallPlan(
             query_sketch=query_sketch,
             route=route,
@@ -215,6 +245,7 @@ class RecallPlanner:
             expand_neighbors=(
                 self.config.neighbor_window > 0 and self.config.neighbor_snippet_budget > 0
             ),
+            neighbor_window=temporal_neighbor_window,
             neighbor_snippet_budget=self.config.neighbor_snippet_budget,
         )
 
@@ -228,13 +259,21 @@ def _query_sketch(query: str) -> QuerySketch:
         )
     )
     lowered = query.casefold()
+    temporal_prefixes = tuple(
+        dict.fromkeys(
+            f"{match.group(2)}-{_MONTH_NUMBERS[match.group(1).casefold()]:02d}"
+            for match in _MONTH_YEAR.finditer(query)
+        )
+    )
     if any(cue in lowered for cue in ("before", "after", "first", "then", "order")):
         temporal_op: TemporalOperation = "order"
     elif any(cue in lowered for cue in ("latest", "most recent", "last")):
         temporal_op = "latest"
     elif any(cue in lowered for cue in ("how long", "duration")):
         temporal_op = "duration"
-    elif any(cue in lowered for cue in ("when", "date", "time", "year", "month", "day")):
+    elif temporal_prefixes or any(
+        cue in lowered for cue in ("when", "date", "time", "year", "month", "day")
+    ):
         temporal_op = "point"
     else:
         temporal_op = "none"
@@ -252,6 +291,7 @@ def _query_sketch(query: str) -> QuerySketch:
             cue in lowered for cue in ("how did", "steps", "procedure", "fix", "verify")
         ),
         coverage_slots=anchors,
+        temporal_prefixes=temporal_prefixes,
     )
 
 
