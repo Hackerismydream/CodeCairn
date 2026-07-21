@@ -94,9 +94,9 @@ class RecallPlannerConfig:
     diverse_matched_facts_per_memory: int = 1
     sibling_facts_per_memory: int = 2
     temporal_sibling_facts_per_memory: int = 5
-    context_max_chars: int = 22_000
-    context_summary_chars: int = 100
-    context_snippet_chars: int = 160
+    context_max_chars: int = 23_900
+    context_summary_chars: int = 60
+    context_snippet_chars: int = 200
     context_snippets_per_memory: int = 5
     context_temporal_snippets_per_memory: int = 8
 

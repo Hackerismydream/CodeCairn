@@ -653,7 +653,7 @@ def test_context_budget_preserves_every_rank_and_prioritizes_temporal_siblings()
         config=RecallPlannerConfig(),
     )
 
-    assert len(rendered) <= 22_000
+    assert len(rendered) <= 23_900
     assert "## 20. Memory 20" in rendered
     assert rendered.count("Evidence excerpts:") == 20
 
