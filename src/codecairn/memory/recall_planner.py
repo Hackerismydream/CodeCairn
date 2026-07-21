@@ -59,10 +59,14 @@ class RecallPlannerConfig:
     """Auditable knobs for hierarchical retrieval and its ablations."""
 
     mode: RecallPlannerMode = "hierarchy"
-    primary_candidate_multiplier: int = 2
-    secondary_candidate_multiplier: int = 1
+    primary_candidate_multiplier: int = 7
+    secondary_candidate_multiplier: int = 7
     minimum_primary_candidates: int = 40
     minimum_secondary_candidates: int = 20
+    maximum_channel_candidates: int = 128
+    rerank_candidate_multiplier: int = 5
+    minimum_rerank_candidates: int = 32
+    maximum_rerank_candidates: int = 96
     neighbor_window: int = 1
     neighbor_snippet_budget: int = 20
     matched_facts_per_memory: int = 3
@@ -77,6 +81,17 @@ class RecallPlannerConfig:
             raise ValueError("minimum_primary_candidates must be positive")
         if self.minimum_secondary_candidates < 1:
             raise ValueError("minimum_secondary_candidates must be positive")
+        if self.maximum_channel_candidates < max(
+            self.minimum_primary_candidates,
+            self.minimum_secondary_candidates,
+        ):
+            raise ValueError("maximum_channel_candidates must cover the minimum candidates")
+        if self.rerank_candidate_multiplier < 1:
+            raise ValueError("rerank_candidate_multiplier must be positive")
+        if self.minimum_rerank_candidates < 1:
+            raise ValueError("minimum_rerank_candidates must be positive")
+        if self.maximum_rerank_candidates < self.minimum_rerank_candidates:
+            raise ValueError("maximum_rerank_candidates must cover the minimum rerank candidates")
         if self.neighbor_window < 0:
             raise ValueError("neighbor_window must not be negative")
         if self.neighbor_snippet_budget < 0:
@@ -106,6 +121,10 @@ class RecallPlannerConfig:
             "secondary_candidate_multiplier": self.secondary_candidate_multiplier,
             "minimum_primary_candidates": self.minimum_primary_candidates,
             "minimum_secondary_candidates": self.minimum_secondary_candidates,
+            "maximum_channel_candidates": self.maximum_channel_candidates,
+            "rerank_candidate_multiplier": self.rerank_candidate_multiplier,
+            "minimum_rerank_candidates": self.minimum_rerank_candidates,
+            "maximum_rerank_candidates": self.maximum_rerank_candidates,
             "neighbor_window": self.neighbor_window,
             "neighbor_snippet_budget": self.neighbor_snippet_budget,
             "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
@@ -120,6 +139,7 @@ class RecallPlan:
     route: RecallRoute
     episode_candidate_limit: int
     atomic_fact_candidate_limit: int
+    rerank_candidate_limit: int
     expand_neighbors: bool
     neighbor_snippet_budget: int
 
@@ -133,13 +153,26 @@ class RecallPlanner:
     def plan(self, query: str, *, limit: int) -> RecallPlan:
         query_sketch = _query_sketch(query)
         route = _route(query)
-        primary_limit = max(
-            self.config.minimum_primary_candidates,
-            limit * self.config.primary_candidate_multiplier,
+        primary_limit = min(
+            self.config.maximum_channel_candidates,
+            max(
+                self.config.minimum_primary_candidates,
+                limit * self.config.primary_candidate_multiplier,
+            ),
         )
-        secondary_limit = max(
-            self.config.minimum_secondary_candidates,
-            limit * self.config.secondary_candidate_multiplier,
+        secondary_limit = min(
+            self.config.maximum_channel_candidates,
+            max(
+                self.config.minimum_secondary_candidates,
+                limit * self.config.secondary_candidate_multiplier,
+            ),
+        )
+        rerank_limit = min(
+            self.config.maximum_rerank_candidates,
+            max(
+                self.config.minimum_rerank_candidates,
+                limit * self.config.rerank_candidate_multiplier,
+            ),
         )
         episode_limit = primary_limit if route == "episode_first" else secondary_limit
         fact_limit = primary_limit if route == "fact_first" else secondary_limit
@@ -150,6 +183,7 @@ class RecallPlanner:
             route=route,
             episode_candidate_limit=episode_limit,
             atomic_fact_candidate_limit=fact_limit,
+            rerank_candidate_limit=rerank_limit,
             expand_neighbors=(
                 self.config.neighbor_window > 0 and self.config.neighbor_snippet_budget > 0
             ),

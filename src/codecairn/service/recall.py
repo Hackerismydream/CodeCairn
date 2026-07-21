@@ -36,7 +36,6 @@ _MAX_LIMIT = 20
 _MAX_QUERY_CHARS = 8_000
 _MAX_FUSED_CANDIDATES = 96
 _MAX_ENTITY_POSTING_CANDIDATES = 24
-_MAX_RERANK_BUNDLES = 32
 _MAX_RERANK_BUNDLE_CHARS = 2_048
 _ENTITY_TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]*")
 _MODALITY_ORDER: tuple[CandidateSource, ...] = ("lexical", "vector")
@@ -168,6 +167,7 @@ class RecallEngine:
             normalized_query,
             ranked,
             coverage_slots=plan.query_sketch.coverage_slots,
+            candidate_limit=plan.rerank_candidate_limit,
         )
         selected_ranked, covered_slots, missing_slots = _coverage_select(
             ranked,
@@ -468,11 +468,12 @@ class RecallEngine:
         ranked: list[RankedRecall],
         *,
         coverage_slots: tuple[str, ...],
+        candidate_limit: int,
     ) -> list[RankedRecall]:
         ranked, _covered, _missing = _coverage_select(
             ranked,
             coverage_slots=coverage_slots,
-            limit=_MAX_RERANK_BUNDLES,
+            limit=candidate_limit,
         )
         fusion_scores = {item.memory_id: item.final_score for item in ranked}
         if self._reranker is None:

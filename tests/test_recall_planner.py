@@ -43,11 +43,31 @@ def test_diagnostic_top_k_uses_bounded_route_aware_candidate_pools() -> None:
     assert (
         fact_first.episode_candidate_limit,
         fact_first.atomic_fact_candidate_limit,
-    ) == (20, 40)
+        fact_first.rerank_candidate_limit,
+    ) == (128, 128, 96)
     assert (
         episode_first.episode_candidate_limit,
         episode_first.atomic_fact_candidate_limit,
-    ) == (40, 20)
+        episode_first.rerank_candidate_limit,
+    ) == (128, 128, 96)
+
+
+def test_small_top_k_keeps_adaptive_candidate_budgets_bounded() -> None:
+    planner = RecallPlanner()
+
+    fact_first = planner.plan("When did it happen?", limit=5)
+    episode_first = planner.plan("Summarize the debugging approach", limit=5)
+
+    assert (
+        fact_first.episode_candidate_limit,
+        fact_first.atomic_fact_candidate_limit,
+        fact_first.rerank_candidate_limit,
+    ) == (35, 40, 32)
+    assert (
+        episode_first.episode_candidate_limit,
+        episode_first.atomic_fact_candidate_limit,
+        episode_first.rerank_candidate_limit,
+    ) == (40, 35, 32)
 
 
 def test_neighbor_expansion_requires_the_full_hierarchy_mode() -> None:
