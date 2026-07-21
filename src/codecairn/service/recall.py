@@ -35,7 +35,6 @@ _RRF_K = 60
 _MAX_LIMIT = 20
 _MAX_QUERY_CHARS = 8_000
 _MAX_FUSED_CANDIDATES = 96
-_MAX_ENTITY_POSTING_CANDIDATES = 24
 _MAX_TEMPORAL_LEXICAL_CANDIDATES = 32
 _MAX_RERANK_BUNDLE_CHARS = 2_048
 _ENTITY_TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]*")
@@ -435,14 +434,22 @@ class RecallEngine:
         memories = method(
             repo_key=repo_key,
             entity_keys=anchors,
-            limit=_MAX_ENTITY_POSTING_CANDIDATES,
+            limit=self._planner.config.entity_posting_scan_limit,
         )
-        existing = {item.memory_id for item in ranked}
-        seed_ids = set(existing)
+        memories = _evenly_spaced_memories(
+            memories,
+            limit=self._planner.config.entity_posting_sample_limit,
+        )
+        entity_slots = self._planner.config.entity_posting_rerank_slots
+        base_limit = max(0, _MAX_FUSED_CANDIDATES - entity_slots)
+        base = ranked[:base_limit]
+        included_ids = {item.memory_id for item in base}
+        ranked_by_id = {item.memory_id: item for item in ranked}
+        entity_lane: list[RankedRecall] = []
         for memory in memories:
             if (
                 memory.repo_key != repo_key
-                or memory.memory_id in existing
+                or memory.memory_id in included_ids
                 or memory.content_sha256 is None
             ):
                 continue
@@ -451,8 +458,25 @@ class RecallEngine:
             )
             if not matched_facts:
                 continue
-            ranked.append(
-                RankedRecall(
+            entity_matches = tuple(
+                RecallMatch(
+                    document_id=f"entity:{fact.fact_id}",
+                    document_kind="atomic_fact",
+                    source="entity_posting",
+                    score=1.0,
+                    rank=rank,
+                    fact_id=fact.fact_id,
+                )
+                for rank, fact in enumerate(matched_facts, start=1)
+            )
+            existing = ranked_by_id.get(memory.memory_id)
+            entity_lane.append(
+                replace(
+                    existing,
+                    matched_documents=(*existing.matched_documents, *entity_matches),
+                )
+                if existing is not None
+                else RankedRecall(
                     rank=0,
                     memory_id=memory.memory_id,
                     memory_type=memory.memory_type,
@@ -467,23 +491,15 @@ class RecallEngine:
                     lexical_rank=None,
                     final_score=0.0,
                     evidence=_recall_evidence(memory),
-                    matched_documents=tuple(
-                        RecallMatch(
-                            document_id=f"entity:{fact.fact_id}",
-                            document_kind="atomic_fact",
-                            source="entity_posting",
-                            score=1.0,
-                            rank=rank,
-                            fact_id=fact.fact_id,
-                        )
-                        for rank, fact in enumerate(matched_facts, start=1)
-                    ),
+                    matched_documents=entity_matches,
                 )
             )
-            existing.add(memory.memory_id)
-        bounded = ranked[:_MAX_FUSED_CANDIDATES]
-        included_postings = sum(item.memory_id not in seed_ids for item in bounded)
-        return bounded, included_postings
+            included_ids.add(memory.memory_id)
+            if len(entity_lane) >= entity_slots:
+                break
+        fill = [item for item in ranked[base_limit:] if item.memory_id not in included_ids]
+        bounded = [*base, *entity_lane, *fill][:_MAX_FUSED_CANDIDATES]
+        return bounded, len(entity_lane)
 
     def _attach_snippets(
         self,
@@ -758,6 +774,21 @@ def _max_pool_by_parent(candidates: tuple[IndexCandidate, ...]) -> tuple[IndexCa
     return tuple(
         sorted(best.values(), key=lambda item: (-item.score, item.memory_id, item.document_id))
     )
+
+
+def _evenly_spaced_memories(
+    memories: tuple[CodingMemory, ...],
+    *,
+    limit: int,
+) -> tuple[CodingMemory, ...]:
+    if limit <= 0:
+        return ()
+    if len(memories) <= limit:
+        return memories
+    if limit == 1:
+        return (memories[0],)
+    indices = tuple(round(index * (len(memories) - 1) / (limit - 1)) for index in range(limit))
+    return tuple(memories[index] for index in indices)
 
 
 def _recall_evidence(memory: CodingMemory) -> tuple[RecallEvidence, ...]:

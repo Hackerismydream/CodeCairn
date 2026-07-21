@@ -45,13 +45,20 @@ _ANCHOR_STOPWORDS = {
     "An",
     "And",
     "Are",
+    "Can",
+    "Considering",
+    "Could",
     "Did",
     "Do",
     "Does",
+    "Had",
+    "Has",
+    "Have",
     "How",
     "In",
     "Is",
     "On",
+    "Should",
     "The",
     "What",
     "When",
@@ -59,6 +66,9 @@ _ANCHOR_STOPWORDS = {
     "Which",
     "Who",
     "Why",
+    "Was",
+    "Were",
+    "Would",
 }
 
 
@@ -92,6 +102,9 @@ class RecallPlannerConfig:
     neighbor_snippet_budget: int = 20
     matched_facts_per_memory: int = 3
     sibling_facts_per_memory: int = 2
+    entity_posting_scan_limit: int = 512
+    entity_posting_sample_limit: int = 24
+    entity_posting_rerank_slots: int = 8
 
     def __post_init__(self) -> None:
         if self.primary_candidate_multiplier < 1:
@@ -123,6 +136,15 @@ class RecallPlannerConfig:
             raise ValueError("matched_facts_per_memory must be positive")
         if self.sibling_facts_per_memory < 0:
             raise ValueError("sibling_facts_per_memory must not be negative")
+        if not (
+            self.entity_posting_scan_limit
+            >= self.entity_posting_sample_limit
+            >= self.entity_posting_rerank_slots
+            >= 0
+        ):
+            raise ValueError("Entity posting budgets must be ordered and non-negative")
+        if self.entity_posting_rerank_slots > self.maximum_rerank_candidates:
+            raise ValueError("Entity posting slots must fit the rerank budget")
         if self.mode != "hierarchy" and self.neighbor_window != 0:
             raise ValueError("Only hierarchy mode may expand temporal neighbors")
 
@@ -158,6 +180,9 @@ class RecallPlannerConfig:
             "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
             "matched_facts_per_memory": self.matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
+            "entity_posting_scan_limit": self.entity_posting_scan_limit,
+            "entity_posting_sample_limit": self.entity_posting_sample_limit,
+            "entity_posting_rerank_slots": self.entity_posting_rerank_slots,
         }
 
 

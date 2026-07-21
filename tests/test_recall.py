@@ -449,6 +449,54 @@ def test_priority_memory_receives_neighbor_budget_before_higher_ranked_item() ->
     assert [item.text for item in enriched[1].snippets] == ["Priority neighbor."]
 
 
+def test_entity_posting_lane_survives_a_full_fused_candidate_pool() -> None:
+    memories = tuple(
+        _memory_with_fact(
+            f"memory-{index:03d}",
+            fact_id=f"fact-{index:03d}",
+            fact_text=("Sam discussed a distant event." if index == 99 else "Generic event."),
+            event_index=index,
+        )
+        for index in range(100)
+    )
+    ranked = [
+        RankedRecall(
+            rank=index + 1,
+            memory_id=memory.memory_id,
+            memory_type=memory.memory_type,
+            title=memory.title,
+            summary=memory.summary,
+            source_uri=f"codecairn://memory/{memory.memory_id}",
+            content_sha256=memory.content_sha256,
+            candidate_sources=("vector",),
+            vector_score=float(100 - index),
+            vector_rank=index + 1,
+            lexical_score=None,
+            lexical_rank=None,
+            final_score=float(100 - index),
+            evidence=(),
+        )
+        for index, memory in enumerate(memories)
+    ]
+    engine = RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState(memories),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    )
+
+    expanded, posting_count = engine._expand_entity_postings(
+        ranked,
+        repo_key="acme/widgets",
+        anchors=("sam",),
+    )
+
+    assert len(expanded) == 96
+    assert posting_count == 1
+    target = next(item for item in expanded if item.memory_id == "memory-099")
+    assert "entity_posting" in {match.source for match in target.matched_documents}
+
+
 def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
     class TemporalIndex(CandidateIndex):
         def __init__(self) -> None:
