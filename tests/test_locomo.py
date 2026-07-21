@@ -542,12 +542,13 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert model.response_format == "text"
     assert model.system_prompt is not None
     assert "ordinary common-sense inferences" not in model.system_prompt.casefold()
+    assert answer.plan.route == "direct"
     assert answer.response.text == "rock"
     assert answer.evidence_ids == ()
     assert answer.invalid_evidence_ids == ()
     assert answer.format == "unstructured-fallback"
 
-    EvidenceAnswerSynthesizer().synthesize(
+    inferred = EvidenceAnswerSynthesizer().synthesize(
         conversation,
         replace(question, question="Would they likely enjoy a live concert?"),
         recall=recall,
@@ -555,7 +556,30 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
         seed=7,
     )
     assert model.system_prompt is not None
-    assert "ordinary common-sense inferences" not in model.system_prompt.casefold()
+    assert "ordinary common-sense inferences" in model.system_prompt.casefold()
+    assert inferred.plan.route == "inference"
+
+    temporal = EvidenceAnswerSynthesizer().synthesize(
+        conversation,
+        replace(question, question="When did they attend the concert?"),
+        recall=recall,
+        model=model,
+        seed=7,
+    )
+    assert model.system_prompt is not None
+    assert "resolve relative expressions" in model.system_prompt.casefold()
+    assert temporal.plan.route == "temporal"
+
+    listed = EvidenceAnswerSynthesizer().synthesize(
+        conversation,
+        replace(question, question="What activities have they done together?"),
+        recall=recall,
+        model=model,
+        seed=7,
+    )
+    assert model.system_prompt is not None
+    assert "all distinct supported items" in model.system_prompt.casefold()
+    assert listed.plan.route == "list"
 
 
 def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
@@ -934,6 +958,83 @@ def test_frozen_query_vectors_fail_closed_without_provider_fallback(tmp_path: Pa
         FrozenQueryEmbeddingAdapter(vectors.vector_set_dir)
 
 
+def test_frozen_query_vector_superset_can_serve_an_audited_subset(tmp_path: Path) -> None:
+    class FixedEmbedder:
+        model_id = "test/embedding"
+        source_id = "test/embedding-source"
+        revision = "a" * 40
+        dimension = 3
+        index_identity = "test:embedding@revision:3"
+
+        def embed_query(self, text: str) -> tuple[float, ...]:
+            return (1.0, 2.0, 3.0)
+
+        def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+            raise AssertionError("query-vector construction must not embed documents")
+
+    vectors = build_locomo_query_vectors(
+        LoCoMoQueryVectorConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "query-vectors",
+            vector_set_id="synthetic-query-superset",
+            expected_dataset_sha256=None,
+        ),
+        embedder=FixedEmbedder(),
+    )
+    dataset = load_locomo_dataset(FIXTURE)
+    selected = tuple(
+        question.question_id
+        for conversation in dataset.conversations
+        for question in conversation.questions
+        if question.category == 1
+    )
+    question_set_path = tmp_path / "diagnostic-subset.json"
+    write_json_exclusive(
+        question_set_path,
+        {
+            "schema_version": 1,
+            "selection_id": "synthetic-query-subset",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-v1",
+            "seed": "selection-seed",
+            "category_targets": {"1": 1},
+            "selection_sha256": hashlib.sha256(
+                json.dumps(sorted(selected), separators=(",", ":")).encode()
+            ).hexdigest(),
+        },
+    )
+
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="query-vector-subset",
+            repository_commit="abc123",
+            mode="retrieval",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+            question_set_path=question_set_path,
+            query_vectors_path=vectors.vector_set_dir,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FailingAnswerModel(),
+        judge_model=None,
+    )
+
+    manifest = json.loads((artifact.run_dir / "manifest.json").read_text())
+    assert manifest["query_vectors"]["coverage"] == "superset"
+    assert manifest["query_vectors"]["artifact_question_count"] == sum(
+        question.category in {1, 2, 3, 4}
+        for conversation in dataset.conversations
+        for question in conversation.questions
+    )
+    assert manifest["query_vectors"]["run_question_count"] == 1
+    assert (
+        manifest["query_vectors"]["run_selection_sha256"]
+        == hashlib.sha256(json.dumps(sorted(selected), separators=(",", ":")).encode()).hexdigest()
+    )
+
+
 def test_retrieval_mode_never_calls_answer_or_judge_models(tmp_path: Path) -> None:
     dataset = load_locomo_dataset(FIXTURE)
     selected = tuple(
@@ -1100,7 +1201,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "bounded-attributed-markdown-v4",
+                "answer_evidence_contract": "query-routed-answer-planner-v7",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,
@@ -1599,7 +1700,7 @@ def test_answer_and_judge_prompts_treat_benchmark_content_as_untrusted_data(
             assert response_format == "text"
             assert set(payload) == {"memory_context", "question", "speakers"}
             assert "inspect the whole supplied context" in system.casefold()
-            assert "for list questions include every supported item" in system.casefold()
+            assert "only after checking every supplied item" in system.casefold()
             assert "ordinary common-sense inferences" not in system.casefold()
 
 

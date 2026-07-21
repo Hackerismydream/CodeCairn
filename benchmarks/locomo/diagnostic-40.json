@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "selection_id": "locomo-diagnostic-40-v1",
+  "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "algorithm": "stratified-sha256-v1",
+  "seed": "codecairn-locomo-diagnostic-200-v1",
+  "category_targets": {
+    "1": 10,
+    "2": 10,
+    "3": 10,
+    "4": 10
+  },
+  "selection_sha256": "5af177ee3aa75a532d7f8f3927ed58ace8468aff4dd0fabdcdc6a2a351c1f8fb",
+  "protocol": {
+    "purpose": "low-cost paired architecture iteration before diagnostic-200",
+    "answer_model": "deepseek-v4-flash",
+    "judge_model": "deepseek-v4-flash",
+    "judge_votes": 3,
+    "top_k": 20,
+    "query_vector_policy": "verified-superset-artifact",
+    "worker_max_rss_bytes": 2147483648
+  },
+  "gates": {
+    "required_scored_questions": 40,
+    "maximum_infrastructure_failures": 0,
+    "maximum_estimated_cost_cny": 0.5,
+    "minimum_accuracy_percent": 62.5,
+    "minimum_temporal_accuracy_percent": 70.0,
+    "minimum_single_hop_accuracy_percent": 80.0
+  }
+}
