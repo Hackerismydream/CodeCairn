@@ -300,16 +300,30 @@ def create_locomo_text_model(
     pricing = _DEEPSEEK_PRICING.get(model)
     if pricing is None:
         raise ValueError(f"Unsupported DeepSeek model for recorded pricing: {model}")
-    effort = environment.get(f"{prefix}REASONING_EFFORT", "high")
-    if effort not in {"high", "max"}:
-        raise ValueError("DeepSeek reasoning effort must be high or max")
+    thinking = environment.get(f"{prefix}THINKING", "enabled")
+    if thinking not in {"enabled", "disabled"}:
+        raise ValueError("DeepSeek thinking must be enabled or disabled")
+    effort: Literal["high", "max"] | None = None
+    if thinking == "enabled":
+        raw_effort = environment.get(f"{prefix}REASONING_EFFORT", "high")
+        if raw_effort not in {"high", "max"}:
+            raise ValueError("DeepSeek reasoning effort must be high or max")
+        effort = cast(Literal["high", "max"], raw_effort)
+    raw_max_tokens = environment.get(f"{prefix}MAX_TOKENS", "")
+    try:
+        max_tokens = None if not raw_max_tokens else int(raw_max_tokens)
+    except ValueError as error:
+        raise ValueError("DeepSeek max tokens must be a positive integer") from error
+    if max_tokens is not None and max_tokens < 1:
+        raise ValueError("DeepSeek max tokens must be a positive integer")
     return OpenAICompatibleTextModel(
         base_url=base_url,
         api_key=api_key,
         model=model,
         send_seed=False,
-        thinking="enabled",
-        reasoning_effort=cast(Literal["high", "max"], effort),
+        thinking=cast(Literal["enabled", "disabled"], thinking),
+        reasoning_effort=effort,
+        max_tokens=max_tokens,
         pricing=pricing,
         pricing_source_url="https://api-docs.deepseek.com/quick_start/pricing/",
         pricing_observed_at="2026-07-19",

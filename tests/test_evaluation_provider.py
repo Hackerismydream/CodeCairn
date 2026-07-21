@@ -202,6 +202,46 @@ def test_locomo_roles_resolve_independent_deepseek_models_without_exposing_secre
     assert "judge-secret" not in public
 
 
+def test_deepseek_role_can_disable_thinking_and_bound_output_tokens() -> None:
+    model = create_locomo_text_model(
+        role="answer",
+        environment={
+            "DEEPSEEK_API_KEY": "shared-secret",
+            "CODECAIRN_ANSWER_MODEL": "deepseek-v4-flash",
+            "CODECAIRN_ANSWER_THINKING": "disabled",
+            "CODECAIRN_ANSWER_MAX_TOKENS": "512",
+        },
+    )
+
+    assert model.public_config["thinking"] == "disabled"
+    assert model.public_config["max_tokens"] == 512
+    assert "reasoning_effort" not in model.public_config
+
+
+@pytest.mark.parametrize(
+    ("name", "value", "message"),
+    [
+        ("CODECAIRN_JUDGE_THINKING", "sometimes", "thinking"),
+        ("CODECAIRN_JUDGE_MAX_TOKENS", "zero", "max tokens"),
+        ("CODECAIRN_JUDGE_MAX_TOKENS", "0", "max tokens"),
+    ],
+)
+def test_deepseek_role_rejects_invalid_cost_controls(
+    name: str,
+    value: str,
+    message: str,
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        create_locomo_text_model(
+            role="judge",
+            environment={
+                "DEEPSEEK_API_KEY": "shared-secret",
+                "CODECAIRN_JUDGE_MODEL": "deepseek-v4-flash",
+                name: value,
+            },
+        )
+
+
 @pytest.mark.parametrize(
     "base_url",
     [
