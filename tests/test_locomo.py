@@ -425,7 +425,7 @@ def test_evidence_answer_synthesizer_rejects_unknown_citation_ids() -> None:
                 text=json.dumps(
                     {
                         "answer": "A beagle.",
-                        "evidence_ids": ["fact-beagle", "not-allowed"],
+                        "evidence_ids": ["E1", "not-allowed"],
                     }
                 ),
                 model=self.model_id,
@@ -482,12 +482,25 @@ def test_evidence_answer_synthesizer_rejects_unknown_citation_ids() -> None:
     )
 
     assert answer.response.text == "A beagle."
-    assert answer.evidence_ids == ("fact-beagle",)
+    assert answer.evidence_ids == ("memory-session",)
     assert answer.invalid_evidence_ids == ("not-allowed",)
     assert answer.format == "structured-v1"
 
 
-def test_evidence_answer_synthesizer_uses_a_compact_fact_first_pack() -> None:
+@pytest.mark.parametrize(
+    ("question_text", "summary_size", "expected_episode_count", "expected_last_size"),
+    [
+        ("What music?", 1_000, 10, 1_000),
+        ("What activities have Caroline and Melanie tried?", 1_000, 15, 1_000),
+        ("What music?", 10_000, 6, 5_000),
+    ],
+)
+def test_evidence_answer_synthesizer_uses_compact_aliases_for_full_episode_summaries(
+    question_text: str,
+    summary_size: int,
+    expected_episode_count: int,
+    expected_last_size: int,
+) -> None:
     @dataclass
     class CapturingAnswerModel:
         user_payload: dict[str, object] | None = None
@@ -510,7 +523,7 @@ def test_evidence_answer_synthesizer_uses_a_compact_fact_first_pack() -> None:
         ) -> ModelResponse:
             self.user_payload = json.loads(user)
             return ModelResponse(
-                text=json.dumps({"answer": "rock", "evidence_ids": ["fact-0-1"]}),
+                text=json.dumps({"answer": "rock", "evidence_ids": ["E1"]}),
                 model=self.model_id,
             )
 
@@ -520,7 +533,7 @@ def test_evidence_answer_synthesizer_uses_a_compact_fact_first_pack() -> None:
             memory_id=f"memory-{index}",
             memory_type="user_preference",
             title=f"Session {index}",
-            summary="S" * 1_000,
+            summary="S" * summary_size,
             source_uri=f"codecairn://memory/memory-{index}",
             content_sha256=f"{index:064x}",
             candidate_sources=("lexical",),
@@ -538,7 +551,7 @@ def test_evidence_answer_synthesizer_uses_a_compact_fact_first_pack() -> None:
                     fact_id=f"fact-{index}-{fact_index}",
                     text="F" * 400,
                     source_title=f"Session {index}",
-                    source_summary="S" * 1_000,
+                    source_summary="S" * summary_size,
                     raw_event_index=fact_index,
                 )
                 for fact_index in range(6)
@@ -561,9 +574,10 @@ def test_evidence_answer_synthesizer_uses_a_compact_fact_first_pack() -> None:
     conversation = load_locomo_dataset(FIXTURE).conversations[0]
     model = CapturingAnswerModel()
 
-    EvidenceAnswerSynthesizer().synthesize(
+    question = replace(conversation.questions[0], question=question_text)
+    answer = EvidenceAnswerSynthesizer().synthesize(
         conversation,
-        conversation.questions[0],
+        question,
         recall=recall,
         model=model,
         seed=7,
@@ -572,10 +586,91 @@ def test_evidence_answer_synthesizer_uses_a_compact_fact_first_pack() -> None:
     assert model.user_payload is not None
     blocks = model.user_payload["evidence_blocks"]
     assert isinstance(blocks, list)
-    assert len(blocks) == 10
-    assert all(len(block["summary"]) == 120 for block in blocks)
-    assert all(len(block["facts"]) == 4 for block in blocks)
-    assert all(len(fact["text"]) == 240 for block in blocks for fact in block["facts"])
+    assert len(blocks) == expected_episode_count
+    assert blocks[0] == {"context": "S" * summary_size, "id": "E1"}
+    assert blocks[-1] == {
+        "context": "S" * expected_last_size,
+        "id": f"E{expected_episode_count}",
+    }
+    assert model.user_payload["allowed_evidence_ids"] == [
+        f"E{index}" for index in range(1, expected_episode_count + 1)
+    ]
+    assert answer.evidence_ids == ("memory-0",)
+
+
+def test_evidence_answer_synthesizer_limits_temporal_questions_to_five_episodes() -> None:
+    @dataclass
+    class CapturingAnswerModel:
+        user_payload: dict[str, object] | None = None
+
+        @property
+        def model_id(self) -> str:
+            return "capturing-answer"
+
+        @property
+        def public_config(self) -> dict[str, object]:
+            return {"adapter": "fake", "model": self.model_id}
+
+        def generate(
+            self,
+            *,
+            system: str,
+            user: str,
+            seed: int,
+            response_format: str = "text",
+        ) -> ModelResponse:
+            self.user_payload = json.loads(user)
+            return ModelResponse(
+                text=json.dumps({"answer": "May 2023", "evidence_ids": ["E1"]}),
+                model=self.model_id,
+            )
+
+    ranked = tuple(
+        RankedRecall(
+            rank=index + 1,
+            memory_id=f"memory-{index}",
+            memory_type="user_preference",
+            title=f"Session {index}",
+            summary=f"Episode {index}",
+            source_uri=f"codecairn://memory/memory-{index}",
+            content_sha256=f"{index:064x}",
+            candidate_sources=("lexical",),
+            vector_score=None,
+            vector_rank=None,
+            lexical_score=1.0,
+            lexical_rank=index + 1,
+            final_score=1.0,
+            evidence=(),
+        )
+        for index in range(20)
+    )
+    recall = RecallResult(
+        markdown="# Recall Context\n",
+        sidecar=RecallSidecar(
+            query="When did Caroline move?",
+            repo_key="locomo/test",
+            limit=20,
+            latency_ms=1.0,
+            vector_candidate_count=0,
+            lexical_candidate_count=20,
+            ranked=ranked,
+        ),
+    )
+    conversation = load_locomo_dataset(FIXTURE).conversations[0]
+    question = replace(conversation.questions[0], question="When did Caroline move?")
+    model = CapturingAnswerModel()
+
+    EvidenceAnswerSynthesizer().synthesize(
+        conversation,
+        question,
+        recall=recall,
+        model=model,
+        seed=7,
+    )
+
+    assert model.user_payload is not None
+    assert len(model.user_payload["evidence_blocks"]) == 5
+    assert model.user_payload["allowed_evidence_ids"] == ["E1", "E2", "E3", "E4", "E5"]
 
 
 def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
@@ -1118,7 +1213,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "compact-fact-first-top10-v2",
+                "answer_evidence_contract": "adaptive-episode-summary-alias-v3",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,
@@ -1621,6 +1716,9 @@ def test_answer_and_judge_prompts_treat_benchmark_content_as_untrusted_data(
                 "question",
                 "speakers",
             }
+            assert "inspect every supplied episode" in system
+            assert "enumerate every distinct supported item" in system
+            assert "match the requested granularity" in system.casefold()
 
 
 def test_smoke_run_is_explicitly_unscored_and_never_calls_a_judge(tmp_path: Path) -> None:
