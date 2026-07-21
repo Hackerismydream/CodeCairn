@@ -588,9 +588,9 @@ def _canonical_sha256(value: object) -> str:
     return hashlib.sha256(canonical_json(value).encode()).hexdigest()
 
 
-def _directory_sha256(root: Path) -> str:
-    """Stream one deterministic tree digest without materializing corpus rows."""
-    digest = hashlib.sha256()
+def _directory_snapshot(root: Path) -> tuple[tuple[str, str], ...]:
+    """Stream per-file hashes without materializing corpus rows."""
+    records: list[tuple[str, str]] = []
     for path in sorted(root.rglob("*")):
         if path.is_symlink():
             raise ValueError("LoCoMo corpus must not contain symbolic links")
@@ -598,13 +598,29 @@ def _directory_sha256(root: Path) -> str:
             continue
         if path.name == ".index.lancedb.lock":
             continue
-        relative = path.relative_to(root).as_posix().encode()
-        digest.update(len(relative).to_bytes(8, "big"))
-        digest.update(relative)
+        file_digest = hashlib.sha256()
         with path.open("rb") as handle:
             while chunk := handle.read(1024 * 1024):
-                digest.update(chunk)
-    return digest.hexdigest()
+                file_digest.update(chunk)
+        records.append((path.relative_to(root).as_posix(), file_digest.hexdigest()))
+    return tuple(records)
+
+
+def _directory_sha256(snapshot: tuple[tuple[str, str], ...]) -> str:
+    return _canonical_sha256(snapshot)
+
+
+def _changed_snapshot_paths(
+    before: tuple[tuple[str, str], ...],
+    after: tuple[tuple[str, str], ...],
+) -> list[str]:
+    before_map = dict(before)
+    after_map = dict(after)
+    return sorted(
+        path
+        for path in before_map.keys() | after_map.keys()
+        if before_map.get(path) != after_map.get(path)
+    )
 
 
 def build_locomo_query_vectors(
@@ -896,8 +912,11 @@ def run_locomo(
             memory_factory=memory_factory,
         )
     )
+    corpus_tree_snapshot = (
+        None if corpus is None else _directory_snapshot(cast(Path, config.corpus_path).resolve())
+    )
     corpus_tree_sha256 = (
-        None if corpus is None else _directory_sha256(cast(Path, config.corpus_path).resolve())
+        None if corpus_tree_snapshot is None else _directory_sha256(corpus_tree_snapshot)
     )
     query_vectors = (
         None
@@ -1070,10 +1089,16 @@ def run_locomo(
 
     summary = report_locomo(run_dir)
     write_json_exclusive(run_dir / "summary.json", summary)
-    if corpus is not None and _directory_sha256(cast(Path, config.corpus_path).resolve()) != cast(
-        str, corpus_tree_sha256
-    ):
-        raise ValueError("LoCoMo corpus files changed during the read-only run")
+    if corpus is not None:
+        current_corpus_snapshot = _directory_snapshot(cast(Path, config.corpus_path).resolve())
+        if _directory_sha256(current_corpus_snapshot) != cast(str, corpus_tree_sha256):
+            changed = _changed_snapshot_paths(
+                cast(tuple[tuple[str, str], ...], corpus_tree_snapshot),
+                current_corpus_snapshot,
+            )
+            raise ValueError(
+                "LoCoMo corpus files changed during the read-only run: " + ", ".join(changed[:5])
+            )
     if query_vectors is not None:
         _load_query_vector_manifest(
             cast(Path, config.query_vectors_path),
