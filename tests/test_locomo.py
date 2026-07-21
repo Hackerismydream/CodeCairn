@@ -959,6 +959,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "embedding_model": "test/embedding",
                 "embedding_dimension": 3,
                 "reranker_model": "test/reranker",
+                "reranker_batch_size": None,
                 "primary_candidate_multiplier": 2,
                 "secondary_candidate_multiplier": 1,
                 "minimum_primary_candidates": 40,

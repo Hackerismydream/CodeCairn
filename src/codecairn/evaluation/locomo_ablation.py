@@ -304,6 +304,7 @@ def _validate_definition_protocol(
         "embedding_model": embedding.get("model"),
         "embedding_dimension": embedding.get("dimension"),
         "reranker_model": reranker.get("model"),
+        "reranker_batch_size": reranker.get("batch_size"),
         "primary_candidate_multiplier": planner.get("primary_candidate_multiplier"),
         "secondary_candidate_multiplier": planner.get("secondary_candidate_multiplier"),
         "minimum_primary_candidates": planner.get("minimum_primary_candidates"),
