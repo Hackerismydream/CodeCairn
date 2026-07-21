@@ -1118,6 +1118,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
+                "answer_evidence_contract": "compact-fact-first-top10-v2",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,

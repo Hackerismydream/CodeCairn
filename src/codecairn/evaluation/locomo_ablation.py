@@ -283,6 +283,7 @@ def _validate_definition_protocol(
     worker = {} if raw_worker is None else _dict(raw_worker, field="question worker")
     observed = {
         "answer_model": answer.get("model"),
+        "answer_evidence_contract": manifest.get("answer_evidence_contract"),
         "judge_model": judge.get("model"),
         "judge_votes": manifest.get("judge_votes"),
         "top_k": retrieval.get("top_k"),
