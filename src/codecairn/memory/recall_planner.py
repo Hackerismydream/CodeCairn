@@ -7,6 +7,8 @@ from typing import Literal
 from codecairn.memory.models import RecallRoute
 
 RecallPlannerMode = Literal["episode-only", "hierarchy-no-neighbors", "hierarchy"]
+TemporalOperation = Literal["none", "point", "duration", "order", "latest"]
+SetOperation = Literal["none", "union", "intersection"]
 
 _FACT_CUES = re.compile(
     r"\b(when|where|who|which|what|how many|how much|before|after|first|last|"
@@ -18,6 +20,38 @@ _EPISODE_CUES = re.compile(
     r"debug|fix|failure|failed|resolve|resolved)\b",
     re.IGNORECASE,
 )
+_NAMED_ANCHOR = re.compile(r"\b[A-Z][A-Za-z0-9_-]{1,63}\b")
+_ANCHOR_STOPWORDS = {
+    "A",
+    "An",
+    "And",
+    "Are",
+    "Did",
+    "Do",
+    "Does",
+    "How",
+    "In",
+    "Is",
+    "On",
+    "The",
+    "What",
+    "When",
+    "Where",
+    "Which",
+    "Who",
+    "Why",
+}
+
+
+@dataclass(frozen=True, slots=True)
+class QuerySketch:
+    """Small deterministic query contract used for coverage, never hard routing."""
+
+    anchors: tuple[str, ...]
+    temporal_op: TemporalOperation
+    set_op: SetOperation
+    wants_procedure: bool
+    coverage_slots: tuple[str, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -82,6 +116,7 @@ class RecallPlannerConfig:
 
 @dataclass(frozen=True, slots=True)
 class RecallPlan:
+    query_sketch: QuerySketch
     route: RecallRoute
     episode_candidate_limit: int
     atomic_fact_candidate_limit: int
@@ -96,6 +131,7 @@ class RecallPlanner:
         self.config = config or RecallPlannerConfig()
 
     def plan(self, query: str, *, limit: int) -> RecallPlan:
+        query_sketch = _query_sketch(query)
         route = _route(query)
         primary_limit = max(
             self.config.minimum_primary_candidates,
@@ -110,6 +146,7 @@ class RecallPlanner:
         if not self.config.atomic_fact_enabled:
             fact_limit = 0
         return RecallPlan(
+            query_sketch=query_sketch,
             route=route,
             episode_candidate_limit=episode_limit,
             atomic_fact_candidate_limit=fact_limit,
@@ -118,6 +155,42 @@ class RecallPlanner:
             ),
             neighbor_snippet_budget=self.config.neighbor_snippet_budget,
         )
+
+
+def _query_sketch(query: str) -> QuerySketch:
+    anchors = tuple(
+        dict.fromkeys(
+            match.group(0).casefold()
+            for match in _NAMED_ANCHOR.finditer(query)
+            if match.group(0) not in _ANCHOR_STOPWORDS
+        )
+    )
+    lowered = query.casefold()
+    if any(cue in lowered for cue in ("before", "after", "first", "then", "order")):
+        temporal_op: TemporalOperation = "order"
+    elif any(cue in lowered for cue in ("latest", "most recent", "last")):
+        temporal_op = "latest"
+    elif any(cue in lowered for cue in ("how long", "duration")):
+        temporal_op = "duration"
+    elif any(cue in lowered for cue in ("when", "date", "time", "year", "month", "day")):
+        temporal_op = "point"
+    else:
+        temporal_op = "none"
+    if any(cue in lowered for cue in (" both ", "shared", "common")):
+        set_op: SetOperation = "intersection"
+    elif any(cue in lowered for cue in (" either ", " or ")):
+        set_op = "union"
+    else:
+        set_op = "none"
+    return QuerySketch(
+        anchors=anchors,
+        temporal_op=temporal_op,
+        set_op=set_op,
+        wants_procedure=any(
+            cue in lowered for cue in ("how did", "steps", "procedure", "fix", "verify")
+        ),
+        coverage_slots=anchors,
+    )
 
 
 def _route(query: str) -> RecallRoute:

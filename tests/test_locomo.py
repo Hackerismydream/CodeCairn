@@ -16,6 +16,7 @@ from codecairn.evaluation.artifacts import write_json_exclusive
 from codecairn.evaluation.locomo import (
     CodeCairnConversationMemory,
     ConversationIngestResult,
+    EvidenceAnswerSynthesizer,
     FrozenQueryEmbeddingAdapter,
     LoCoMoConversation,
     LoCoMoConversationWork,
@@ -35,8 +36,9 @@ from codecairn.evaluation.locomo_ablation import (
     build_locomo_ablation_report,
 )
 from codecairn.evaluation.model import ModelResponse
-from codecairn.memory.models import RecallResult, RecallSidecar
+from codecairn.memory.models import RankedRecall, RecallResult, RecallSidecar, RecallSnippet
 from codecairn.memory.retrieval import retrieval_config_sha256
+from codecairn.storage.sqlite import SQLiteState
 
 FIXTURE = Path(__file__).parent / "fixtures" / "locomo" / "synthetic.json"
 FAKE_RETRIEVAL_CONFIG: dict[str, object] = {
@@ -372,7 +374,7 @@ def test_loader_preserves_sessions_speakers_timestamps_and_all_categories() -> N
     assert dataset.conversations[1].questions[1].golden_answer == "2023"
 
 
-def test_locomo_turns_ingest_through_public_gate_and_recall_interfaces(
+def test_locomo_sessions_ingest_as_real_episode_parents_through_public_interfaces(
     tmp_path: Path,
 ) -> None:
     conversation = load_locomo_dataset(FIXTURE).conversations[0]
@@ -388,14 +390,101 @@ def test_locomo_turns_ingest_through_public_gate_and_recall_interfaces(
 
     assert ingested.session_count == 2
     assert ingested.turn_count == 3
-    assert ingested.accepted_memory_count == 3
+    assert ingested.accepted_memory_count == 2
     assert ingested.rejected_memory_count == 0
     assert recalled.sidecar.repo_key == "locomo/conv-test-1"
     assert recalled.sidecar.ranked[0].memory_type == "user_preference"
     assert "beagle" in recalled.markdown
     memories = create_runtime(root).list_memories(repo_key="locomo/conv-test-1")
-    assert len(memories) == 3
+    assert len(memories) == 2
+    assert sorted(len(item.facts) for item in memories) == [1, 2]
+    assert all(len({fact.episode_id for fact in item.facts}) == 1 for item in memories)
+    assert all(" — " in fact.text and ": " in fact.text for item in memories for fact in item.facts)
+    entity_hits = SQLiteState(root / "state.sqlite3").find_entity_memories(
+        repo_key="locomo/conv-test-1",
+        entity_keys=("caroline",),
+        limit=10,
+    )
+    assert entity_hits
+    assert all(any("Caroline" in fact.text for fact in item.facts) for item in entity_hits)
     assert {item.evidence[0].provider for item in memories} == {"locomo"}
+
+
+def test_evidence_answer_synthesizer_rejects_unknown_citation_ids() -> None:
+    class CitedAnswerModel(FakeAnswerModel):
+        def generate(
+            self,
+            *,
+            system: str,
+            user: str,
+            seed: int,
+            response_format: str = "text",
+        ) -> ModelResponse:
+            assert response_format == "json"
+            return ModelResponse(
+                text=json.dumps(
+                    {
+                        "answer": "A beagle.",
+                        "evidence_ids": ["fact-beagle", "not-allowed"],
+                    }
+                ),
+                model=self.model_id,
+            )
+
+    conversation = load_locomo_dataset(FIXTURE).conversations[0]
+    ranked = RankedRecall(
+        rank=1,
+        memory_id="memory-session",
+        memory_type="user_preference",
+        title="Session",
+        summary="Caroline has a beagle.",
+        source_uri="codecairn://memory/memory-session",
+        content_sha256="a" * 64,
+        candidate_sources=("lexical",),
+        vector_score=None,
+        vector_rank=None,
+        lexical_score=1.0,
+        lexical_rank=1,
+        final_score=1.0,
+        evidence=(),
+        snippets=(
+            RecallSnippet(
+                relation="matched",
+                source_memory_id="memory-session",
+                source_uri="codecairn://memory/memory-session",
+                fact_id="fact-beagle",
+                text="2023-05-08T13:56:00+00:00 — Caroline: I have a beagle.",
+                source_title="Session",
+                source_summary="Caroline has a beagle.",
+                raw_event_index=1,
+            ),
+        ),
+    )
+    recall = RecallResult(
+        markdown="# Recall Context\n",
+        sidecar=RecallSidecar(
+            query=conversation.questions[0].question,
+            repo_key="locomo/conv-test-1",
+            limit=1,
+            latency_ms=1.0,
+            vector_candidate_count=0,
+            lexical_candidate_count=1,
+            ranked=(ranked,),
+        ),
+    )
+
+    answer = EvidenceAnswerSynthesizer().synthesize(
+        conversation,
+        conversation.questions[0],
+        recall=recall,
+        model=CitedAnswerModel(),
+        seed=7,
+    )
+
+    assert answer.response.text == "A beagle."
+    assert answer.evidence_ids == ("fact-beagle",)
+    assert answer.invalid_evidence_ids == ("not-allowed",)
+    assert answer.format == "structured-v1"
 
 
 def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
@@ -547,6 +636,7 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
 
     assert CountingMemory.ingest_calls == 2
     assert CountingMemory.snapshot_calls == 2
+    assert corpus.manifest["build_contract"]["projection_contract"] == ("locomo-session-episode-v2")
     run_dirs: list[Path] = []
     for run_id in ("shared-corpus-first", "shared-corpus-second"):
         run = run_locomo(
@@ -1248,6 +1338,29 @@ def test_report_rejects_retry_metadata_that_exceeds_the_manifest_limit(tmp_path:
     assert report["infrastructure_failed_count"] == 1
 
 
+def test_report_rejects_answer_citations_outside_retrieved_evidence(tmp_path: Path) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-forged-answer-citation",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
+    question = json.loads(question_path.read_text(encoding="utf-8"))
+    question["answer_evidence"]["evidence_ids"] = ["forged-evidence-id"]
+    question_path.unlink()
+    write_json_exclusive(question_path, question)
+
+    with pytest.raises(ValueError, match="do not match retrieved evidence"):
+        report_locomo(artifact.run_dir)
+
+
 def test_report_rejects_missing_question_checkpoint_from_manifest_inventory(
     tmp_path: Path,
 ) -> None:
@@ -1405,10 +1518,17 @@ def test_answer_and_judge_prompts_treat_benchmark_content_as_untrusted_data(
         assert "untrusted data" in system
         payload = json.loads(user)
         assert isinstance(payload, dict)
-        if response_format == "json":
+        assert response_format == "json"
+        if "generated_answer" in payload:
             assert set(payload) == {"generated_answer", "gold_answer", "question"}
         else:
-            assert set(payload) == {"memory_context", "question", "speakers"}
+            assert set(payload) == {
+                "allowed_evidence_ids",
+                "evidence_blocks",
+                "memory_context_fallback",
+                "question",
+                "speakers",
+            }
 
 
 def test_smoke_run_is_explicitly_unscored_and_never_calls_a_judge(tmp_path: Path) -> None:

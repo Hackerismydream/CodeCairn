@@ -53,6 +53,7 @@ RecallDocumentSource = Literal[
     "episode_vector",
     "atomic_fact_lexical",
     "atomic_fact_vector",
+    "entity_posting",
 ]
 RecallSnippetRelation = Literal["matched", "sibling", "neighbor"]
 
@@ -420,6 +421,14 @@ class RecallSidecar:
     atomic_fact_vector_candidate_count: int = 0
     atomic_fact_lexical_candidate_count: int = 0
     neighbor_expansion_count: int = 0
+    entity_posting_candidate_count: int = 0
+    rerank_bundle_count: int = 0
+    query_anchors: tuple[str, ...] = ()
+    covered_slots: tuple[str, ...] = ()
+    missing_slots: tuple[str, ...] = ()
+    completion: Literal["complete", "partial"] = "complete"
+    degraded_stages: tuple[str, ...] = ()
+    query_vector_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

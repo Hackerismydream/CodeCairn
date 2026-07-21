@@ -161,6 +161,28 @@ class MemoryState:
             if memory_repo_key == repo_key and memory.episode_id == episode_id
         )
 
+    def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
+        return tuple(
+            memory
+            for (memory_repo_key, _memory_id), memory in self._memories.items()
+            if memory_repo_key == repo_key
+        )
+
+    def find_entity_memories(
+        self,
+        *,
+        repo_key: str,
+        entity_keys: tuple[str, ...],
+        limit: int,
+    ) -> tuple[CodingMemory, ...]:
+        return tuple(
+            memory
+            for memory in self.list_memories(repo_key=repo_key)
+            if any(
+                entity in fact.text.casefold() for fact in memory.facts for entity in entity_keys
+            )
+        )[:limit]
+
 
 def test_hybrid_recall_unions_candidates_before_deterministic_reranking() -> None:
     memories = (
@@ -196,6 +218,153 @@ def test_hybrid_recall_unions_candidates_before_deterministic_reranking() -> Non
     assert "BM25 found this memory." in result.markdown
     assert "codecairn://memory/memory-b" in result.markdown
     assert result.sidecar.ranked[0].evidence[0].raw_event_index == 1
+
+
+def test_coverage_selection_keeps_evidence_for_distinct_named_anchors() -> None:
+    class AnchorIndex(CandidateIndex):
+        def vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return tuple(
+                IndexCandidate(repo_key=repo_key, memory_id=memory_id, score=score)
+                for memory_id, score in (
+                    ("memory-a", 3.0),
+                    ("memory-b", 2.0),
+                    ("memory-c", 1.0),
+                )
+            )
+
+        def lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return self.vector_candidates(repo_key=repo_key, vector=(), limit=limit)
+
+    memories = (
+        _memory("memory-a", summary="Alice selected the venue."),
+        _memory("memory-b", summary="Alice ordered the flowers."),
+        _memory("memory-c", summary="Bob selected the music."),
+    )
+    result = RecallEngine(
+        index=AnchorIndex(),
+        state=MemoryState(memories),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    ).recall("What did Alice and Bob select?", repo_key="acme/widgets", limit=2)
+
+    assert [item.memory_id for item in result.sidecar.ranked] == ["memory-a", "memory-c"]
+    assert result.sidecar.covered_slots == ("alice", "bob")
+    assert result.sidecar.missing_slots == ()
+
+
+def test_empty_recall_reports_partial_completion() -> None:
+    class EmptyIndex(CandidateIndex):
+        def vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return ()
+
+        def lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return ()
+
+    result = RecallEngine(
+        index=EmptyIndex(),
+        state=MemoryState(()),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    ).recall("repository convention", repo_key="acme/widgets")
+
+    assert result.sidecar.ranked == ()
+    assert result.sidecar.completion == "partial"
+    assert result.sidecar.degraded_stages == ("no_candidates",)
+
+
+def test_rerank_budget_preserves_focal_fact_before_long_parent_summary() -> None:
+    class FactIndex(CandidateIndex):
+        def document_vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            if document_kind == "episode":
+                return ()
+            return (
+                IndexCandidate(
+                    repo_key=repo_key,
+                    memory_id="memory-long",
+                    document_id="fact-document",
+                    document_kind="atomic_fact",
+                    parent_document_id="episode-document",
+                    fact_id="fact-focal",
+                    score=1.0,
+                ),
+            )
+
+        def document_lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return ()
+
+    class CaptureReranker:
+        model_id = "test/capture"
+        source_id = "test/capture-source"
+        revision = "test-v1"
+
+        def __init__(self) -> None:
+            self.text = ""
+
+        def rerank(
+            self,
+            query: str,
+            documents: tuple[RerankDocument, ...],
+        ) -> tuple[RerankScore, ...]:
+            self.text = documents[0].text
+            return (RerankScore(memory_id=documents[0].memory_id, score=1.0),)
+
+    memory = _memory_with_fact(
+        "memory-long",
+        fact_id="fact-focal",
+        fact_text="FOCAL-EVIDENCE must survive the rerank budget.",
+        event_index=1,
+    )
+    memory = replace(memory, summary="unrelated " * 1_000)
+    reranker = CaptureReranker()
+
+    RecallEngine(
+        index=FactIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        reranker=reranker,
+        clock_ns=lambda: 0,
+    ).recall("Which focal evidence?", repo_key="acme/widgets", limit=1)
+
+    assert "FOCAL-EVIDENCE" in reranker.text
+    assert len(reranker.text) <= 2_048
 
 
 def test_equal_component_scores_use_memory_id_as_the_stable_tie_breaker() -> None:

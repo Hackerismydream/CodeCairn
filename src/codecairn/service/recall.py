@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import hashlib
+import re
+import struct
 import time
 from collections.abc import Callable
 from dataclasses import replace
@@ -30,6 +33,11 @@ from codecairn.memory.reranking import RerankingProvider
 _RRF_K = 60
 _MAX_LIMIT = 20
 _MAX_QUERY_CHARS = 8_000
+_MAX_FUSED_CANDIDATES = 96
+_MAX_ENTITY_POSTING_CANDIDATES = 24
+_MAX_RERANK_BUNDLES = 32
+_MAX_RERANK_BUNDLE_CHARS = 2_048
+_ENTITY_TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]*")
 _MODALITY_ORDER: tuple[CandidateSource, ...] = ("lexical", "vector")
 
 
@@ -145,13 +153,26 @@ class RecallEngine:
                 ("atomic_fact_vector", atomic_vector),
             ),
         )
+        ranked, entity_posting_candidate_count = self._expand_entity_postings(
+            ranked,
+            repo_key=repo_key,
+            anchors=plan.query_sketch.anchors,
+        )
         ranked, _ = self._attach_snippets(
             ranked,
             repo_key=repo_key,
             expand_neighbors=False,
         )
-        ranked = self._rerank(normalized_query, ranked)
-        selected_ranked = ranked[:limit]
+        ranked = self._rerank(
+            normalized_query,
+            ranked,
+            coverage_slots=plan.query_sketch.coverage_slots,
+        )
+        selected_ranked, covered_slots, missing_slots = _coverage_select(
+            ranked,
+            coverage_slots=plan.query_sketch.coverage_slots,
+            limit=limit,
+        )
         neighbor_expansion_count = 0
         if plan.expand_neighbors:
             selected_ranked, neighbor_expansion_count = self._attach_snippets(
@@ -185,6 +206,14 @@ class RecallEngine:
             atomic_fact_vector_candidate_count=len(atomic_vector),
             atomic_fact_lexical_candidate_count=len(atomic_lexical),
             neighbor_expansion_count=neighbor_expansion_count,
+            entity_posting_candidate_count=entity_posting_candidate_count,
+            rerank_bundle_count=len(ranked),
+            query_anchors=plan.query_sketch.anchors,
+            covered_slots=covered_slots,
+            missing_slots=missing_slots,
+            completion="partial" if missing_slots or not selected else "complete",
+            degraded_stages=("no_candidates",) if not selected else (),
+            query_vector_sha256=_vector_digest(query_vector),
         )
         return RecallResult(
             markdown=_render_context(normalized_query, repo_key=repo_key, ranked=selected),
@@ -309,6 +338,69 @@ class RecallEngine:
         ranked.sort(key=lambda item: (-item.final_score, item.memory_id))
         return ranked
 
+    def _expand_entity_postings(
+        self,
+        ranked: list[RankedRecall],
+        *,
+        repo_key: str,
+        anchors: tuple[str, ...],
+    ) -> tuple[list[RankedRecall], int]:
+        method = getattr(self._state, "find_entity_memories", None)
+        if not anchors or not callable(method):
+            return ranked[:_MAX_FUSED_CANDIDATES], 0
+        memories = method(
+            repo_key=repo_key,
+            entity_keys=anchors,
+            limit=_MAX_ENTITY_POSTING_CANDIDATES,
+        )
+        existing = {item.memory_id for item in ranked}
+        seed_ids = set(existing)
+        for memory in memories:
+            if (
+                memory.repo_key != repo_key
+                or memory.memory_id in existing
+                or memory.content_sha256 is None
+            ):
+                continue
+            matched_facts = tuple(
+                fact for fact in memory.facts if set(anchors) & _entity_terms(fact.text)
+            )
+            if not matched_facts:
+                continue
+            ranked.append(
+                RankedRecall(
+                    rank=0,
+                    memory_id=memory.memory_id,
+                    memory_type=memory.memory_type,
+                    title=memory.title,
+                    summary=memory.summary,
+                    source_uri=_memory_uri(memory.memory_id),
+                    content_sha256=memory.content_sha256,
+                    candidate_sources=(),
+                    vector_score=None,
+                    vector_rank=None,
+                    lexical_score=None,
+                    lexical_rank=None,
+                    final_score=0.0,
+                    evidence=_recall_evidence(memory),
+                    matched_documents=tuple(
+                        RecallMatch(
+                            document_id=f"entity:{fact.fact_id}",
+                            document_kind="atomic_fact",
+                            source="entity_posting",
+                            score=1.0,
+                            rank=rank,
+                            fact_id=fact.fact_id,
+                        )
+                        for rank, fact in enumerate(matched_facts, start=1)
+                    ),
+                )
+            )
+            existing.add(memory.memory_id)
+        bounded = ranked[:_MAX_FUSED_CANDIDATES]
+        included_postings = sum(item.memory_id not in seed_ids for item in bounded)
+        return bounded, included_postings
+
     def _attach_snippets(
         self,
         ranked: list[RankedRecall],
@@ -369,7 +461,18 @@ class RecallEngine:
             enriched.append(replace(item, snippets=snippets))
         return enriched, neighbor_count
 
-    def _rerank(self, query: str, ranked: list[RankedRecall]) -> list[RankedRecall]:
+    def _rerank(
+        self,
+        query: str,
+        ranked: list[RankedRecall],
+        *,
+        coverage_slots: tuple[str, ...],
+    ) -> list[RankedRecall]:
+        ranked, _covered, _missing = _coverage_select(
+            ranked,
+            coverage_slots=coverage_slots,
+            limit=_MAX_RERANK_BUNDLES,
+        )
         fusion_scores = {item.memory_id: item.final_score for item in ranked}
         if self._reranker is None:
             ranked.sort(key=lambda item: (-item.final_score, item.memory_id))
@@ -425,6 +528,59 @@ def _safe_document_candidates(
     return tuple(
         sorted(best.values(), key=lambda item: (-item.score, item.document_id, item.memory_id))
     )
+
+
+def _coverage_select(
+    ranked: list[RankedRecall],
+    *,
+    coverage_slots: tuple[str, ...],
+    limit: int,
+) -> tuple[list[RankedRecall], tuple[str, ...], tuple[str, ...]]:
+    if not coverage_slots:
+        return ranked[:limit], (), ()
+    slot_sets = {
+        item.memory_id: set(coverage_slots) & _entity_terms(_recall_search_text(item))
+        for item in ranked
+    }
+    uncovered = set(coverage_slots)
+    remaining = list(ranked)
+    selected: list[RankedRecall] = []
+    while remaining and len(selected) < limit:
+        best = min(
+            remaining,
+            key=lambda item: (
+                -len(slot_sets[item.memory_id] & uncovered),
+                -item.final_score,
+                item.memory_id,
+            ),
+        )
+        if not (slot_sets[best.memory_id] & uncovered):
+            break
+        selected.append(best)
+        uncovered.difference_update(slot_sets[best.memory_id])
+        remaining.remove(best)
+    for item in ranked:
+        if len(selected) >= limit:
+            break
+        if item not in selected:
+            selected.append(item)
+    covered = tuple(slot for slot in coverage_slots if slot not in uncovered)
+    missing = tuple(slot for slot in coverage_slots if slot in uncovered)
+    return selected, covered, missing
+
+
+def _recall_search_text(item: RankedRecall) -> str:
+    return "\n".join(
+        (
+            item.title,
+            item.summary,
+            *(snippet.text for snippet in item.snippets),
+        )
+    )
+
+
+def _entity_terms(text: str) -> set[str]:
+    return {match.group(0).casefold() for match in _ENTITY_TERM.finditer(text)}
 
 
 def _max_pool_by_parent(candidates: tuple[IndexCandidate, ...]) -> tuple[IndexCandidate, ...]:
@@ -549,12 +705,16 @@ def _chronology_key(memory: CodingMemory) -> tuple[str, int, str]:
 
 
 def _rerank_text(item: RankedRecall) -> str:
-    lines = [item.title, item.summary]
+    lines = [item.title]
     lines.extend(
-        f"{snippet.relation}: {snippet.source_title}\n{snippet.source_summary}\n{snippet.text}"
+        f"{snippet.relation}: {snippet.text}\n{snippet.source_title}\n{snippet.source_summary}"
         for snippet in item.snippets
     )
-    return "\n".join(lines)
+    lines.append(item.summary)
+    text = "\n".join(lines)
+    if len(text) <= _MAX_RERANK_BUNDLE_CHARS:
+        return text
+    return text[: _MAX_RERANK_BUNDLE_CHARS - 1] + "…"
 
 
 def _validated_rerank_scores(
@@ -625,3 +785,7 @@ def _memory_uri(memory_id: str) -> str:
 def _single_line(value: str, *, limit: int) -> str:
     cleaned = " ".join(value.replace("\x00", "").split())
     return cleaned if len(cleaned) <= limit else cleaned[: limit - 1] + "…"
+
+
+def _vector_digest(vector: tuple[float, ...]) -> str:
+    return hashlib.sha256(struct.pack(f"<{len(vector)}f", *vector)).hexdigest()

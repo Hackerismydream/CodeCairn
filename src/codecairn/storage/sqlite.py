@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 from pathlib import Path
 from typing import Literal, cast
@@ -423,6 +424,45 @@ class SQLiteState:
             ).fetchall()
         return tuple(_memory_from_row(repo_key, row) for row in rows)
 
+    def find_entity_memories(
+        self,
+        *,
+        repo_key: str,
+        entity_keys: tuple[str, ...],
+        limit: int,
+    ) -> tuple[CodingMemory, ...]:
+        normalized = tuple(
+            dict.fromkeys(key.casefold().strip() for key in entity_keys if key.strip())
+        )
+        if not normalized or limit <= 0:
+            return ()
+        placeholders = ", ".join("?" for _key in normalized)
+        with self._connect() as connection:
+            rows = connection.execute(
+                f"""
+                WITH hits AS (
+                    SELECT memory_id, COUNT(DISTINCT entity_key) AS matched_entities,
+                           MIN(source_order) AS first_source_order
+                    FROM fact_postings
+                    WHERE repo_key = ? AND entity_key IN ({placeholders})
+                    GROUP BY memory_id
+                )
+                SELECT memories.memory_id, memories.memory_type, memories.title,
+                       memories.summary, memories.episode_id, memories.command,
+                       memories.exit_code, memories.evidence_json,
+                       memories.fact_ids_json, memories.facts_json,
+                       memories.markdown_path, memories.content_sha256
+                FROM hits
+                JOIN memories
+                  ON memories.repo_key = ? AND memories.memory_id = hits.memory_id
+                ORDER BY hits.matched_entities DESC, hits.first_source_order ASC,
+                         memories.memory_id ASC
+                LIMIT ?
+                """,
+                (repo_key, *normalized, repo_key, limit),
+            ).fetchall()
+        return tuple(_memory_from_row(repo_key, row) for row in rows)
+
     def list_all_memories(self) -> tuple[CodingMemory, ...]:
         with self._connect() as connection:
             rows = connection.execute(
@@ -483,6 +523,10 @@ class SQLiteState:
                     raise ValueError("Markdown path changed memory identity")
                 connection.execute(
                     "DELETE FROM memories WHERE repo_key = ? AND memory_id = ?",
+                    key,
+                )
+                connection.execute(
+                    "DELETE FROM fact_postings WHERE repo_key = ? AND memory_id = ?",
                     key,
                 )
                 _enqueue_index_key(
@@ -775,12 +819,26 @@ class SQLiteState:
                     observed_sha256 TEXT,
                     error_type TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS fact_postings (
+                    repo_key TEXT NOT NULL,
+                    memory_id TEXT NOT NULL,
+                    fact_id TEXT NOT NULL,
+                    entity_key TEXT NOT NULL,
+                    source_order INTEGER NOT NULL,
+                    PRIMARY KEY (repo_key, memory_id, fact_id, entity_key)
+                );
+                CREATE TABLE IF NOT EXISTS projection_meta (
+                    key TEXT PRIMARY KEY,
+                    value TEXT NOT NULL
+                );
                 CREATE UNIQUE INDEX IF NOT EXISTS recovery_audit_active_operation
                 ON recovery_audit(operation_key)
                 WHERE status = 'started';
                 CREATE UNIQUE INDEX IF NOT EXISTS index_queue_active_revision
                 ON index_queue(repo_key, memory_id, content_sha256, operation)
                 WHERE status IN ('pending', 'leased');
+                CREATE INDEX IF NOT EXISTS fact_postings_lookup
+                ON fact_postings(repo_key, entity_key, source_order, memory_id);
                 """
             )
             columns = {
@@ -846,6 +904,29 @@ class SQLiteState:
                 )
                 """
             )
+            posting_revision = connection.execute(
+                "SELECT value FROM projection_meta WHERE key = 'fact_postings_revision'"
+            ).fetchone()
+            if posting_revision is None or posting_revision["value"] != "entity-postings-v1":
+                connection.execute("DELETE FROM fact_postings")
+                rows = connection.execute(
+                    """
+                    SELECT repo_key, memory_id, memory_type, title, summary, episode_id,
+                           command, exit_code, evidence_json, fact_ids_json, facts_json,
+                           markdown_path, content_sha256
+                    FROM memories
+                    ORDER BY repo_key, memory_id
+                    """
+                ).fetchall()
+                for row in rows:
+                    _replace_fact_postings(connection, _memory_from_row(row["repo_key"], row))
+                connection.execute(
+                    """
+                    INSERT INTO projection_meta (key, value)
+                    VALUES ('fact_postings_revision', 'entity-postings-v1')
+                    ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                    """
+                )
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self._path)
@@ -918,6 +999,7 @@ def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
         ).fetchone()
         if stored is None or stored["content_sha256"] != memory.content_sha256:
             raise ValueError(f"Committed memory conflicts with candidate: {memory.memory_id}")
+    _replace_fact_postings(connection, memory)
     return cursor.rowcount
 
 
@@ -956,6 +1038,55 @@ def _update_truth_memory(connection: sqlite3.Connection, memory: CodingMemory) -
     )
     if cursor.rowcount != 1:
         raise ValueError(f"Markdown truth memory disappeared: {memory.memory_id}")
+    _replace_fact_postings(connection, memory)
+
+
+_POSTING_ENTITY = re.compile(r"\b[A-Z][A-Za-z0-9_-]{1,63}\b")
+_POSTING_STOPWORDS = {
+    "A",
+    "An",
+    "And",
+    "At",
+    "Conversation",
+    "I",
+    "In",
+    "It",
+    "On",
+    "The",
+    "This",
+}
+
+
+def _replace_fact_postings(connection: sqlite3.Connection, memory: CodingMemory) -> None:
+    connection.execute(
+        "DELETE FROM fact_postings WHERE repo_key = ? AND memory_id = ?",
+        (memory.repo_key, memory.memory_id),
+    )
+    rows: list[tuple[str, str, str, str, int]] = []
+    for fact in memory.facts:
+        source_order = min(
+            (reference.raw_event_index for reference in fact.evidence),
+            default=0,
+        )
+        entities = tuple(
+            dict.fromkeys(
+                match.group(0).casefold()
+                for match in _POSTING_ENTITY.finditer(fact.text)
+                if match.group(0) not in _POSTING_STOPWORDS
+            )
+        )
+        rows.extend(
+            (memory.repo_key, memory.memory_id, fact.fact_id, entity, source_order)
+            for entity in entities
+        )
+    connection.executemany(
+        """
+        INSERT INTO fact_postings (
+            repo_key, memory_id, fact_id, entity_key, source_order
+        ) VALUES (?, ?, ?, ?, ?)
+        """,
+        rows,
+    )
 
 
 def _enqueue_index_revision(
