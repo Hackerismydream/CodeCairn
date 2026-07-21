@@ -11,8 +11,11 @@ def canonical_json(value: object) -> str:
 
 
 def write_json_exclusive(path: Path, value: object) -> None:
+    write_bytes_exclusive(path, canonical_json(value).encode())
+
+
+def write_bytes_exclusive(path: Path, payload: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    payload = canonical_json(value).encode()
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     try:
         with os.fdopen(descriptor, "wb") as handle:

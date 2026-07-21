@@ -37,7 +37,7 @@
     "ingest_max_workers": 1,
     "retrieval_max_workers": 1,
     "retrieval_thread_count": 1,
-    "execution_phase_contract": "process-isolated-ingest-then-questions-v1",
+    "execution_phase_contract": "verified-shared-corpus-v1",
     "embedding_adapter": "dashscope-openai-compatible",
     "embedding_model": "qwen3.7-text-embedding",
     "embedding_dimension": 1024,
@@ -52,8 +52,10 @@
   "gates": {
     "required_scored_questions_per_variant": 200,
     "maximum_infrastructure_failures": 0,
-    "hierarchy_vs_episode_minimum_accuracy_delta_points": 2.0,
-    "hierarchy_vs_no_neighbors_minimum_accuracy_delta_points": -1.0,
-    "hierarchy_maximum_retrieval_p95_ms": 2500.0
+    "hierarchy_no_neighbors_vs_episode_minimum_accuracy_delta_points": 2.0,
+    "temporal_neighbor_minimum_overall_accuracy_delta_points": 0.0,
+    "temporal_neighbor_minimum_temporal_or_multihop_delta_points": 0.1,
+    "temporal_neighbor_maximum_p95_increase_percent": 20.0,
+    "selected_maximum_retrieval_p95_ms": 2500.0
   }
 }

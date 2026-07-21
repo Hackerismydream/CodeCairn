@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
@@ -60,17 +61,48 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
     gates = _dict(definition.get("gates"), field="gates")
     required_questions = _int(gates, "required_scored_questions_per_variant")
     maximum_failures = _int(gates, "maximum_infrastructure_failures")
-    minimum_episode_delta = _number(gates, "hierarchy_vs_episode_minimum_accuracy_delta_points")
-    minimum_neighbor_delta = _number(
-        gates, "hierarchy_vs_no_neighbors_minimum_accuracy_delta_points"
+    minimum_core_delta = _number(
+        gates, "hierarchy_no_neighbors_vs_episode_minimum_accuracy_delta_points"
     )
-    maximum_p95 = _number(gates, "hierarchy_maximum_retrieval_p95_ms")
+    minimum_neighbor_delta = _number(
+        gates, "temporal_neighbor_minimum_overall_accuracy_delta_points"
+    )
+    minimum_neighbor_category_delta = _number(
+        gates, "temporal_neighbor_minimum_temporal_or_multihop_delta_points"
+    )
+    maximum_neighbor_p95_increase = _number(gates, "temporal_neighbor_maximum_p95_increase_percent")
+    maximum_selected_p95 = _number(gates, "selected_maximum_retrieval_p95_ms")
     episode_accuracy = _accuracy(reports["episode-only"])
     no_neighbor_accuracy = _accuracy(reports["hierarchy-no-neighbors"])
     hierarchy_accuracy = _accuracy(reports["hierarchy"])
-    episode_delta = round((hierarchy_accuracy - episode_accuracy) * 100, 3)
+    core_delta = round((no_neighbor_accuracy - episode_accuracy) * 100, 3)
     neighbor_delta = round((hierarchy_accuracy - no_neighbor_accuracy) * 100, 3)
+    temporal_delta = round(
+        (
+            _category_accuracy(reports["hierarchy"], category=2)
+            - _category_accuracy(reports["hierarchy-no-neighbors"], category=2)
+        )
+        * 100,
+        3,
+    )
+    multihop_delta = round(
+        (
+            _category_accuracy(reports["hierarchy"], category=1)
+            - _category_accuracy(reports["hierarchy-no-neighbors"], category=1)
+        )
+        * 100,
+        3,
+    )
+    best_neighbor_category_delta = max(temporal_delta, multihop_delta)
+    no_neighbor_p95 = _retrieval_p95(reports["hierarchy-no-neighbors"])
     hierarchy_p95 = _retrieval_p95(reports["hierarchy"])
+    neighbor_p95_increase = (
+        0.0
+        if no_neighbor_p95 == 0 and hierarchy_p95 == 0
+        else math.inf
+        if no_neighbor_p95 == 0
+        else round((hierarchy_p95 - no_neighbor_p95) * 100 / no_neighbor_p95, 3)
+    )
 
     checks: list[dict[str, object]] = []
     for variant, report in reports.items():
@@ -92,26 +124,45 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
                 ),
             )
         )
-    checks.extend(
-        (
-            _check(
-                "hierarchy.accuracy_delta_vs_episode_points",
-                observed=episode_delta,
-                threshold=minimum_episode_delta,
-                passed=episode_delta >= minimum_episode_delta,
-            ),
-            _check(
-                "hierarchy.accuracy_delta_vs_no_neighbors_points",
-                observed=neighbor_delta,
-                threshold=minimum_neighbor_delta,
-                passed=neighbor_delta >= minimum_neighbor_delta,
-            ),
-            _check(
-                "hierarchy.retrieval_p95_ms",
-                observed=hierarchy_p95,
-                threshold=maximum_p95,
-                passed=hierarchy_p95 <= maximum_p95,
-            ),
+    checks.append(
+        _check(
+            "hierarchy-no-neighbors.accuracy_delta_vs_episode_points",
+            observed=core_delta,
+            threshold=minimum_core_delta,
+            passed=core_delta >= minimum_core_delta,
+        )
+    )
+    temporal_neighbor_checks = [
+        _check(
+            "hierarchy.accuracy_delta_vs_no_neighbors_points",
+            observed=neighbor_delta,
+            threshold=minimum_neighbor_delta,
+            passed=neighbor_delta >= minimum_neighbor_delta,
+        ),
+        _check(
+            "hierarchy.best_temporal_or_multihop_delta_points",
+            observed=best_neighbor_category_delta,
+            threshold=minimum_neighbor_category_delta,
+            passed=best_neighbor_category_delta >= minimum_neighbor_category_delta,
+        ),
+        _check(
+            "hierarchy.retrieval_p95_increase_percent",
+            observed=neighbor_p95_increase,
+            threshold=maximum_neighbor_p95_increase,
+            passed=neighbor_p95_increase <= maximum_neighbor_p95_increase,
+        ),
+    ]
+    temporal_neighbor_promoted = all(
+        cast(bool, check["passed"]) for check in temporal_neighbor_checks
+    )
+    selected_variant = "hierarchy" if temporal_neighbor_promoted else "hierarchy-no-neighbors"
+    selected_p95 = hierarchy_p95 if temporal_neighbor_promoted else no_neighbor_p95
+    checks.append(
+        _check(
+            f"{selected_variant}.retrieval_p95_ms",
+            observed=selected_p95,
+            threshold=maximum_selected_p95,
+            passed=selected_p95 <= maximum_selected_p95,
         )
     )
     report = {
@@ -123,10 +174,15 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
         "repository_commit": _str(manifests["hierarchy"], "repository_commit"),
         "variants": reports,
         "accuracy_delta_points": {
-            "hierarchy_vs_episode_only": episode_delta,
+            "hierarchy_no_neighbors_vs_episode_only": core_delta,
             "hierarchy_vs_hierarchy_no_neighbors": neighbor_delta,
+            "hierarchy_temporal_category_vs_no_neighbors": temporal_delta,
+            "hierarchy_multihop_category_vs_no_neighbors": multihop_delta,
         },
         "checks": checks,
+        "temporal_neighbor_checks": temporal_neighbor_checks,
+        "temporal_neighbor_promoted": temporal_neighbor_promoted,
+        "selected_variant": selected_variant,
         "gate_passed": all(cast(bool, check["passed"]) for check in checks),
     }
     write_json_exclusive(config.output_path, report)
@@ -173,6 +229,8 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
         "retrieval_max_workers",
         "retrieval_thread_count",
         "execution_phase_contract",
+        "corpus",
+        "query_vectors",
     )
     for variant, manifest in manifests.items():
         for field in fields:
@@ -253,6 +311,14 @@ def _accuracy(report: dict[str, object]) -> float:
     if not isinstance(value, int | float):
         raise ValueError("LoCoMo ablation run has no scored accuracy")
     return float(value)
+
+
+def _category_accuracy(report: dict[str, object], *, category: int) -> float:
+    by_category = _dict(report.get("by_category"), field="LoCoMo category report")
+    category_report = _dict(
+        by_category.get(str(category)), field=f"LoCoMo category {category} report"
+    )
+    return _number(category_report, "accuracy")
 
 
 def _retrieval_p95(report: dict[str, object]) -> float:

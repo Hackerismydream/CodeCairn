@@ -68,15 +68,14 @@ expected selection digest prevents a seed, loader, or question-identity change
 from silently moving the diagnostic set. Question text is not redistributed.
 Initial conversation ingestion uses the same Markdown truth and rebuild parity
 contract as production recovery, but projects all Episode and AtomicFact
-documents through bounded Qwen embedding batches. Ingestion and index rebuilding
-are serialized to bound Arrow/LanceDB peak memory. The local CrossEncoder uses
-one manifest-recorded inference thread and disables tokenizer parallelism.
-After all ten ingest checkpoints exist, a fresh process runs the question phase;
-one caller thread performs every local retrieval while DeepSeek answer and judge
-calls are pipelined in a separate pool at `--max-workers`; this avoids one set
-of LanceDB, Arrow, and ONNX native caches per API worker. The manifest records
-the requested API concurrency, `ingest_max_workers = 1`,
-`retrieval_max_workers = 1`, and `retrieval_thread_count = 1`.
+documents through bounded Qwen embedding batches. It publishes one immutable,
+content-addressed corpus after verifying truth/index fingerprints and an idle
+index queue. All variants reuse that corpus. Query vectors are also frozen once
+per question selection and fail closed on a miss; scored runs cannot silently
+call the embedding provider. The local CrossEncoder uses one manifest-recorded
+inference thread and disables tokenizer parallelism. One caller thread performs
+every local retrieval while DeepSeek answer and judge calls are pipelined in a
+separate pool at `--max-workers`.
 
 Run the same commit, answer model, judge model, vote count, and top-k under the
 three declared recall modes. Each command must include:
@@ -85,52 +84,61 @@ three declared recall modes. Each command must include:
 --question-set benchmarks/locomo/diagnostic-200.json
 ```
 
-The reproducible launch sequence is:
+Build the shared corpus and diagnostic query vectors once:
 
 ```bash
 COMMIT="$(git rev-parse HEAD)"
+uv run codecairn eval build-locomo-corpus \
+  benchmarks/locomo/data/locomo10.json \
+  --corpus-id "locomo-corpus-v1" \
+  --repository-commit "$COMMIT" \
+  --output-root benchmark_results/locomo/corpora
+
+uv run codecairn eval build-locomo-query-vectors \
+  benchmarks/locomo/data/locomo10.json \
+  --question-set benchmarks/locomo/diagnostic-200.json \
+  --vector-set-id "locomo-diagnostic-200-v1" \
+  --output-root benchmark_results/locomo/query-vectors
+```
+
+Use the content-addressed directories printed by those commands:
+
+```bash
+CORPUS="benchmark_results/locomo/corpora/corpus-<content-sha-prefix>"
+QUERIES="benchmark_results/locomo/query-vectors/queries-<content-sha-prefix>"
+
 for MODE in episode-only hierarchy-no-neighbors hierarchy; do
   CODECAIRN_RECALL_MODE="$MODE" uv run codecairn eval run locomo \
     benchmarks/locomo/data/locomo10.json \
     --question-set benchmarks/locomo/diagnostic-200.json \
-    --run-id "locomo-diagnostic-200-v6-$MODE" \
+    --run-id "locomo-diagnostic-200-v7-$MODE" \
     --repository-commit "$COMMIT" \
     --output-root benchmark_results \
-    --root "benchmark_results/runtime-v6-$MODE" \
+    --root "benchmark_results/runtime-v7-$MODE" \
+    --corpus "$CORPUS" \
+    --query-vectors "$QUERIES" \
     --mode full \
     --model deepseek-v4-flash \
     --judge-model deepseek-v4-flash \
-    --max-workers 10 \
-    --execution-phase ingest
-  CODECAIRN_RECALL_MODE="$MODE" uv run codecairn eval run locomo \
-    benchmarks/locomo/data/locomo10.json \
-    --question-set benchmarks/locomo/diagnostic-200.json \
-    --run-id "locomo-diagnostic-200-v6-$MODE" \
-    --repository-commit "$COMMIT" \
-    --output-root benchmark_results \
-    --root "benchmark_results/runtime-v6-$MODE" \
-    --mode full \
-    --model deepseek-v4-flash \
-    --judge-model deepseek-v4-flash \
-    --max-workers 10 \
-    --execution-phase questions \
-    --resume
+    --max-workers 10
 done
 
 uv run codecairn eval compare-locomo \
   benchmarks/locomo/diagnostic-200.json \
-  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v6-episode-only \
+  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v7-episode-only \
   --hierarchy-no-neighbors-run \
-    benchmark_results/locomo/locomo-diagnostic-200-v6-hierarchy-no-neighbors \
-  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v6-hierarchy \
-  --output benchmark_results/locomo/locomo-diagnostic-200-v6-report.json
+    benchmark_results/locomo/locomo-diagnostic-200-v7-hierarchy-no-neighbors \
+  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v7-hierarchy \
+  --output benchmark_results/locomo/locomo-diagnostic-200-v7-report.json
 ```
 
 The comparison gate requires 200 scored questions and zero infrastructure
-failures per variant. Full hierarchy must improve at least 2.0 accuracy points
-over Episode-only recall, may regress by at most 1.0 point against hierarchy
-without neighbors, and must keep retrieval P95 at or below 2,500 ms. A failed
-gate is a diagnostic result, not permission to launch the full run.
+failures per variant. Hierarchy without temporal neighbors must improve at
+least 2.0 accuracy points over Episode-only recall. Temporal neighbors are
+selected only when overall accuracy does not decline, temporal or multi-hop
+accuracy improves, and retrieval P95 rises by at most 20%. The selected variant
+must keep retrieval P95 at or below 2,500 ms. A failed gate is a diagnostic
+result, not permission to launch the full run.
 
 DeepSeek model capabilities and pricing are sourced from the
 [official model and pricing page](https://api-docs.deepseek.com/quick_start/pricing/);

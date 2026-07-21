@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import math
 import re
+import struct
 from collections import Counter
 from collections.abc import Callable
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
@@ -12,8 +14,15 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Literal, Protocol, cast
 
-from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
+from codecairn.evaluation.artifacts import (
+    canonical_json,
+    file_sha256,
+    read_json,
+    write_bytes_exclusive,
+    write_json_exclusive,
+)
 from codecairn.evaluation.model import ModelResponse, TextModel
+from codecairn.memory.embedding import EmbeddingProvider
 from codecairn.memory.models import (
     EvidenceFact,
     EvidenceReference,
@@ -39,7 +48,7 @@ CATEGORY_NAMES = {
 }
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
 
-RunMode = Literal["full", "smoke"]
+RunMode = Literal["full", "smoke", "retrieval"]
 ExecutionPhase = Literal["all", "ingest", "questions"]
 
 
@@ -130,6 +139,8 @@ class ConversationMemory(Protocol):
 
     def recall(self, question: str, *, limit: int) -> RecallResult: ...
 
+    def corpus_snapshot(self) -> dict[str, object]: ...
+
 
 @dataclass(frozen=True, slots=True)
 class LoCoMoRunConfig:
@@ -151,12 +162,51 @@ class LoCoMoRunConfig:
     retrieval_config: dict[str, object] | None = None
     question_set_path: Path | None = None
     execution_phase: ExecutionPhase = "all"
+    corpus_path: Path | None = None
+    query_vectors_path: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class LoCoMoRunArtifact:
     run_dir: Path
     summary: dict[str, object]
+
+
+@dataclass(frozen=True, slots=True)
+class LoCoMoCorpusConfig:
+    dataset_path: Path
+    output_root: Path
+    corpus_id: str
+    repository_commit: str
+    conversation_ids: tuple[str, ...] = ()
+    expected_dataset_sha256: str | None = LOCOMO_DATASET_SHA256
+    retrieval_config: dict[str, object] | None = None
+    resume: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class LoCoMoCorpusArtifact:
+    corpus_dir: Path
+    content_sha256: str
+    manifest: dict[str, object]
+
+
+@dataclass(frozen=True, slots=True)
+class LoCoMoQueryVectorConfig:
+    dataset_path: Path
+    output_root: Path
+    vector_set_id: str
+    categories: tuple[int, ...] = (1, 2, 3, 4)
+    conversation_ids: tuple[str, ...] = ()
+    expected_dataset_sha256: str | None = LOCOMO_DATASET_SHA256
+    question_set_path: Path | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class LoCoMoQueryVectorArtifact:
+    vector_set_dir: Path
+    content_sha256: str
+    manifest: dict[str, object]
 
 
 MemoryFactory = Callable[[Path], ConversationMemory]
@@ -243,6 +293,35 @@ class CodeCairnConversationMemory:
     def recall(self, question: str, *, limit: int) -> RecallResult:
         return self._runtime.recall(question, repo_key=self._repo_key, limit=limit)
 
+    def corpus_snapshot(self) -> dict[str, object]:
+        memories = self._runtime.list_memories(repo_key=self._repo_key)
+        truth_fingerprints = sorted(
+            (memory.repo_key, memory.memory_id, memory.content_sha256 or "") for memory in memories
+        )
+        index_fingerprint_set, document_fingerprint_set, vector_sha256 = (
+            self._cascade.index_corpus_snapshot()
+        )
+        index_fingerprints = sorted(index_fingerprint_set)
+        if index_fingerprints != truth_fingerprints:
+            raise ValueError("LoCoMo corpus memory fingerprints do not match its index")
+        document_fingerprints = sorted(
+            (asdict(item) for item in document_fingerprint_set),
+            key=lambda item: (
+                str(item["repo_key"]),
+                str(item["memory_id"]),
+                str(item["document_id"]),
+            ),
+        )
+        health = asdict(self._cascade.health())
+        if any(health.get(field) != 0 for field in ("pending", "leased", "failed", "stale")):
+            raise ValueError("LoCoMo corpus index queue is not idle")
+        return {
+            "memory_fingerprints": [list(item) for item in truth_fingerprints],
+            "document_fingerprints": document_fingerprints,
+            "vector_sha256": vector_sha256,
+            "index_health": health,
+        }
+
 
 def load_locomo_dataset(path: Path) -> LoCoMoDataset:
     sha256 = file_sha256(path)
@@ -328,11 +407,438 @@ def load_locomo_question_set(path: Path, *, dataset: LoCoMoDataset) -> LoCoMoQue
     )
 
 
+def build_locomo_corpus(
+    config: LoCoMoCorpusConfig,
+    *,
+    memory_factory: MemoryFactory,
+) -> LoCoMoCorpusArtifact:
+    """Build one content-addressed LoCoMo corpus for multiple recall variants."""
+    if _SAFE_ID.fullmatch(config.corpus_id) is None:
+        raise ValueError("corpus_id must be a safe path segment")
+    if not config.repository_commit.strip():
+        raise ValueError("repository_commit must not be empty")
+    dataset = load_locomo_dataset(config.dataset_path)
+    if (
+        config.expected_dataset_sha256 is not None
+        and dataset.sha256 != config.expected_dataset_sha256
+    ):
+        raise ValueError("LoCoMo dataset digest does not match the corpus contract")
+    selected = _select_conversations(dataset, config.conversation_ids)
+    output_root = config.output_root.resolve()
+    building_dir = (output_root / f".building-{config.corpus_id}").resolve()
+    if not building_dir.is_relative_to(output_root):
+        raise ValueError("LoCoMo corpus directory escapes the output root")
+    if config.resume:
+        if not building_dir.is_dir():
+            raise FileNotFoundError(f"LoCoMo corpus build does not exist: {building_dir}")
+    else:
+        building_dir.mkdir(parents=True, exist_ok=False)
+
+    for conversation in selected:
+        _ingest_conversation(
+            conversation,
+            resume=config.resume,
+            dataset_sha256=dataset.sha256,
+            artifact_dir=building_dir,
+            memory_factory=memory_factory,
+        )
+
+    ingest_records = [
+        _required_dict(read_json(path), field="corpus ingest checkpoint")
+        for path in sorted((building_dir / "checkpoints" / "ingest").glob("*.json"))
+    ]
+    if len(ingest_records) != len(selected):
+        raise ValueError("LoCoMo corpus is missing ingest checkpoints")
+    snapshots = {
+        conversation.sample_id: memory_factory(
+            building_dir / "runtime" / conversation.sample_id
+        ).corpus_snapshot()
+        for conversation in selected
+    }
+    embedding = _corpus_embedding_contract(config.retrieval_config)
+    build_contract = {
+        "schema_version": 1,
+        "dataset_sha256": dataset.sha256,
+        "conversation_ids": [conversation.sample_id for conversation in selected],
+        "projection_contract": "locomo-turn-memory-v1",
+        "embedding": embedding,
+    }
+    build_contract_sha256 = _canonical_sha256(build_contract)
+    content = {
+        "build_contract_sha256": build_contract_sha256,
+        "dataset_sha256": dataset.sha256,
+        "conversation_ids": [conversation.sample_id for conversation in selected],
+        "ingest_checkpoints": ingest_records,
+        "corpus_snapshots": snapshots,
+    }
+    content_sha256 = _canonical_sha256(content)
+    manifest: dict[str, object] = {
+        "schema_version": 1,
+        "artifact_kind": "locomo-corpus",
+        "artifact_id": config.corpus_id,
+        "status": "complete",
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "repository_commit": config.repository_commit,
+        "build_contract": build_contract,
+        "build_contract_sha256": build_contract_sha256,
+        "content": content,
+        "content_sha256": content_sha256,
+        "dataset": {
+            "url": LOCOMO_DATASET_URL,
+            "sha256": dataset.sha256,
+            "license": LOCOMO_LICENSE,
+        },
+        "selection": {
+            "conversation_ids": [conversation.sample_id for conversation in selected],
+        },
+        "embedding": embedding,
+        "counts": {
+            "conversation_count": len(selected),
+            "session_count": sum(_required_int(item, "session_count") for item in ingest_records),
+            "turn_count": sum(_required_int(item, "turn_count") for item in ingest_records),
+            "accepted_memory_count": sum(
+                _required_int(item, "accepted_memory_count") for item in ingest_records
+            ),
+            "rejected_memory_count": sum(
+                _required_int(item, "rejected_memory_count") for item in ingest_records
+            ),
+        },
+    }
+    write_json_exclusive(building_dir / "manifest.json", manifest)
+    corpus_dir = (output_root / f"corpus-{content_sha256[:16]}").resolve()
+    if corpus_dir.exists():
+        raise FileExistsError(f"LoCoMo corpus already exists: {corpus_dir}")
+    building_dir.rename(corpus_dir)
+    return LoCoMoCorpusArtifact(
+        corpus_dir=corpus_dir,
+        content_sha256=content_sha256,
+        manifest=manifest,
+    )
+
+
+def _load_locomo_corpus(
+    path: Path,
+    *,
+    dataset: LoCoMoDataset,
+    selected: tuple[LoCoMoConversation, ...],
+    retrieval_config: dict[str, object] | None,
+    memory_factory: MemoryFactory,
+) -> dict[str, object]:
+    corpus_dir = path.resolve()
+    if not corpus_dir.is_dir():
+        raise FileNotFoundError(f"LoCoMo corpus does not exist: {corpus_dir}")
+    manifest = _required_dict(read_json(corpus_dir / "manifest.json"), field="corpus manifest")
+    if (
+        manifest.get("schema_version") != 1
+        or manifest.get("artifact_kind") != "locomo-corpus"
+        or manifest.get("status") != "complete"
+    ):
+        raise ValueError("LoCoMo corpus manifest is not a complete supported artifact")
+    build_contract = _required_dict(manifest.get("build_contract"), field="corpus build contract")
+    build_contract_sha256 = _required_str(manifest, "build_contract_sha256")
+    if _canonical_sha256(build_contract) != build_contract_sha256:
+        raise ValueError("LoCoMo corpus build contract digest does not match")
+    content = _required_dict(manifest.get("content"), field="corpus content")
+    content_sha256 = _required_str(manifest, "content_sha256")
+    if _canonical_sha256(content) != content_sha256:
+        raise ValueError("LoCoMo corpus content digest does not match")
+    if corpus_dir.name != f"corpus-{content_sha256[:16]}":
+        raise ValueError("LoCoMo corpus directory name does not match its content digest")
+    if build_contract.get("dataset_sha256") != dataset.sha256:
+        raise ValueError("LoCoMo corpus targets a different dataset")
+    expected_ids = [conversation.sample_id for conversation in selected]
+    if build_contract.get("conversation_ids") != expected_ids:
+        raise ValueError("LoCoMo corpus conversation selection does not match the run")
+    if build_contract.get("embedding") != _corpus_embedding_contract(retrieval_config):
+        raise ValueError("LoCoMo corpus embedding contract does not match the run")
+    raw_ingests = content.get("ingest_checkpoints")
+    if not isinstance(raw_ingests, list) or any(not isinstance(item, dict) for item in raw_ingests):
+        raise ValueError("LoCoMo corpus content has invalid ingest checkpoints")
+    ingest_records = [
+        _required_dict(read_json(item), field="corpus ingest checkpoint")
+        for item in sorted((corpus_dir / "checkpoints" / "ingest").glob("*.json"))
+    ]
+    if ingest_records != raw_ingests or len(ingest_records) != len(selected):
+        raise ValueError("LoCoMo corpus ingest checkpoints do not match its content digest")
+    for conversation, ingest in zip(selected, ingest_records, strict=True):
+        if ingest.get("sample_id") != conversation.sample_id:
+            raise ValueError("LoCoMo corpus ingest checkpoint order does not match selection")
+        relative_root = _required_str(ingest, "memory_root")
+        memory_root = (corpus_dir / relative_root).resolve()
+        if not memory_root.is_relative_to(corpus_dir) or not memory_root.is_dir():
+            raise ValueError("LoCoMo corpus ingest checkpoint has no runtime state")
+        snapshots = _required_dict(content.get("corpus_snapshots"), field="corpus snapshots")
+        expected_snapshot = _required_dict(
+            snapshots.get(conversation.sample_id), field="conversation corpus snapshot"
+        )
+        if memory_factory(memory_root).corpus_snapshot() != expected_snapshot:
+            raise ValueError("LoCoMo corpus runtime fingerprints do not match its manifest")
+    return manifest
+
+
+def _corpus_embedding_contract(
+    retrieval_config: dict[str, object] | None,
+) -> dict[str, object]:
+    if retrieval_config is None:
+        raise ValueError("LoCoMo shared corpus requires an explicit retrieval configuration")
+    return _required_dict(retrieval_config.get("embedding"), field="retrieval embedding")
+
+
+def _canonical_sha256(value: object) -> str:
+    return hashlib.sha256(canonical_json(value).encode()).hexdigest()
+
+
+def build_locomo_query_vectors(
+    config: LoCoMoQueryVectorConfig,
+    *,
+    embedder: EmbeddingProvider,
+) -> LoCoMoQueryVectorArtifact:
+    """Freeze query vectors for one exact LoCoMo question selection."""
+    if _SAFE_ID.fullmatch(config.vector_set_id) is None:
+        raise ValueError("vector_set_id must be a safe path segment")
+    if not config.categories or any(
+        category not in CATEGORY_NAMES for category in config.categories
+    ):
+        raise ValueError("categories must contain known LoCoMo categories")
+    dataset = load_locomo_dataset(config.dataset_path)
+    if (
+        config.expected_dataset_sha256 is not None
+        and dataset.sha256 != config.expected_dataset_sha256
+    ):
+        raise ValueError("LoCoMo dataset digest does not match the query-vector contract")
+    selected = _select_conversations(dataset, config.conversation_ids)
+    question_set = (
+        None
+        if config.question_set_path is None
+        else load_locomo_question_set(config.question_set_path, dataset=dataset)
+    )
+    selected_question_ids = None if question_set is None else set(question_set.question_ids)
+    questions = [
+        question
+        for conversation in selected
+        for question in conversation.questions
+        if question.category in config.categories
+        and (selected_question_ids is None or question.question_id in selected_question_ids)
+    ]
+    if (
+        question_set is not None
+        and {item.question_id for item in questions} != selected_question_ids
+    ):
+        raise ValueError("LoCoMo filters exclude part of the frozen query-vector question set")
+    if not questions:
+        raise ValueError("LoCoMo query-vector selection must not be empty")
+    output_root = config.output_root.resolve()
+    building_dir = (output_root / f".building-{config.vector_set_id}").resolve()
+    if not building_dir.is_relative_to(output_root):
+        raise ValueError("LoCoMo query-vector directory escapes the output root")
+    building_dir.mkdir(parents=True, exist_ok=False)
+
+    records: list[dict[str, object]] = []
+    for question in questions:
+        normalized = _normalize_query(question.question)
+        vector = embedder.embed_query(normalized)
+        _validate_frozen_vector(vector, dimension=embedder.dimension)
+        packed = struct.pack(f"<{embedder.dimension}f", *vector)
+        records.append(
+            {
+                "question_id": question.question_id,
+                "query_role": "question",
+                "query_payload_sha256": hashlib.sha256(normalized.encode()).hexdigest(),
+                "encoding": "f32le-base64",
+                "dimension": embedder.dimension,
+                "vector": base64.b64encode(packed).decode("ascii"),
+            }
+        )
+    vectors_payload = b"".join(
+        json.dumps(record, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode()
+        + b"\n"
+        for record in records
+    )
+    vectors_sha256 = hashlib.sha256(vectors_payload).hexdigest()
+    embedding = _embedding_provider_identity(embedder)
+    question_ids = [question.question_id for question in questions]
+    selection_sha256 = hashlib.sha256(
+        json.dumps(sorted(question_ids), ensure_ascii=False, separators=(",", ":")).encode()
+    ).hexdigest()
+    content = {
+        "dataset_sha256": dataset.sha256,
+        "selection_sha256": selection_sha256,
+        "question_ids": question_ids,
+        "embedding": embedding,
+        "normalization_contract": "unicode-strip-v1",
+        "vectors_sha256": vectors_sha256,
+    }
+    content_sha256 = _canonical_sha256(content)
+    manifest: dict[str, object] = {
+        "schema_version": 1,
+        "artifact_kind": "locomo-query-vectors",
+        "artifact_id": config.vector_set_id,
+        "status": "complete",
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "dataset_sha256": dataset.sha256,
+        "selection_sha256": selection_sha256,
+        "question_count": len(records),
+        "question_set": None if question_set is None else question_set.public_manifest,
+        "embedding": embedding,
+        "normalization_contract": "unicode-strip-v1",
+        "vectors_sha256": vectors_sha256,
+        "content": content,
+        "content_sha256": content_sha256,
+    }
+    write_bytes_exclusive(building_dir / "vectors.jsonl", vectors_payload)
+    write_json_exclusive(building_dir / "manifest.json", manifest)
+    vector_set_dir = (output_root / f"queries-{content_sha256[:16]}").resolve()
+    if vector_set_dir.exists():
+        raise FileExistsError(f"LoCoMo query-vector set already exists: {vector_set_dir}")
+    building_dir.rename(vector_set_dir)
+    return LoCoMoQueryVectorArtifact(
+        vector_set_dir=vector_set_dir,
+        content_sha256=content_sha256,
+        manifest=manifest,
+    )
+
+
+class FrozenQueryEmbeddingAdapter:
+    """Read exact query vectors from an immutable artifact and fail closed."""
+
+    def __init__(self, vector_set_dir: Path) -> None:
+        self._vector_set_dir = vector_set_dir.resolve()
+        manifest = _required_dict(
+            read_json(self._vector_set_dir / "manifest.json"),
+            field="query-vector manifest",
+        )
+        if (
+            manifest.get("schema_version") != 1
+            or manifest.get("artifact_kind") != "locomo-query-vectors"
+            or manifest.get("status") != "complete"
+        ):
+            raise ValueError("LoCoMo query-vector manifest is not a complete supported artifact")
+        content = _required_dict(manifest.get("content"), field="query-vector content")
+        content_sha256 = _required_str(manifest, "content_sha256")
+        if _canonical_sha256(content) != content_sha256:
+            raise ValueError("LoCoMo query-vector content digest does not match")
+        if self._vector_set_dir.name != f"queries-{content_sha256[:16]}":
+            raise ValueError("LoCoMo query-vector directory does not match its content digest")
+        vectors_path = self._vector_set_dir / "vectors.jsonl"
+        if file_sha256(vectors_path) != _required_str(manifest, "vectors_sha256"):
+            raise ValueError("LoCoMo query-vector payload digest does not match")
+        embedding = _required_dict(manifest.get("embedding"), field="query-vector embedding")
+        self._model_id = _required_str(embedding, "model")
+        self._source_id = _required_str(embedding, "source")
+        self._revision = _required_str(embedding, "revision")
+        self._index_identity = _required_str(embedding, "index_identity")
+        self._dimension = _required_int(embedding, "dimension")
+        self._vectors: dict[str, tuple[float, ...]] = {}
+        observed_question_ids: list[str] = []
+        for line in vectors_path.read_text(encoding="utf-8").splitlines():
+            record = _required_dict(json.loads(line), field="query-vector record")
+            observed_question_ids.append(_required_str(record, "question_id"))
+            payload_sha256 = _required_str(record, "query_payload_sha256")
+            if record.get("encoding") != "f32le-base64":
+                raise ValueError("LoCoMo query-vector encoding is unsupported")
+            if _required_int(record, "dimension") != self._dimension:
+                raise ValueError("LoCoMo query-vector dimension does not match its manifest")
+            encoded = _required_str(record, "vector")
+            try:
+                raw = base64.b64decode(encoded, validate=True)
+                vector = tuple(struct.unpack(f"<{self._dimension}f", raw))
+            except (ValueError, struct.error) as error:
+                raise ValueError("LoCoMo query-vector payload is invalid") from error
+            _validate_frozen_vector(vector, dimension=self._dimension)
+            existing = self._vectors.get(payload_sha256)
+            if existing is not None and existing != vector:
+                raise ValueError("LoCoMo duplicate query payload has conflicting vectors")
+            self._vectors[payload_sha256] = vector
+        if (
+            manifest.get("question_count") != len(observed_question_ids)
+            or content.get("question_ids") != observed_question_ids
+        ):
+            raise ValueError("LoCoMo query-vector record count or identity does not match")
+
+    @property
+    def model_id(self) -> str:
+        return self._model_id
+
+    @property
+    def source_id(self) -> str:
+        return self._source_id
+
+    @property
+    def revision(self) -> str:
+        return self._revision
+
+    @property
+    def dimension(self) -> int:
+        return self._dimension
+
+    @property
+    def index_identity(self) -> str:
+        return self._index_identity
+
+    def embed_query(self, text: str) -> tuple[float, ...]:
+        payload_sha256 = hashlib.sha256(_normalize_query(text).encode()).hexdigest()
+        try:
+            return self._vectors[payload_sha256]
+        except KeyError as error:
+            raise KeyError("Query is not present in the frozen LoCoMo vector set") from error
+
+    def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+        raise RuntimeError("Frozen LoCoMo query vectors cannot perform document embedding")
+
+
+def _load_query_vector_manifest(
+    path: Path,
+    *,
+    dataset_sha256: str,
+    question_ids: set[str],
+    retrieval_config: dict[str, object] | None,
+) -> dict[str, object]:
+    FrozenQueryEmbeddingAdapter(path)
+    manifest = _required_dict(read_json(path.resolve() / "manifest.json"), field="query manifest")
+    if manifest.get("dataset_sha256") != dataset_sha256:
+        raise ValueError("LoCoMo query vectors target a different dataset")
+    selection_sha256 = hashlib.sha256(
+        json.dumps(sorted(question_ids), ensure_ascii=False, separators=(",", ":")).encode()
+    ).hexdigest()
+    if manifest.get("selection_sha256") != selection_sha256 or manifest.get(
+        "question_count"
+    ) != len(question_ids):
+        raise ValueError("LoCoMo query-vector selection does not match the run")
+    expected_embedding = _corpus_embedding_contract(retrieval_config)
+    observed_embedding = _required_dict(manifest.get("embedding"), field="query-vector embedding")
+    for field in ("model", "source", "revision", "dimension"):
+        if observed_embedding.get(field) != expected_embedding.get(field):
+            raise ValueError(f"LoCoMo query-vector embedding {field} does not match the run")
+    return manifest
+
+
+def _embedding_provider_identity(embedder: EmbeddingProvider) -> dict[str, object]:
+    return {
+        "model": embedder.model_id,
+        "source": embedder.source_id,
+        "revision": embedder.revision,
+        "dimension": embedder.dimension,
+        "index_identity": embedder.index_identity,
+    }
+
+
+def _normalize_query(text: str) -> str:
+    normalized = text.strip()
+    if not normalized:
+        raise ValueError("LoCoMo query must not be empty")
+    return normalized
+
+
+def _validate_frozen_vector(vector: tuple[float, ...], *, dimension: int) -> None:
+    if len(vector) != dimension or any(not math.isfinite(value) for value in vector):
+        raise ValueError("LoCoMo query vector does not match its finite dimension contract")
+
+
 def run_locomo(
     config: LoCoMoRunConfig,
     *,
     memory_factory: MemoryFactory,
-    answer_model: TextModel,
+    answer_model: TextModel | None,
     judge_model: TextModel | None,
 ) -> LoCoMoRunArtifact:
     _validate_config(config, judge_model=judge_model)
@@ -360,6 +866,27 @@ def run_locomo(
         raise ValueError(
             "LoCoMo conversation or category filters exclude part of the frozen question set"
         )
+    corpus = (
+        None
+        if config.corpus_path is None
+        else _load_locomo_corpus(
+            config.corpus_path,
+            dataset=dataset,
+            selected=selected,
+            retrieval_config=config.retrieval_config,
+            memory_factory=memory_factory,
+        )
+    )
+    query_vectors = (
+        None
+        if config.query_vectors_path is None
+        else _load_query_vector_manifest(
+            config.query_vectors_path,
+            dataset_sha256=dataset.sha256,
+            question_ids=eligible_question_ids,
+            retrieval_config=config.retrieval_config,
+        )
+    )
     output_root = config.output_root.resolve()
     run_dir = (output_root / config.run_id).resolve()
     if not run_dir.is_relative_to(output_root):
@@ -412,7 +939,25 @@ def run_locomo(
             **(config.retrieval_config or {"method": "hybrid-rrf"}),
             "top_k": config.top_k,
         },
-        "answer_model": answer_model.public_config,
+        "corpus": (
+            None
+            if corpus is None
+            else {
+                "artifact_id": _required_str(corpus, "artifact_id"),
+                "content_sha256": _required_str(corpus, "content_sha256"),
+                "build_contract_sha256": _required_str(corpus, "build_contract_sha256"),
+            }
+        ),
+        "query_vectors": (
+            None
+            if query_vectors is None
+            else {
+                "artifact_id": _required_str(query_vectors, "artifact_id"),
+                "content_sha256": _required_str(query_vectors, "content_sha256"),
+                "selection_sha256": _required_str(query_vectors, "selection_sha256"),
+            }
+        ),
+        "answer_model": None if answer_model is None else answer_model.public_config,
         "judge_model": None if judge_model is None else judge_model.public_config,
         "judge_votes": config.judge_votes if config.mode == "full" else 0,
         "judge_response_max_attempts": (
@@ -426,7 +971,11 @@ def run_locomo(
         "ingest_max_workers": 1,
         "retrieval_max_workers": 1,
         "retrieval_thread_count": 1,
-        "execution_phase_contract": "process-isolated-ingest-then-questions-v1",
+        "execution_phase_contract": (
+            "process-isolated-ingest-then-questions-v1"
+            if corpus is None
+            else "verified-shared-corpus-v1"
+        ),
         "checkpoint_policy": "missing-only",
     }
     if config.resume:
@@ -449,13 +998,13 @@ def run_locomo(
         write_json_exclusive(run_dir / "manifest.json", manifest)
 
     work = list(enumerate(selected))
-    if config.execution_phase != "questions":
+    if corpus is None and config.execution_phase != "questions":
         for _, conversation in work:
             _ingest_conversation(
                 conversation,
-                config=config,
+                resume=config.resume,
                 dataset_sha256=dataset.sha256,
-                run_dir=run_dir,
+                artifact_dir=run_dir,
                 memory_factory=memory_factory,
             )
 
@@ -485,6 +1034,7 @@ def run_locomo(
                 conversation,
                 config=config,
                 run_dir=run_dir,
+                corpus_dir=None if corpus is None else config.corpus_path,
                 memory_factory=memory_factory,
                 answer_model=answer_model,
                 judge_model=judge_model,
@@ -497,24 +1047,39 @@ def run_locomo(
 
     summary = report_locomo(run_dir)
     write_json_exclusive(run_dir / "summary.json", summary)
+    if corpus is not None:
+        _load_locomo_corpus(
+            cast(Path, config.corpus_path),
+            dataset=dataset,
+            selected=selected,
+            retrieval_config=config.retrieval_config,
+            memory_factory=memory_factory,
+        )
+    if query_vectors is not None:
+        _load_query_vector_manifest(
+            cast(Path, config.query_vectors_path),
+            dataset_sha256=dataset.sha256,
+            question_ids=eligible_question_ids,
+            retrieval_config=config.retrieval_config,
+        )
     return LoCoMoRunArtifact(run_dir=run_dir, summary=summary)
 
 
 def _ingest_conversation(
     conversation: LoCoMoConversation,
     *,
-    config: LoCoMoRunConfig,
+    resume: bool,
     dataset_sha256: str,
-    run_dir: Path,
+    artifact_dir: Path,
     memory_factory: MemoryFactory,
 ) -> None:
-    memory_root = run_dir / "runtime" / conversation.sample_id
-    ingest_path = run_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
+    memory_root = artifact_dir / "runtime" / conversation.sample_id
+    ingest_path = artifact_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
     if ingest_path.exists() and not memory_root.is_dir():
         raise ValueError(f"LoCoMo ingest checkpoint has no runtime state: {conversation.sample_id}")
     if ingest_path.exists():
         return
-    memory_root.mkdir(parents=True, exist_ok=config.resume)
+    memory_root.mkdir(parents=True, exist_ok=resume)
     memory = memory_factory(memory_root)
     ingest = memory.ingest(conversation, dataset_sha256=dataset_sha256)
     write_json_exclusive(
@@ -523,7 +1088,7 @@ def _ingest_conversation(
             "sample_id": conversation.sample_id,
             "speaker_a": conversation.speaker_a,
             "speaker_b": conversation.speaker_b,
-            "memory_root": str(memory_root.relative_to(run_dir)),
+            "memory_root": str(memory_root.relative_to(artifact_dir)),
             **asdict(ingest),
         },
     )
@@ -535,15 +1100,17 @@ def _schedule_conversation_questions(
     *,
     config: LoCoMoRunConfig,
     run_dir: Path,
+    corpus_dir: Path | None,
     memory_factory: MemoryFactory,
-    answer_model: TextModel,
+    answer_model: TextModel | None,
     judge_model: TextModel | None,
     selected_question_ids: set[str] | None,
     executor: ThreadPoolExecutor,
     in_flight: set[Future[None]],
 ) -> None:
-    memory_root = run_dir / "runtime" / conversation.sample_id
-    ingest_path = run_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
+    runtime_owner = run_dir if corpus_dir is None else corpus_dir.resolve()
+    memory_root = runtime_owner / "runtime" / conversation.sample_id
+    ingest_path = runtime_owner / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
     if not ingest_path.is_file() or not memory_root.is_dir():
         raise ValueError(
             f"LoCoMo conversation is not ready for questions: {conversation.sample_id}"
@@ -575,6 +1142,13 @@ def _schedule_conversation_questions(
             retrieval_config=config.retrieval_config,
             top_k=config.top_k,
         )
+        if config.mode == "retrieval":
+            write_json_exclusive(
+                question_path,
+                _retrieval_only_record(conversation, question, recall=recall),
+            )
+            continue
+        assert answer_model is not None
         in_flight.add(
             executor.submit(
                 _complete_question,
@@ -791,7 +1365,13 @@ def report_locomo(run_dir: Path) -> dict[str, object]:
         "accuracy": round(correct / scored, 6) if scored else None,
         "by_category": by_category if mode == "full" else {},
         "usage": usage,
-        "unscored_reason": "smoke mode is never scored" if mode == "smoke" else None,
+        "unscored_reason": (
+            "smoke mode is never scored"
+            if mode == "smoke"
+            else "retrieval mode never calls answer or judge"
+            if mode == "retrieval"
+            else None
+        ),
     }
     if mode == "full":
         report["judge_votes"] = expected_votes
@@ -944,6 +1524,27 @@ def _complete_question(
         seed=seed,
     )
     write_json_exclusive(question_path, record)
+
+
+def _retrieval_only_record(
+    conversation: LoCoMoConversation,
+    question: LoCoMoQuestion,
+    *,
+    recall: RecallResult | dict[str, object],
+) -> dict[str, object]:
+    if isinstance(recall, dict):
+        return recall
+    return {
+        "schema_version": 1,
+        "sample_id": conversation.sample_id,
+        "question_id": question.question_id,
+        "question": question.question,
+        "category": question.category,
+        "category_name": CATEGORY_NAMES.get(question.category, "unknown"),
+        "status": "completed",
+        "retrieval": asdict(recall.sidecar),
+        "judge_votes": [],
+    }
 
 
 def _run_question(
@@ -1304,6 +1905,8 @@ def _validate_config(config: LoCoMoRunConfig, *, judge_model: TextModel | None) 
         raise ValueError("run_id must be a safe path segment")
     if not config.repository_commit.strip():
         raise ValueError("repository_commit must not be empty")
+    if config.mode not in {"full", "smoke", "retrieval"}:
+        raise ValueError("mode must be full, smoke, or retrieval")
     if not 1 <= config.top_k <= 20:
         raise ValueError("top_k must be between 1 and 20")
     if not config.categories or any(
@@ -1324,7 +1927,9 @@ def _validate_config(config: LoCoMoRunConfig, *, judge_model: TextModel | None) 
         raise ValueError("max_workers must be positive")
     if config.execution_phase not in {"all", "ingest", "questions"}:
         raise ValueError("execution_phase must be all, ingest, or questions")
-    if config.execution_phase == "questions" and not config.resume:
+    if config.corpus_path is not None and config.execution_phase != "questions":
+        raise ValueError("Shared-corpus LoCoMo runs require execution_phase=questions")
+    if config.execution_phase == "questions" and config.corpus_path is None and not config.resume:
         raise ValueError("The questions execution phase requires resume=True")
 
 

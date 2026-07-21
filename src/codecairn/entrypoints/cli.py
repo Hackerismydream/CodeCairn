@@ -15,6 +15,8 @@ from codecairn.service.application import (
     EvaluationSuite,
     EvidenceBundleBuildRequest,
     LoCoMoAblationRequest,
+    LoCoMoCorpusBuildRequest,
+    LoCoMoQueryVectorBuildRequest,
 )
 
 ApplicationFactory = Callable[[Path], CodeCairnApplication]
@@ -92,10 +94,20 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
             Path | None,
             typer.Option("--question-set", exists=True, dir_okay=False, readable=True),
         ] = None,
+        corpus: Annotated[
+            Path | None,
+            typer.Option("--corpus", exists=True, file_okay=False, readable=True),
+        ] = None,
+        query_vectors: Annotated[
+            Path | None,
+            typer.Option("--query-vectors", exists=True, file_okay=False, readable=True),
+        ] = None,
     ) -> None:
         """Execute one immutable evaluation suite run."""
-        if mode not in {"full", "smoke"}:
-            raise typer.BadParameter("mode must be 'full' or 'smoke'", param_hint="--mode")
+        if mode not in {"full", "smoke", "retrieval"}:
+            raise typer.BadParameter(
+                "mode must be 'full', 'smoke', or 'retrieval'", param_hint="--mode"
+            )
         if execution_phase not in {"all", "ingest", "questions"}:
             raise typer.BadParameter(
                 "execution-phase must be 'all', 'ingest', or 'questions'",
@@ -106,6 +118,13 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 "execution-phase is supported only for LoCoMo",
                 param_hint="--execution-phase",
             )
+        if suite != "locomo" and (corpus is not None or query_vectors is not None):
+            raise typer.BadParameter(
+                "corpus and query-vectors are supported only for LoCoMo",
+                param_hint="--corpus",
+            )
+        if corpus is not None and execution_phase == "all":
+            execution_phase = "questions"
         result = application_factory(root).run_evaluation(
             EvaluationRunRequest(
                 suite=_evaluation_suite(suite),
@@ -113,13 +132,66 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 output_root=output_root,
                 run_id=run_id,
                 repository_commit=repository_commit,
-                mode=cast(Literal["full", "smoke"], mode),
+                mode=cast(Literal["full", "smoke", "retrieval"], mode),
                 model=model,
                 judge_model=judge_model,
                 max_workers=max_workers,
                 resume=resume,
                 question_set_path=question_set,
                 execution_phase=cast(Literal["all", "ingest", "questions"], execution_phase),
+                corpus_path=corpus,
+                query_vectors_path=query_vectors,
+            )
+        )
+        typer.echo(json.dumps(result, sort_keys=True))
+
+    @evaluation_app.command("build-locomo-corpus")
+    def build_locomo_corpus_command(
+        input_path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
+        corpus_id: Annotated[str, typer.Option("--corpus-id")],
+        repository_commit: Annotated[str, typer.Option("--repository-commit")],
+        output_root: Annotated[Path, typer.Option("--output-root")],
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        resume: Annotated[bool, typer.Option("--resume")] = False,
+        expected_dataset_sha256: Annotated[
+            str | None, typer.Option("--expected-dataset-sha256")
+        ] = None,
+    ) -> None:
+        """Build and atomically publish one reusable LoCoMo corpus."""
+        result = application_factory(root).build_locomo_corpus(
+            LoCoMoCorpusBuildRequest(
+                input_path=input_path,
+                output_root=output_root,
+                corpus_id=corpus_id,
+                repository_commit=repository_commit,
+                resume=resume,
+                expected_dataset_sha256=expected_dataset_sha256,
+            )
+        )
+        typer.echo(json.dumps(result, sort_keys=True))
+
+    @evaluation_app.command("build-locomo-query-vectors")
+    def build_locomo_query_vectors_command(
+        input_path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
+        vector_set_id: Annotated[str, typer.Option("--vector-set-id")],
+        output_root: Annotated[Path, typer.Option("--output-root")],
+        question_set: Annotated[
+            Path | None,
+            typer.Option("--question-set", exists=True, dir_okay=False, readable=True),
+        ] = None,
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        expected_dataset_sha256: Annotated[
+            str | None, typer.Option("--expected-dataset-sha256")
+        ] = None,
+    ) -> None:
+        """Freeze query vectors for one LoCoMo question selection."""
+        result = application_factory(root).build_locomo_query_vectors(
+            LoCoMoQueryVectorBuildRequest(
+                input_path=input_path,
+                output_root=output_root,
+                vector_set_id=vector_set_id,
+                question_set_path=question_set,
+                expected_dataset_sha256=expected_dataset_sha256,
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))

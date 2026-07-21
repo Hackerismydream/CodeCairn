@@ -1,3 +1,4 @@
+import hashlib
 import json
 from pathlib import Path
 
@@ -7,6 +8,7 @@ from codecairn.bootstrap import app, create_cascade, create_runtime
 
 FIXTURE = Path(__file__).parent / "fixtures" / "codex" / "failed_command.jsonl"
 CLAUDE_FIXTURE = Path(__file__).parent / "fixtures" / "claude" / "failed_command.jsonl"
+LOCOMO_FIXTURE = Path(__file__).parent / "fixtures" / "locomo" / "synthetic.json"
 
 
 def test_cli_import_and_list_share_the_runtime_contract(tmp_path: Path) -> None:
@@ -170,6 +172,62 @@ def test_doctor_verifies_the_hierarchical_document_projection(tmp_path: Path) ->
     assert diagnostics["index"]["ready"] is True
     assert diagnostics["index"]["document_fingerprint_count"] == 4
     assert diagnostics["index"]["truth_document_fingerprint_count"] == 4
+
+
+def test_cli_builds_reusable_locomo_corpus_and_query_vectors(tmp_path: Path) -> None:
+    runner = CliRunner()
+    runtime_root = tmp_path / "runtime"
+    corpus_root = tmp_path / "corpora"
+    vector_root = tmp_path / "query-vectors"
+    dataset_sha256 = hashlib.sha256(LOCOMO_FIXTURE.read_bytes()).hexdigest()
+
+    corpus = runner.invoke(
+        app,
+        [
+            "eval",
+            "build-locomo-corpus",
+            str(LOCOMO_FIXTURE),
+            "--corpus-id",
+            "cli-corpus",
+            "--repository-commit",
+            "abc123",
+            "--output-root",
+            str(corpus_root),
+            "--root",
+            str(runtime_root),
+            "--expected-dataset-sha256",
+            dataset_sha256,
+        ],
+    )
+    assert corpus.exit_code == 0, corpus.output
+    corpus_payload = json.loads(corpus.stdout)
+    corpus_dir = Path(corpus_payload["corpus_dir"])
+    assert corpus_dir.is_dir()
+    assert corpus_payload["counts"]["conversation_count"] == 2
+    corpus_manifest = json.loads((corpus_dir / "manifest.json").read_text(encoding="utf-8"))
+    snapshots = corpus_manifest["content"]["corpus_snapshots"]
+    assert all(snapshot["vector_sha256"] for snapshot in snapshots.values())
+
+    vectors = runner.invoke(
+        app,
+        [
+            "eval",
+            "build-locomo-query-vectors",
+            str(LOCOMO_FIXTURE),
+            "--vector-set-id",
+            "cli-queries",
+            "--output-root",
+            str(vector_root),
+            "--root",
+            str(runtime_root),
+            "--expected-dataset-sha256",
+            dataset_sha256,
+        ],
+    )
+    assert vectors.exit_code == 0, vectors.output
+    vector_payload = json.loads(vectors.stdout)
+    assert Path(vector_payload["query_vectors_dir"]).is_dir()
+    assert vector_payload["question_count"] == 4
 
 
 def test_cli_help_lists_complete_public_surface() -> None:

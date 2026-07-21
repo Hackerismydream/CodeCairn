@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "selection_id": "locomo-retrieval-canary-20-v1",
+  "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "algorithm": "stratified-sha256-v1",
+  "seed": "codecairn-locomo-canary-20-v1",
+  "category_targets": {
+    "1": 5,
+    "2": 5,
+    "3": 5,
+    "4": 5
+  },
+  "selection_sha256": "9a4fc0477fd24b54c28a61d5fe8f1cd03afe7eb858d30ca940156d75b59d1067"
+}

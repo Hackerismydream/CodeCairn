@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
+import struct
 from pathlib import Path
 from typing import cast
 
@@ -139,9 +141,20 @@ class LanceMemoryIndex:
         _memory_fingerprints, document_fingerprints = self.fingerprint_snapshot()
         return document_fingerprints
 
+    def vector_sha256(self) -> str:
+        """Hash canonical document IDs and stored float32 vectors."""
+        _memories, _documents, vector_sha256 = self.corpus_snapshot()
+        return vector_sha256
+
     def fingerprint_snapshot(
         self,
     ) -> tuple[set[tuple[str, str, str]], set[RecallDocumentFingerprint]]:
+        memory_fingerprints, document_fingerprints, _vector_sha256 = self.corpus_snapshot()
+        return memory_fingerprints, document_fingerprints
+
+    def corpus_snapshot(
+        self,
+    ) -> tuple[set[tuple[str, str, str]], set[RecallDocumentFingerprint], str]:
         with self._operation_lock:
             rows = self._validated_rows()
         memory_fingerprints = {
@@ -161,7 +174,14 @@ class LanceMemoryIndex:
             for episode, children in rows
             for row in (episode, *children)
         }
-        return memory_fingerprints, document_fingerprints
+        return (
+            memory_fingerprints,
+            document_fingerprints,
+            _vector_sha256(
+                rows,
+                dimension=self._embedder.dimension,
+            ),
+        )
 
     def vector_candidates(
         self,
@@ -410,6 +430,33 @@ class LanceMemoryIndex:
         if any(index.index_type == "FTS" for index in table.list_indices()):
             return
         table.create_index("content", config=FTS())
+
+
+def _vector_sha256(
+    rows: tuple[tuple[dict[str, object], tuple[dict[str, object], ...]], ...],
+    *,
+    dimension: int,
+) -> str:
+    documents = sorted(
+        (row for episode, children in rows for row in (episode, *children)),
+        key=lambda row: (str(row["repo_key"]), str(row["document_id"])),
+    )
+    digest = hashlib.sha256()
+    for row in documents:
+        identity = json.dumps(
+            [str(row["repo_key"]), str(row["document_id"])],
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode()
+        raw_vector = row.get("vector")
+        if not isinstance(raw_vector, list):
+            raise ValueError("LanceDB vector payload is invalid")
+        vector = tuple(float(item) for item in raw_vector)
+        _validate_vector(vector, dimension=dimension)
+        digest.update(len(identity).to_bytes(4, "big"))
+        digest.update(identity)
+        digest.update(struct.pack(f"<{dimension}f", *vector))
+    return digest.hexdigest()
 
 
 def _document_from_row(row: dict[str, object]) -> RecallDocument:

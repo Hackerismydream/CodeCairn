@@ -156,6 +156,40 @@ class MiniCascade:
     def index_document_fingerprints(self) -> set[RecallDocumentFingerprint]:
         return _document_fingerprints(self._index)
 
+    def index_vector_sha256(self) -> str:
+        method = getattr(self._index, "vector_sha256", None)
+        if not callable(method):
+            raise TypeError("Memory index does not expose a vector digest")
+        result = method()
+        if not isinstance(result, str) or not result:
+            raise TypeError("Memory index vector digest must be a non-empty string")
+        return result
+
+    def index_corpus_snapshot(
+        self,
+    ) -> tuple[set[tuple[str, str, str]], set[RecallDocumentFingerprint], str]:
+        method = getattr(self._index, "corpus_snapshot", None)
+        if not callable(method):
+            return (
+                self.index_fingerprints(),
+                self.index_document_fingerprints(),
+                self.index_vector_sha256(),
+            )
+        result = method()
+        if (
+            not isinstance(result, tuple)
+            or len(result) != 3
+            or not isinstance(result[0], set)
+            or not isinstance(result[1], set)
+            or not isinstance(result[2], str)
+            or not result[2]
+        ):
+            raise TypeError("Memory index corpus snapshot has an invalid shape")
+        return cast(
+            tuple[set[tuple[str, str, str]], set[RecallDocumentFingerprint], str],
+            result,
+        )
+
 
 def _system_clock_ms() -> int:
     return time.time_ns() // 1_000_000

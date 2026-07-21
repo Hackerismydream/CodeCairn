@@ -3,7 +3,7 @@
 import os
 import shutil
 from collections.abc import Mapping
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 from typing import cast
 
@@ -49,6 +49,8 @@ from codecairn.service.application import (
     EvaluationRunRequest,
     EvidenceBundleBuildRequest,
     LoCoMoAblationRequest,
+    LoCoMoCorpusBuildRequest,
+    LoCoMoQueryVectorBuildRequest,
 )
 from codecairn.service.cascade import MemoryIndex, MiniCascade
 from codecairn.service.recall import RecallEngine
@@ -577,6 +579,73 @@ class _LocalOperations(ApplicationOperations):
             )
         )
 
+    def build_locomo_corpus(self, request: LoCoMoCorpusBuildRequest) -> dict[str, object]:
+        from codecairn.evaluation.locomo import (
+            LOCOMO_DATASET_SHA256,
+            CodeCairnConversationMemory,
+            LoCoMoCorpusConfig,
+            build_locomo_corpus,
+        )
+
+        def memory_factory(root: Path) -> CodeCairnConversationMemory:
+            return CodeCairnConversationMemory(
+                runtime=create_runtime(root, retrieval=self._retrieval),
+                cascade=create_cascade(root, retrieval=self._retrieval),
+                repo_key=f"locomo/{root.name}",
+            )
+
+        artifact = build_locomo_corpus(
+            LoCoMoCorpusConfig(
+                dataset_path=request.input_path,
+                output_root=request.output_root,
+                corpus_id=request.corpus_id,
+                repository_commit=request.repository_commit,
+                retrieval_config=self._retrieval.public_config,
+                resume=request.resume,
+                expected_dataset_sha256=(
+                    LOCOMO_DATASET_SHA256
+                    if request.expected_dataset_sha256 is None
+                    else request.expected_dataset_sha256
+                ),
+            ),
+            memory_factory=memory_factory,
+        )
+        return {
+            "corpus_dir": str(artifact.corpus_dir),
+            "content_sha256": artifact.content_sha256,
+            "counts": artifact.manifest["counts"],
+        }
+
+    def build_locomo_query_vectors(
+        self,
+        request: LoCoMoQueryVectorBuildRequest,
+    ) -> dict[str, object]:
+        from codecairn.evaluation.locomo import (
+            LOCOMO_DATASET_SHA256,
+            LoCoMoQueryVectorConfig,
+            build_locomo_query_vectors,
+        )
+
+        artifact = build_locomo_query_vectors(
+            LoCoMoQueryVectorConfig(
+                dataset_path=request.input_path,
+                output_root=request.output_root,
+                vector_set_id=request.vector_set_id,
+                question_set_path=request.question_set_path,
+                expected_dataset_sha256=(
+                    LOCOMO_DATASET_SHA256
+                    if request.expected_dataset_sha256 is None
+                    else request.expected_dataset_sha256
+                ),
+            ),
+            embedder=self._retrieval.embedder,
+        )
+        return {
+            "query_vectors_dir": str(artifact.vector_set_dir),
+            "content_sha256": artifact.content_sha256,
+            "question_count": artifact.manifest["question_count"],
+        }
+
     def _run_locomo(
         self,
         request: EvaluationRunRequest,
@@ -585,15 +654,20 @@ class _LocalOperations(ApplicationOperations):
     ) -> dict[str, object]:
         from codecairn.evaluation.locomo import (
             CodeCairnConversationMemory,
+            FrozenQueryEmbeddingAdapter,
             LoCoMoRunConfig,
             run_locomo,
         )
         from codecairn.evaluation.providers import create_locomo_text_model
 
-        answer_model = create_locomo_text_model(
-            role="answer",
-            environment=os.environ,
-            model_override=request.model,
+        answer_model = (
+            None
+            if request.mode == "retrieval"
+            else create_locomo_text_model(
+                role="answer",
+                environment=os.environ,
+                model_override=request.model,
+            )
         )
         judge_model = (
             create_locomo_text_model(
@@ -605,10 +679,17 @@ class _LocalOperations(ApplicationOperations):
             else None
         )
 
+        retrieval = self._retrieval
+        if request.query_vectors_path is not None:
+            retrieval = replace(
+                retrieval,
+                embedder=FrozenQueryEmbeddingAdapter(request.query_vectors_path),
+            )
+
         def memory_factory(root: Path) -> CodeCairnConversationMemory:
             return CodeCairnConversationMemory(
-                runtime=create_runtime(root, retrieval=self._retrieval),
-                cascade=create_cascade(root, retrieval=self._retrieval),
+                runtime=create_runtime(root, retrieval=retrieval),
+                cascade=create_cascade(root, retrieval=retrieval),
                 repo_key=f"locomo/{root.name}",
             )
 
@@ -621,9 +702,11 @@ class _LocalOperations(ApplicationOperations):
                 mode=request.mode,
                 max_workers=request.max_workers,
                 resume=request.resume,
-                retrieval_config=self._retrieval.public_config,
+                retrieval_config=retrieval.public_config,
                 question_set_path=request.question_set_path,
                 execution_phase=request.execution_phase,
+                corpus_path=request.corpus_path,
+                query_vectors_path=request.query_vectors_path,
             ),
             memory_factory=memory_factory,
             answer_model=answer_model,

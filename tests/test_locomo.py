@@ -16,8 +16,13 @@ from codecairn.evaluation.artifacts import write_json_exclusive
 from codecairn.evaluation.locomo import (
     CodeCairnConversationMemory,
     ConversationIngestResult,
+    FrozenQueryEmbeddingAdapter,
     LoCoMoConversation,
+    LoCoMoCorpusConfig,
+    LoCoMoQueryVectorConfig,
     LoCoMoRunConfig,
+    build_locomo_corpus,
+    build_locomo_query_vectors,
     load_locomo_dataset,
     load_locomo_question_set,
     report_locomo,
@@ -89,6 +94,9 @@ class FakeMemory:
                 retrieval_config_sha256=retrieval_config_sha256(FAKE_RETRIEVAL_CONFIG),
             ),
         )
+
+    def corpus_snapshot(self) -> dict[str, object]:
+        return {"adapter": "fake", "sample_id": self.root.name}
 
 
 @dataclass
@@ -500,6 +508,170 @@ def test_locomo_supports_process_isolated_ingest_and_question_phases(tmp_path: P
     assert (questions.run_dir / "summary.json").is_file()
 
 
+def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Path) -> None:
+    class CountingMemory(FakeMemory):
+        ingest_calls = 0
+
+        def ingest(
+            self,
+            conversation: LoCoMoConversation,
+            *,
+            dataset_sha256: str,
+        ) -> ConversationIngestResult:
+            type(self).ingest_calls += 1
+            return super().ingest(conversation, dataset_sha256=dataset_sha256)
+
+    corpus = build_locomo_corpus(
+        LoCoMoCorpusConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "corpora",
+            corpus_id="synthetic-corpus",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+        ),
+        memory_factory=CountingMemory,
+    )
+
+    assert CountingMemory.ingest_calls == 2
+    run_dirs: list[Path] = []
+    for run_id in ("shared-corpus-first", "shared-corpus-second"):
+        run = run_locomo(
+            LoCoMoRunConfig(
+                dataset_path=FIXTURE,
+                output_root=tmp_path / "runs",
+                run_id=run_id,
+                repository_commit="abc123",
+                mode="smoke",
+                expected_dataset_sha256=None,
+                retrieval_config=FAKE_RETRIEVAL_CONFIG,
+                corpus_path=corpus.corpus_dir,
+                execution_phase="questions",
+            ),
+            memory_factory=CountingMemory,
+            answer_model=FakeAnswerModel(),
+            judge_model=None,
+        )
+        run_dirs.append(run.run_dir)
+
+    assert CountingMemory.ingest_calls == 2
+    assert all(not (run_dir / "runtime").exists() for run_dir in run_dirs)
+    manifests = [
+        json.loads((run_dir / "manifest.json").read_text(encoding="utf-8")) for run_dir in run_dirs
+    ]
+    assert {manifest["corpus"]["content_sha256"] for manifest in manifests} == {
+        corpus.content_sha256
+    }
+
+
+def test_frozen_query_vectors_fail_closed_without_provider_fallback(tmp_path: Path) -> None:
+    class CountingEmbedder:
+        model_id = "test/embedding"
+        source_id = "test/embedding-source"
+        revision = "a" * 40
+        dimension = 3
+        index_identity = "test:embedding@revision:3"
+
+        def __init__(self) -> None:
+            self.query_calls = 0
+            self.document_calls = 0
+
+        def embed_query(self, text: str) -> tuple[float, ...]:
+            self.query_calls += 1
+            return (1.0, 2.0, 3.0)
+
+        def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+            self.document_calls += 1
+            return tuple((1.0, 2.0, 3.0) for _text in texts)
+
+    provider = CountingEmbedder()
+    vectors = build_locomo_query_vectors(
+        LoCoMoQueryVectorConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "query-vectors",
+            vector_set_id="synthetic-queries",
+            expected_dataset_sha256=None,
+        ),
+        embedder=provider,
+    )
+    dataset = load_locomo_dataset(FIXTURE)
+    scored_questions = [
+        question
+        for conversation in dataset.conversations
+        for question in conversation.questions
+        if question.category in {1, 2, 3, 4}
+    ]
+
+    assert provider.query_calls == len(scored_questions)
+    frozen = FrozenQueryEmbeddingAdapter(vectors.vector_set_dir)
+    assert frozen.embed_query(scored_questions[0].question) == (1.0, 2.0, 3.0)
+    with pytest.raises(KeyError, match="not present"):
+        frozen.embed_query("a query outside the frozen selection")
+    with pytest.raises(RuntimeError, match="document embedding"):
+        frozen.embed_documents(("must not call the provider",))
+    assert provider.document_calls == 0
+
+    manifest_path = vectors.vector_set_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["question_count"] += 1
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    with pytest.raises(ValueError, match="record count"):
+        FrozenQueryEmbeddingAdapter(vectors.vector_set_dir)
+
+
+def test_retrieval_mode_never_calls_answer_or_judge_models(tmp_path: Path) -> None:
+    dataset = load_locomo_dataset(FIXTURE)
+    selected = tuple(
+        question.question_id
+        for conversation in dataset.conversations
+        for question in conversation.questions
+        if question.category in {1, 4}
+    )
+    question_set_path = tmp_path / "retrieval-canary.json"
+    write_json_exclusive(
+        question_set_path,
+        {
+            "schema_version": 1,
+            "selection_id": "synthetic-retrieval-canary",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-v1",
+            "seed": "selection-seed",
+            "category_targets": {"1": 1, "4": 1},
+            "selection_sha256": hashlib.sha256(
+                json.dumps(sorted(selected), separators=(",", ":")).encode()
+            ).hexdigest(),
+        },
+    )
+    answer = FailingAnswerModel()
+
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="retrieval-only-canary",
+            repository_commit="abc123",
+            mode="retrieval",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+            question_set_path=question_set_path,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=answer,
+        judge_model=None,
+    )
+
+    assert answer.calls == 0
+    assert artifact.summary["question_artifact_count"] == 2
+    assert artifact.summary["completed_question_count"] == 2
+    assert artifact.summary["scored"] is False
+    assert artifact.summary["unscored_reason"] == "retrieval mode never calls answer or judge"
+    records = [
+        json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))
+    ]
+    assert all("retrieval" in record and "answer" not in record for record in records)
+
+
 def test_frozen_question_set_selects_exact_strata_and_reports_retrieval_diagnostics(
     tmp_path: Path,
 ) -> None:
@@ -587,7 +759,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         question.question_id
         for conversation in dataset.conversations
         for question in conversation.questions
-        if question.category in {1, 4}
+        if question.category in {1, 2, 4}
     )
     selection_sha256 = hashlib.sha256(
         json.dumps(sorted(selected), separators=(",", ":")).encode()
@@ -601,7 +773,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             "dataset_sha256": dataset.sha256,
             "algorithm": "stratified-sha256-v1",
             "seed": "selection-seed",
-            "category_targets": {"1": 1, "4": 1},
+            "category_targets": {"1": 1, "2": 1, "4": 1},
             "selection_sha256": selection_sha256,
             "variants": [
                 {"id": "episode-only", "recall_mode": "episode-only"},
@@ -636,11 +808,13 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "enrichment_order": "rerank-then-top-k-then-neighbors-v1",
             },
             "gates": {
-                "required_scored_questions_per_variant": 2,
+                "required_scored_questions_per_variant": 3,
                 "maximum_infrastructure_failures": 0,
-                "hierarchy_vs_episode_minimum_accuracy_delta_points": 0.0,
-                "hierarchy_vs_no_neighbors_minimum_accuracy_delta_points": 0.0,
-                "hierarchy_maximum_retrieval_p95_ms": 2.0,
+                "hierarchy_no_neighbors_vs_episode_minimum_accuracy_delta_points": 0.0,
+                "temporal_neighbor_minimum_overall_accuracy_delta_points": 0.0,
+                "temporal_neighbor_minimum_temporal_or_multihop_delta_points": 0.0,
+                "temporal_neighbor_maximum_p95_increase_percent": 20.0,
+                "selected_maximum_retrieval_p95_ms": 2.0,
             },
         },
     )
@@ -700,9 +874,12 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
 
     assert report["gate_passed"] is True
     assert report["accuracy_delta_points"] == {
-        "hierarchy_vs_episode_only": 0.0,
+        "hierarchy_no_neighbors_vs_episode_only": 0.0,
         "hierarchy_vs_hierarchy_no_neighbors": 0.0,
+        "hierarchy_temporal_category_vs_no_neighbors": 0.0,
+        "hierarchy_multihop_category_vs_no_neighbors": 0.0,
     }
+    assert report["selected_variant"] == "hierarchy"
     assert (tmp_path / "ablation-report.json").is_file()
 
     episode_manifest_path = run_paths["episode-only"] / "manifest.json"

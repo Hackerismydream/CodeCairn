@@ -42,13 +42,15 @@ class EvaluationRequest(BaseModel):
     input_path: Path
     run_id: str = Field(min_length=1, max_length=128)
     repository_commit: str = Field(min_length=1, max_length=128)
-    mode: Literal["full", "smoke"] = "full"
+    mode: Literal["full", "smoke", "retrieval"] = "full"
     model: str | None = Field(default=None, min_length=1, max_length=128)
     judge_model: str | None = Field(default=None, min_length=1, max_length=128)
     max_workers: int = Field(default=1, ge=1, le=16)
     resume: bool = False
     question_set_path: Path | None = None
     execution_phase: Literal["all", "ingest", "questions"] = "all"
+    corpus_path: Path | None = None
+    query_vectors_path: Path | None = None
 
 
 class _ApiError(Exception):
@@ -229,6 +231,25 @@ def create_app(
                     code="source_path_forbidden",
                     message="Evaluation question set is outside configured roots",
                 )
+        artifact_inputs: dict[str, Path | None] = {
+            "corpus": request.corpus_path,
+            "query_vectors": request.query_vectors_path,
+        }
+        resolved_artifact_inputs: dict[str, Path | None] = {}
+        for name, raw_path in artifact_inputs.items():
+            if raw_path is None:
+                resolved_artifact_inputs[name] = None
+                continue
+            resolved_path = Path(os.path.abspath(raw_path)).resolve(strict=True)
+            if not resolved_path.is_dir() or not resolved_path.is_relative_to(
+                resolved_artifact_root
+            ):
+                raise _ApiError(
+                    status_code=403,
+                    code="artifact_path_forbidden",
+                    message=f"Evaluation {name} artifact is outside the artifact root",
+                )
+            resolved_artifact_inputs[name] = resolved_path
         if not _SAFE_ID.fullmatch(request.run_id):
             raise _ApiError(
                 status_code=422,
@@ -241,6 +262,14 @@ def create_app(
                 code="invalid_execution_phase",
                 message="Execution phases are supported only for LoCoMo",
             )
+        if request.suite != "locomo" and any(
+            path is not None for path in resolved_artifact_inputs.values()
+        ):
+            raise _ApiError(
+                status_code=422,
+                code="invalid_locomo_artifact",
+                message="Corpus and query-vector artifacts are supported only for LoCoMo",
+            )
         suite_root = resolved_artifact_root / request.suite
         if suite_root.exists() and not suite_root.resolve(strict=True).is_relative_to(
             resolved_artifact_root
@@ -250,6 +279,9 @@ def create_app(
                 code="artifact_path_forbidden",
                 message="Evaluation output escapes the configured artifact root",
             )
+        execution_phase = request.execution_phase
+        if resolved_artifact_inputs["corpus"] is not None and execution_phase == "all":
+            execution_phase = "questions"
         return application.run_evaluation(
             EvaluationRunRequest(
                 suite=request.suite,
@@ -263,7 +295,9 @@ def create_app(
                 max_workers=request.max_workers,
                 resume=request.resume,
                 question_set_path=question_set_path,
-                execution_phase=request.execution_phase,
+                execution_phase=execution_phase,
+                corpus_path=resolved_artifact_inputs["corpus"],
+                query_vectors_path=resolved_artifact_inputs["query_vectors"],
             )
         )
 

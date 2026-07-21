@@ -17,13 +17,34 @@ class EvaluationRunRequest:
     output_root: Path
     run_id: str
     repository_commit: str
-    mode: Literal["full", "smoke"] = "full"
+    mode: Literal["full", "smoke", "retrieval"] = "full"
     model: str | None = None
     judge_model: str | None = None
     max_workers: int = 1
     resume: bool = False
     question_set_path: Path | None = None
     execution_phase: Literal["all", "ingest", "questions"] = "all"
+    corpus_path: Path | None = None
+    query_vectors_path: Path | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class LoCoMoCorpusBuildRequest:
+    input_path: Path
+    output_root: Path
+    corpus_id: str
+    repository_commit: str
+    resume: bool = False
+    expected_dataset_sha256: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class LoCoMoQueryVectorBuildRequest:
+    input_path: Path
+    output_root: Path
+    vector_set_id: str
+    question_set_path: Path | None = None
+    expected_dataset_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,6 +88,12 @@ class ApplicationOperations(Protocol):
     def verify_evidence_bundle(self, bundle_dir: Path) -> dict[str, object]: ...
 
     def build_locomo_ablation_report(self, request: LoCoMoAblationRequest) -> dict[str, object]: ...
+
+    def build_locomo_corpus(self, request: LoCoMoCorpusBuildRequest) -> dict[str, object]: ...
+
+    def build_locomo_query_vectors(
+        self, request: LoCoMoQueryVectorBuildRequest
+    ) -> dict[str, object]: ...
 
 
 class CodeCairnApplication:
@@ -112,3 +139,11 @@ class CodeCairnApplication:
 
     def build_locomo_ablation_report(self, request: LoCoMoAblationRequest) -> dict[str, object]:
         return self._operations.build_locomo_ablation_report(request)
+
+    def build_locomo_corpus(self, request: LoCoMoCorpusBuildRequest) -> dict[str, object]:
+        return self._operations.build_locomo_corpus(request)
+
+    def build_locomo_query_vectors(
+        self, request: LoCoMoQueryVectorBuildRequest
+    ) -> dict[str, object]:
+        return self._operations.build_locomo_query_vectors(request)

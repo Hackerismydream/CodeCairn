@@ -296,3 +296,20 @@ def test_http_rejects_remote_bind_and_evaluation_symlink_escape(tmp_path: Path) 
 
     assert response.status_code == 403
     assert response.json()["error"]["code"] == "source_path_forbidden"
+
+    allowed_source = allowed / "source.jsonl"
+    allowed_source.write_text(FIXTURE.read_text(encoding="utf-8"), encoding="utf-8")
+    response = client.post(
+        "/api/v1/evaluations",
+        json={
+            "suite": "locomo",
+            "input_path": str(allowed_source),
+            "run_id": "artifact-escape",
+            "repository_commit": "abc123",
+            "mode": "retrieval",
+            "corpus_path": str(outside),
+        },
+    )
+
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "artifact_path_forbidden"
