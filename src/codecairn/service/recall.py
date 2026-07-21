@@ -240,6 +240,19 @@ class RecallEngine:
             limit=limit,
             exploration_limit=plan.exploration_result_limit,
         )
+        if plan.query_sketch.temporal_prefixes:
+            temporal_snippet_priority_ids = {
+                item.memory_id
+                for item in selected_ranked
+                if _matches_temporal_prefix(item, plan.query_sketch.temporal_prefixes)
+            }
+        elif plan.query_sketch.temporal_op != "none":
+            temporal_snippet_priority_ids = {
+                item.memory_id
+                for item in selected_ranked[: self._planner.config.maximum_exploration_results]
+            }
+        else:
+            temporal_snippet_priority_ids = set()
         neighbor_expansion_count = 0
         if plan.expand_neighbors:
             temporal_exploration_ids = {
@@ -255,6 +268,7 @@ class RecallEngine:
                 neighbor_window=plan.neighbor_window,
                 neighbor_snippet_budget=plan.neighbor_snippet_budget,
                 priority_memory_ids=temporal_exploration_ids,
+                wide_sibling_memory_ids=temporal_snippet_priority_ids,
             )
         selected = tuple(
             replace(item, rank=rank) for rank, item in enumerate(selected_ranked, start=1)
@@ -494,6 +508,7 @@ class RecallEngine:
         neighbor_window: int | None = None,
         neighbor_snippet_budget: int = 0,
         priority_memory_ids: set[str] | None = None,
+        wide_sibling_memory_ids: set[str] | None = None,
     ) -> tuple[list[RankedRecall], int]:
         memory_map = {
             item.memory_id: memory
@@ -550,13 +565,15 @@ class RecallEngine:
                 continue
             snippets = _memory_snippets(
                 candidate_memory,
-                matched_fact_ids=tuple(
-                    match.fact_id
-                    for match in item.matched_documents
-                    if match.document_kind == "atomic_fact" and match.fact_id
-                ),
+                matches=item.matched_documents,
                 matched_limit=self._planner.config.matched_facts_per_memory,
-                sibling_limit=self._planner.config.sibling_facts_per_memory,
+                diverse_matched_limit=(self._planner.config.diverse_matched_facts_per_memory),
+                sibling_limit=(
+                    self._planner.config.temporal_sibling_facts_per_memory
+                    if item.memory_id in (wide_sibling_memory_ids or set())
+                    else self._planner.config.sibling_facts_per_memory
+                ),
+                wide_sibling_window=item.memory_id in (wide_sibling_memory_ids or set()),
             )
             if expand_neighbors:
                 snippets = _deduplicate_snippets(
@@ -777,12 +794,18 @@ def _recall_evidence(memory: CodingMemory) -> tuple[RecallEvidence, ...]:
 def _memory_snippets(
     memory: CodingMemory,
     *,
-    matched_fact_ids: tuple[str, ...],
+    matches: tuple[RecallMatch, ...],
     matched_limit: int,
+    diverse_matched_limit: int,
     sibling_limit: int,
+    wide_sibling_window: bool,
 ) -> tuple[RecallSnippet, ...]:
     facts = {fact.fact_id: fact for fact in memory.facts}
-    ordered_matched = tuple(dict.fromkeys(matched_fact_ids))[:matched_limit]
+    ordered_matched = _matched_fact_ids(
+        matches,
+        matched_limit=matched_limit,
+        diverse_limit=diverse_matched_limit,
+    )
     snippets: list[RecallSnippet] = []
     sibling_ids: list[str] = []
     chronological_facts = sorted(memory.facts, key=_fact_chronology_key)
@@ -791,26 +814,97 @@ def _memory_snippets(
         if fact_id not in facts:
             continue
         snippets.append(_snippet(memory, fact_id=fact_id, relation="matched"))
-        position = fact_positions[fact_id]
-        # A conversational question is commonly followed by its answer. Prefer the
-        # next fact, then the previous fact, before unrelated session siblings.
-        for adjacent_position in (position + 1, position - 1):
-            if not 0 <= adjacent_position < len(chronological_facts):
-                continue
-            adjacent_id = chronological_facts[adjacent_position].fact_id
-            if adjacent_id not in ordered_matched and adjacent_id not in sibling_ids:
-                sibling_ids.append(adjacent_id)
+        if not wide_sibling_window:
+            position = fact_positions[fact_id]
+            # A conversational question is commonly followed by its answer. Prefer the
+            # next fact, then the previous fact, before unrelated session siblings.
+            for adjacent_position in (position + 1, position - 1):
+                if not 0 <= adjacent_position < len(chronological_facts):
+                    continue
+                adjacent_id = chronological_facts[adjacent_position].fact_id
+                if adjacent_id not in ordered_matched and adjacent_id not in sibling_ids:
+                    sibling_ids.append(adjacent_id)
     if ordered_matched:
-        sibling_ids.extend(
-            fact.fact_id
-            for fact in chronological_facts
-            if fact.fact_id not in ordered_matched and fact.fact_id not in sibling_ids
-        )
+        if wide_sibling_window:
+            anchor_id = _best_lexical_fact_id(matches) or ordered_matched[0]
+            sibling_ids.extend(
+                _nearby_fact_ids(
+                    chronological_facts,
+                    anchor_id=anchor_id,
+                    excluded=set(ordered_matched),
+                )
+            )
+        else:
+            sibling_ids.extend(
+                fact.fact_id
+                for fact in chronological_facts
+                if fact.fact_id not in ordered_matched and fact.fact_id not in sibling_ids
+            )
         snippets.extend(
             _snippet(memory, fact_id=fact_id, relation="sibling")
             for fact_id in sibling_ids[:sibling_limit]
         )
     return tuple(snippets)
+
+
+def _matched_fact_ids(
+    matches: tuple[RecallMatch, ...],
+    *,
+    matched_limit: int,
+    diverse_limit: int,
+) -> tuple[str, ...]:
+    atomic_matches = tuple(
+        match for match in matches if match.document_kind == "atomic_fact" and match.fact_id
+    )
+    ordered = list(dict.fromkeys(match.fact_id for match in atomic_matches))[:matched_limit]
+    if diverse_limit == 0:
+        return tuple(ordered)
+    diverse_added = 0
+    for match in sorted(
+        (item for item in atomic_matches if item.source.endswith("_vector")),
+        key=lambda item: (item.rank, item.document_id),
+    ):
+        if match.fact_id in ordered:
+            continue
+        ordered.append(match.fact_id)
+        diverse_added += 1
+        if diverse_added == diverse_limit:
+            break
+    return tuple(ordered)
+
+
+def _best_lexical_fact_id(matches: tuple[RecallMatch, ...]) -> str | None:
+    lexical = tuple(
+        match
+        for match in matches
+        if match.document_kind == "atomic_fact"
+        and match.fact_id
+        and match.source.endswith("_lexical")
+    )
+    if not lexical:
+        return None
+    return min(lexical, key=lambda item: (item.rank, item.document_id)).fact_id
+
+
+def _nearby_fact_ids(
+    chronological_facts: list[EvidenceFact],
+    *,
+    anchor_id: str,
+    excluded: set[str],
+) -> tuple[str, ...]:
+    positions = {fact.fact_id: position for position, fact in enumerate(chronological_facts)}
+    anchor_position = positions.get(anchor_id)
+    if anchor_position is None:
+        return ()
+    result: list[str] = []
+    for distance in range(1, len(chronological_facts)):
+        for position in (anchor_position + distance, anchor_position - distance):
+            if not 0 <= position < len(chronological_facts):
+                continue
+            fact_id = chronological_facts[position].fact_id
+            if fact_id not in excluded:
+                result.append(fact_id)
+    return tuple(result)
 
 
 def _fact_chronology_key(fact: EvidenceFact) -> tuple[int, str]:

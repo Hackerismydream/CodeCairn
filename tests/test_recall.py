@@ -12,6 +12,7 @@ from codecairn.memory.models import (
     EvidenceReference,
     IndexCandidate,
     RankedRecall,
+    RecallMatch,
     RerankDocument,
     RerankScore,
 )
@@ -447,6 +448,165 @@ def test_priority_memory_receives_neighbor_budget_before_higher_ranked_item() ->
     assert neighbor_count == 1
     assert enriched[0].snippets == ()
     assert [item.text for item in enriched[1].snippets] == ["Priority neighbor."]
+
+
+def test_snippet_selection_keeps_one_distinct_vector_fact_after_lexical_matches() -> None:
+    base = _memory("memory-session", summary="Session summary.", event_index=10)
+    memory = replace(
+        base,
+        facts=tuple(
+            EvidenceFact(
+                fact_id=f"fact-{index}",
+                repo_key=base.repo_key,
+                episode_id=base.episode_id,
+                kind="user_quote",
+                text=f"Fact {index}.",
+                role="user",
+                evidence=(
+                    replace(
+                        base.evidence[0],
+                        raw_event_index=10 + index,
+                        raw_event_sha256=f"{10 + index:064x}",
+                    ),
+                ),
+            )
+            for index in range(4)
+        ),
+    )
+    matches = (
+        *(
+            RecallMatch(
+                document_id=f"lexical-{index}",
+                document_kind="atomic_fact",
+                source="atomic_fact_lexical",
+                score=10.0 - index,
+                rank=index + 1,
+                fact_id=f"fact-{index}",
+            )
+            for index in range(3)
+        ),
+        RecallMatch(
+            document_id="vector-3",
+            document_kind="atomic_fact",
+            source="atomic_fact_vector",
+            score=0.9,
+            rank=1,
+            fact_id="fact-3",
+        ),
+    )
+    ranked = [
+        RankedRecall(
+            rank=1,
+            memory_id=memory.memory_id,
+            memory_type=memory.memory_type,
+            title=memory.title,
+            summary=memory.summary,
+            source_uri=f"codecairn://memory/{memory.memory_id}",
+            content_sha256=memory.content_sha256,
+            candidate_sources=("lexical", "vector"),
+            vector_score=0.9,
+            vector_rank=1,
+            lexical_score=10.0,
+            lexical_rank=1,
+            final_score=1.0,
+            evidence=(),
+            matched_documents=matches,
+        )
+    ]
+    engine = RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    )
+
+    enriched, _ = engine._attach_snippets(
+        ranked,
+        repo_key=memory.repo_key,
+        expand_neighbors=False,
+    )
+
+    assert [snippet.fact_id for snippet in enriched[0].snippets] == [
+        "fact-0",
+        "fact-1",
+        "fact-2",
+        "fact-3",
+    ]
+
+
+def test_temporal_priority_uses_a_bounded_local_fact_window() -> None:
+    base = _memory("memory-temporal", summary="Temporal session.", event_index=20)
+    memory = replace(
+        base,
+        facts=tuple(
+            EvidenceFact(
+                fact_id=f"fact-{index}",
+                repo_key=base.repo_key,
+                episode_id=base.episode_id,
+                kind="user_quote",
+                text=f"Turn {index}.",
+                role="user",
+                evidence=(
+                    replace(
+                        base.evidence[0],
+                        raw_event_index=20 + index,
+                        raw_event_sha256=f"{20 + index:064x}",
+                    ),
+                ),
+            )
+            for index in range(7)
+        ),
+    )
+    ranked = [
+        RankedRecall(
+            rank=1,
+            memory_id=memory.memory_id,
+            memory_type=memory.memory_type,
+            title=memory.title,
+            summary=memory.summary,
+            source_uri=f"codecairn://memory/{memory.memory_id}",
+            content_sha256=memory.content_sha256,
+            candidate_sources=("lexical",),
+            vector_score=None,
+            vector_rank=None,
+            lexical_score=5.0,
+            lexical_rank=1,
+            final_score=1.0,
+            evidence=(),
+            matched_documents=(
+                RecallMatch(
+                    document_id="lexical-2",
+                    document_kind="atomic_fact",
+                    source="atomic_fact_lexical",
+                    score=5.0,
+                    rank=1,
+                    fact_id="fact-2",
+                ),
+            ),
+        )
+    ]
+    engine = RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    )
+
+    enriched, _ = engine._attach_snippets(
+        ranked,
+        repo_key=memory.repo_key,
+        expand_neighbors=False,
+        wide_sibling_memory_ids={memory.memory_id},
+    )
+
+    assert [(snippet.fact_id, snippet.relation) for snippet in enriched[0].snippets] == [
+        ("fact-2", "matched"),
+        ("fact-3", "sibling"),
+        ("fact-1", "sibling"),
+        ("fact-4", "sibling"),
+        ("fact-0", "sibling"),
+        ("fact-5", "sibling"),
+    ]
 
 
 def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:

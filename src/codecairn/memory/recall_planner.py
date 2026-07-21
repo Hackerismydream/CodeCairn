@@ -91,7 +91,9 @@ class RecallPlannerConfig:
     neighbor_window: int = 1
     neighbor_snippet_budget: int = 20
     matched_facts_per_memory: int = 3
+    diverse_matched_facts_per_memory: int = 1
     sibling_facts_per_memory: int = 2
+    temporal_sibling_facts_per_memory: int = 5
 
     def __post_init__(self) -> None:
         if self.primary_candidate_multiplier < 1:
@@ -121,8 +123,14 @@ class RecallPlannerConfig:
             raise ValueError("neighbor_snippet_budget must not be negative")
         if self.matched_facts_per_memory < 1:
             raise ValueError("matched_facts_per_memory must be positive")
+        if self.diverse_matched_facts_per_memory < 0:
+            raise ValueError("diverse_matched_facts_per_memory must not be negative")
         if self.sibling_facts_per_memory < 0:
             raise ValueError("sibling_facts_per_memory must not be negative")
+        if self.temporal_sibling_facts_per_memory < self.sibling_facts_per_memory:
+            raise ValueError(
+                "temporal_sibling_facts_per_memory must cover sibling_facts_per_memory"
+            )
         if self.mode != "hierarchy" and self.neighbor_window != 0:
             raise ValueError("Only hierarchy mode may expand temporal neighbors")
 
@@ -155,9 +163,11 @@ class RecallPlannerConfig:
             ),
             "neighbor_snippet_budget": self.neighbor_snippet_budget,
             "temporal_lane": "explicit-month-prefix-v1",
-            "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
+            "enrichment_order": "matched-diverse-channel-temporal-window-v3",
             "matched_facts_per_memory": self.matched_facts_per_memory,
+            "diverse_matched_facts_per_memory": self.diverse_matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
+            "temporal_sibling_facts_per_memory": self.temporal_sibling_facts_per_memory,
         }
 
 

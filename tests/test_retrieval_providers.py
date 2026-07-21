@@ -131,10 +131,14 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
             "maximum_rerank_candidates": 96,
             "maximum_exploration_results": 4,
             "neighbor_window": 1,
+            "temporal_neighbor_window": 2,
             "neighbor_snippet_budget": 20,
-            "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
+            "temporal_lane": "explicit-month-prefix-v1",
+            "enrichment_order": "matched-diverse-channel-temporal-window-v3",
             "matched_facts_per_memory": 3,
+            "diverse_matched_facts_per_memory": 1,
             "sibling_facts_per_memory": 2,
+            "temporal_sibling_facts_per_memory": 5,
         },
     }
 
@@ -337,10 +341,14 @@ def test_recall_mode_selects_an_auditable_ablation_configuration() -> None:
         "maximum_rerank_candidates": 96,
         "maximum_exploration_results": 4,
         "neighbor_window": 0,
+        "temporal_neighbor_window": 0,
         "neighbor_snippet_budget": 20,
-        "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
+        "temporal_lane": "explicit-month-prefix-v1",
+        "enrichment_order": "matched-diverse-channel-temporal-window-v3",
         "matched_facts_per_memory": 3,
+        "diverse_matched_facts_per_memory": 1,
         "sibling_facts_per_memory": 2,
+        "temporal_sibling_facts_per_memory": 5,
     }
 
 

@@ -1237,7 +1237,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "minimum_primary_candidates": 40,
                 "minimum_secondary_candidates": 20,
                 "neighbor_snippet_budget": 20,
-                "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
+                "enrichment_order": "matched-diverse-channel-temporal-window-v3",
             },
             "gates": {
                 "required_scored_questions_per_variant": 3,
@@ -1261,7 +1261,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "minimum_primary_candidates": 40,
                 "minimum_secondary_candidates": 20,
                 "neighbor_snippet_budget": 20,
-                "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
+                "enrichment_order": "matched-diverse-channel-temporal-window-v3",
             },
         }
 
