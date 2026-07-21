@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "selection_id": "locomo-diagnostic-10-temporal-v1",
+  "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "algorithm": "stratified-sha256-v1",
+  "seed": "codecairn-locomo-diagnostic-200-v1",
+  "category_targets": {
+    "2": 10
+  },
+  "selection_sha256": "882bdf5b430c5972c006f77f7c13a0ead3c0109dd99f17fca9ab3dd25432c9a7",
+  "protocol": {
+    "purpose": "targeted temporal mechanism check nested in diagnostic-40",
+    "claim_policy": "mechanism-only-not-a-benchmark-score",
+    "answer_model": "deepseek-v4-flash",
+    "judge_model": "deepseek-v4-flash",
+    "judge_votes": 3,
+    "top_k": 20,
+    "query_vector_policy": "verified-superset-artifact",
+    "worker_max_rss_bytes": 2147483648
+  },
+  "gates": {
+    "required_scored_questions": 10,
+    "maximum_infrastructure_failures": 0,
+    "maximum_estimated_cost_cny": 0.2,
+    "minimum_accuracy_percent": 70.0
+  }
+}

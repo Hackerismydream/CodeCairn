@@ -44,7 +44,7 @@ LOCOMO_DATASET_URL = (
 )
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
-_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v9"
+_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v10"
 _ANSWER_CONTEXT_CHARS = 24_000
 _TEMPORAL_QUESTION_CUE = re.compile(
     r"^\s*(?:when|what\s+(?:date|day|month|year|time)|"
@@ -210,15 +210,15 @@ class EvidenceAnswerSynthesizer:
                 "with broader categories or add plausible items."
             ),
             "temporal": (
-                "Treat every leading timestamp as the message time. Resolve relative "
-                "expressions such as yesterday, last week, and ago against that timestamp, "
-                "and do calendar arithmetic before answering. If the source states only a "
-                "relative interval, return it anchored to the timestamp instead of declaring "
-                "the context insufficient. Use the timestamp of the closest matching event "
-                "report when no more precise event date is supplied. Resolve pronouns and "
-                "follow-up durations from the adjacent exchange. Answer the requested time "
-                "without rejecting it merely because an unrelated qualifier in the question "
-                "is not repeated in the same evidence. Preserve the supported year."
+                "Follow this order: (1) scan the whole context for the closest matching event "
+                "and its adjacent exchange; (2) prefer a later confirmation or action over an "
+                "earlier plan, suggestion, or uncertainty; (3) resolve yesterday, next month, "
+                "last week, durations, and ago against the leading message timestamp using "
+                "calendar arithmetic; (4) when an event timestamp is available, answer with "
+                "that single best-supported point instead of a broad range; (5) answer the "
+                "requested time or fact without rejecting supported evidence merely because "
+                "an extra location or qualifier is not repeated. If only a relative interval "
+                "is supported, anchor it to the message timestamp. Preserve the supported year."
             ),
             "inference": (
                 "You may make ordinary common-sense inferences, including simple causal and "

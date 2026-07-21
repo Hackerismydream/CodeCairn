@@ -569,10 +569,11 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
         seed=7,
     )
     assert model.system_prompt is not None
-    assert "resolve relative expressions" in model.system_prompt.casefold()
+    assert "prefer a later confirmation or action" in model.system_prompt.casefold()
+    assert "answer with that single best-supported point" in model.system_prompt.casefold()
     assert "closest matching event" in model.system_prompt.casefold()
     assert "adjacent exchange" in model.system_prompt.casefold()
-    assert "unrelated qualifier" in model.system_prompt.casefold()
+    assert "extra location or qualifier" in model.system_prompt.casefold()
     assert temporal.plan.route == "temporal"
 
     listed = EvidenceAnswerSynthesizer().synthesize(
@@ -1208,7 +1209,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "query-routed-answer-planner-v9",
+                "answer_evidence_contract": "query-routed-answer-planner-v10",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,
