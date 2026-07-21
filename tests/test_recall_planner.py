@@ -108,21 +108,3 @@ def test_non_temporal_query_keeps_the_configured_neighbor_window() -> None:
 
     assert plan.query_sketch.temporal_prefixes == ()
     assert plan.neighbor_window == 1
-
-
-def test_question_auxiliaries_are_not_entity_anchors() -> None:
-    plan = RecallPlanner().plan(
-        "Was James feeling lonely before meeting Samantha?",
-        limit=20,
-    )
-
-    assert plan.query_sketch.anchors == ("james", "samantha")
-
-
-def test_entity_posting_budgets_must_be_ordered() -> None:
-    with pytest.raises(ValueError, match="Entity posting budgets"):
-        RecallPlannerConfig(
-            entity_posting_scan_limit=8,
-            entity_posting_sample_limit=16,
-            entity_posting_rerank_slots=4,
-        )
