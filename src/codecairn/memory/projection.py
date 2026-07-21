@@ -12,6 +12,8 @@ from codecairn.memory.models import (
 )
 from codecairn.memory.trace import stable_id
 
+_MAX_EPISODE_PROJECTION_CHARS = 16_000
+
 
 def project_recall_documents(
     memory: CodingMemory,
@@ -36,7 +38,7 @@ def project_recall_documents(
         fact_id="",
         title=memory.title,
         summary=memory.summary,
-        content=_episode_projection_content(markdown),
+        content=_episode_projection_content(memory, markdown=markdown),
         child_count=len(memory.facts),
     )
     children = tuple(
@@ -50,16 +52,23 @@ def project_recall_documents(
     return (episode, *children)
 
 
-def _episode_projection_content(markdown: str) -> str:
+def _episode_projection_content(memory: CodingMemory, *, markdown: str) -> str:
     if not markdown.startswith("---\n"):
-        return markdown
-    frontmatter, separator, body = markdown[4:].partition("\n---\n")
-    if not separator:
-        return markdown
-    episode_frontmatter = "\n".join(
-        line for line in frontmatter.splitlines() if not line.startswith("facts: ")
-    )
-    return f"---\n{episode_frontmatter}\n---\n{body}"
+        body = markdown
+    else:
+        frontmatter, separator, body = markdown[4:].partition("\n---\n")
+        if separator:
+            episode_frontmatter = "\n".join(
+                line for line in frontmatter.splitlines() if not line.startswith("facts: ")
+            )
+            body = f"---\n{episode_frontmatter}\n---\n{body}"
+        else:
+            body = markdown
+    fact_text = "\n".join(f"- {fact.text}" for fact in memory.facts)
+    content = f"{body}\n\nEpisode facts:\n{fact_text}"
+    if len(content) <= _MAX_EPISODE_PROJECTION_CHARS:
+        return content
+    return content[: _MAX_EPISODE_PROJECTION_CHARS - 1].rstrip() + "…"
 
 
 def fingerprint(document: RecallDocument) -> RecallDocumentFingerprint:

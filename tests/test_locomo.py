@@ -375,7 +375,7 @@ def test_loader_preserves_sessions_speakers_timestamps_and_all_categories() -> N
     assert dataset.conversations[1].questions[1].golden_answer == "2023"
 
 
-def test_locomo_turns_ingest_as_independent_children_of_session_episodes(
+def test_locomo_turns_ingest_as_facts_of_session_episodes(
     tmp_path: Path,
 ) -> None:
     conversation = load_locomo_dataset(FIXTURE).conversations[0]
@@ -391,14 +391,14 @@ def test_locomo_turns_ingest_as_independent_children_of_session_episodes(
 
     assert ingested.session_count == 2
     assert ingested.turn_count == 3
-    assert ingested.accepted_memory_count == 3
+    assert ingested.accepted_memory_count == 2
     assert ingested.rejected_memory_count == 0
     assert recalled.sidecar.repo_key == "locomo/conv-test-1"
     assert recalled.sidecar.ranked[0].memory_type == "user_preference"
     assert "beagle" in recalled.markdown
     memories = create_runtime(root).list_memories(repo_key="locomo/conv-test-1")
-    assert len(memories) == 3
-    assert {len(item.facts) for item in memories} == {1}
+    assert len(memories) == 2
+    assert {len(item.facts) for item in memories} == {1, 2}
     episode_sizes = Counter(fact.episode_id for item in memories for fact in item.facts)
     assert sorted(episode_sizes.values()) == [1, 2]
     assert {fact.text for item in memories for fact in item.facts} == {
@@ -737,7 +737,7 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
     assert CountingMemory.ingest_calls == 2
     assert CountingMemory.snapshot_calls == 2
     assert corpus.manifest["build_contract"]["projection_contract"] == (
-        "locomo-turn-child-session-episode-v3"
+        "locomo-session-episode-with-turn-facts-v4"
     )
     run_dirs: list[Path] = []
     for run_id in ("shared-corpus-first", "shared-corpus-second"):

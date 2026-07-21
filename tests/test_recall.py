@@ -710,7 +710,7 @@ def test_lancedb_fts_candidate_is_independent_of_vector_shortlist(tmp_path: Path
     assert [item.memory_id for item in lexical_candidates] == ["memory-lexical"]
 
 
-def test_episode_recall_does_not_search_atomic_fact_only_text(tmp_path: Path) -> None:
+def test_episode_recall_searches_its_aggregated_fact_text(tmp_path: Path) -> None:
     index = LanceMemoryIndex(tmp_path / "index.lancedb", embedder=FixedEmbedder())
     base = _memory("memory-hierarchical")
     fact = EvidenceFact(
@@ -727,14 +727,13 @@ def test_episode_recall_does_not_search_atomic_fact_only_text(tmp_path: Path) ->
 
     index.upsert(memory, markdown=markdown)
 
-    assert (
-        index.lexical_candidates(
-            repo_key=memory.repo_key,
-            query="childonlytoken",
-            limit=5,
-        )
-        == ()
+    candidates = index.lexical_candidates(
+        repo_key=memory.repo_key,
+        query="childonlytoken",
+        limit=5,
     )
+
+    assert [item.memory_id for item in candidates] == [memory.memory_id]
     assert len(index.document_fingerprints()) == 2
 
 
