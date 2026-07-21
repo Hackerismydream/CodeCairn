@@ -275,8 +275,8 @@ The canary passes only when:
 - every question has a finite score set and a complete Recall Sidecar;
 - hierarchy retrieval p95 is at most 5,000 ms and maximum latency is at most
   15,000 ms;
-- maximum resident set size is at most 512 MiB as a soft gate and never exceeds
-  the 768 MiB hard-stop limit;
+- maximum resident set size is at most 896 MiB as a soft gate and never exceeds
+  the 1,024 MiB hard-stop limit;
 - post-run corpus fingerprints are unchanged.
 
 Failure stops the ladder before any 200-question answer or judge calls.
@@ -343,7 +343,7 @@ The following are launch limits, not expected performance claims:
 | 200-question ablation paid inference | CNY 6 | CNY 10 |
 | 200-question ablation wall time | 90 min | 120 min |
 | Full selected-policy paid inference | CNY 18 | CNY 25 |
-| Any process maximum RSS | 512 MiB | 768 MiB |
+| Any process maximum RSS | 896 MiB | 1,024 MiB |
 
 Cost preflight uses provider-reported or locally measured token counts and the
 pinned price snapshot recorded in the run manifest. A hard estimate breach
@@ -354,6 +354,14 @@ Corpus construction, query-vector construction, and every recall variant run
 in separate processes. Variants are sequential, not concurrent. A watchdog
 terminates a stage after ten minutes without a new durable checkpoint. This
 limits native-memory accumulation and makes failure boundaries observable.
+
+The RSS envelope was calibrated on 2026-07-21 after the first production
+retrieval canary. Corpus construction peaked at 359.5 MiB, while a bounded
+11-second `episode-only` process peaked at 875.9 MiB when loading the pinned
+local ONNX CrossEncoder together with Lance and Arrow. Because the process
+exited normally and variants remain process-isolated, 768 MiB was below the
+measured production baseline rather than evidence of a leak. The 1,024 MiB
+hard gate preserves a fail-closed margin above that baseline.
 
 The current planning estimate is approximately 2.5 to 2.8 million provider
 embedding tokens. At the supplied price snapshot of CNY 0.5 per million input
