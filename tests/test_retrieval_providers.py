@@ -127,7 +127,7 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
             "minimum_secondary_candidates": 20,
             "neighbor_window": 1,
             "neighbor_snippet_budget": 20,
-            "enrichment_order": "rerank-then-top-k-then-neighbors-v1",
+            "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
             "matched_facts_per_memory": 3,
             "sibling_facts_per_memory": 2,
         },
@@ -328,7 +328,7 @@ def test_recall_mode_selects_an_auditable_ablation_configuration() -> None:
         "minimum_secondary_candidates": 20,
         "neighbor_window": 0,
         "neighbor_snippet_budget": 20,
-        "enrichment_order": "rerank-then-top-k-then-neighbors-v1",
+        "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
         "matched_facts_per_memory": 3,
         "sibling_facts_per_memory": 2,
     }

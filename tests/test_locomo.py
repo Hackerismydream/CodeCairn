@@ -487,6 +487,97 @@ def test_evidence_answer_synthesizer_rejects_unknown_citation_ids() -> None:
     assert answer.format == "structured-v1"
 
 
+def test_evidence_answer_synthesizer_uses_a_compact_fact_first_pack() -> None:
+    @dataclass
+    class CapturingAnswerModel:
+        user_payload: dict[str, object] | None = None
+
+        @property
+        def model_id(self) -> str:
+            return "capturing-answer"
+
+        @property
+        def public_config(self) -> dict[str, object]:
+            return {"adapter": "fake", "model": self.model_id}
+
+        def generate(
+            self,
+            *,
+            system: str,
+            user: str,
+            seed: int,
+            response_format: str = "text",
+        ) -> ModelResponse:
+            self.user_payload = json.loads(user)
+            return ModelResponse(
+                text=json.dumps({"answer": "rock", "evidence_ids": ["fact-0-1"]}),
+                model=self.model_id,
+            )
+
+    ranked = tuple(
+        RankedRecall(
+            rank=index + 1,
+            memory_id=f"memory-{index}",
+            memory_type="user_preference",
+            title=f"Session {index}",
+            summary="S" * 1_000,
+            source_uri=f"codecairn://memory/memory-{index}",
+            content_sha256=f"{index:064x}",
+            candidate_sources=("lexical",),
+            vector_score=None,
+            vector_rank=None,
+            lexical_score=1.0,
+            lexical_rank=index + 1,
+            final_score=1.0,
+            evidence=(),
+            snippets=tuple(
+                RecallSnippet(
+                    relation="matched" if fact_index == 0 else "sibling",
+                    source_memory_id=f"memory-{index}",
+                    source_uri=f"codecairn://memory/memory-{index}",
+                    fact_id=f"fact-{index}-{fact_index}",
+                    text="F" * 400,
+                    source_title=f"Session {index}",
+                    source_summary="S" * 1_000,
+                    raw_event_index=fact_index,
+                )
+                for fact_index in range(6)
+            ),
+        )
+        for index in range(20)
+    )
+    recall = RecallResult(
+        markdown="# Recall Context\n",
+        sidecar=RecallSidecar(
+            query="What music?",
+            repo_key="locomo/test",
+            limit=20,
+            latency_ms=1.0,
+            vector_candidate_count=0,
+            lexical_candidate_count=20,
+            ranked=ranked,
+        ),
+    )
+    conversation = load_locomo_dataset(FIXTURE).conversations[0]
+    model = CapturingAnswerModel()
+
+    EvidenceAnswerSynthesizer().synthesize(
+        conversation,
+        conversation.questions[0],
+        recall=recall,
+        model=model,
+        seed=7,
+    )
+
+    assert model.user_payload is not None
+    blocks = model.user_payload["evidence_blocks"]
+    assert isinstance(blocks, list)
+    assert len(blocks) == 10
+    assert all(len(block["summary"]) == 120 for block in blocks)
+    assert all(len(block["facts"]) == 4 for block in blocks)
+    assert all(len(fact["text"]) == 240 for block in blocks for fact in block["facts"])
+
+
 def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
     tmp_path: Path,
 ) -> None:
@@ -1055,7 +1146,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "minimum_primary_candidates": 40,
                 "minimum_secondary_candidates": 20,
                 "neighbor_snippet_budget": 20,
-                "enrichment_order": "rerank-then-top-k-then-neighbors-v1",
+                "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
             },
             "gates": {
                 "required_scored_questions_per_variant": 3,
@@ -1079,7 +1170,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "minimum_primary_candidates": 40,
                 "minimum_secondary_candidates": 20,
                 "neighbor_snippet_budget": 20,
-                "enrichment_order": "rerank-then-top-k-then-neighbors-v1",
+                "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
             },
         }
 

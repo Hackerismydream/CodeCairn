@@ -14,6 +14,7 @@ from codecairn.memory.embedding import EmbeddingProvider
 from codecairn.memory.models import (
     CandidateSource,
     CodingMemory,
+    EvidenceFact,
     IndexCandidate,
     RankedRecall,
     RecallDocumentKind,
@@ -621,18 +622,42 @@ def _memory_snippets(
 ) -> tuple[RecallSnippet, ...]:
     facts = {fact.fact_id: fact for fact in memory.facts}
     ordered_matched = tuple(dict.fromkeys(matched_fact_ids))[:matched_limit]
-    snippets = [
-        _snippet(memory, fact_id=fact_id, relation="matched")
-        for fact_id in ordered_matched
-        if fact_id in facts
-    ]
+    snippets: list[RecallSnippet] = []
+    sibling_ids: list[str] = []
+    chronological_facts = sorted(memory.facts, key=_fact_chronology_key)
+    fact_positions = {fact.fact_id: position for position, fact in enumerate(chronological_facts)}
+    for fact_id in ordered_matched:
+        if fact_id not in facts:
+            continue
+        snippets.append(_snippet(memory, fact_id=fact_id, relation="matched"))
+        position = fact_positions[fact_id]
+        # A conversational question is commonly followed by its answer. Prefer the
+        # next fact, then the previous fact, before unrelated session siblings.
+        for adjacent_position in (position + 1, position - 1):
+            if not 0 <= adjacent_position < len(chronological_facts):
+                continue
+            adjacent_id = chronological_facts[adjacent_position].fact_id
+            if adjacent_id not in ordered_matched and adjacent_id not in sibling_ids:
+                sibling_ids.append(adjacent_id)
     if ordered_matched:
-        siblings = [fact for fact in memory.facts if fact.fact_id not in ordered_matched]
+        sibling_ids.extend(
+            fact.fact_id
+            for fact in chronological_facts
+            if fact.fact_id not in ordered_matched and fact.fact_id not in sibling_ids
+        )
         snippets.extend(
-            _snippet(memory, fact_id=fact.fact_id, relation="sibling")
-            for fact in siblings[:sibling_limit]
+            _snippet(memory, fact_id=fact_id, relation="sibling")
+            for fact_id in sibling_ids[:sibling_limit]
         )
     return tuple(snippets)
+
+
+def _fact_chronology_key(fact: EvidenceFact) -> tuple[int, str]:
+    raw_event_index = min(
+        (reference.raw_event_index for reference in fact.evidence),
+        default=-1,
+    )
+    return raw_event_index, fact.fact_id
 
 
 def _neighbor_snippets(
@@ -706,11 +731,8 @@ def _chronology_key(memory: CodingMemory) -> tuple[str, int, str]:
 
 def _rerank_text(item: RankedRecall) -> str:
     lines = [item.title]
-    lines.extend(
-        f"{snippet.relation}: {snippet.text}\n{snippet.source_title}\n{snippet.source_summary}"
-        for snippet in item.snippets
-    )
-    lines.append(item.summary)
+    lines.extend(f"{snippet.relation}: {snippet.text}" for snippet in item.snippets)
+    lines.append(_single_line(item.summary, limit=320))
     text = "\n".join(lines)
     if len(text) <= _MAX_RERANK_BUNDLE_CHARS:
         return text
@@ -758,7 +780,7 @@ def _render_context(
                 "",
                 f"## {item.rank}. {_single_line(item.title, limit=120)}",
                 "",
-                _single_line(item.summary, limit=500),
+                _single_line(item.summary, limit=240),
                 "",
                 f"- Type: `{item.memory_type}`",
                 f"- Source: [{item.memory_id}]({item.source_uri})",
@@ -768,11 +790,8 @@ def _render_context(
         if item.snippets:
             lines.extend(("", "Evidence excerpts:"))
             for snippet in item.snippets:
-                excerpt = snippet.source_summary
-                if snippet.text not in excerpt:
-                    excerpt = f"{excerpt} — {snippet.text}"
                 lines.append(
-                    f"- {snippet.relation}: {_single_line(excerpt, limit=700)} "
+                    f"- {snippet.relation}: {_single_line(snippet.text, limit=360)} "
                     f"([{snippet.source_memory_id}]({snippet.source_uri}))"
                 )
     return "\n".join(lines) + "\n"

@@ -525,6 +525,85 @@ def test_hierarchical_recall_lifts_atomic_fact_hits_to_the_parent_memory(
     assert state.episode_requests == []
 
 
+def test_hierarchical_recall_pairs_a_matched_turn_with_its_following_fact() -> None:
+    class QuestionFactIndex(CandidateIndex):
+        def document_vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return ()
+
+        def document_lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            if document_kind == "episode":
+                return ()
+            return (
+                IndexCandidate(
+                    repo_key=repo_key,
+                    memory_id="memory-session",
+                    document_id="fact-question-document",
+                    document_kind="atomic_fact",
+                    parent_document_id="episode-session",
+                    fact_id="fact-question",
+                    score=7.0,
+                ),
+            )
+
+    base = _memory("memory-session", summary="A long session summary.", event_index=10)
+    facts = tuple(
+        EvidenceFact(
+            fact_id=fact_id,
+            repo_key=base.repo_key,
+            episode_id=base.episode_id,
+            kind="user_quote",
+            text=text,
+            role="user",
+            evidence=(
+                replace(
+                    base.evidence[0],
+                    raw_event_index=event_index,
+                    raw_event_sha256=f"{event_index:064x}",
+                ),
+            ),
+        )
+        for fact_id, text, event_index in (
+            ("fact-before", "John introduces the topic.", 10),
+            ("fact-question", "What kind of music do you like?", 11),
+            ("fact-answer", "John likes electronic and rock music.", 12),
+            ("fact-after", "They continue chatting.", 13),
+        )
+    )
+    memory = replace(base, facts=facts)
+
+    result = RecallEngine(
+        index=QuestionFactIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        planner_config=RecallPlannerConfig.for_mode("hierarchy-no-neighbors"),
+        clock_ns=lambda: 0,
+    ).recall("What music does John like?", repo_key=base.repo_key, limit=1)
+
+    assert [
+        (snippet.fact_id, snippet.relation) for snippet in result.sidecar.ranked[0].snippets
+    ] == [
+        ("fact-question", "matched"),
+        ("fact-answer", "sibling"),
+        ("fact-before", "sibling"),
+    ]
+    assert "John likes electronic and rock music." in result.markdown
+    assert result.markdown.count("A long session summary.") == 1
+
+
 def test_hierarchical_recall_expands_only_adjacent_memories_in_the_same_episode() -> None:
     class FactOnlyIndex(CandidateIndex):
         def document_vector_candidates(

@@ -44,6 +44,7 @@ LOCOMO_DATASET_URL = (
 )
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
+_ANSWER_EVIDENCE_CONTRACT = "compact-fact-first-top10-v2"
 CATEGORY_NAMES = {
     1: "multi-hop",
     2: "temporal",
@@ -1240,6 +1241,7 @@ def run_locomo(
             }
         ),
         "answer_model": None if answer_model is None else answer_model.public_config,
+        "answer_evidence_contract": _ANSWER_EVIDENCE_CONTRACT,
         "judge_model": None if judge_model is None else judge_model.public_config,
         "judge_votes": config.judge_votes if config.mode == "full" else 0,
         "judge_response_max_attempts": (
@@ -2619,24 +2621,20 @@ def _run_question(
 
 def _answer_evidence_blocks(recall: RecallResult) -> list[dict[str, object]]:
     blocks: list[dict[str, object]] = []
-    ranked_count = max(1, len(recall.sidecar.ranked))
-    block_budget = max(600, min(1_600, 16_000 // ranked_count))
-    for item in recall.sidecar.ranked:
-        summary_budget = max(240, block_budget // 2)
-        fact_budget = max(160, (block_budget - summary_budget) // 2)
-        snippets = item.snippets[:2]
+    for item in recall.sidecar.ranked[:10]:
+        snippets = item.snippets[:4]
         snippet_ids = [snippet.fact_id for snippet in snippets if snippet.fact_id]
         blocks.append(
             {
                 "memory_id": item.memory_id,
                 "title": item.title,
-                "summary": _bounded_text(item.summary, summary_budget),
+                "summary": _bounded_text(item.summary, 120 if snippets else 400),
                 "evidence_ids": [item.memory_id, *snippet_ids],
                 "facts": [
                     {
                         "evidence_id": snippet.fact_id,
                         "relation": snippet.relation,
-                        "text": _bounded_text(snippet.text, fact_budget),
+                        "text": _bounded_text(snippet.text, 240),
                         "source_order": snippet.raw_event_index,
                     }
                     for snippet in snippets

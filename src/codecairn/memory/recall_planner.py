@@ -108,7 +108,7 @@ class RecallPlannerConfig:
             "minimum_secondary_candidates": self.minimum_secondary_candidates,
             "neighbor_window": self.neighbor_window,
             "neighbor_snippet_budget": self.neighbor_snippet_budget,
-            "enrichment_order": "rerank-then-top-k-then-neighbors-v1",
+            "enrichment_order": "matched-adjacency-rerank-top-k-neighbors-v2",
             "matched_facts_per_memory": self.matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
         }

@@ -219,6 +219,7 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
         "dataset",
         "selection",
         "answer_model",
+        "answer_evidence_contract",
         "judge_model",
         "judge_votes",
         "judge_response_max_attempts",
