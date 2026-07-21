@@ -56,7 +56,12 @@ class RecallIndex(Protocol):
 class RecallState(Protocol):
     def get_memory(self, *, repo_key: str, memory_id: str) -> CodingMemory | None: ...
 
-    def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]: ...
+    def list_episode_memories(
+        self,
+        *,
+        repo_key: str,
+        episode_id: str,
+    ) -> tuple[CodingMemory, ...]: ...
 
 
 class RecallEngine:
@@ -312,13 +317,25 @@ class RecallEngine:
         expand_neighbors: bool,
         neighbor_snippet_budget: int = 0,
     ) -> tuple[list[RankedRecall], int]:
-        memories = self._state.list_memories(repo_key=repo_key)
-        memory_map = {memory.memory_id: memory for memory in memories}
+        memory_map = {
+            item.memory_id: memory
+            for item in ranked
+            if (memory := self._state.get_memory(repo_key=repo_key, memory_id=item.memory_id))
+            is not None
+        }
         episode_groups: dict[str, list[CodingMemory]] = {}
-        for stored_memory in memories:
-            episode_groups.setdefault(stored_memory.episode_id, []).append(stored_memory)
-        for group in episode_groups.values():
-            group.sort(key=_chronology_key)
+        if expand_neighbors:
+            for memory in memory_map.values():
+                if memory.episode_id in episode_groups:
+                    continue
+                group = list(
+                    self._state.list_episode_memories(
+                        repo_key=repo_key,
+                        episode_id=memory.episode_id,
+                    )
+                )
+                group.sort(key=_chronology_key)
+                episode_groups[memory.episode_id] = group
 
         neighbor_count = 0
         remaining_neighbor_budget = neighbor_snippet_budget

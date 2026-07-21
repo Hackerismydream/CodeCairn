@@ -142,16 +142,23 @@ class MemoryState:
     def __init__(self, memories: tuple[CodingMemory, ...]) -> None:
         self._memories = {(item.repo_key, item.memory_id): item for item in memories}
         self.requested: list[tuple[str, str]] = []
+        self.episode_requests: list[tuple[str, str]] = []
 
     def get_memory(self, *, repo_key: str, memory_id: str) -> CodingMemory | None:
         self.requested.append((repo_key, memory_id))
         return self._memories.get((repo_key, memory_id))
 
-    def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
+    def list_episode_memories(
+        self,
+        *,
+        repo_key: str,
+        episode_id: str,
+    ) -> tuple[CodingMemory, ...]:
+        self.episode_requests.append((repo_key, episode_id))
         return tuple(
             memory
             for (memory_repo_key, _memory_id), memory in self._memories.items()
-            if memory_repo_key == repo_key
+            if memory_repo_key == repo_key and memory.episode_id == episode_id
         )
 
 
@@ -327,9 +334,10 @@ def test_hierarchical_recall_lifts_atomic_fact_hits_to_the_parent_memory(
     )
     memory = replace(base, facts=(fact,))
     index.upsert(memory, markdown="# Parent without the queried term")
+    state = MemoryState((memory,))
     engine = RecallEngine(
         index=index,
-        state=MemoryState((memory,)),
+        state=state,
         embedder=FixedEmbedder(),
         planner_config=RecallPlannerConfig.for_mode("hierarchy-no-neighbors"),
         clock_ns=lambda: 0,
@@ -344,6 +352,8 @@ def test_hierarchical_recall_lifts_atomic_fact_hits_to_the_parent_memory(
     }
     assert [snippet.relation for snippet in result.sidecar.ranked[0].snippets] == ["matched"]
     assert "childonlytoken" in result.markdown
+    assert set(state.requested) == {(memory.repo_key, memory.memory_id)}
+    assert state.episode_requests == []
 
 
 def test_hierarchical_recall_expands_only_adjacent_memories_in_the_same_episode() -> None:
@@ -396,9 +406,10 @@ def test_hierarchical_recall_expands_only_adjacent_memories_in_the_same_episode(
         event_index=4,
         episode_id="episode-other",
     )
+    state = MemoryState((before, matched, after, unrelated))
     engine = RecallEngine(
         index=FactOnlyIndex(),
-        state=MemoryState((before, matched, after, unrelated)),
+        state=state,
         embedder=FixedEmbedder(),
         clock_ns=lambda: 0,
     )
@@ -415,6 +426,7 @@ def test_hierarchical_recall_expands_only_adjacent_memories_in_the_same_episode(
     assert "Alice booked the venue." in result.markdown
     assert "Carol ordered the cake." in result.markdown
     assert "This must remain isolated." not in result.markdown
+    assert state.episode_requests == [("acme/widgets", matched.episode_id)]
 
 
 def test_neighbor_context_is_added_only_after_reranking_and_top_k_selection() -> None:

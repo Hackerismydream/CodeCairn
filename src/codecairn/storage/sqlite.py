@@ -403,6 +403,26 @@ class SQLiteState:
             ).fetchone()
         return None if row is None else _memory_from_row(repo_key, row)
 
+    def list_episode_memories(
+        self,
+        *,
+        repo_key: str,
+        episode_id: str,
+    ) -> tuple[CodingMemory, ...]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT memory_id, memory_type, title, summary, episode_id,
+                       command, exit_code, evidence_json, fact_ids_json, facts_json,
+                       markdown_path, content_sha256
+                FROM memories
+                WHERE repo_key = ? AND episode_id = ?
+                ORDER BY memory_id
+                """,
+                (repo_key, episode_id),
+            ).fetchall()
+        return tuple(_memory_from_row(repo_key, row) for row in rows)
+
     def list_all_memories(self) -> tuple[CodingMemory, ...]:
         with self._connect() as connection:
             rows = connection.execute(
