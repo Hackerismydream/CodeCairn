@@ -44,7 +44,7 @@ LOCOMO_DATASET_URL = (
 )
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
-_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v10"
+_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v11"
 _JUDGE_CONTRACT = "locomo-generous-semantic-equivalence-v1"
 _ANSWER_CONTEXT_CHARS = 24_000
 _TEMPORAL_QUESTION_CUE = re.compile(
@@ -259,10 +259,15 @@ class EvidenceAnswerSynthesizer:
                 "follow-up durations from the adjacent exchange. Answer the requested time "
                 "without rejecting it merely because an unrelated qualifier in the question "
                 "is not repeated in the same evidence. Preserve the supported year. Use the "
-                "deterministic temporal hints in the request when present. For currently or "
-                "already, use the closest report timestamp when no more precise event date "
-                "exists. Recognize ordinary geographic containment such as a city, park, or "
-                "mountain range belonging to a state."
+                "deterministic temporal hints in the request when present: answer with "
+                "resolved_time, never the earlier report_time, for a relative expression. "
+                "For a currently occurring or already completed event, use the closest report "
+                "date as the event date when no more precise date exists; do not answer merely "
+                "before that date. Recognize ordinary geographic containment such as a city, "
+                "park, or mountain range belonging to either state in a yes-or-no travel "
+                "question. When the question asks which new activity someone takes up, a "
+                "definite stated intention to try a concrete activity in that period supports "
+                "naming that activity."
             ),
             "inference": (
                 "You may make ordinary common-sense inferences, including simple causal and "

@@ -609,6 +609,8 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert "closest matching event" in model.system_prompt.casefold()
     assert "adjacent exchange" in model.system_prompt.casefold()
     assert "unrelated qualifier" in model.system_prompt.casefold()
+    assert "resolved_time" in model.system_prompt
+    assert "either state" in model.system_prompt.casefold()
     assert model.user_payload is not None
     hints = model.user_payload["temporal_hints"]
     assert isinstance(hints, list)
@@ -1249,7 +1251,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "query-routed-answer-planner-v10",
+                "answer_evidence_contract": "query-routed-answer-planner-v11",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,

@@ -12,7 +12,7 @@
     "purpose": "targeted temporal mechanism check nested in diagnostic-40",
     "claim_policy": "mechanism-only-not-a-benchmark-score",
     "answer_model": "deepseek-v4-flash",
-    "answer_evidence_contract": "query-routed-answer-planner-v10",
+    "answer_evidence_contract": "query-routed-answer-planner-v11",
     "judge_model": "deepseek-v4-flash",
     "judge_contract": "locomo-generous-semantic-equivalence-v1",
     "judge_votes": 3,
