@@ -483,6 +483,7 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     @dataclass
     class CapturingAnswerModel:
         user_payload: dict[str, object] | None = None
+        system_prompt: str | None = None
         response_format: str | None = None
 
         @property
@@ -501,6 +502,7 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
             seed: int,
             response_format: str = "text",
         ) -> ModelResponse:
+            self.system_prompt = system
             self.user_payload = json.loads(user)
             self.response_format = response_format
             return ModelResponse(text="rock", model=self.model_id)
@@ -533,10 +535,22 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert set(model.user_payload) == {"memory_context", "question", "speakers"}
     assert len(model.user_payload["memory_context"]) == 24_000
     assert model.response_format == "text"
+    assert model.system_prompt is not None
+    assert "ordinary common-sense inferences" not in model.system_prompt.casefold()
     assert answer.response.text == "rock"
     assert answer.evidence_ids == ()
     assert answer.invalid_evidence_ids == ()
     assert answer.format == "unstructured-fallback"
+
+    EvidenceAnswerSynthesizer().synthesize(
+        conversation,
+        replace(question, question="Would they likely enjoy a live concert?"),
+        recall=recall,
+        model=model,
+        seed=7,
+    )
+    assert model.system_prompt is not None
+    assert "ordinary common-sense inferences" in model.system_prompt.casefold()
 
 
 def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
@@ -1079,7 +1093,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "bounded-attributed-markdown-v5",
+                "answer_evidence_contract": "query-routed-attributed-markdown-v6",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,
@@ -1579,8 +1593,7 @@ def test_answer_and_judge_prompts_treat_benchmark_content_as_untrusted_data(
             assert set(payload) == {"memory_context", "question", "speakers"}
             assert "inspect the whole supplied context" in system.casefold()
             assert "for list questions include every supported item" in system.casefold()
-            assert "ordinary common-sense inferences" in system.casefold()
-            assert "claims about the speakers" in system.casefold()
+            assert "ordinary common-sense inferences" not in system.casefold()
 
 
 def test_smoke_run_is_explicitly_unscored_and_never_calls_a_judge(tmp_path: Path) -> None:
