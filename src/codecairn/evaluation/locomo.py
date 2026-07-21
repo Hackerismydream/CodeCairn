@@ -44,7 +44,7 @@ LOCOMO_DATASET_URL = (
 )
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
-_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v7"
+_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v8"
 _ANSWER_CONTEXT_CHARS = 24_000
 _TEMPORAL_QUESTION_CUE = re.compile(
     r"^\s*(?:when|what\s+(?:date|day|month|year|time)|"
@@ -200,8 +200,9 @@ class EvidenceAnswerSynthesizer:
         plan = _plan_answer(question.question)
         route_instruction = {
             "direct": (
-                "Return the shortest exact span that answers the question. Omit unrelated "
-                "alternatives and explanation."
+                "Return a concise direct answer while preserving action, negation, and "
+                "qualifiers needed to identify the fact. Omit unrelated alternatives and "
+                "explanation."
             ),
             "list": (
                 "Collect all distinct supported items across the whole context, deduplicate "
@@ -218,7 +219,8 @@ class EvidenceAnswerSynthesizer:
             "inference": (
                 "You may make ordinary common-sense inferences, including simple causal and "
                 "preference reasoning, but every premise about the speakers must remain "
-                "grounded in the context. State the most likely conclusion directly."
+                "grounded in the context. Preserve uncertainty and logical alternatives: do "
+                "not turn may into certainty or or into and. State the conclusion directly."
             ),
         }[plan.route]
         response = model.generate(
@@ -256,7 +258,7 @@ def _plan_answer(question: str) -> AnswerPlan:
         return AnswerPlan(route="inference", policy="grounded-common-sense-v1")
     if _LIST_QUESTION_CUE.search(question) is not None:
         return AnswerPlan(route="list", policy="exhaustive-deduplicated-list-v1")
-    return AnswerPlan(route="direct", policy="shortest-supported-answer-v1")
+    return AnswerPlan(route="direct", policy="qualified-concise-answer-v2")
 
 
 @dataclass(frozen=True, slots=True)
