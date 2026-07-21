@@ -1079,7 +1079,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "bounded-attributed-markdown-v4",
+                "answer_evidence_contract": "bounded-attributed-markdown-v5",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,
@@ -1579,6 +1579,8 @@ def test_answer_and_judge_prompts_treat_benchmark_content_as_untrusted_data(
             assert set(payload) == {"memory_context", "question", "speakers"}
             assert "inspect the whole supplied context" in system.casefold()
             assert "for list questions include every supported item" in system.casefold()
+            assert "ordinary common-sense inferences" in system.casefold()
+            assert "claims about the speakers" in system.casefold()
 
 
 def test_smoke_run_is_explicitly_unscored_and_never_calls_a_judge(tmp_path: Path) -> None:
