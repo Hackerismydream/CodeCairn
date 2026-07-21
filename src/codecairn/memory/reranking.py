@@ -17,9 +17,13 @@ DEFAULT_RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"
 DEFAULT_RERANKER_SOURCE = "Xenova/ms-marco-MiniLM-L-6-v2"
 DEFAULT_RERANKER_LICENSE = "Apache-2.0"
 DEFAULT_RERANKER_REVISION = "a09144355adeed5f58c8ed011d209bf8ee5a1fec"
+DEFAULT_RERANKER_BATCH_SIZE = 8
 
 
 class RerankingProvider(Protocol):
+    @property
+    def batch_size(self) -> int | None: ...
+
     @property
     def model_id(self) -> str: ...
 
@@ -42,6 +46,7 @@ class FusionScoreRerankingAdapter:
     model_id = "test/rrf-score-v1"
     source_id = "builtin/rrf-score-v1"
     revision = "test-v1"
+    batch_size = None
 
     def rerank(
         self,
@@ -55,7 +60,9 @@ class FusionScoreRerankingAdapter:
 
 
 class _FastEmbedReranker(Protocol):
-    def rerank(self, query: str, documents: Iterable[str]) -> Iterable[float]: ...
+    def rerank(
+        self, query: str, documents: Iterable[str], *, batch_size: int
+    ) -> Iterable[float]: ...
 
 
 class FastEmbedRerankingAdapter:
@@ -68,14 +75,18 @@ class FastEmbedRerankingAdapter:
         source_id: str = DEFAULT_RERANKER_SOURCE,
         revision: str = DEFAULT_RERANKER_REVISION,
         cache_dir: str | None = None,
+        batch_size: int = DEFAULT_RERANKER_BATCH_SIZE,
     ) -> None:
         if not model_id.strip():
             raise ValueError("Reranker model ID must not be empty")
+        if batch_size < 1:
+            raise ValueError("Reranker batch size must be positive")
         validate_hf_artifact(source_id=source_id, revision=revision)
         self._model_id = model_id
         self._source_id = source_id
         self._revision = revision
         self._cache_dir = cache_dir
+        self._batch_size = batch_size
         self._model: _FastEmbedReranker | None = None
         self._lock = Lock()
 
@@ -91,6 +102,10 @@ class FastEmbedRerankingAdapter:
     def revision(self) -> str:
         return self._revision
 
+    @property
+    def batch_size(self) -> int:
+        return self._batch_size
+
     def rerank(
         self,
         query: str,
@@ -105,6 +120,7 @@ class FastEmbedRerankingAdapter:
             for score in self._model_instance().rerank(
                 query,
                 (document.text for document in documents),
+                batch_size=self._batch_size,
             )
         )
         if len(scores) != len(documents):

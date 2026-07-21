@@ -42,6 +42,7 @@ from codecairn.memory.model_artifact import validate_hf_artifact
 from codecairn.memory.projection import fingerprint, project_recall_documents
 from codecairn.memory.recall_planner import RecallPlannerConfig, RecallPlannerMode
 from codecairn.memory.reranking import (
+    DEFAULT_RERANKER_BATCH_SIZE,
     DEFAULT_RERANKER_LICENSE,
     DEFAULT_RERANKER_MODEL,
     DEFAULT_RERANKER_REVISION,
@@ -121,6 +122,13 @@ def create_retrieval_providers(
         default_license=DEFAULT_RERANKER_LICENSE,
     )
     cache_dir = resolved_environment.get("CODECAIRN_MODEL_CACHE") or None
+    reranker_batch_size = _integer_environment(
+        environment=resolved_environment,
+        key="CODECAIRN_RERANKER_BATCH_SIZE",
+        default=DEFAULT_RERANKER_BATCH_SIZE,
+    )
+    if reranker_batch_size < 1:
+        raise ValueError("CODECAIRN_RERANKER_BATCH_SIZE must be positive")
     if profile == "dashscope":
         embedding_model = resolved_environment.get(
             "CODECAIRN_EMBEDDING_MODEL",
@@ -199,6 +207,7 @@ def create_retrieval_providers(
                 source_id=reranker_source,
                 revision=reranker_revision,
                 cache_dir=cache_dir,
+                batch_size=reranker_batch_size,
             ),
             embedding_license=embedding_license,
             reranker_license=reranker_license,
@@ -259,6 +268,7 @@ def create_retrieval_providers(
             source_id=reranker_source,
             revision=reranker_revision,
             cache_dir=cache_dir,
+            batch_size=reranker_batch_size,
         ),
         embedding_license=embedding_license,
         reranker_license=reranker_license,

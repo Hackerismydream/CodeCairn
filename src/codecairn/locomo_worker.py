@@ -25,7 +25,7 @@ from codecairn.evaluation.locomo import (
 from codecairn.evaluation.providers import create_locomo_text_model
 
 
-class _WorkerTermination(Exception):
+class _WorkerTermination(BaseException):
     pass
 
 

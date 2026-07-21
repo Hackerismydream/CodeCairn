@@ -27,9 +27,10 @@ class FakeEmbeddingModel:
 
 
 class FakeCrossEncoder:
-    def rerank(self, query: str, documents: Iterable[str]) -> Iterable[float]:
+    def rerank(self, query: str, documents: Iterable[str], *, batch_size: int) -> Iterable[float]:
         assert query == "query text"
         assert list(documents) == ["document one", "document two"]
+        assert batch_size == 2
         return (-2.5, 4.25)
 
 
@@ -63,6 +64,7 @@ def test_fastembed_adapters_load_lazily_and_preserve_model_scores(monkeypatch) -
         source_id="test/reranker-source",
         revision="b" * 40,
         cache_dir="/models",
+        batch_size=2,
     )
 
     assert embedding_loads == []
@@ -113,6 +115,7 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
             "source": "Xenova/ms-marco-MiniLM-L-6-v2",
             "revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
             "license": "Apache-2.0",
+            "batch_size": 8,
         },
         "planner": {
             "mode": "hierarchy",
@@ -154,6 +157,16 @@ def test_text_v4_profile_rejects_batches_larger_than_the_provider_limit() -> Non
             environment={
                 "DASHSCOPE_API_KEY": "secret-key",
                 "CODECAIRN_EMBEDDING_BATCH_SIZE": "11",
+            }
+        )
+
+
+def test_retrieval_profile_rejects_non_positive_reranker_batch_size() -> None:
+    with pytest.raises(ValueError, match="RERANKER_BATCH_SIZE must be positive"):
+        create_retrieval_providers(
+            environment={
+                "DASHSCOPE_API_KEY": "secret-key",
+                "CODECAIRN_RERANKER_BATCH_SIZE": "0",
             }
         )
 

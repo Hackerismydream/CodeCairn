@@ -147,6 +147,9 @@ after 600 seconds without a new durable question checkpoint. These fail-closed d
 `CODECAIRN_EVAL_WORKER_POLL_SECONDS`. The independent live-RSS cadence is
 configured with `CODECAIRN_EVAL_WORKER_RSS_POLL_SECONDS`; changing any of these
 values changes the run manifest and therefore cannot be hidden by `--resume`.
+The CrossEncoder uses batches of 8 by default so hierarchical candidate sets do
+not create a large ONNX activation spike; `CODECAIRN_RERANKER_BATCH_SIZE`
+changes this frozen retrieval contract.
 
 The comparison gate requires 200 scored questions and zero infrastructure
 failures per variant. Hierarchy without temporal neighbors must improve at

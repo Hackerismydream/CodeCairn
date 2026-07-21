@@ -91,6 +91,7 @@ class RetrievalProviders:
                 "source": self.reranker.source_id,
                 "revision": self.reranker.revision,
                 "license": self.reranker_license,
+                "batch_size": self.reranker.batch_size,
             },
             "planner": self.planner.public_config,
         }

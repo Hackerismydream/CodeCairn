@@ -49,6 +49,7 @@
     "embedding_model": "text-embedding-v4",
     "embedding_dimension": 1024,
     "reranker_model": "Xenova/ms-marco-MiniLM-L-6-v2",
+    "reranker_batch_size": 8,
     "primary_candidate_multiplier": 2,
     "secondary_candidate_multiplier": 1,
     "minimum_primary_candidates": 40,
