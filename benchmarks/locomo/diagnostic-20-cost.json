@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "selection_id": "locomo-cost-diagnostic-20-v1",
+  "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "algorithm": "stratified-sha256-v1",
+  "seed": "codecairn-locomo-diagnostic-200-v1",
+  "category_targets": {
+    "1": 5,
+    "2": 5,
+    "3": 5,
+    "4": 5
+  },
+  "selection_sha256": "2866c83f16c92bc26764e80f0a1ff1d386714673003305f496d28e64f02b7e77"
+}
