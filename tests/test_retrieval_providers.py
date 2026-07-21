@@ -99,7 +99,7 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
         "embedding": {
             "adapter": "dashscope-openai-compatible",
             "adapter_version": "1",
-            "model": "qwen3.7-text-embedding",
+            "model": "text-embedding-v4",
             "source": "https://dashscope.aliyuncs.com/compatible-mode/v1",
             "revision": "provider-managed",
             "dimension": 1024,
@@ -138,7 +138,7 @@ def test_dashscope_profile_defers_the_api_key_guard_until_embedding_is_used() ->
         providers.embedder.embed_query("query text")
 
 
-def test_qwen37_profile_rejects_an_unsupported_dimension() -> None:
+def test_text_v4_profile_rejects_an_unsupported_dimension() -> None:
     with pytest.raises(ValueError, match="must be one of"):
         create_retrieval_providers(
             environment={
@@ -148,12 +148,12 @@ def test_qwen37_profile_rejects_an_unsupported_dimension() -> None:
         )
 
 
-def test_qwen37_profile_rejects_batches_larger_than_the_provider_limit() -> None:
-    with pytest.raises(ValueError, match="must not exceed 20"):
+def test_text_v4_profile_rejects_batches_larger_than_the_provider_limit() -> None:
+    with pytest.raises(ValueError, match="must not exceed 10"):
         create_retrieval_providers(
             environment={
                 "DASHSCOPE_API_KEY": "secret-key",
-                "CODECAIRN_EMBEDDING_BATCH_SIZE": "21",
+                "CODECAIRN_EMBEDDING_BATCH_SIZE": "11",
             }
         )
 
@@ -288,7 +288,7 @@ def test_dashscope_public_config_never_contains_the_api_key() -> None:
     assert providers.public_config["embedding"] == {
         "adapter": "dashscope-openai-compatible",
         "adapter_version": "1",
-        "model": "qwen3.7-text-embedding",
+        "model": "text-embedding-v4",
         "source": "https://workspace.example/compatible-mode/v1",
         "revision": "provider-managed",
         "dimension": 1024,

@@ -39,7 +39,7 @@
     "retrieval_thread_count": 1,
     "execution_phase_contract": "verified-shared-corpus-v1",
     "embedding_adapter": "dashscope-openai-compatible",
-    "embedding_model": "qwen3.7-text-embedding",
+    "embedding_model": "text-embedding-v4",
     "embedding_dimension": 1024,
     "reranker_model": "Xenova/ms-marco-MiniLM-L-6-v2",
     "primary_candidate_multiplier": 2,

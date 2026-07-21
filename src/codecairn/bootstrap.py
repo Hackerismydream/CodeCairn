@@ -10,7 +10,7 @@ from typing import cast
 from codecairn.entrypoints.cli import build_app
 from codecairn.importers.session import SessionImporter
 from codecairn.memory.embedding import (
-    DASHSCOPE_QWEN37_DIMENSIONS,
+    DASHSCOPE_TEXT_V4_DIMENSIONS,
     DEFAULT_EMBEDDING_BATCH_SIZE,
     DEFAULT_EMBEDDING_DIMENSION,
     DEFAULT_EMBEDDING_LICENSE,
@@ -122,9 +122,9 @@ def create_retrieval_providers(
         )
         if (
             embedding_model == DEFAULT_EMBEDDING_MODEL
-            and dimension not in DASHSCOPE_QWEN37_DIMENSIONS
+            and dimension not in DASHSCOPE_TEXT_V4_DIMENSIONS
         ):
-            supported = ", ".join(str(item) for item in sorted(DASHSCOPE_QWEN37_DIMENSIONS))
+            supported = ", ".join(str(item) for item in sorted(DASHSCOPE_TEXT_V4_DIMENSIONS))
             raise ValueError(
                 f"CODECAIRN_EMBEDDING_DIMENSION must be one of {supported} "
                 f"for {DEFAULT_EMBEDDING_MODEL}"
@@ -134,9 +134,9 @@ def create_retrieval_providers(
             key="CODECAIRN_EMBEDDING_BATCH_SIZE",
             default=DEFAULT_EMBEDDING_BATCH_SIZE,
         )
-        if embedding_model == DEFAULT_EMBEDDING_MODEL and batch_size > 20:
+        if embedding_model == DEFAULT_EMBEDDING_MODEL and batch_size > 10:
             raise ValueError(
-                f"CODECAIRN_EMBEDDING_BATCH_SIZE must not exceed 20 for {DEFAULT_EMBEDDING_MODEL}"
+                f"CODECAIRN_EMBEDDING_BATCH_SIZE must not exceed 10 for {DEFAULT_EMBEDDING_MODEL}"
             )
         api_key = resolved_environment.get(
             "CODECAIRN_EMBEDDING_API_KEY", ""

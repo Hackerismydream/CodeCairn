@@ -5,11 +5,11 @@
 ADR 0013 selected a small English-only local embedding model because it was
 cheap, reproducible, and sufficient to replace deterministic feature hashing.
 CodeCairn now needs stronger code, Chinese, and multilingual retrieval. Alibaba
-Cloud Model Studio exposes `qwen3.7-text-embedding` through an OpenAI-compatible
-embedding endpoint. The model supports explicit dimensions, batches of up to 20
+Cloud Model Studio exposes `text-embedding-v4` through an OpenAI-compatible
+embedding endpoint. The model supports explicit dimensions, batches of up to 10
 texts, and long code or text inputs.
 
-Provider contract checked on 2026-07-20 against the
+Provider contract checked on 2026-07-21 against the
 [Alibaba Cloud Model Studio embedding documentation](https://help.aliyun.com/zh/model-studio/text-embedding-synchronous-api/).
 
 The provider-managed model alias does not expose an immutable artifact commit.
@@ -21,7 +21,7 @@ boundary honestly.
 
 Production composition defaults to the `dashscope` retrieval profile. It calls
 the OpenAI-compatible `/embeddings` endpoint with model
-`qwen3.7-text-embedding`, `encoding_format=float`, and an explicit 1,024-vector
+`text-embedding-v4`, `encoding_format=float`, and an explicit 1,024-vector
 dimension. The endpoint defaults to
 `https://dashscope.aliyuncs.com/compatible-mode/v1` and can be replaced with a
 workspace-specific Model Studio URL. Authentication comes from
