@@ -44,7 +44,7 @@ LOCOMO_DATASET_URL = (
 )
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
-_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v8"
+_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v9"
 _ANSWER_CONTEXT_CHARS = 24_000
 _TEMPORAL_QUESTION_CUE = re.compile(
     r"^\s*(?:when|what\s+(?:date|day|month|year|time)|"
@@ -214,7 +214,11 @@ class EvidenceAnswerSynthesizer:
                 "expressions such as yesterday, last week, and ago against that timestamp, "
                 "and do calendar arithmetic before answering. If the source states only a "
                 "relative interval, return it anchored to the timestamp instead of declaring "
-                "the context insufficient. Preserve the supported year."
+                "the context insufficient. Use the timestamp of the closest matching event "
+                "report when no more precise event date is supplied. Resolve pronouns and "
+                "follow-up durations from the adjacent exchange. Answer the requested time "
+                "without rejecting it merely because an unrelated qualifier in the question "
+                "is not repeated in the same evidence. Preserve the supported year."
             ),
             "inference": (
                 "You may make ordinary common-sense inferences, including simple causal and "
@@ -253,7 +257,7 @@ class EvidenceAnswerSynthesizer:
 
 def _plan_answer(question: str) -> AnswerPlan:
     if _TEMPORAL_QUESTION_CUE.search(question) is not None:
-        return AnswerPlan(route="temporal", policy="relative-time-anchor-v1")
+        return AnswerPlan(route="temporal", policy="relative-time-anchor-v2")
     if _INFERENCE_QUESTION_CUE.search(question) is not None:
         return AnswerPlan(route="inference", policy="grounded-common-sense-v1")
     if _LIST_QUESTION_CUE.search(question) is not None:
