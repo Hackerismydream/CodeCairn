@@ -527,7 +527,8 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
             return super().corpus_snapshot()
 
         def recall(self, question: str, *, limit: int) -> RecallResult:
-            (self.root / ".index.lancedb.lock").touch()
+            for name in (".index.lancedb.lock", "state.sqlite3-shm", "state.sqlite3-wal"):
+                (self.root / name).touch()
             return super().recall(question, limit=limit)
 
     corpus = build_locomo_corpus(

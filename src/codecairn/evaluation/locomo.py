@@ -596,7 +596,7 @@ def _directory_snapshot(root: Path) -> tuple[tuple[str, str], ...]:
             raise ValueError("LoCoMo corpus must not contain symbolic links")
         if not path.is_file():
             continue
-        if path.name == ".index.lancedb.lock":
+        if path.name == ".index.lancedb.lock" or path.name.endswith(("-shm", "-wal")):
             continue
         file_digest = hashlib.sha256()
         with path.open("rb") as handle:
