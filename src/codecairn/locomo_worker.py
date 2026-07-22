@@ -21,6 +21,7 @@ from codecairn.evaluation.locomo import (
     load_locomo_dataset,
     run_locomo_conversation_questions,
     validate_locomo_corpus_conversation,
+    validate_locomo_corpus_preflight,
 )
 from codecairn.evaluation.providers import create_locomo_text_model
 
@@ -127,6 +128,13 @@ def _execute(raw: dict[str, object]) -> None:
         "tree_sha256"
     ) != _string(raw, "corpus_tree_sha256"):
         raise ValueError("LoCoMo worker corpus binding does not match")
+    expected_retrieval = _mapping(raw.get("retrieval_config"), "retrieval config")
+    validate_locomo_corpus_preflight(
+        corpus_dir,
+        dataset=dataset,
+        expected_content_sha256=expected_corpus_content_sha256,
+        retrieval_config=expected_retrieval,
+    )
 
     query_vectors_path = Path(_string(raw, "query_vectors_path")).resolve()
     query_manifest = _mapping(
@@ -143,7 +151,6 @@ def _execute(raw: dict[str, object]) -> None:
         create_retrieval_providers(environment=os.environ),
         embedder=FrozenQueryEmbeddingAdapter(query_vectors_path),
     )
-    expected_retrieval = _mapping(raw.get("retrieval_config"), "retrieval config")
     if retrieval.public_config != expected_retrieval:
         raise ValueError("LoCoMo worker retrieval configuration does not match")
     run_retrieval = _mapping(run_manifest.get("retrieval"), "run retrieval config")

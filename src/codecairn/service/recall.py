@@ -5,12 +5,13 @@ import re
 import struct
 import time
 from collections.abc import Callable
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from math import isfinite
 from typing import Protocol
 from urllib.parse import quote
 
 from codecairn.memory.embedding import EmbeddingProvider
+from codecairn.memory.episode import render_attributed_fact, render_episode
 from codecairn.memory.models import (
     CandidateSource,
     CodingMemory,
@@ -273,6 +274,24 @@ class RecallEngine:
         selected = tuple(
             replace(item, rank=rank) for rank, item in enumerate(selected_ranked, start=1)
         )
+        rendered_context = _compile_context(
+            normalized_query,
+            repo_key=repo_key,
+            ranked=selected,
+            temporal_priority_memory_ids=temporal_snippet_priority_ids,
+            config=self._planner.config,
+        )
+        rendered_terms = _entity_terms(rendered_context.evidence_text)
+        covered_slots = tuple(
+            slot for slot in plan.query_sketch.coverage_slots if slot in rendered_terms
+        )
+        missing_slots = tuple(
+            slot for slot in plan.query_sketch.coverage_slots if slot not in rendered_terms
+        )
+        # Full parent transcripts are renderer working state, not audit metadata. Keeping
+        # them in every ranked sidecar would duplicate the same long episode for every
+        # question and can dominate LoCoMo memory and artifact size.
+        audited_selected = tuple(replace(item, episode_text="") for item in selected)
         latency_ms = round((self._clock_ns() - started) / 1_000_000, 3)
         sidecar = RecallSidecar(
             query=normalized_query,
@@ -286,7 +305,7 @@ class RecallEngine:
                 + len(episode_temporal_lexical)
                 + len(atomic_temporal_lexical)
             ),
-            ranked=selected,
+            ranked=audited_selected,
             reranker_model=None if self._reranker is None else self._reranker.model_id,
             reranker_source=None if self._reranker is None else self._reranker.source_id,
             reranker_revision=None if self._reranker is None else self._reranker.revision,
@@ -308,19 +327,32 @@ class RecallEngine:
             query_temporal_prefixes=plan.query_sketch.temporal_prefixes,
             covered_slots=covered_slots,
             missing_slots=missing_slots,
-            completion="partial" if missing_slots or not selected else "complete",
-            degraded_stages=("no_candidates",) if not selected else (),
+            completion=(
+                "partial"
+                if missing_slots
+                or not selected
+                or rendered_context.partial_episode_ids
+                or rendered_context.dropped_episode_ids
+                else "complete"
+            ),
+            degraded_stages=(
+                ("no_candidates",)
+                if not selected
+                else (
+                    ("context_budget",)
+                    if rendered_context.partial_episode_ids or rendered_context.dropped_episode_ids
+                    else ()
+                )
+            ),
             query_vector_sha256=_vector_digest(query_vector),
             neighbor_window=plan.neighbor_window if plan.expand_neighbors else 0,
+            hydrated_episode_count=len(rendered_context.hydrated_episode_ids),
+            hydrated_episode_ids=rendered_context.hydrated_episode_ids,
+            partial_episode_ids=rendered_context.partial_episode_ids,
+            dropped_episode_ids=rendered_context.dropped_episode_ids,
         )
         return RecallResult(
-            markdown=_render_context(
-                normalized_query,
-                repo_key=repo_key,
-                ranked=selected,
-                temporal_priority_memory_ids=temporal_snippet_priority_ids,
-                config=self._planner.config,
-            ),
+            markdown=rendered_context.markdown,
             sidecar=sidecar,
         )
 
@@ -437,6 +469,7 @@ class RecallEngine:
                             key=lambda item: (item.source, item.rank, item.document_id),
                         )
                     ),
+                    episode_text=_episode_text(memory),
                 )
             )
         ranked.sort(key=lambda item: (-item.final_score, item.memory_id))
@@ -460,16 +493,54 @@ class RecallEngine:
         existing = {item.memory_id for item in ranked}
         seed_ids = set(existing)
         for memory in memories:
-            if (
-                memory.repo_key != repo_key
-                or memory.memory_id in existing
-                or memory.content_sha256 is None
-            ):
+            if memory.repo_key != repo_key or memory.content_sha256 is None:
                 continue
-            matched_facts = tuple(
-                fact for fact in memory.facts if set(anchors) & _entity_terms(fact.text)
+            prior = next(
+                (item for item in ranked if item.memory_id == memory.memory_id),
+                None,
+            )
+            existing_snippets = (
+                ()
+                if prior is None
+                else _memory_snippets(
+                    memory,
+                    matches=prior.matched_documents,
+                    matched_limit=self._planner.config.matched_facts_per_memory,
+                    diverse_matched_limit=(self._planner.config.diverse_matched_facts_per_memory),
+                    sibling_limit=self._planner.config.sibling_facts_per_memory,
+                    wide_sibling_window=False,
+                )
+            )
+            matched_facts = _entity_posting_facts(
+                memory,
+                anchors=anchors,
+                existing_snippets=existing_snippets,
             )
             if not matched_facts:
+                continue
+            posting_matches = tuple(
+                RecallMatch(
+                    document_id=f"entity:{fact.fact_id}",
+                    document_kind="atomic_fact",
+                    source="entity_posting",
+                    score=1.0,
+                    rank=rank,
+                    fact_id=fact.fact_id,
+                )
+                for rank, fact in enumerate(matched_facts, start=1)
+            )
+            if memory.memory_id in existing:
+                position = next(
+                    index for index, item in enumerate(ranked) if item.memory_id == memory.memory_id
+                )
+                prior = ranked[position]
+                ranked[position] = replace(
+                    prior,
+                    matched_documents=_merge_recall_matches(
+                        prior.matched_documents,
+                        posting_matches,
+                    ),
+                )
                 continue
             ranked.append(
                 RankedRecall(
@@ -487,17 +558,8 @@ class RecallEngine:
                     lexical_rank=None,
                     final_score=0.0,
                     evidence=_recall_evidence(memory),
-                    matched_documents=tuple(
-                        RecallMatch(
-                            document_id=f"entity:{fact.fact_id}",
-                            document_kind="atomic_fact",
-                            source="entity_posting",
-                            score=1.0,
-                            rank=rank,
-                            fact_id=fact.fact_id,
-                        )
-                        for rank, fact in enumerate(matched_facts, start=1)
-                    ),
+                    matched_documents=posting_matches,
+                    episode_text=_episode_text(memory),
                 )
             )
             existing.add(memory.memory_id)
@@ -755,13 +817,55 @@ def _temporal_lexical_query(
 
 
 def _recall_search_text(item: RankedRecall) -> str:
-    return "\n".join(
-        (
-            item.title,
-            item.summary,
-            *(snippet.text for snippet in item.snippets),
+    # Coverage is evidence-backed. A generic title or parent summary must not
+    # satisfy a named-anchor subgoal shared by every candidate episode.
+    return "\n".join(snippet.text for snippet in item.snippets if snippet.text)
+
+
+def _merge_recall_matches(
+    existing: tuple[RecallMatch, ...],
+    postings: tuple[RecallMatch, ...],
+) -> tuple[RecallMatch, ...]:
+    merged: dict[tuple[str, str | None], RecallMatch] = {}
+    ordered: list[RecallMatch] = []
+    for match in (*existing, *postings):
+        key = (match.document_id, match.fact_id)
+        if key in merged:
+            continue
+        merged[key] = match
+        ordered.append(match)
+    return tuple(ordered)
+
+
+def _entity_posting_facts(
+    memory: CodingMemory,
+    *,
+    anchors: tuple[str, ...],
+    existing_snippets: tuple[RecallSnippet, ...],
+) -> tuple[EvidenceFact, ...]:
+    already_covered = _entity_terms("\n".join(item.text for item in existing_snippets))
+    selected: list[EvidenceFact] = []
+    for anchor in anchors:
+        if anchor in already_covered:
+            continue
+        candidates = [
+            fact
+            for fact in memory.facts
+            if anchor in _entity_terms(_fact_search_text(memory, fact))
+        ]
+        if not candidates:
+            continue
+        best = min(
+            candidates,
+            key=lambda fact: (
+                -len(set(anchors) & _entity_terms(_fact_search_text(memory, fact))),
+                _fact_chronology_key(fact),
+            ),
         )
-    )
+        if best not in selected:
+            selected.append(best)
+        already_covered.update(_entity_terms(_fact_search_text(memory, best)))
+    return tuple(selected)
 
 
 def _entity_terms(text: str) -> set[str]:
@@ -809,6 +913,7 @@ def _memory_snippets(
     facts = {fact.fact_id: fact for fact in memory.facts}
     ordered_matched = _matched_fact_ids(
         matches,
+        memory=memory,
         matched_limit=matched_limit,
         diverse_limit=diverse_matched_limit,
     )
@@ -832,7 +937,7 @@ def _memory_snippets(
                     sibling_ids.append(adjacent_id)
     if ordered_matched:
         if wide_sibling_window:
-            anchor_id = _best_lexical_fact_id(matches) or ordered_matched[0]
+            anchor_id = _best_lexical_fact_id(matches, memory=memory) or ordered_matched[0]
             sibling_ids.extend(
                 _nearby_fact_ids(
                     chronological_facts,
@@ -856,13 +961,32 @@ def _memory_snippets(
 def _matched_fact_ids(
     matches: tuple[RecallMatch, ...],
     *,
+    memory: CodingMemory,
     matched_limit: int,
     diverse_limit: int,
 ) -> tuple[str, ...]:
     atomic_matches = tuple(
         match for match in matches if match.document_kind == "atomic_fact" and match.fact_id
     )
-    ordered = list(dict.fromkeys(match.fact_id for match in atomic_matches))[:matched_limit]
+    regular = list(
+        dict.fromkeys(
+            source_fact_id
+            for match in atomic_matches
+            if match.source != "entity_posting"
+            for source_fact_id in _source_fact_ids(memory, match.fact_id)
+        )
+    )
+    posting = list(
+        dict.fromkeys(
+            source_fact_id
+            for match in atomic_matches
+            if match.source == "entity_posting"
+            for source_fact_id in _source_fact_ids(memory, match.fact_id)
+            if source_fact_id not in regular
+        )
+    )
+    regular_budget = max(0, matched_limit - len(posting))
+    ordered = [*regular[:regular_budget], *posting[:matched_limit]]
     if diverse_limit == 0:
         return tuple(ordered)
     diverse_added = 0
@@ -870,16 +994,23 @@ def _matched_fact_ids(
         (item for item in atomic_matches if item.source.endswith("_vector")),
         key=lambda item: (item.rank, item.document_id),
     ):
-        if match.fact_id in ordered:
-            continue
-        ordered.append(match.fact_id)
-        diverse_added += 1
+        for source_fact_id in _source_fact_ids(memory, match.fact_id):
+            if source_fact_id in ordered:
+                continue
+            ordered.append(source_fact_id)
+            diverse_added += 1
+            if diverse_added == diverse_limit:
+                break
         if diverse_added == diverse_limit:
             break
     return tuple(ordered)
 
 
-def _best_lexical_fact_id(matches: tuple[RecallMatch, ...]) -> str | None:
+def _best_lexical_fact_id(
+    matches: tuple[RecallMatch, ...],
+    *,
+    memory: CodingMemory,
+) -> str | None:
     lexical = tuple(
         match
         for match in matches
@@ -889,7 +1020,25 @@ def _best_lexical_fact_id(matches: tuple[RecallMatch, ...]) -> str | None:
     )
     if not lexical:
         return None
-    return min(lexical, key=lambda item: (item.rank, item.document_id)).fact_id
+    match = min(lexical, key=lambda item: (item.rank, item.document_id))
+    source_fact_ids = _source_fact_ids(memory, match.fact_id)
+    return source_fact_ids[0] if source_fact_ids else None
+
+
+def _source_fact_ids(memory: CodingMemory, retrieval_fact_id: str) -> tuple[str, ...]:
+    if any(fact.fact_id == retrieval_fact_id for fact in memory.facts):
+        return (retrieval_fact_id,)
+    if memory.semantic_episode is None:
+        return ()
+    semantic_fact = next(
+        (
+            fact
+            for fact in memory.semantic_episode.atomic_facts
+            if fact.fact_id == retrieval_fact_id
+        ),
+        None,
+    )
+    return () if semantic_fact is None else semantic_fact.source_fact_ids
 
 
 def _nearby_fact_ids(
@@ -962,11 +1111,28 @@ def _snippet(
         source_memory_id=memory.memory_id,
         source_uri=_memory_uri(memory.memory_id),
         fact_id=fact.fact_id,
-        text=fact.text,
+        text=render_attributed_fact(fact),
         source_title=memory.title,
         source_summary=memory.summary,
         raw_event_index=raw_event_index,
     )
+
+
+def _fact_search_text(memory: CodingMemory, fact: EvidenceFact) -> str:
+    semantic_text = "\n".join(
+        atomic.text
+        for atomic in (memory.semantic_episode.atomic_facts if memory.semantic_episode else ())
+        if fact.fact_id in atomic.source_fact_ids
+    )
+    return "\n".join(part for part in (render_attributed_fact(fact), semantic_text) if part)
+
+
+def _episode_text(memory: CodingMemory) -> str:
+    if memory.semantic_episode is None:
+        return ""
+    # Semantic projections are retrieval aids. The answer context hydrates only
+    # authoritative source turns so a model-written narrative cannot become evidence.
+    return render_episode(memory.facts)
 
 
 def _deduplicate_snippets(snippets: tuple[RecallSnippet, ...]) -> tuple[RecallSnippet, ...]:
@@ -1020,6 +1186,15 @@ def _validated_rerank_scores(
     return observed
 
 
+@dataclass(frozen=True, slots=True)
+class _CompiledContext:
+    markdown: str
+    evidence_text: str = ""
+    hydrated_episode_ids: tuple[str, ...] = ()
+    partial_episode_ids: tuple[str, ...] = ()
+    dropped_episode_ids: tuple[str, ...] = ()
+
+
 def _render_context(
     query: str,
     *,
@@ -1028,6 +1203,238 @@ def _render_context(
     temporal_priority_memory_ids: set[str],
     config: RecallPlannerConfig,
 ) -> str:
+    return _compile_context(
+        query,
+        repo_key=repo_key,
+        ranked=ranked,
+        temporal_priority_memory_ids=temporal_priority_memory_ids,
+        config=config,
+    ).markdown
+
+
+def _compile_context(
+    query: str,
+    *,
+    repo_key: str,
+    ranked: tuple[RankedRecall, ...],
+    temporal_priority_memory_ids: set[str],
+    config: RecallPlannerConfig,
+) -> _CompiledContext:
+    if not any(item.episode_text for item in ranked):
+        return _compile_legacy_context(
+            query,
+            repo_key=repo_key,
+            ranked=ranked,
+            temporal_priority_memory_ids=temporal_priority_memory_ids,
+            config=config,
+        )
+    header = [
+        "# Recall Context",
+        "",
+        f"Task: {_single_line(query, limit=400)}",
+        f"Repository: `{_single_line(repo_key, limit=200)}`",
+    ]
+    lines = list(header)
+    hydrated: list[str] = []
+    partial: list[str] = []
+    dropped: list[str] = []
+    evidence_parts: list[str] = []
+    for item in ranked:
+        if not item.episode_text:
+            block = _legacy_memory_block(
+                item,
+                temporal_priority=item.memory_id in temporal_priority_memory_ids,
+                config=config,
+            )
+            if len("\n".join((*lines, *block))) + 1 <= config.context_max_chars:
+                lines.extend(block)
+                evidence_parts.extend(
+                    _single_line(snippet.text, limit=config.context_snippet_chars)
+                    for snippet in _rendered_legacy_snippets(
+                        item,
+                        temporal_priority=item.memory_id in temporal_priority_memory_ids,
+                        config=config,
+                    )
+                )
+            else:
+                dropped.append(item.memory_id)
+            continue
+        block = _complete_episode_block(item)
+        if len("\n".join((*lines, *block))) + 1 <= config.context_max_chars:
+            lines.extend(block)
+            hydrated.append(item.memory_id)
+            evidence_parts.append(item.episode_text)
+            continue
+        fallback = _partial_episode_block(
+            item,
+            temporal_priority=item.memory_id in temporal_priority_memory_ids,
+            config=config,
+        )
+        if (
+            not hydrated
+            and not partial
+            and len("\n".join((*lines, *fallback))) + 1 <= config.context_max_chars
+        ):
+            lines.extend(fallback)
+            partial.append(item.memory_id)
+            evidence_parts.extend(
+                _single_line(snippet.text, limit=config.context_snippet_chars)
+                for snippet in _rendered_partial_snippets(
+                    item,
+                    temporal_priority=item.memory_id in temporal_priority_memory_ids,
+                    config=config,
+                )
+            )
+        else:
+            dropped.append(item.memory_id)
+    if dropped:
+        notice = f"\n{len(dropped)} lower-ranked parent episodes omitted by the context budget."
+        if len("\n".join(lines)) + len(notice) + 1 <= config.context_max_chars:
+            lines.extend(("", notice.strip()))
+    markdown = "\n".join(lines) + "\n"
+    if len(markdown) > config.context_max_chars:
+        raise AssertionError("Recall Context exceeded its deterministic character budget")
+    return _CompiledContext(
+        markdown=markdown,
+        evidence_text="\n".join(evidence_parts),
+        hydrated_episode_ids=tuple(hydrated),
+        partial_episode_ids=tuple(partial),
+        dropped_episode_ids=tuple(dropped),
+    )
+
+
+def _complete_episode_block(item: RankedRecall) -> list[str]:
+    return [
+        "",
+        f"## {item.rank}. {_single_line(item.title, limit=120)}",
+        "",
+        _single_line(item.summary, limit=320),
+        "",
+        f"- Type: `{item.memory_type}`",
+        f"- Source: [{item.memory_id}]({item.source_uri})",
+        "- Parent hydration: `complete`",
+        "",
+        "Complete parent episode:",
+        "",
+        item.episode_text,
+    ]
+
+
+def _partial_episode_block(
+    item: RankedRecall,
+    *,
+    temporal_priority: bool,
+    config: RecallPlannerConfig,
+) -> list[str]:
+    snippets = _rendered_partial_snippets(
+        item,
+        temporal_priority=temporal_priority,
+        config=config,
+    )
+    return [
+        "",
+        f"## {item.rank}. {_single_line(item.title, limit=120)}",
+        "",
+        _single_line(item.summary, limit=config.context_summary_chars),
+        "",
+        f"- Type: `{item.memory_type}`",
+        f"- Source: [{item.memory_id}]({item.source_uri})",
+        "- Parent hydration: `partial`",
+        "",
+        "Evidence excerpts:",
+        *(
+            _context_snippet_line(
+                snippet,
+                parent_memory_id=item.memory_id,
+                text_limit=config.context_snippet_chars,
+            )
+            for snippet in snippets
+        ),
+    ]
+
+
+def _legacy_memory_block(
+    item: RankedRecall,
+    *,
+    temporal_priority: bool,
+    config: RecallPlannerConfig,
+) -> list[str]:
+    snippets = _rendered_legacy_snippets(
+        item,
+        temporal_priority=temporal_priority,
+        config=config,
+    )
+    return [
+        "",
+        f"## {item.rank}. {_single_line(item.title, limit=120)}",
+        "",
+        _single_line(item.summary, limit=config.context_summary_chars),
+        "",
+        f"- Type: `{item.memory_type}`",
+        f"- Source: [{item.memory_id}]({item.source_uri})",
+        "",
+        "Evidence excerpts:",
+        *(
+            _context_snippet_line(
+                snippet,
+                parent_memory_id=item.memory_id,
+                text_limit=config.context_snippet_chars,
+            )
+            for snippet in snippets
+        ),
+    ]
+
+
+def _rendered_partial_snippets(
+    item: RankedRecall,
+    *,
+    temporal_priority: bool,
+    config: RecallPlannerConfig,
+) -> tuple[RecallSnippet, ...]:
+    return _context_snippets(item, temporal_priority=temporal_priority)[
+        : config.context_snippets_per_memory
+    ]
+
+
+def _rendered_legacy_snippets(
+    item: RankedRecall,
+    *,
+    temporal_priority: bool,
+    config: RecallPlannerConfig,
+) -> tuple[RecallSnippet, ...]:
+    limit = (
+        config.context_temporal_snippets_per_memory
+        if temporal_priority
+        else config.context_snippets_per_memory
+    )
+    return _context_snippets(item, temporal_priority=temporal_priority)[:limit]
+
+
+def _render_legacy_context(
+    query: str,
+    *,
+    repo_key: str,
+    ranked: tuple[RankedRecall, ...],
+    temporal_priority_memory_ids: set[str],
+    config: RecallPlannerConfig,
+) -> str:
+    return _compile_legacy_context(
+        query,
+        repo_key=repo_key,
+        ranked=ranked,
+        temporal_priority_memory_ids=temporal_priority_memory_ids,
+        config=config,
+    ).markdown
+
+
+def _compile_legacy_context(
+    query: str,
+    *,
+    repo_key: str,
+    ranked: tuple[RankedRecall, ...],
+    temporal_priority_memory_ids: set[str],
+    config: RecallPlannerConfig,
+) -> _CompiledContext:
     header = [
         "# Recall Context",
         "",
@@ -1036,9 +1443,10 @@ def _render_context(
     ]
     if not ranked:
         header.extend(("", "No evidence-backed memory matched this task."))
-        return "\n".join(header) + "\n"
+        return _CompiledContext(markdown="\n".join(header) + "\n")
 
     bases: list[list[str]] = []
+    snippet_values: list[tuple[RecallSnippet, ...]] = []
     snippet_lines: list[tuple[str, ...]] = []
     for item in ranked:
         bases.append(
@@ -1058,6 +1466,7 @@ def _render_context(
             item,
             temporal_priority=item.memory_id in temporal_priority_memory_ids,
         )
+        snippet_values.append(snippets)
         snippet_lines.append(
             tuple(
                 _context_snippet_line(
@@ -1084,10 +1493,10 @@ def _render_context(
         for item_index, item in enumerate(ranked):
             if temporal_only and item.memory_id not in temporal_priority_memory_ids:
                 continue
-            lines = snippet_lines[item_index]
-            if round_index >= len(lines) or selected_counts[item_index] != round_index:
+            excerpts = snippet_lines[item_index]
+            if round_index >= len(excerpts) or selected_counts[item_index] != round_index:
                 continue
-            line_cost = len(lines[round_index]) + 1
+            line_cost = len(excerpts[round_index]) + 1
             if line_cost > remaining_chars:
                 continue
             selected_counts[item_index] = round_index + 1
@@ -1105,7 +1514,12 @@ def _render_context(
     rendered = "\n".join(lines) + "\n"
     if len(rendered) > config.context_max_chars:
         raise AssertionError("Recall Context exceeded its deterministic character budget")
-    return rendered
+    evidence_text = "\n".join(
+        _single_line(snippet.text, limit=config.context_snippet_chars)
+        for snippets, selected_count in zip(snippet_values, selected_counts, strict=True)
+        for snippet in snippets[:selected_count]
+    )
+    return _CompiledContext(markdown=rendered, evidence_text=evidence_text)
 
 
 def _context_snippets(

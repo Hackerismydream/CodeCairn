@@ -1,8 +1,10 @@
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
 
 import codecairn.storage.markdown as markdown_module
+from codecairn.memory.episode import LosslessEpisodeSemanticizer
 from codecairn.memory.models import CodingMemory, EvidenceFact, EvidenceReference
 from codecairn.storage.markdown import MarkdownMemoryStore
 
@@ -79,7 +81,73 @@ def test_atomic_facts_round_trip_inside_markdown_truth(tmp_path: Path) -> None:
 
     markdown = Path(persisted.markdown_path).read_text(encoding="utf-8")
     assert '"fact_id": "fact_test"' in markdown
+    assert '"actor":' not in markdown
+    assert '"occurred_at":' not in markdown
     assert store.read(Path(persisted.markdown_path)) == persisted
+
+    path = Path(persisted.markdown_path)
+    path.unlink()
+    plan = store.plan_repair(persisted)
+    assert plan is not None and plan.reason == "missing"
+    repaired = store.repair(persisted, plan)
+    assert repaired.content_sha256 == persisted.content_sha256
+
+
+def test_conversation_episode_requires_a_grounded_semantic_projection(tmp_path: Path) -> None:
+    store = MarkdownMemoryStore(tmp_path)
+    evidence = EvidenceReference(
+        provider="locomo",
+        session_id="conversation/session",
+        source_path="locomo://dataset-a/conversation/session",
+        raw_event_sha256="d" * 64,
+        raw_event_index=1,
+        raw_event_type="locomo_turn",
+    )
+    fact = EvidenceFact(
+        fact_id="fact_source_path",
+        repo_key="locomo/conversation",
+        episode_id="episode_source_path",
+        kind="conversation_turn",
+        text="Exact source text.",
+        role="participant",
+        evidence=(evidence,),
+        actor="Alice",
+        occurred_at="2023-05-08T13:56:00+00:00",
+    )
+    memory = CodingMemory(
+        memory_id="memory_source_path",
+        repo_key="locomo/conversation",
+        memory_type="conversation_episode",
+        title="Conversation session",
+        summary="An attributed session.",
+        episode_id="episode_source_path",
+        command=None,
+        exit_code=None,
+        evidence=(evidence,),
+        fact_ids=(fact.fact_id,),
+        facts=(fact,),
+        semantic_episode=LosslessEpisodeSemanticizer().compile(
+            (fact,),
+            episode_id=fact.episode_id,
+        ),
+    )
+    store.write(memory)
+    with pytest.raises(ValueError, match="grounded semantic projection"):
+        store.write(
+            replace(
+                memory,
+                memory_id="memory_missing_semantic_projection",
+                semantic_episode=None,
+            )
+        )
+    with pytest.raises(ValueError, match="attributed source turns"):
+        store.write(
+            replace(
+                memory,
+                memory_id="memory_missing_conversation_fact_ids",
+                fact_ids=(),
+            )
+        )
 
 
 def test_fact_identifiers_must_match_the_persisted_fact_snapshot(tmp_path: Path) -> None:

@@ -82,8 +82,10 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
   opening evidence. It never includes the current session end offset.
 - The Import Ledger commits a cursor only after the corresponding Markdown and
   SQLite state are durable.
-- The five Coding Memory types are Debug Episode, Repository Convention, Failed
-  Command, Verified Fix, and User Preference.
+- The six Coding Memory types are Debug Episode, Conversation Episode,
+  Repository Convention, Failed Command, Verified Fix, and User Preference. A
+  Conversation Episode keeps exact attributed turns as Evidence Facts and a
+  separately marked semantic retrieval projection grounded in those facts.
 - Evidence Facts are derived by code. The LLM may reference fact identifiers and
   author summaries, but cannot author provenance fields.
 - Markdown truth uses same-directory temporary files, flush, fsync, atomic

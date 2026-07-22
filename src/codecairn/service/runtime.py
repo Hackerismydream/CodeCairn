@@ -5,6 +5,13 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Literal, Protocol
 
+from codecairn.memory.episode import (
+    AttributedEpisode,
+    EpisodeSemanticizer,
+    LosslessEpisodeSemanticizer,
+    compile_source_facts,
+    episode_summary,
+)
 from codecairn.memory.evidence import EvidenceGate, collect_evidence_facts
 from codecairn.memory.models import (
     AgentTrace,
@@ -23,6 +30,7 @@ from codecairn.memory.trace import (
     extend_raw_prefix_sha256,
     extract_failed_commands,
     segment_tasks,
+    stable_id,
 )
 from codecairn.service.recall import RecallEngine
 
@@ -105,12 +113,14 @@ class MemoryRuntime:
         state: ImportState,
         evidence_gate: EvidenceGate,
         recall_engine: RecallEngine | None = None,
+        episode_semanticizer: EpisodeSemanticizer | None = None,
     ) -> None:
         self._state = state
         self._markdown = memory_store
         self._importer = importer
         self._evidence_gate = evidence_gate
         self._recall_engine = recall_engine
+        self._episode_semanticizer = episode_semanticizer or LosslessEpisodeSemanticizer()
 
     def import_session(
         self,
@@ -184,6 +194,39 @@ class MemoryRuntime:
         facts: tuple[EvidenceFact, ...],
     ) -> GateDecision:
         decision = self._evidence_gate.evaluate(proposal, facts=facts)
+        if decision.memory is not None:
+            persisted = self._markdown.write(decision.memory)
+            decision = replace(decision, memory=persisted)
+        self._state.commit_gate_decision(decision, proposal=proposal)
+        return decision
+
+    def write_episode(self, episode: AttributedEpisode) -> GateDecision:
+        """Persist one attributed episode through the ordinary evidence gate."""
+
+        episode_id, facts = compile_source_facts(episode)
+        semantic_episode = self._episode_semanticizer.compile(
+            facts,
+            episode_id=episode_id,
+        )
+        proposal = MemoryProposal(
+            proposal_id=stable_id(
+                "attributed-episode-proposal",
+                episode.repo_key,
+                episode.source_episode_id,
+                *(fact.fact_id for fact in facts),
+            ),
+            repo_key=episode.repo_key,
+            memory_type="conversation_episode",
+            title=episode.title,
+            summary=episode_summary(facts),
+            fact_ids=tuple(fact.fact_id for fact in facts),
+            confidence=1.0,
+        )
+        decision = self._evidence_gate.evaluate(
+            proposal,
+            facts=facts,
+            semantic_episode=semantic_episode,
+        )
         if decision.memory is not None:
             persisted = self._markdown.write(decision.memory)
             decision = replace(decision, memory=persisted)

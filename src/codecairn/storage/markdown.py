@@ -18,15 +18,22 @@ from codecairn.memory.models import (
     MemoryRepairPlan,
     MemoryRepairReason,
     MemoryType,
+    SemanticAtomicFact,
+    SemanticEpisode,
     TruthIssue,
     TruthScan,
 )
+from codecairn.memory.trace import stable_id
 
 _MEMORY_TYPES = frozenset(get_args(MemoryType))
 _EVIDENCE_FACT_KINDS = frozenset(get_args(EvidenceFactKind))
 _EVIDENCE_FACT_STATUSES = frozenset(get_args(EvidenceFactStatus))
 _MAX_MARKDOWN_BYTES = 64 * 1024 * 1024
 _SAFE_BODY: dict[MemoryType, tuple[str, str]] = {
+    "conversation_episode": (
+        "Conversation Episode",
+        "An attributed conversation episode backed by exact source turns.",
+    ),
     "debug_episode": ("Debug Episode", "A debugging episode backed by cited raw events."),
     "repository_convention": (
         "Repository Convention",
@@ -246,6 +253,7 @@ def _memory_from_content(resolved: Path, content: str) -> CodingMemory:
         evidence=evidence,
         fact_ids=_optional_string_tuple(attributes, "fact_ids"),
         facts=_parse_facts(attributes.get("facts", [])),
+        semantic_episode=_parse_semantic_episode(attributes.get("semantic_episode")),
         markdown_path=str(resolved),
         content_sha256=hashlib.sha256(content.encode()).hexdigest(),
     )
@@ -268,6 +276,19 @@ def _render(memory: CodingMemory) -> str:
         if memory.facts
         else ""
     )
+    semantic_episode = (
+        "semantic_episode: "
+        f"{json.dumps(_semantic_episode_dict(memory.semantic_episode), sort_keys=True)}\n"
+        if memory.semantic_episode is not None
+        else ""
+    )
+    semantic_body = (
+        "\n## Retrieval Annotation\n\n"
+        "This derived text is a search aid; the cited Evidence Facts remain authoritative.\n\n"
+        f"{memory.semantic_episode.narrative}\n"
+        if memory.semantic_episode is not None
+        else ""
+    )
     return (
         "---\n"
         f"memory_id: {json.dumps(memory.memory_id)}\n"
@@ -281,6 +302,7 @@ def _render(memory: CodingMemory) -> str:
         f"evidence: {json.dumps(evidence, sort_keys=True)}\n"
         f"{fact_ids}"
         f"{facts}"
+        f"{semantic_episode}"
         "---\n\n"
         f"# {heading}\n\n"
         f"{description}\n\n"
@@ -288,6 +310,7 @@ def _render(memory: CodingMemory) -> str:
         f"- Raw event indices: {', '.join(str(item.raw_event_index) for item in memory.evidence)}\n"
         f"- Raw event hashes: {', '.join(item.raw_event_sha256 for item in memory.evidence)}\n"
         f"{result}"
+        f"{semantic_body}"
     )
 
 
@@ -304,7 +327,7 @@ def _evidence_dict(evidence: EvidenceReference) -> dict[str, object]:
 
 
 def _fact_dict(fact: EvidenceFact) -> dict[str, object]:
-    return {
+    result: dict[str, object] = {
         "fact_id": fact.fact_id,
         "repo_key": fact.repo_key,
         "episode_id": fact.episode_id,
@@ -313,6 +336,29 @@ def _fact_dict(fact: EvidenceFact) -> dict[str, object]:
         "role": fact.role,
         "evidence": [_evidence_dict(item) for item in fact.evidence],
         "status": fact.status,
+    }
+    if fact.actor is not None:
+        result["actor"] = fact.actor
+    if fact.occurred_at is not None:
+        result["occurred_at"] = fact.occurred_at
+    return result
+
+
+def _semantic_episode_dict(semantic_episode: SemanticEpisode) -> dict[str, object]:
+    return {
+        "episode_id": semantic_episode.episode_id,
+        "narrative": semantic_episode.narrative,
+        "atomic_facts": [
+            {
+                "fact_id": fact.fact_id,
+                "text": fact.text,
+                "source_fact_ids": list(fact.source_fact_ids),
+            }
+            for fact in semantic_episode.atomic_facts
+        ],
+        "source_fact_ids": list(semantic_episode.source_fact_ids),
+        "semanticizer_id": semantic_episode.semanticizer_id,
+        "revision": semantic_episode.revision,
     }
 
 
@@ -388,9 +434,40 @@ def _parse_facts(value: object) -> tuple[EvidenceFact, ...]:
                 role=_optional_str(item, "role"),
                 evidence=_parse_evidence(item.get("evidence")),
                 status=cast(EvidenceFactStatus | None, status),
+                actor=_optional_str(item, "actor"),
+                occurred_at=_optional_str(item, "occurred_at"),
             )
         )
     return tuple(facts)
+
+
+def _parse_semantic_episode(value: object) -> SemanticEpisode | None:
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        raise ValueError("Memory semantic episode must be an object or null")
+    atomic_value = value.get("atomic_facts")
+    if not isinstance(atomic_value, list):
+        raise ValueError("Memory semantic atomic facts must be a list")
+    atomic_facts: list[SemanticAtomicFact] = []
+    for position, item in enumerate(atomic_value):
+        if not isinstance(item, dict):
+            raise ValueError(f"Semantic atomic fact at position {position} is not an object")
+        atomic_facts.append(
+            SemanticAtomicFact(
+                fact_id=_required_str(item, "fact_id"),
+                text=_required_str(item, "text"),
+                source_fact_ids=_required_string_tuple(item, "source_fact_ids"),
+            )
+        )
+    return SemanticEpisode(
+        episode_id=_required_str(value, "episode_id"),
+        narrative=_required_str(value, "narrative"),
+        atomic_facts=tuple(atomic_facts),
+        source_fact_ids=_required_string_tuple(value, "source_fact_ids"),
+        semanticizer_id=_required_str(value, "semanticizer_id"),
+        revision=_required_str(value, "revision"),
+    )
 
 
 def _required_str(values: dict[str, object], key: str) -> str:
@@ -428,6 +505,12 @@ def _optional_string_tuple(values: dict[str, object], key: str) -> tuple[str, ..
     if len(value) != len(set(value)):
         raise ValueError(f"Memory field {key!r} must contain unique values")
     return tuple(value)
+
+
+def _required_string_tuple(values: dict[str, object], key: str) -> tuple[str, ...]:
+    if key not in values:
+        raise ValueError(f"Memory field {key!r} is required")
+    return _optional_string_tuple(values, key)
 
 
 def _atomic_create(path: Path, content: str) -> None:
@@ -501,6 +584,7 @@ def _core_semantic_identity(memory: CodingMemory) -> tuple[object, ...]:
         memory.command,
         memory.exit_code,
         memory.fact_ids,
+        _semantic_episode_identity(memory.semantic_episode),
         evidence,
     )
 
@@ -525,6 +609,8 @@ def _fact_semantic_identity(facts: tuple[EvidenceFact, ...]) -> tuple[object, ..
             fact.text,
             fact.role,
             fact.status,
+            fact.actor,
+            fact.occurred_at,
             tuple(
                 (
                     item.provider,
@@ -541,6 +627,22 @@ def _fact_semantic_identity(facts: tuple[EvidenceFact, ...]) -> tuple[object, ..
     )
 
 
+def _semantic_episode_identity(semantic_episode: SemanticEpisode | None) -> object:
+    if semantic_episode is None:
+        return None
+    return (
+        semantic_episode.episode_id,
+        semantic_episode.narrative,
+        tuple(
+            (fact.fact_id, fact.text, fact.source_fact_ids)
+            for fact in semantic_episode.atomic_facts
+        ),
+        semantic_episode.source_fact_ids,
+        semantic_episode.semanticizer_id,
+        semantic_episode.revision,
+    )
+
+
 def _validate_facts(memory: CodingMemory) -> None:
     fact_ids = tuple(fact.fact_id for fact in memory.facts)
     if len(fact_ids) != len(set(fact_ids)):
@@ -553,6 +655,55 @@ def _validate_facts(memory: CodingMemory) -> None:
             raise ValueError("Memory facts must belong to the same repository")
         if not fact.evidence or not set(fact.evidence).issubset(evidence):
             raise ValueError("Memory facts must cite the memory evidence")
+    if memory.memory_type == "conversation_episode" and (
+        not memory.facts
+        or memory.fact_ids != fact_ids
+        or any(
+            fact.kind != "conversation_turn"
+            or fact.episode_id != memory.episode_id
+            or not fact.actor
+            or not fact.role
+            for fact in memory.facts
+        )
+    ):
+        raise ValueError("Conversation Episodes require attributed source turns")
+    semantic_episode = memory.semantic_episode
+    if memory.memory_type == "conversation_episode" and semantic_episode is None:
+        raise ValueError("Conversation Episodes require a grounded semantic projection")
+    if semantic_episode is None:
+        return
+    source_fact_ids = set(fact_ids)
+    semantic_fact_ids = tuple(atomic.fact_id for atomic in semantic_episode.atomic_facts)
+    if (
+        semantic_episode.episode_id != memory.episode_id
+        or tuple(fact_ids) != semantic_episode.source_fact_ids
+        or not semantic_episode.narrative.strip()
+        or not semantic_episode.semanticizer_id.strip()
+        or not semantic_episode.revision.strip()
+        or not semantic_episode.atomic_facts
+        or len(semantic_fact_ids) != len(set(semantic_fact_ids))
+        or any(
+            not atomic.source_fact_ids
+            or len(atomic.source_fact_ids) != len(set(atomic.source_fact_ids))
+            or not set(atomic.source_fact_ids) <= source_fact_ids
+            or not atomic.text.strip()
+            or atomic.fact_id
+            != stable_id(
+                "semantic-atomic-fact",
+                semantic_episode.episode_id,
+                *atomic.source_fact_ids,
+                atomic.text,
+            )
+            for atomic in semantic_episode.atomic_facts
+        )
+        or set(
+            source_fact_id
+            for atomic in semantic_episode.atomic_facts
+            for source_fact_id in atomic.source_fact_ids
+        )
+        != source_fact_ids
+    ):
+        raise ValueError("Memory semantic episode must be grounded in its Evidence Facts")
 
 
 def _file_sha256(path: Path) -> str | None:

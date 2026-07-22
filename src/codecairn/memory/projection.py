@@ -3,12 +3,14 @@ from __future__ import annotations
 import hashlib
 import json
 
+from codecairn.memory.episode import render_attributed_fact, render_episode
 from codecairn.memory.models import (
     CodingMemory,
     EvidenceFact,
     RecallDocument,
     RecallDocumentFingerprint,
     RecallDocumentKind,
+    SemanticAtomicFact,
 )
 from codecairn.memory.trace import stable_id
 
@@ -39,20 +41,45 @@ def project_recall_documents(
         title=memory.title,
         summary=memory.summary,
         content=_episode_projection_content(memory, markdown=markdown),
-        child_count=len(memory.facts),
+        child_count=(
+            len(memory.semantic_episode.atomic_facts)
+            if memory.semantic_episode is not None
+            else len(memory.facts)
+        ),
     )
-    children = tuple(
-        _atomic_fact_document(
-            memory,
-            fact=fact,
-            parent_document_id=episode_document_id,
+    if memory.semantic_episode is not None:
+        children = tuple(
+            _semantic_atomic_fact_document(
+                memory,
+                fact=fact,
+                parent_document_id=episode_document_id,
+            )
+            for fact in memory.semantic_episode.atomic_facts
         )
-        for fact in memory.facts
-    )
+    else:
+        children = tuple(
+            _atomic_fact_document(
+                memory,
+                fact=fact,
+                parent_document_id=episode_document_id,
+            )
+            for fact in memory.facts
+        )
     return (episode, *children)
 
 
 def _episode_projection_content(memory: CodingMemory, *, markdown: str) -> str:
+    if memory.semantic_episode is not None:
+        authoritative = render_episode(memory.facts)
+        narrative = memory.semantic_episode.narrative.strip()
+        content = (
+            authoritative
+            if narrative == authoritative
+            else f"{narrative}\n\nAuthoritative evidence:\n{authoritative}"
+        )
+        if len(content) <= _MAX_EPISODE_PROJECTION_CHARS:
+            return content
+        return content[: _MAX_EPISODE_PROJECTION_CHARS - 1].rstrip() + "…"
     if not markdown.startswith("---\n"):
         body = markdown
     else:
@@ -64,7 +91,7 @@ def _episode_projection_content(memory: CodingMemory, *, markdown: str) -> str:
             body = f"---\n{episode_frontmatter}\n---\n{body}"
         else:
             body = markdown
-    fact_text = "\n".join(f"- {fact.text}" for fact in memory.facts)
+    fact_text = "\n".join(f"- {render_attributed_fact(fact)}" for fact in memory.facts)
     content = f"{body}\n\nEpisode facts:\n{fact_text}"
     if len(content) <= _MAX_EPISODE_PROJECTION_CHARS:
         return content
@@ -139,8 +166,33 @@ def _atomic_fact_document(
         source_episode_id=fact.episode_id,
         fact_id=fact.fact_id,
         title=fact.kind.replace("_", " ").title(),
+        summary=render_attributed_fact(fact),
+        content=f"{fact.kind}\n{render_attributed_fact(fact)}{status}",
+        child_count=0,
+    )
+
+
+def _semantic_atomic_fact_document(
+    memory: CodingMemory,
+    *,
+    fact: SemanticAtomicFact,
+    parent_document_id: str,
+) -> RecallDocument:
+    return _document(
+        document_id=stable_id(
+            "recall-semantic-atomic-fact",
+            memory.repo_key,
+            memory.memory_id,
+            fact.fact_id,
+        ),
+        memory=memory,
+        document_kind="atomic_fact",
+        parent_document_id=parent_document_id,
+        source_episode_id=memory.episode_id,
+        fact_id=fact.fact_id,
+        title="Atomic Fact",
         summary=fact.text,
-        content=f"{fact.kind}\n{fact.text}{status}",
+        content=fact.text,
         child_count=0,
     )
 

@@ -68,6 +68,8 @@ class SemanticCompression:
                 "fact_id": fact.fact_id,
                 "kind": fact.kind,
                 "role": fact.role,
+                "actor": fact.actor,
+                "occurred_at": fact.occurred_at,
                 "text": self._redactor.redact(fact.text),
             }
             for fact in facts

@@ -13,7 +13,7 @@ from typing import ClassVar
 import pytest
 
 from codecairn.bootstrap import create_cascade, create_runtime
-from codecairn.evaluation.artifacts import write_json_exclusive
+from codecairn.evaluation.artifacts import canonical_json, write_json_exclusive
 from codecairn.evaluation.locomo import (
     CodeCairnConversationMemory,
     ConversationIngestResult,
@@ -22,6 +22,7 @@ from codecairn.evaluation.locomo import (
     LoCoMoConversation,
     LoCoMoConversationWork,
     LoCoMoCorpusConfig,
+    LoCoMoQuery,
     LoCoMoQueryVectorConfig,
     LoCoMoRunConfig,
     build_locomo_corpus,
@@ -31,7 +32,11 @@ from codecairn.evaluation.locomo import (
     report_locomo,
     run_locomo,
     run_locomo_conversation_questions,
+    validate_locomo_corpus_conversation,
+    validate_locomo_corpus_preflight,
 )
+from codecairn.evaluation.locomo import _recall_question as recall_question
+from codecairn.evaluation.locomo import _run_question as run_question
 from codecairn.evaluation.locomo_ablation import (
     LoCoMoAblationConfig,
     build_locomo_ablation_report,
@@ -75,7 +80,7 @@ class FakeMemory:
         return ConversationIngestResult(
             session_count=len(conversation.sessions),
             turn_count=turn_count,
-            accepted_memory_count=turn_count,
+            accepted_memory_count=sum(bool(session.turns) for session in conversation.sessions),
             rejected_memory_count=0,
         )
 
@@ -394,7 +399,7 @@ def test_locomo_turns_ingest_as_facts_of_session_episodes(
     assert ingested.accepted_memory_count == 2
     assert ingested.rejected_memory_count == 0
     assert recalled.sidecar.repo_key == "locomo/conv-test-1"
-    assert recalled.sidecar.ranked[0].memory_type == "user_preference"
+    assert recalled.sidecar.ranked[0].memory_type == "conversation_episode"
     assert "beagle" in recalled.markdown
     memories = create_runtime(root).list_memories(repo_key="locomo/conv-test-1")
     assert len(memories) == 2
@@ -404,14 +409,24 @@ def test_locomo_turns_ingest_as_facts_of_session_episodes(
     assert {fact.text for item in memories for fact in item.facts} == {
         turn.text for session in conversation.sessions for turn in session.turns
     }
-    assert all(" — " in item.summary and ": " in item.summary for item in memories)
+    assert {(fact.actor, fact.occurred_at) for item in memories for fact in item.facts} == {
+        (turn.speaker, turn.timestamp_iso)
+        for session in conversation.sessions
+        for turn in session.turns
+    }
+    assert all(item.semantic_episode is not None for item in memories)
+    assert all(" — attributed episode with " in item.summary for item in memories)
+    assert all(
+        item.semantic_episode is not None and ": " in item.semantic_episode.narrative
+        for item in memories
+    )
     entity_hits = SQLiteState(root / "state.sqlite3").find_entity_memories(
         repo_key="locomo/conv-test-1",
         entity_keys=("caroline",),
         limit=10,
     )
     assert entity_hits
-    assert all(any("Caroline" in fact.text for fact in item.facts) for item in entity_hits)
+    assert all(any(fact.actor == "Caroline" for fact in item.facts) for item in entity_hits)
     assert {item.evidence[0].provider for item in memories} == {"locomo"}
 
 
@@ -471,8 +486,11 @@ def test_evidence_answer_synthesizer_does_not_invent_citations_for_plain_answers
     )
 
     answer = EvidenceAnswerSynthesizer().synthesize(
-        conversation,
-        conversation.questions[0],
+        LoCoMoQuery(
+            question_id=conversation.questions[0].question_id,
+            text=conversation.questions[0].question,
+        ),
+        speakers=(conversation.speaker_a, conversation.speaker_b),
         recall=recall,
         model=CitedAnswerModel(),
         seed=7,
@@ -529,8 +547,8 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
 
     question = replace(conversation.questions[0], question="What music?")
     answer = EvidenceAnswerSynthesizer().synthesize(
-        conversation,
-        question,
+        LoCoMoQuery(question_id=question.question_id, text=question.question),
+        speakers=(conversation.speaker_a, conversation.speaker_b),
         recall=recall,
         model=model,
         seed=7,
@@ -549,9 +567,21 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert answer.invalid_evidence_ids == ()
     assert answer.format == "unstructured-fallback"
 
+    relabeled = EvidenceAnswerSynthesizer().synthesize(
+        LoCoMoQuery(question_id=question.question_id, text=question.question),
+        speakers=(conversation.speaker_a, conversation.speaker_b),
+        recall=recall,
+        model=model,
+        seed=7,
+    )
+    assert relabeled.plan.route == "direct"
+
     inferred = EvidenceAnswerSynthesizer().synthesize(
-        conversation,
-        replace(question, question="Would they likely enjoy a live concert?"),
+        LoCoMoQuery(
+            question_id=question.question_id,
+            text="Would they likely enjoy a live concert?",
+        ),
+        speakers=(conversation.speaker_a, conversation.speaker_b),
         recall=recall,
         model=model,
         seed=7,
@@ -594,12 +624,11 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
         sidecar=replace(recall.sidecar, ranked=(temporal_item,)),
     )
     temporal = EvidenceAnswerSynthesizer().synthesize(
-        conversation,
-        replace(
-            question,
-            question="When did Tim start playing the violin?",
-            category=2,
+        LoCoMoQuery(
+            question_id=question.question_id,
+            text="When did Tim start playing the violin?",
         ),
+        speakers=(conversation.speaker_a, conversation.speaker_b),
         recall=temporal_recall,
         model=model,
         seed=7,
@@ -618,8 +647,11 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert temporal.plan.route == "temporal"
 
     listed = EvidenceAnswerSynthesizer().synthesize(
-        conversation,
-        replace(question, question="What activities have they done together?"),
+        LoCoMoQuery(
+            question_id=question.question_id,
+            text="What activities have they done together?",
+        ),
+        speakers=(conversation.speaker_a, conversation.speaker_b),
         recall=recall,
         model=model,
         seed=7,
@@ -627,6 +659,89 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert model.system_prompt is not None
     assert "all distinct supported items" in model.system_prompt.casefold()
     assert listed.plan.route == "list"
+
+
+def test_retrieval_and_answer_requests_exclude_evaluation_labels(tmp_path: Path) -> None:
+    conversation = load_locomo_dataset(FIXTURE).conversations[0]
+    question = conversation.questions[0]
+    relabeled = replace(
+        question,
+        golden_answer="a deliberately unrelated label",
+        adversarial_answer="another hidden label",
+        category=4,
+        evidence=("hidden-evidence-id",),
+    )
+
+    class RecordingMemory(FakeMemory):
+        def __init__(self, root: Path) -> None:
+            super().__init__(root)
+            self.queries: list[tuple[str, int]] = []
+
+        def recall(self, question: str, *, limit: int) -> RecallResult:
+            self.queries.append((question, limit))
+            return super().recall(question, limit=limit)
+
+    memory = RecordingMemory(tmp_path / conversation.sample_id)
+    query = LoCoMoQuery(question_id=question.question_id, text=question.question)
+    first_recall = recall_question(
+        conversation.sample_id,
+        query,
+        memory=memory,
+        retrieval_config=FAKE_RETRIEVAL_CONFIG,
+        top_k=20,
+    )
+    second_recall = recall_question(
+        conversation.sample_id,
+        query,
+        memory=memory,
+        retrieval_config=FAKE_RETRIEVAL_CONFIG,
+        top_k=20,
+    )
+    assert not isinstance(first_recall, dict)
+    assert not isinstance(second_recall, dict)
+    assert memory.queries == [(question.question, 20), (question.question, 20)]
+
+    @dataclass
+    class RecordingAnswerModel:
+        requests: list[tuple[str, str, int, str]] = field(default_factory=list)
+
+        @property
+        def model_id(self) -> str:
+            return "recording-answer"
+
+        @property
+        def public_config(self) -> dict[str, object]:
+            return {"adapter": "fake", "model": self.model_id}
+
+        def generate(
+            self,
+            *,
+            system: str,
+            user: str,
+            seed: int,
+            response_format: str = "text",
+        ) -> ModelResponse:
+            self.requests.append((system, user, seed, response_format))
+            return ModelResponse(text="answer", model=self.model_id)
+
+    model = RecordingAnswerModel()
+    records = [
+        run_question(
+            conversation,
+            candidate,
+            recall=first_recall,
+            answer_model=model,
+            judge_model=None,
+            judge_votes=0,
+            judge_response_max_attempts=1,
+            judge_response_max_chars=128,
+            seed=7,
+        )
+        for candidate in (question, relabeled)
+    ]
+    assert model.requests[0] == model.requests[1]
+    assert records[0]["category"] != records[1]["category"]
+    assert records[0]["golden_answer"] != records[1]["golden_answer"]
 
 
 def test_full_run_keeps_isolated_roots_raw_votes_and_read_only_reporting(
@@ -780,7 +895,7 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
     assert CountingMemory.ingest_calls == 2
     assert CountingMemory.snapshot_calls == 2
     assert corpus.manifest["build_contract"]["projection_contract"] == (
-        "locomo-session-episode-with-turn-facts-v4"
+        "locomo-attributed-grounded-episode-v5"
     )
     run_dirs: list[Path] = []
     for run_id in ("shared-corpus-first", "shared-corpus-second"):
@@ -811,6 +926,78 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
     assert {manifest["corpus"]["content_sha256"] for manifest in manifests} == {
         corpus.content_sha256
     }
+
+
+def test_shared_corpus_rejects_incomplete_ingest_before_publication(tmp_path: Path) -> None:
+    class RejectingMemory(FakeMemory):
+        def ingest(
+            self,
+            conversation: LoCoMoConversation,
+            *,
+            dataset_sha256: str,
+        ) -> ConversationIngestResult:
+            result = super().ingest(conversation, dataset_sha256=dataset_sha256)
+            return replace(result, rejected_memory_count=1)
+
+    output_root = tmp_path / "corpora"
+    with pytest.raises(ValueError, match="rejected_memory_count"):
+        build_locomo_corpus(
+            LoCoMoCorpusConfig(
+                dataset_path=FIXTURE,
+                output_root=output_root,
+                corpus_id="rejected-ingest",
+                repository_commit="abc123",
+                expected_dataset_sha256=None,
+                retrieval_config=FAKE_RETRIEVAL_CONFIG,
+            ),
+            memory_factory=RejectingMemory,
+        )
+
+    assert not list(output_root.glob("corpus-*"))
+    assert not (output_root / ".building-rejected-ingest" / "manifest.json").exists()
+
+
+def test_worker_rejects_an_obsolete_corpus_projection_contract(tmp_path: Path) -> None:
+    corpus = build_locomo_corpus(
+        LoCoMoCorpusConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "corpora",
+            corpus_id="obsolete-projection",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+        ),
+        memory_factory=FakeMemory,
+    )
+    manifest_path = corpus.corpus_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["build_contract"]["projection_contract"] = "locomo-session-episode-with-turn-facts-v4"
+    manifest["build_contract_sha256"] = hashlib.sha256(
+        canonical_json(manifest["build_contract"]).encode()
+    ).hexdigest()
+    manifest["content"]["build_contract_sha256"] = manifest["build_contract_sha256"]
+    manifest["content_sha256"] = hashlib.sha256(
+        canonical_json(manifest["content"]).encode()
+    ).hexdigest()
+    manifest_path.unlink()
+    write_json_exclusive(manifest_path, manifest)
+
+    conversation = load_locomo_dataset(FIXTURE).conversations[0]
+    dataset = load_locomo_dataset(FIXTURE)
+    with pytest.raises(ValueError):
+        validate_locomo_corpus_preflight(
+            corpus.corpus_dir,
+            dataset=dataset,
+            expected_content_sha256=manifest["content_sha256"],
+            retrieval_config=FAKE_RETRIEVAL_CONFIG,
+        )
+    with pytest.raises(ValueError, match="projection contract is not supported"):
+        validate_locomo_corpus_conversation(
+            corpus.corpus_dir,
+            conversation,
+            expected_content_sha256=manifest["content_sha256"],
+            memory_factory=FakeMemory,
+        )
 
 
 def test_shared_corpus_delegates_each_conversation_to_an_injected_worker(
@@ -1251,7 +1438,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "query-routed-answer-planner-v11",
+                "answer_evidence_contract": "query-routed-answer-planner-v12",
                 "judge_model": "fake-judge",
                 "judge_votes": 3,
                 "top_k": 20,

@@ -28,12 +28,8 @@ from codecairn.evaluation.artifacts import (
 )
 from codecairn.evaluation.model import ModelResponse, TextModel
 from codecairn.memory.embedding import EmbeddingProvider
-from codecairn.memory.models import (
-    EvidenceFact,
-    EvidenceReference,
-    MemoryProposal,
-    RecallResult,
-)
+from codecairn.memory.episode import AttributedEpisode, AttributedTurn
+from codecairn.memory.models import EvidenceReference, RecallResult
 from codecairn.memory.retrieval import retrieval_config_sha256
 from codecairn.memory.trace import stable_id
 from codecairn.service.cascade import MiniCascade
@@ -44,8 +40,9 @@ LOCOMO_DATASET_URL = (
 )
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
-_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v11"
+_ANSWER_EVIDENCE_CONTRACT = "query-routed-answer-planner-v12"
 _JUDGE_CONTRACT = "locomo-generous-semantic-equivalence-v1"
+_LOCOMO_PROJECTION_CONTRACT = "locomo-attributed-grounded-episode-v5"
 _ANSWER_CONTEXT_CHARS = 24_000
 _TEMPORAL_QUESTION_CUE = re.compile(
     r"^\s*(?:when|what\s+(?:date|day|month|year|time)|"
@@ -148,6 +145,14 @@ class LoCoMoQuestion:
 
 
 @dataclass(frozen=True, slots=True)
+class LoCoMoQuery:
+    """Question view allowed to cross the retrieval and answer boundary."""
+
+    question_id: str
+    text: str
+
+
+@dataclass(frozen=True, slots=True)
 class LoCoMoConversation:
     sample_id: str
     speaker_a: str
@@ -230,14 +235,14 @@ class EvidenceAnswerSynthesizer:
 
     def synthesize(
         self,
-        conversation: LoCoMoConversation,
-        question: LoCoMoQuestion,
+        query: LoCoMoQuery,
         *,
+        speakers: tuple[str, str],
         recall: RecallResult,
         model: TextModel,
         seed: int,
     ) -> EvidenceAnswer:
-        plan = _plan_answer(question.question, category=question.category)
+        plan = _plan_answer(query.text)
         route_instruction = {
             "direct": (
                 "Return a concise direct answer while preserving action, negation, and "
@@ -286,8 +291,8 @@ class EvidenceAnswerSynthesizer:
             ),
             user=json.dumps(
                 _answer_payload(
-                    conversation,
-                    question,
+                    speakers,
+                    query,
                     recall=recall,
                     plan=plan,
                 ),
@@ -305,8 +310,8 @@ class EvidenceAnswerSynthesizer:
         )
 
 
-def _plan_answer(question: str, *, category: int | None = None) -> AnswerPlan:
-    if category == 2 or _TEMPORAL_QUESTION_CUE.search(question) is not None:
+def _plan_answer(question: str) -> AnswerPlan:
+    if _TEMPORAL_QUESTION_CUE.search(question) is not None:
         return AnswerPlan(route="temporal", policy="deterministic-relative-time-hints-v3")
     if _INFERENCE_QUESTION_CUE.search(question) is not None:
         return AnswerPlan(route="inference", policy="grounded-common-sense-v1")
@@ -316,19 +321,19 @@ def _plan_answer(question: str, *, category: int | None = None) -> AnswerPlan:
 
 
 def _answer_payload(
-    conversation: LoCoMoConversation,
-    question: LoCoMoQuestion,
+    speakers: tuple[str, str],
+    query: LoCoMoQuery,
     *,
     recall: RecallResult,
     plan: AnswerPlan,
 ) -> dict[str, object]:
     payload: dict[str, object] = {
-        "speakers": [conversation.speaker_a, conversation.speaker_b],
-        "question": question.question,
+        "speakers": list(speakers),
+        "question": query.text,
         "memory_context": recall.markdown[:_ANSWER_CONTEXT_CHARS],
     }
     if plan.route == "temporal":
-        payload["temporal_hints"] = _temporal_hints(question.question, recall=recall)
+        payload["temporal_hints"] = _temporal_hints(query.text, recall=recall)
     return payload
 
 
@@ -524,7 +529,7 @@ class CodeCairnConversationMemory:
         rejected = 0
         turn_count = 0
         for session in conversation.sessions:
-            facts: list[EvidenceFact] = []
+            turns: list[AttributedTurn] = []
             for turn in session.turns:
                 turn_count += 1
                 evidence = _turn_evidence(
@@ -533,49 +538,29 @@ class CodeCairnConversationMemory:
                     turn,
                     dataset_sha256=dataset_sha256,
                 )
-                fact_id = stable_id(
-                    "locomo-fact",
-                    self._repo_key,
-                    session.session_id,
-                    turn.dia_id,
-                    evidence.raw_event_sha256,
-                )
-                facts.append(
-                    EvidenceFact(
-                        fact_id=fact_id,
-                        repo_key=self._repo_key,
-                        episode_id=stable_id(
-                            "locomo-session",
-                            self._repo_key,
-                            session.session_id,
-                        ),
-                        kind="user_quote",
+                turns.append(
+                    AttributedTurn(
+                        turn_id=turn.dia_id,
+                        actor=turn.speaker,
+                        role="participant",
                         text=turn.text,
-                        role="user",
-                        evidence=(evidence,),
+                        occurred_at=turn.timestamp_iso,
+                        evidence=evidence,
                     )
                 )
-            if not facts:
+            if not turns:
                 continue
-            proposal = MemoryProposal(
-                proposal_id=stable_id(
-                    "locomo-session-proposal",
-                    self._repo_key,
-                    session.session_id,
-                    *(fact.fact_id for fact in facts),
-                ),
-                repo_key=self._repo_key,
-                memory_type="user_preference",
-                title=(
-                    f"{conversation.speaker_a} and {conversation.speaker_b} in {session.session_id}"
-                ),
-                summary=_session_episode_summary(conversation, session),
-                fact_ids=tuple(fact.fact_id for fact in facts),
-                quote=session.turns[0].text,
-                quote_role="user",
-                confidence=1.0,
+            decision = self._runtime.write_episode(
+                AttributedEpisode(
+                    repo_key=self._repo_key,
+                    source_episode_id=f"{conversation.sample_id}/{session.session_id}",
+                    title=(
+                        f"Conversation {session.session_id} on "
+                        f"{session.turns[0].timestamp_iso[:10]}"
+                    ),
+                    turns=tuple(turns),
+                )
             )
-            decision = self._runtime.evaluate_proposal(proposal, facts=tuple(facts))
             if decision.accepted:
                 accepted += 1
             else:
@@ -743,12 +728,7 @@ def build_locomo_corpus(
             memory_factory=memory_factory,
         )
 
-    ingest_records = [
-        _required_dict(read_json(path), field="corpus ingest checkpoint")
-        for path in sorted((building_dir / "checkpoints" / "ingest").glob("*.json"))
-    ]
-    if len(ingest_records) != len(selected):
-        raise ValueError("LoCoMo corpus is missing ingest checkpoints")
+    ingest_records = _read_ingest_records(building_dir, selected=selected)
     snapshots = {
         conversation.sample_id: memory_factory(
             building_dir / "runtime" / conversation.sample_id
@@ -760,7 +740,7 @@ def build_locomo_corpus(
         "schema_version": 1,
         "dataset_sha256": dataset.sha256,
         "conversation_ids": [conversation.sample_id for conversation in selected],
-        "projection_contract": "locomo-session-episode-with-turn-facts-v4",
+        "projection_contract": _LOCOMO_PROJECTION_CONTRACT,
         "embedding": embedding,
     }
     build_contract_sha256 = _canonical_sha256(build_contract)
@@ -843,10 +823,13 @@ def _load_locomo_corpus(
     content_sha256 = _required_str(manifest, "content_sha256")
     if _canonical_sha256(content) != content_sha256:
         raise ValueError("LoCoMo corpus content digest does not match")
+    if content.get("build_contract_sha256") != build_contract_sha256:
+        raise ValueError("LoCoMo corpus content targets a different build contract")
     if corpus_dir.name != f"corpus-{content_sha256[:16]}":
         raise ValueError("LoCoMo corpus directory name does not match its content digest")
     if build_contract.get("dataset_sha256") != dataset.sha256:
         raise ValueError("LoCoMo corpus targets a different dataset")
+    _validate_projection_contract(build_contract)
     expected_ids = [conversation.sample_id for conversation in selected]
     if build_contract.get("conversation_ids") != expected_ids:
         raise ValueError("LoCoMo corpus conversation selection does not match the run")
@@ -855,15 +838,11 @@ def _load_locomo_corpus(
     raw_ingests = content.get("ingest_checkpoints")
     if not isinstance(raw_ingests, list) or any(not isinstance(item, dict) for item in raw_ingests):
         raise ValueError("LoCoMo corpus content has invalid ingest checkpoints")
-    ingest_records = [
-        _required_dict(read_json(item), field="corpus ingest checkpoint")
-        for item in sorted((corpus_dir / "checkpoints" / "ingest").glob("*.json"))
-    ]
+    ingest_records = _read_ingest_records(corpus_dir, selected=selected)
     if ingest_records != raw_ingests or len(ingest_records) != len(selected):
         raise ValueError("LoCoMo corpus ingest checkpoints do not match its content digest")
+    _validate_corpus_counts(manifest, selected=selected, ingest_records=ingest_records)
     for conversation, ingest in zip(selected, ingest_records, strict=True):
-        if ingest.get("sample_id") != conversation.sample_id:
-            raise ValueError("LoCoMo corpus ingest checkpoint order does not match selection")
         relative_root = _required_str(ingest, "memory_root")
         memory_root = (corpus_dir / relative_root).resolve()
         if not memory_root.is_relative_to(corpus_dir) or not memory_root.is_dir():
@@ -890,8 +869,15 @@ def validate_locomo_corpus_conversation(
     """Open and verify exactly one conversation runtime inside an exec worker."""
     corpus_dir = path.resolve()
     manifest = _required_dict(read_json(corpus_dir / "manifest.json"), field="corpus manifest")
+    build_contract = _required_dict(manifest.get("build_contract"), field="corpus build contract")
+    build_contract_sha256 = _required_str(manifest, "build_contract_sha256")
+    if _canonical_sha256(build_contract) != build_contract_sha256:
+        raise ValueError("LoCoMo worker corpus build contract digest does not match")
+    _validate_projection_contract(build_contract)
     content = _required_dict(manifest.get("content"), field="corpus content")
     content_sha256 = _required_str(manifest, "content_sha256")
+    if content.get("build_contract_sha256") != build_contract_sha256:
+        raise ValueError("LoCoMo worker corpus content targets a different build contract")
     if content_sha256 != expected_content_sha256 or _canonical_sha256(content) != content_sha256:
         raise ValueError("LoCoMo worker corpus content digest does not match")
     ingest_path = corpus_dir / "checkpoints" / "ingest" / f"{conversation.sample_id}.json"
@@ -906,6 +892,107 @@ def validate_locomo_corpus_conversation(
     )
 
 
+def validate_locomo_corpus_preflight(
+    path: Path,
+    *,
+    dataset: LoCoMoDataset,
+    expected_content_sha256: str,
+    retrieval_config: dict[str, object],
+) -> dict[str, object]:
+    """Validate immutable corpus metadata without opening providers or runtime state."""
+    corpus_dir = path.resolve()
+    manifest = _required_dict(read_json(corpus_dir / "manifest.json"), field="corpus manifest")
+    build_contract = _required_dict(manifest.get("build_contract"), field="corpus build contract")
+    raw_ids = build_contract.get("conversation_ids")
+    if (
+        not isinstance(raw_ids, list)
+        or not raw_ids
+        or any(not isinstance(item, str) or not item for item in raw_ids)
+        or len(raw_ids) != len(set(raw_ids))
+    ):
+        raise ValueError("LoCoMo corpus conversation selection is invalid")
+    selected = _select_conversations(dataset, tuple(cast(list[str], raw_ids)))
+
+    def unopened_memory_factory(_root: Path) -> ConversationMemory:
+        raise AssertionError("LoCoMo preflight must not open runtime state")
+
+    validated = _load_locomo_corpus(
+        corpus_dir,
+        dataset=dataset,
+        selected=selected,
+        retrieval_config=retrieval_config,
+        memory_factory=unopened_memory_factory,
+        verify_runtime=False,
+    )
+    if _required_str(validated, "content_sha256") != expected_content_sha256:
+        raise ValueError("LoCoMo worker corpus content digest does not match")
+    return validated
+
+
+def _validate_projection_contract(build_contract: dict[str, object]) -> None:
+    if build_contract.get("projection_contract") != _LOCOMO_PROJECTION_CONTRACT:
+        raise ValueError("LoCoMo corpus projection contract is not supported")
+
+
+def _read_ingest_records(
+    corpus_dir: Path,
+    *,
+    selected: tuple[LoCoMoConversation, ...],
+) -> list[dict[str, object]]:
+    paths = sorted((corpus_dir / "checkpoints" / "ingest").glob("*.json"))
+    records_by_id: dict[str, dict[str, object]] = {}
+    for path in paths:
+        record = _required_dict(read_json(path), field="corpus ingest checkpoint")
+        sample_id = _required_str(record, "sample_id")
+        if sample_id in records_by_id:
+            raise ValueError("LoCoMo corpus has duplicate ingest checkpoints")
+        records_by_id[sample_id] = record
+    expected_ids = {conversation.sample_id for conversation in selected}
+    if records_by_id.keys() != expected_ids:
+        raise ValueError("LoCoMo corpus ingest checkpoints do not match selection")
+    ordered = [records_by_id[conversation.sample_id] for conversation in selected]
+    for conversation, ingest in zip(selected, ordered, strict=True):
+        _validate_ingest_contract(conversation, ingest)
+    return ordered
+
+
+def _validate_ingest_contract(
+    conversation: LoCoMoConversation,
+    ingest: dict[str, object],
+) -> None:
+    expected = {
+        "session_count": len(conversation.sessions),
+        "turn_count": sum(len(session.turns) for session in conversation.sessions),
+        "accepted_memory_count": sum(bool(session.turns) for session in conversation.sessions),
+        "rejected_memory_count": 0,
+    }
+    if ingest.get("sample_id") != conversation.sample_id:
+        raise ValueError("LoCoMo corpus ingest checkpoint targets a different conversation")
+    for field, expected_value in expected.items():
+        if _required_int(ingest, field) != expected_value:
+            raise ValueError(f"LoCoMo corpus ingest checkpoint violates {field}")
+
+
+def _validate_corpus_counts(
+    manifest: dict[str, object],
+    *,
+    selected: tuple[LoCoMoConversation, ...],
+    ingest_records: list[dict[str, object]],
+) -> None:
+    counts = _required_dict(manifest.get("counts"), field="corpus counts")
+    expected = {
+        "conversation_count": len(selected),
+        "session_count": sum(_required_int(item, "session_count") for item in ingest_records),
+        "turn_count": sum(_required_int(item, "turn_count") for item in ingest_records),
+        "accepted_memory_count": sum(
+            _required_int(item, "accepted_memory_count") for item in ingest_records
+        ),
+        "rejected_memory_count": 0,
+    }
+    if counts != expected:
+        raise ValueError("LoCoMo corpus manifest counts do not match verified ingest checkpoints")
+
+
 def _validate_conversation_corpus_snapshot(
     corpus_dir: Path,
     conversation: LoCoMoConversation,
@@ -915,8 +1002,7 @@ def _validate_conversation_corpus_snapshot(
     memory_factory: MemoryFactory,
     runtime_root: Path | None = None,
 ) -> ConversationMemory:
-    if ingest.get("sample_id") != conversation.sample_id:
-        raise ValueError("LoCoMo corpus ingest checkpoint targets a different conversation")
+    _validate_ingest_contract(conversation, ingest)
     relative_root = _required_str(ingest, "memory_root")
     expected_memory_root = (corpus_dir / relative_root).resolve()
     if not expected_memory_root.is_relative_to(corpus_dir):
@@ -1733,8 +1819,8 @@ def _schedule_conversation_questions(
             continue
         seed = config.seed + conversation_index * 10_000 + question_index
         recall = _recall_question(
-            conversation,
-            question,
+            conversation.sample_id,
+            LoCoMoQuery(question_id=question.question_id, text=question.question),
             memory=memory,
             retrieval_config=config.retrieval_config,
             top_k=config.top_k,
@@ -2681,19 +2767,19 @@ def _valid_judge_vote_retry_metadata(
 
 
 def _recall_question(
-    conversation: LoCoMoConversation,
-    question: LoCoMoQuestion,
+    sample_id: str,
+    query: LoCoMoQuery,
     *,
     memory: ConversationMemory,
     retrieval_config: dict[str, object] | None,
     top_k: int,
 ) -> RecallResult | dict[str, object]:
     try:
-        recall = memory.recall(question.question, limit=top_k)
+        recall = memory.recall(query.text, limit=top_k)
         _validate_retrieval_sidecar(
             recall,
-            query=question.question,
-            repo_key=f"locomo/{conversation.sample_id}",
+            query=query.text,
+            repo_key=f"locomo/{sample_id}",
             top_k=top_k,
             retrieval_config=retrieval_config,
         )
@@ -2701,9 +2787,8 @@ def _recall_question(
     except Exception as exc:
         return {
             "schema_version": 1,
-            "sample_id": conversation.sample_id,
-            "question_id": question.question_id,
-            "category": question.category,
+            "sample_id": sample_id,
+            "question_id": query.question_id,
             "status": "infrastructure_failed",
             "phase": "retrieval",
             "error_type": type(exc).__name__,
@@ -2745,7 +2830,7 @@ def _retrieval_only_record(
     recall: RecallResult | dict[str, object],
 ) -> dict[str, object]:
     if isinstance(recall, dict):
-        return recall
+        return _with_question_metadata(recall, conversation=conversation, question=question)
     return {
         "schema_version": 1,
         "sample_id": conversation.sample_id,
@@ -2772,11 +2857,11 @@ def _run_question(
     seed: int,
 ) -> dict[str, object]:
     if isinstance(recall, dict):
-        return recall
+        return _with_question_metadata(recall, conversation=conversation, question=question)
     try:
         synthesis = EvidenceAnswerSynthesizer().synthesize(
-            conversation,
-            question,
+            LoCoMoQuery(question_id=question.question_id, text=question.question),
+            speakers=(conversation.speaker_a, conversation.speaker_b),
             recall=recall,
             model=answer_model,
             seed=seed,
@@ -2827,6 +2912,22 @@ def _run_question(
             "invalid_evidence_ids": list(synthesis.invalid_evidence_ids),
         },
         "judge_votes": votes,
+    }
+
+
+def _with_question_metadata(
+    record: dict[str, object],
+    *,
+    conversation: LoCoMoConversation,
+    question: LoCoMoQuestion,
+) -> dict[str, object]:
+    return {
+        **record,
+        "sample_id": conversation.sample_id,
+        "question_id": question.question_id,
+        "question": question.question,
+        "category": question.category,
+        "category_name": CATEGORY_NAMES.get(question.category, "unknown"),
     }
 
 
@@ -3045,7 +3146,7 @@ def _parse_conversation(record: dict[str, object]) -> LoCoMoConversation:
         if not isinstance(raw_turns, list):
             raise ValueError(f"LoCoMo {session_id} must be an array")
         turns: list[LoCoMoTurn] = []
-        for position, raw_turn in enumerate(raw_turns):
+        for raw_turn in raw_turns:
             turn = _required_dict(raw_turn, field="conversation turn")
             text = _turn_text(turn)
             if not text:
@@ -3056,7 +3157,7 @@ def _parse_conversation(record: dict[str, object]) -> LoCoMoConversation:
                     speaker=_required_str(turn, "speaker"),
                     text=text,
                     timestamp=timestamp,
-                    timestamp_iso=(base_time + timedelta(seconds=position * 30)).isoformat(),
+                    timestamp_iso=base_time.isoformat(),
                     turn_index=global_turn_index,
                 )
             )

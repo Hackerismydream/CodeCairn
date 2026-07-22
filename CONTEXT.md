@@ -20,9 +20,11 @@ is never an Evidence Fact.
 actions and outcome. Appending a later episode must not change earlier episode
 identities.
 
-**Coding Memory**: An evidence-backed reusable item of one of five types: Debug
-Episode, Repository Convention, Failed Command, Verified Fix, or User
-Preference.
+**Coding Memory**: An evidence-backed reusable item of one of six types: Debug
+Episode, Conversation Episode, Repository Convention, Failed Command, Verified
+Fix, or User Preference. A Conversation Episode preserves attributed source
+turns plus a grounded, derived retrieval projection; the source turns remain
+the evidence authority.
 
 **Evidence Gate**: Type-specific validation that decides whether a Coding
 Memory may become durable truth. It validates claims against Evidence Facts,

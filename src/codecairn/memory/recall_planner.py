@@ -185,7 +185,7 @@ class RecallPlannerConfig:
             "diverse_matched_facts_per_memory": self.diverse_matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
             "temporal_sibling_facts_per_memory": self.temporal_sibling_facts_per_memory,
-            "context_renderer": "balanced-evidence-round-robin-v1",
+            "context_renderer": "parent-episode-hydration-v2",
             "context_max_chars": self.context_max_chars,
             "context_summary_chars": self.context_summary_chars,
             "context_snippet_chars": self.context_snippet_chars,

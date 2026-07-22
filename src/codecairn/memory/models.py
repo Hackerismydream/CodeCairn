@@ -6,6 +6,7 @@ from typing import Literal
 TraceEventKind = Literal["message", "tool_call", "tool_result", "metadata", "unknown"]
 FileChangeOperation = Literal["add", "update", "delete", "move"]
 MemoryType = Literal[
+    "conversation_episode",
     "debug_episode",
     "repository_convention",
     "failed_command",
@@ -17,6 +18,7 @@ MemoryRepairReason = Literal["missing", "truncated", "hash_mismatch", "unparsabl
 EvidenceFactKind = Literal[
     "action",
     "command_outcome",
+    "conversation_turn",
     "episode_outcome",
     "file_change",
     "repository_rule",
@@ -43,6 +45,9 @@ GateDecisionReason = Literal[
     "debug_episode_requires_action",
     "debug_episode_requires_observed_outcome",
     "debug_episode_facts_are_disconnected",
+    "conversation_episode_requires_attributed_turns",
+    "conversation_episode_facts_are_disconnected",
+    "semantic_episode_invalid",
 ]
 IndexOperation = Literal["upsert", "delete"]
 CandidateSource = Literal["lexical", "vector"]
@@ -81,6 +86,25 @@ class EvidenceFact:
     role: str | None
     evidence: tuple[EvidenceReference, ...]
     status: EvidenceFactStatus | None = None
+    actor: str | None = None
+    occurred_at: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class SemanticAtomicFact:
+    fact_id: str
+    text: str
+    source_fact_ids: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SemanticEpisode:
+    episode_id: str
+    narrative: str
+    atomic_facts: tuple[SemanticAtomicFact, ...]
+    source_fact_ids: tuple[str, ...]
+    semanticizer_id: str
+    revision: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -148,6 +172,7 @@ class CodingMemory:
     markdown_path: str | None = None
     content_sha256: str | None = None
     facts: tuple[EvidenceFact, ...] = ()
+    semantic_episode: SemanticEpisode | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -399,6 +424,7 @@ class RankedRecall:
     reranker_score: float | None = None
     matched_documents: tuple[RecallMatch, ...] = ()
     snippets: tuple[RecallSnippet, ...] = ()
+    episode_text: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -435,6 +461,10 @@ class RecallSidecar:
     degraded_stages: tuple[str, ...] = ()
     query_vector_sha256: str | None = None
     neighbor_window: int = 0
+    hydrated_episode_count: int = 0
+    hydrated_episode_ids: tuple[str, ...] = ()
+    partial_episode_ids: tuple[str, ...] = ()
+    dropped_episode_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

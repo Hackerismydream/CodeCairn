@@ -19,6 +19,7 @@ from codecairn.memory.models import (
 )
 from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.service.recall import RecallEngine
+from codecairn.service.recall import _compile_context as compile_context
 from codecairn.service.recall import _core_preserving_select as core_preserving_select
 from codecairn.service.recall import _render_context as render_context
 from codecairn.storage.lance import LanceMemoryIndex
@@ -253,9 +254,15 @@ def test_coverage_selection_keeps_evidence_for_distinct_named_anchors() -> None:
             return self.vector_candidates(repo_key=repo_key, vector=(), limit=limit)
 
     memories = (
-        _memory("memory-a", summary="Alice selected the venue."),
-        _memory("memory-b", summary="Alice ordered the flowers."),
-        _memory("memory-c", summary="Bob selected the music."),
+        _memory_with_fact(
+            "memory-a", fact_id="fact-a", fact_text="Alice selected the venue.", event_index=1
+        ),
+        _memory_with_fact(
+            "memory-b", fact_id="fact-b", fact_text="Alice ordered the flowers.", event_index=2
+        ),
+        _memory_with_fact(
+            "memory-c", fact_id="fact-c", fact_text="Bob selected the music.", event_index=3
+        ),
     )
     result = RecallEngine(
         index=AnchorIndex(),
@@ -267,6 +274,91 @@ def test_coverage_selection_keeps_evidence_for_distinct_named_anchors() -> None:
     assert [item.memory_id for item in result.sidecar.ranked] == ["memory-a", "memory-c"]
     assert result.sidecar.covered_slots == ("alice", "bob")
     assert result.sidecar.missing_slots == ()
+
+
+def test_entity_postings_render_far_apart_anchors_from_one_parent() -> None:
+    class OneFactIndex(CandidateIndex):
+        def document_vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            if document_kind == "atomic_fact":
+                return (
+                    IndexCandidate(
+                        repo_key=repo_key,
+                        memory_id="memory-session",
+                        score=1.0,
+                        document_id="fact-alice",
+                        document_kind="atomic_fact",
+                        fact_id="fact-alice",
+                    ),
+                )
+            return (
+                IndexCandidate(
+                    repo_key=repo_key,
+                    memory_id="memory-session",
+                    score=1.0,
+                    document_id="memory-session",
+                    document_kind="episode",
+                ),
+            )
+
+        def document_lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return self.document_vector_candidates(
+                repo_key=repo_key,
+                vector=(),
+                document_kind=document_kind,
+                limit=limit,
+            )
+
+    base = _memory("memory-session", summary="One conversation session.")
+    facts = tuple(
+        EvidenceFact(
+            fact_id=fact_id,
+            repo_key=base.repo_key,
+            episode_id=base.episode_id,
+            kind="user_quote",
+            text=text,
+            role="user",
+            evidence=(replace(base.evidence[0], raw_event_index=index),),
+        )
+        for index, (fact_id, text) in enumerate(
+            (
+                ("fact-alice", "Alice booked the venue."),
+                ("fact-middle-1", "The weather stayed dry."),
+                ("fact-middle-2", "The band arrived early."),
+                ("fact-bob", "Bob selected the music."),
+            ),
+            start=1,
+        )
+    )
+    memory = replace(base, facts=facts)
+    result = RecallEngine(
+        index=OneFactIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    ).recall("What did Alice and Bob do?", repo_key=base.repo_key, limit=1)
+
+    assert result.sidecar.covered_slots == ("alice", "bob")
+    assert result.sidecar.missing_slots == ()
+    assert "Alice booked the venue." in result.markdown
+    assert "Bob selected the music." in result.markdown
+    assert [snippet.fact_id for snippet in result.sidecar.ranked[0].snippets[:2]] == [
+        "fact-alice",
+        "fact-bob",
+    ]
 
 
 def test_expanded_rerank_pool_preserves_a_stable_core_lane() -> None:
@@ -666,6 +758,55 @@ def test_context_budget_preserves_every_rank_and_prioritizes_temporal_siblings()
     )
     assert temporal_rendered.index("evidence-1-0") < temporal_rendered.index("evidence-1-2")
     assert temporal_rendered.index("evidence-1-2") < temporal_rendered.index("evidence-1-1")
+
+
+def test_context_budget_allows_only_one_partial_parent_episode() -> None:
+    ranked = tuple(
+        RankedRecall(
+            rank=rank,
+            memory_id=f"memory-{rank}",
+            memory_type="conversation_episode",
+            title=f"Episode {rank}",
+            summary="Oversized parent",
+            source_uri=f"codecairn://memory/memory-{rank}",
+            content_sha256=f"{rank:064x}",
+            candidate_sources=("lexical",),
+            vector_score=None,
+            vector_rank=None,
+            lexical_score=1.0,
+            lexical_rank=rank,
+            final_score=1.0 / rank,
+            evidence=(),
+            snippets=(
+                RecallSnippet(
+                    relation="matched",
+                    source_memory_id=f"memory-{rank}",
+                    source_uri=f"codecairn://memory/memory-{rank}",
+                    fact_id=f"fact-{rank}",
+                    text=f"Anchor {rank}",
+                    source_title=f"Episode {rank}",
+                    source_summary="Oversized parent",
+                    raw_event_index=rank,
+                ),
+            ),
+            episode_text="X" * 30_000,
+        )
+        for rank in (1, 2)
+    )
+
+    compiled = compile_context(
+        "Find the anchor",
+        repo_key="acme/widgets",
+        ranked=ranked,
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(),
+    )
+
+    assert len(compiled.markdown) <= 23_900
+    assert compiled.partial_episode_ids == ("memory-1",)
+    assert compiled.dropped_episode_ids == ("memory-2",)
+    assert "## 1. Episode 1" in compiled.markdown
+    assert "## 2. Episode 2" not in compiled.markdown
 
 
 def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:

@@ -23,6 +23,8 @@ from codecairn.memory.models import (
     OperationalCounts,
     PendingRecoveryAudit,
     ReconcileReport,
+    SemanticAtomicFact,
+    SemanticEpisode,
     TruthScan,
 )
 from codecairn.memory.trace import EMPTY_RAW_PREFIX_SHA256, stable_id
@@ -381,6 +383,7 @@ class SQLiteState:
                 """
                 SELECT memory_id, memory_type, title, summary, episode_id,
                        command, exit_code, evidence_json, fact_ids_json, facts_json,
+                       semantic_episode_json,
                        markdown_path, content_sha256
                 FROM memories
                 WHERE repo_key = ?
@@ -396,6 +399,7 @@ class SQLiteState:
                 """
                 SELECT memory_id, memory_type, title, summary, episode_id,
                        command, exit_code, evidence_json, fact_ids_json, facts_json,
+                       semantic_episode_json,
                        markdown_path, content_sha256
                 FROM memories
                 WHERE repo_key = ? AND memory_id = ?
@@ -415,6 +419,7 @@ class SQLiteState:
                 """
                 SELECT memory_id, memory_type, title, summary, episode_id,
                        command, exit_code, evidence_json, fact_ids_json, facts_json,
+                       semantic_episode_json,
                        markdown_path, content_sha256
                 FROM memories
                 WHERE repo_key = ? AND episode_id = ?
@@ -451,6 +456,7 @@ class SQLiteState:
                        memories.summary, memories.episode_id, memories.command,
                        memories.exit_code, memories.evidence_json,
                        memories.fact_ids_json, memories.facts_json,
+                       memories.semantic_episode_json,
                        memories.markdown_path, memories.content_sha256
                 FROM hits
                 JOIN memories
@@ -469,6 +475,7 @@ class SQLiteState:
                 """
                 SELECT repo_key, memory_id, memory_type, title, summary, episode_id,
                        command, exit_code, evidence_json, fact_ids_json, facts_json,
+                       semantic_episode_json,
                        markdown_path, content_sha256
                 FROM memories
                 ORDER BY repo_key, memory_id
@@ -748,6 +755,7 @@ class SQLiteState:
                     evidence_json TEXT NOT NULL,
                     fact_ids_json TEXT NOT NULL DEFAULT '[]',
                     facts_json TEXT NOT NULL DEFAULT '[]',
+                    semantic_episode_json TEXT,
                     markdown_path TEXT NOT NULL,
                     content_sha256 TEXT NOT NULL,
                     PRIMARY KEY (repo_key, memory_id)
@@ -874,6 +882,8 @@ class SQLiteState:
                 connection.execute(
                     "ALTER TABLE memories ADD COLUMN facts_json TEXT NOT NULL DEFAULT '[]'"
                 )
+            if "semantic_episode_json" not in memory_columns:
+                connection.execute("ALTER TABLE memories ADD COLUMN semantic_episode_json TEXT")
             gate_columns = {
                 row["name"]
                 for row in connection.execute("PRAGMA table_info(gate_audit)").fetchall()
@@ -907,12 +917,13 @@ class SQLiteState:
             posting_revision = connection.execute(
                 "SELECT value FROM projection_meta WHERE key = 'fact_postings_revision'"
             ).fetchone()
-            if posting_revision is None or posting_revision["value"] != "entity-postings-v1":
+            if posting_revision is None or posting_revision["value"] != "entity-postings-v2":
                 connection.execute("DELETE FROM fact_postings")
                 rows = connection.execute(
                     """
                     SELECT repo_key, memory_id, memory_type, title, summary, episode_id,
                            command, exit_code, evidence_json, fact_ids_json, facts_json,
+                           semantic_episode_json,
                            markdown_path, content_sha256
                     FROM memories
                     ORDER BY repo_key, memory_id
@@ -923,7 +934,7 @@ class SQLiteState:
                 connection.execute(
                     """
                     INSERT INTO projection_meta (key, value)
-                    VALUES ('fact_postings_revision', 'entity-postings-v1')
+                    VALUES ('fact_postings_revision', 'entity-postings-v2')
                     ON CONFLICT(key) DO UPDATE SET value = excluded.value
                     """
                 )
@@ -957,6 +968,26 @@ def _fact_dict(fact: EvidenceFact) -> dict[str, object]:
         "role": fact.role,
         "evidence": [_evidence_dict(item) for item in fact.evidence],
         "status": fact.status,
+        "actor": fact.actor,
+        "occurred_at": fact.occurred_at,
+    }
+
+
+def _semantic_episode_dict(semantic_episode: SemanticEpisode) -> dict[str, object]:
+    return {
+        "episode_id": semantic_episode.episode_id,
+        "narrative": semantic_episode.narrative,
+        "atomic_facts": [
+            {
+                "fact_id": fact.fact_id,
+                "text": fact.text,
+                "source_fact_ids": list(fact.source_fact_ids),
+            }
+            for fact in semantic_episode.atomic_facts
+        ],
+        "source_fact_ids": list(semantic_episode.source_fact_ids),
+        "semanticizer_id": semantic_episode.semanticizer_id,
+        "revision": semantic_episode.revision,
     }
 
 
@@ -968,8 +999,8 @@ def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
         INSERT INTO memories (
             repo_key, memory_id, memory_type, title, summary,
             episode_id, command, exit_code, evidence_json, fact_ids_json, facts_json,
-            markdown_path, content_sha256
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            semantic_episode_json, markdown_path, content_sha256
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(repo_key, memory_id) DO NOTHING
         """,
         (
@@ -984,6 +1015,11 @@ def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
             json.dumps([_evidence_dict(item) for item in memory.evidence]),
             json.dumps(memory.fact_ids),
             json.dumps([_fact_dict(fact) for fact in memory.facts]),
+            (
+                None
+                if memory.semantic_episode is None
+                else json.dumps(_semantic_episode_dict(memory.semantic_episode))
+            ),
             memory.markdown_path,
             memory.content_sha256,
         ),
@@ -1017,6 +1053,7 @@ def _update_truth_memory(connection: sqlite3.Connection, memory: CodingMemory) -
         UPDATE memories
         SET memory_type = ?, title = ?, summary = ?, episode_id = ?,
             command = ?, exit_code = ?, evidence_json = ?, fact_ids_json = ?, facts_json = ?,
+            semantic_episode_json = ?,
             markdown_path = ?, content_sha256 = ?
         WHERE repo_key = ? AND memory_id = ?
         """,
@@ -1030,6 +1067,11 @@ def _update_truth_memory(connection: sqlite3.Connection, memory: CodingMemory) -
             json.dumps([_evidence_dict(item) for item in memory.evidence]),
             json.dumps(memory.fact_ids),
             json.dumps([_fact_dict(fact) for fact in memory.facts]),
+            (
+                None
+                if memory.semantic_episode is None
+                else json.dumps(_semantic_episode_dict(memory.semantic_episode))
+            ),
             markdown_path,
             memory.content_sha256,
             memory.repo_key,
@@ -1068,10 +1110,18 @@ def _replace_fact_postings(connection: sqlite3.Connection, memory: CodingMemory)
             (reference.raw_event_index for reference in fact.evidence),
             default=0,
         )
+        semantic_text = "\n".join(
+            item.text
+            for item in (memory.semantic_episode.atomic_facts if memory.semantic_episode else ())
+            if fact.fact_id in item.source_fact_ids
+        )
+        posting_text = "\n".join(
+            part for part in (fact.actor or "", fact.text, semantic_text) if part
+        )
         entities = tuple(
             dict.fromkeys(
                 match.group(0).casefold()
-                for match in _POSTING_ENTITY.finditer(fact.text)
+                for match in _POSTING_ENTITY.finditer(posting_text)
                 if match.group(0) not in _POSTING_STOPWORDS
             )
         )
@@ -1158,6 +1208,8 @@ def _memory_from_row(repo_key: str, row: sqlite3.Row) -> CodingMemory:
             role=item["role"],
             evidence=tuple(EvidenceReference(**reference) for reference in item["evidence"]),
             status=item["status"],
+            actor=item.get("actor"),
+            occurred_at=item.get("occurred_at"),
         )
         for item in json.loads(row["facts_json"])
     )
@@ -1173,6 +1225,30 @@ def _memory_from_row(repo_key: str, row: sqlite3.Row) -> CodingMemory:
         evidence=evidence,
         fact_ids=_parse_string_tuple(row["fact_ids_json"], field="memory fact IDs"),
         facts=facts,
+        semantic_episode=_parse_semantic_episode(row["semantic_episode_json"]),
         markdown_path=row["markdown_path"],
         content_sha256=row["content_sha256"],
+    )
+
+
+def _parse_semantic_episode(value: str | None) -> SemanticEpisode | None:
+    if value is None:
+        return None
+    raw = json.loads(value)
+    if not isinstance(raw, dict) or not isinstance(raw.get("atomic_facts"), list):
+        raise ValueError("Memory semantic episode mirror is invalid")
+    return SemanticEpisode(
+        episode_id=raw["episode_id"],
+        narrative=raw["narrative"],
+        atomic_facts=tuple(
+            SemanticAtomicFact(
+                fact_id=item["fact_id"],
+                text=item["text"],
+                source_fact_ids=tuple(item["source_fact_ids"]),
+            )
+            for item in raw["atomic_facts"]
+        ),
+        source_fact_ids=tuple(raw["source_fact_ids"]),
+        semanticizer_id=raw["semanticizer_id"],
+        revision=raw["revision"],
     )

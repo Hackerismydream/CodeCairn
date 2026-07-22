@@ -37,6 +37,7 @@ from codecairn.memory.embedding import (
     FastEmbedEmbeddingAdapter,
     HashingEmbedder,
 )
+from codecairn.memory.episode import EpisodeSemanticizer
 from codecairn.memory.evidence import EvidenceGate
 from codecairn.memory.model_artifact import validate_hf_artifact
 from codecairn.memory.projection import fingerprint, project_recall_documents
@@ -310,6 +311,7 @@ def create_runtime(
     root: Path,
     *,
     retrieval: RetrievalProviders | None = None,
+    episode_semanticizer: EpisodeSemanticizer | None = None,
 ) -> MemoryRuntime:
     """Build the local Markdown plus SQLite runtime behind service ports."""
     resolved = root.resolve()
@@ -321,6 +323,7 @@ def create_runtime(
         memory_store=MarkdownMemoryStore(resolved),
         state=state,
         evidence_gate=EvidenceGate(),
+        episode_semanticizer=episode_semanticizer,
         recall_engine=RecallEngine(
             index=index,
             state=state,
