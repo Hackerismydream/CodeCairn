@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+import codecairn.service.recall as recall_service
 from codecairn.memory.models import (
     CodingMemory,
     EvidenceFact,
@@ -192,8 +193,24 @@ class MemoryState:
 
 def test_hybrid_recall_unions_candidates_before_deterministic_reranking() -> None:
     memories = (
-        _memory("memory-a", title="Vector and lexical", summary="Shared candidate."),
-        _memory("memory-b", title="Lexical only", summary="BM25 found this memory."),
+        replace(
+            _memory_with_fact(
+                "memory-a",
+                fact_id="fact-a",
+                fact_text="Shared candidate.",
+                event_index=1,
+            ),
+            title="Vector and lexical",
+        ),
+        replace(
+            _memory_with_fact(
+                "memory-b",
+                fact_id="fact-b",
+                fact_text="BM25 found this memory.",
+                event_index=1,
+            ),
+            title="Lexical only",
+        ),
     )
     state = MemoryState(memories)
     ticks = iter((1_000_000, 3_500_000))
@@ -224,6 +241,178 @@ def test_hybrid_recall_unions_candidates_before_deterministic_reranking() -> Non
     assert "BM25 found this memory." in result.markdown
     assert "codecairn://memory/memory-b" in result.markdown
     assert result.sidecar.ranked[0].evidence[0].raw_event_index == 1
+    assert [trace.stage for trace in result.sidecar.stage_trace] == [
+        "candidate_recall",
+        "fusion",
+        "rerank",
+        "selection",
+        "context",
+    ]
+    assert [trace.output_memory_ids for trace in result.sidecar.stage_trace] == [
+        ("memory-b", "memory-a"),
+        ("memory-a", "memory-b"),
+        ("memory-b", "memory-a"),
+        ("memory-b", "memory-a"),
+        ("memory-b", "memory-a"),
+    ]
+
+
+def test_recall_engine_applies_asymmetric_route_budgets_to_every_index_lane() -> None:
+    class LimitEchoIndex(CandidateIndex):
+        def _candidates(
+            self,
+            *,
+            repo_key: str,
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return tuple(
+                IndexCandidate(
+                    repo_key=repo_key,
+                    memory_id=f"{document_kind}-memory-{index}",
+                    document_id=f"{document_kind}-document-{index}",
+                    document_kind=document_kind,
+                    parent_document_id=f"episode-document-{index}",
+                    fact_id=(f"fact-{index}" if document_kind == "atomic_fact" else ""),
+                    score=float(limit - index),
+                )
+                for index in range(limit)
+            )
+
+        def document_vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return self._candidates(
+                repo_key=repo_key,
+                document_kind=document_kind,
+                limit=limit,
+            )
+
+        def document_lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return self._candidates(
+                repo_key=repo_key,
+                document_kind=document_kind,
+                limit=limit,
+            )
+
+    engine = RecallEngine(
+        index=LimitEchoIndex(),
+        state=MemoryState(()),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    )
+
+    fact_first = engine.recall("When did it happen?", repo_key="acme/widgets", limit=20)
+    episode_first = engine.recall(
+        "Summarize the debugging approach",
+        repo_key="acme/widgets",
+        limit=20,
+    )
+
+    assert fact_first.sidecar.recall_route == "fact_first"
+    assert (
+        fact_first.sidecar.episode_vector_candidate_count,
+        fact_first.sidecar.episode_lexical_candidate_count,
+        fact_first.sidecar.atomic_fact_vector_candidate_count,
+        fact_first.sidecar.atomic_fact_lexical_candidate_count,
+    ) == (20, 20, 40, 40)
+    assert episode_first.sidecar.recall_route == "episode_first"
+    assert (
+        episode_first.sidecar.episode_vector_candidate_count,
+        episode_first.sidecar.episode_lexical_candidate_count,
+        episode_first.sidecar.atomic_fact_vector_candidate_count,
+        episode_first.sidecar.atomic_fact_lexical_candidate_count,
+    ) == (40, 40, 20, 20)
+
+
+def test_episode_only_selects_query_matched_source_fact_beyond_episode_prefix() -> None:
+    base = _memory("memory-a", summary="A long attributed conversation.")
+    facts = tuple(
+        EvidenceFact(
+            fact_id=f"fact-{index}",
+            repo_key=base.repo_key,
+            episode_id=base.episode_id,
+            kind="user_quote",
+            text=(
+                "The rare-tail-token answer is a cobalt telescope."
+                if index == 8
+                else f"Unrelated filler turn {index}."
+            ),
+            role="user",
+            evidence=(
+                replace(
+                    base.evidence[0],
+                    raw_event_index=index,
+                    raw_event_sha256=f"{index:064x}",
+                ),
+            ),
+        )
+        for index in range(10)
+    )
+    memory = replace(base, facts=facts)
+
+    result = RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        planner_config=RecallPlannerConfig.for_mode("episode-only"),
+        clock_ns=lambda: 0,
+    ).recall(
+        "What is the rare-tail-token answer?",
+        repo_key=memory.repo_key,
+        limit=1,
+    )
+
+    assert "cobalt telescope" in result.markdown
+    assert result.sidecar.context_trace is not None
+    assert "fact-8" in result.sidecar.context_trace.rendered_fact_ids
+    assert result.sidecar.context_trace.omitted_memory_ids == ()
+
+
+def test_query_matched_episode_facts_are_cached_across_recall_stages(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    memory = _memory_with_fact(
+        "memory-a",
+        fact_id="fact-a",
+        fact_text="The rare answer is cobalt.",
+        event_index=1,
+    )
+    original = recall_service._query_matched_fact_ids
+    call_count = 0
+
+    def counting_query_match(
+        candidate: CodingMemory,
+        *,
+        query: str,
+        limit: int,
+    ) -> tuple[str, ...]:
+        nonlocal call_count
+        call_count += 1
+        return original(candidate, query=query, limit=limit)
+
+    monkeypatch.setattr(recall_service, "_query_matched_fact_ids", counting_query_match)
+
+    RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    ).recall("What is the rare answer?", repo_key=memory.repo_key, limit=1)
+
+    assert call_count == 1
 
 
 def test_coverage_selection_keeps_evidence_for_distinct_named_anchors() -> None:
@@ -760,7 +949,7 @@ def test_context_budget_preserves_every_rank_and_prioritizes_temporal_siblings()
     assert temporal_rendered.index("evidence-1-2") < temporal_rendered.index("evidence-1-1")
 
 
-def test_context_budget_allows_only_one_partial_parent_episode() -> None:
+def test_context_budget_keeps_compact_evidence_from_every_large_parent() -> None:
     ranked = tuple(
         RankedRecall(
             rank=rank,
@@ -803,10 +992,12 @@ def test_context_budget_allows_only_one_partial_parent_episode() -> None:
     )
 
     assert len(compiled.markdown) <= 23_900
-    assert compiled.partial_episode_ids == ("memory-1",)
-    assert compiled.dropped_episode_ids == ("memory-2",)
+    assert compiled.partial_episode_ids == ("memory-1", "memory-2")
+    assert compiled.dropped_episode_ids == ()
     assert "## 1. Episode 1" in compiled.markdown
-    assert "## 2. Episode 2" not in compiled.markdown
+    assert "## 2. Episode 2" in compiled.markdown
+    assert "Anchor 1" in compiled.markdown
+    assert "Anchor 2" in compiled.markdown
 
 
 def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
@@ -1337,7 +1528,10 @@ def test_neighbor_context_is_added_only_after_reranking_and_top_k_selection() ->
     snippet_relations = [
         (item.source_memory_id, item.relation) for item in result.sidecar.ranked[0].snippets
     ]
-    assert snippet_relations == [("memory-a", "neighbor")]
+    assert snippet_relations == [
+        ("memory-b", "matched"),
+        ("memory-a", "neighbor"),
+    ]
     assert result.sidecar.neighbor_expansion_count == 1
 
 
@@ -1363,7 +1557,8 @@ def test_neighbor_context_obeys_one_global_snippet_budget() -> None:
 
     assert result.sidecar.neighbor_expansion_count == 1
     assert [(item.source_memory_id, item.text) for item in result.sidecar.ranked[0].snippets] == [
-        ("memory-b", "First neighbor.")
+        ("memory-a", "Selected fact."),
+        ("memory-b", "First neighbor."),
     ]
 
 

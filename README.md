@@ -145,18 +145,16 @@ ablations may select `episode-only` or `hierarchy-no-neighbors`; the effective
 mode and deterministic router contract are included in the retrieval manifest
 and every query sidecar.
 
-Resource-sensitive LoCoMo evidence runs separate index construction from
-question execution so native indexing state is released between phases:
+Resource-sensitive LoCoMo evidence runs reuse one verified corpus and one frozen
+query-vector artifact, then isolate each conversation in a fresh worker process.
+Build those artifacts as documented in `benchmarks/locomo/README.md`, then run:
 
 ```bash
-codecairn eval run locomo data/locomo10.json \
-  --run-id <run-id> --repository-commit <commit> \
-  --question-set benchmarks/locomo/diagnostic-200.json \
-  --execution-phase ingest
-codecairn eval run locomo data/locomo10.json \
-  --run-id <run-id> --repository-commit <commit> \
-  --question-set benchmarks/locomo/diagnostic-200.json \
-  --execution-phase questions --resume
+codecairn eval run locomo benchmarks/locomo/data/locomo10.json \
+  --run-id <run-id> --repository-commit <commit> --mode full \
+  --question-set benchmarks/locomo/diagnostic-200-v12.json \
+  --corpus <content-addressed-corpus> --query-vectors <frozen-query-vectors> \
+  --model deepseek-v4-flash --judge-model deepseek-v4-flash --max-workers 10
 ```
 
 The six versioned routes cover import, memory list, recall, evaluation run,

@@ -62,7 +62,7 @@ are scored, each has three valid votes, and infrastructure failures are zero.
 ## Frozen 200-question diagnostic
 
 Before a new retrieval stack may spend a full 1,540-question run, execute the
-three-layer ablation frozen in `diagnostic-200.json`. The selector takes 50
+three-layer ablation frozen in `diagnostic-200-v12.json`. The selector takes 50
 questions from each scored category with a dataset-pinned SHA-256 ordering; its
 expected selection digest prevents a seed, loader, or question-identity change
 from silently moving the diagnostic set. Question text is not redistributed.
@@ -88,7 +88,7 @@ Run the same commit, answer model, judge model, vote count, and top-k under the
 three declared recall modes. Each command must include:
 
 ```bash
---question-set benchmarks/locomo/diagnostic-200.json
+--question-set benchmarks/locomo/diagnostic-200-v12.json
 ```
 
 Build the shared corpus and diagnostic query vectors once:
@@ -103,7 +103,7 @@ uv run codecairn eval build-locomo-corpus \
 
 uv run codecairn eval build-locomo-query-vectors \
   benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-200.json \
+  --question-set benchmarks/locomo/diagnostic-200-v12.json \
   --vector-set-id "locomo-diagnostic-200-v1" \
   --output-root benchmark_results/locomo/query-vectors
 ```
@@ -117,11 +117,11 @@ QUERIES="benchmark_results/locomo/query-vectors/queries-<content-sha-prefix>"
 for MODE in episode-only hierarchy-no-neighbors hierarchy; do
   CODECAIRN_RECALL_MODE="$MODE" uv run codecairn eval run locomo \
     benchmarks/locomo/data/locomo10.json \
-    --question-set benchmarks/locomo/diagnostic-200.json \
-    --run-id "locomo-diagnostic-200-v7-$MODE" \
+    --question-set benchmarks/locomo/diagnostic-200-v12.json \
+    --run-id "locomo-diagnostic-200-v12-$MODE" \
     --repository-commit "$COMMIT" \
     --output-root benchmark_results \
-    --root "benchmark_results/runtime-v7-$MODE" \
+    --root "benchmark_results/runtime-v12-$MODE" \
     --corpus "$CORPUS" \
     --query-vectors "$QUERIES" \
     --mode full \
@@ -131,12 +131,12 @@ for MODE in episode-only hierarchy-no-neighbors hierarchy; do
 done
 
 uv run codecairn eval compare-locomo \
-  benchmarks/locomo/diagnostic-200.json \
-  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v7-episode-only \
+  benchmarks/locomo/diagnostic-200-v12.json \
+  --episode-only-run benchmark_results/locomo/locomo-diagnostic-200-v12-episode-only \
   --hierarchy-no-neighbors-run \
-    benchmark_results/locomo/locomo-diagnostic-200-v7-hierarchy-no-neighbors \
-  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v7-hierarchy \
-  --output benchmark_results/locomo/locomo-diagnostic-200-v7-report.json
+    benchmark_results/locomo/locomo-diagnostic-200-v12-hierarchy-no-neighbors \
+  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-200-v12-hierarchy \
+  --output benchmark_results/locomo/locomo-diagnostic-200-v12-report.json
 ```
 
 The worker coordinator polls durable checkpoints every 250 ms and samples live

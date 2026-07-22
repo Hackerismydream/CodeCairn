@@ -20,6 +20,10 @@ _EPISODE_CUES = re.compile(
     r"debug|fix|failure|failed|resolve|resolved)\b",
     re.IGNORECASE,
 )
+_PROCEDURE_CUES = re.compile(
+    r"\b(how\s+did|steps?|procedure|fix(?:ed|es|ing)?|verif(?:y|ied|ies|ying))\b",
+    re.IGNORECASE,
+)
 _NAMED_ANCHOR = re.compile(r"\b[A-Z][A-Za-z0-9_-]{1,63}\b")
 _MONTH_YEAR = re.compile(
     r"\b(January|February|March|April|May|June|July|August|September|October|"
@@ -79,11 +83,11 @@ class RecallPlannerConfig:
     """Auditable knobs for hierarchical retrieval and its ablations."""
 
     mode: RecallPlannerMode = "hierarchy"
-    primary_candidate_multiplier: int = 7
-    secondary_candidate_multiplier: int = 7
+    primary_candidate_multiplier: int = 2
+    secondary_candidate_multiplier: int = 1
     minimum_primary_candidates: int = 40
     minimum_secondary_candidates: int = 20
-    maximum_channel_candidates: int = 128
+    maximum_channel_candidates: int = 64
     rerank_candidate_multiplier: int = 5
     minimum_rerank_candidates: int = 32
     maximum_rerank_candidates: int = 96
@@ -185,7 +189,7 @@ class RecallPlannerConfig:
             "diverse_matched_facts_per_memory": self.diverse_matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
             "temporal_sibling_facts_per_memory": self.temporal_sibling_facts_per_memory,
-            "context_renderer": "parent-episode-hydration-v2",
+            "context_renderer": "facts-first-round-robin-v1",
             "context_max_chars": self.context_max_chars,
             "context_summary_chars": self.context_summary_chars,
             "context_snippet_chars": self.context_snippet_chars,
@@ -321,9 +325,7 @@ def _query_sketch(query: str) -> QuerySketch:
         anchors=anchors,
         temporal_op=temporal_op,
         set_op=set_op,
-        wants_procedure=any(
-            cue in lowered for cue in ("how did", "steps", "procedure", "fix", "verify")
-        ),
+        wants_procedure=_PROCEDURE_CUES.search(query) is not None,
         coverage_slots=anchors,
         temporal_prefixes=temporal_prefixes,
     )

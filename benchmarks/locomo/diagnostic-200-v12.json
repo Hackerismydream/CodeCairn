@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "selection_id": "locomo-diagnostic-200-v1",
+  "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "algorithm": "stratified-sha256-v1",
+  "seed": "codecairn-locomo-diagnostic-200-v1",
+  "category_targets": {
+    "1": 50,
+    "2": 50,
+    "3": 50,
+    "4": 50
+  },
+  "selection_sha256": "d46528af81467f0379e4d9456cbad99bf57a7237bc491690a6c5732ef51de579",
+  "variants": [
+    {
+      "id": "episode-only",
+      "recall_mode": "episode-only"
+    },
+    {
+      "id": "hierarchy-no-neighbors",
+      "recall_mode": "hierarchy-no-neighbors"
+    },
+    {
+      "id": "hierarchy",
+      "recall_mode": "hierarchy"
+    }
+  ],
+  "protocol": {
+    "answer_model": "deepseek-v4-flash",
+    "answer_evidence_contract": "query-routed-answer-planner-v12",
+    "judge_model": "deepseek-v4-flash",
+    "judge_contract": "locomo-generous-semantic-equivalence-v1",
+    "judge_votes": 3,
+    "top_k": 20,
+    "inference_threads": 1,
+    "tokenizer_parallelism": false,
+    "tokenizer_threads": 1,
+    "max_workers": 10,
+    "ingest_max_workers": 1,
+    "retrieval_max_workers": 1,
+    "retrieval_thread_count": 1,
+    "execution_phase_contract": "verified-shared-corpus-exec-per-conversation-v2",
+    "worker_contract": "verified-shared-corpus-exec-per-conversation-v2",
+    "worker_max_rss_bytes": 2147483648,
+    "worker_stall_timeout_seconds": 600.0,
+    "worker_poll_interval_seconds": 0.25,
+    "worker_rss_poll_interval_seconds": 1.0,
+    "worker_progress_signal": "heartbeat-evidence-and-durable-question-checkpoint-deadline-v2",
+    "worker_publish_policy": "conversation-directory-atomic-rename-v1",
+    "embedding_adapter": "dashscope-openai-compatible",
+    "embedding_model": "text-embedding-v4",
+    "embedding_dimension": 1024,
+    "reranker_model": "Xenova/ms-marco-MiniLM-L-6-v2",
+    "reranker_batch_size": 8,
+    "neighbor_windows": {
+      "episode-only": {
+        "neighbor_window": 0,
+        "temporal_neighbor_window": 0
+      },
+      "hierarchy-no-neighbors": {
+        "neighbor_window": 0,
+        "temporal_neighbor_window": 0
+      },
+      "hierarchy": {
+        "neighbor_window": 1,
+        "temporal_neighbor_window": 2
+      }
+    },
+    "router": "deterministic-cues-v1",
+    "hard_route_cutoff": false,
+    "primary_candidate_multiplier": 2,
+    "secondary_candidate_multiplier": 1,
+    "minimum_primary_candidates": 40,
+    "minimum_secondary_candidates": 20,
+    "maximum_channel_candidates": 64,
+    "rerank_candidate_multiplier": 5,
+    "minimum_rerank_candidates": 32,
+    "maximum_rerank_candidates": 96,
+    "maximum_exploration_results": 4,
+    "neighbor_snippet_budget": 20,
+    "temporal_lane": "explicit-month-prefix-v1",
+    "enrichment_order": "matched-diverse-channel-temporal-window-v3",
+    "matched_facts_per_memory": 3,
+    "diverse_matched_facts_per_memory": 1,
+    "sibling_facts_per_memory": 2,
+    "temporal_sibling_facts_per_memory": 5,
+    "context_renderer": "facts-first-round-robin-v1",
+    "context_max_chars": 23900,
+    "context_summary_chars": 60,
+    "context_snippet_chars": 200,
+    "context_snippets_per_memory": 5,
+    "context_temporal_snippets_per_memory": 8
+  },
+  "gates": {
+    "required_scored_questions_per_variant": 200,
+    "maximum_infrastructure_failures": 0,
+    "hierarchy_no_neighbors_vs_episode_minimum_accuracy_delta_points": 2.0,
+    "temporal_neighbor_minimum_overall_accuracy_delta_points": 0.0,
+    "temporal_neighbor_minimum_temporal_or_multihop_delta_points": 0.1,
+    "temporal_neighbor_maximum_p95_increase_percent": 20.0,
+    "selected_maximum_retrieval_p95_ms": 2500.0
+  }
+}

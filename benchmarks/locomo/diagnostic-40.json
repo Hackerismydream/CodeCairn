@@ -14,7 +14,7 @@
   "protocol": {
     "purpose": "low-cost paired architecture iteration before diagnostic-200",
     "answer_model": "deepseek-v4-flash",
-    "answer_evidence_contract": "query-routed-answer-planner-v11",
+    "answer_evidence_contract": "query-routed-answer-planner-v12",
     "judge_model": "deepseek-v4-flash",
     "judge_contract": "locomo-generous-semantic-equivalence-v1",
     "judge_votes": 3,

@@ -24,6 +24,7 @@ from codecairn.evaluation.locomo import (
     LoCoMoCorpusConfig,
     LoCoMoQuery,
     LoCoMoQueryVectorConfig,
+    LoCoMoQuestionSet,
     LoCoMoRunConfig,
     build_locomo_corpus,
     build_locomo_query_vectors,
@@ -37,12 +38,20 @@ from codecairn.evaluation.locomo import (
 )
 from codecairn.evaluation.locomo import _recall_question as recall_question
 from codecairn.evaluation.locomo import _run_question as run_question
+from codecairn.evaluation.locomo import _validate_run_protocol as validate_run_protocol
 from codecairn.evaluation.locomo_ablation import (
     LoCoMoAblationConfig,
     build_locomo_ablation_report,
 )
 from codecairn.evaluation.model import ModelResponse
-from codecairn.memory.models import RankedRecall, RecallResult, RecallSidecar, RecallSnippet
+from codecairn.memory.models import (
+    RankedRecall,
+    RecallContextTrace,
+    RecallResult,
+    RecallSidecar,
+    RecallSnippet,
+)
+from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.memory.retrieval import retrieval_config_sha256
 from codecairn.storage.sqlite import SQLiteState
 
@@ -102,6 +111,14 @@ class FakeMemory:
                 embedding_source="test/embedding-source",
                 embedding_revision="a" * 40,
                 retrieval_config_sha256=retrieval_config_sha256(FAKE_RETRIEVAL_CONFIG),
+                context_trace=RecallContextTrace(
+                    renderer="facts-first-round-robin-v1",
+                    char_count=48,
+                    rendered_memory_ids=(),
+                    rendered_fact_ids=(),
+                    omitted_memory_ids=(),
+                    omitted_snippet_count=0,
+                ),
             ),
         )
 
@@ -617,11 +634,32 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
                 source_summary="2023-12-06T17:34:00+00:00 — Tim and John conversation",
                 raw_event_index=1,
             ),
+            RecallSnippet(
+                relation="sibling",
+                source_memory_id="memory-temporal",
+                source_uri="codecairn://memory/memory-temporal",
+                fact_id="fact-omitted",
+                text="Tim started playing the violin yesterday.",
+                source_title="Tim and John",
+                source_summary="2023-12-06T17:34:00+00:00 — Tim and John conversation",
+                raw_event_index=2,
+            ),
         ),
     )
     temporal_recall = replace(
         recall,
-        sidecar=replace(recall.sidecar, ranked=(temporal_item,)),
+        sidecar=replace(
+            recall.sidecar,
+            ranked=(temporal_item,),
+            context_trace=RecallContextTrace(
+                renderer="facts-first-round-robin-v1",
+                char_count=len(recall.markdown),
+                rendered_memory_ids=("memory-temporal",),
+                rendered_fact_ids=("fact-violin",),
+                omitted_memory_ids=(),
+                omitted_snippet_count=1,
+            ),
+        ),
     )
     temporal = EvidenceAnswerSynthesizer().synthesize(
         LoCoMoQuery(
@@ -643,6 +681,7 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert model.user_payload is not None
     hints = model.user_payload["temporal_hints"]
     assert isinstance(hints, list)
+    assert len(hints) == 1
     assert hints[0]["resolved_time"] == "2023-08"
     assert temporal.plan.route == "temporal"
 
@@ -1380,6 +1419,16 @@ def test_frozen_question_set_selects_exact_strata_and_reports_retrieval_diagnost
             "episode_vector_candidate_count": 0.0,
             "neighbor_expansion_count": 0.0,
         },
+        "context": {
+            "renderer_counts": {"facts-first-round-robin-v1": 2},
+            "averages": {
+                "char_count": 48.0,
+                "omitted_parent_count": 0.0,
+                "omitted_snippet_count": 0.0,
+                "rendered_fact_count": 0.0,
+                "rendered_parent_count": 0.0,
+            },
+        },
     }
     manifest = json.loads((artifact.run_dir / "manifest.json").read_text())
     assert manifest["selection"]["question_set"]["question_count"] == 2
@@ -1417,6 +1466,11 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
     selection_sha256 = hashlib.sha256(
         json.dumps(sorted(selected), separators=(",", ":")).encode()
     ).hexdigest()
+    frozen_planner_protocol = {
+        field: value
+        for field, value in RecallPlannerConfig().public_config.items()
+        if field not in {"mode", "neighbor_window", "temporal_neighbor_window"}
+    }
     definition_path = tmp_path / "ablation.json"
     write_json_exclusive(
         definition_path,
@@ -1440,6 +1494,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "answer_model": "fake-answer",
                 "answer_evidence_contract": "query-routed-answer-planner-v12",
                 "judge_model": "fake-judge",
+                "judge_contract": "locomo-generous-semantic-equivalence-v1",
                 "judge_votes": 3,
                 "top_k": 20,
                 "inference_threads": 1,
@@ -1462,12 +1517,21 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "embedding_dimension": 3,
                 "reranker_model": "test/reranker",
                 "reranker_batch_size": None,
-                "primary_candidate_multiplier": 2,
-                "secondary_candidate_multiplier": 1,
-                "minimum_primary_candidates": 40,
-                "minimum_secondary_candidates": 20,
-                "neighbor_snippet_budget": 20,
-                "enrichment_order": "matched-diverse-channel-temporal-window-v3",
+                "neighbor_windows": {
+                    "episode-only": {
+                        "neighbor_window": 0,
+                        "temporal_neighbor_window": 0,
+                    },
+                    "hierarchy-no-neighbors": {
+                        "neighbor_window": 0,
+                        "temporal_neighbor_window": 0,
+                    },
+                    "hierarchy": {
+                        "neighbor_window": 1,
+                        "temporal_neighbor_window": 2,
+                    },
+                },
+                **frozen_planner_protocol,
             },
             "gates": {
                 "required_scored_questions_per_variant": 3,
@@ -1480,19 +1544,39 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             },
         },
     )
+    drifted_definition = json.loads(definition_path.read_text(encoding="utf-8"))
+    drifted_definition["protocol"]["context_renderer"] = "incompatible-renderer"
+    drifted_definition_path = tmp_path / "drifted-protocol.json"
+    write_json_exclusive(drifted_definition_path, drifted_definition)
+    answer_model = FakeAnswerModel()
+    judge_model = AlternatingJudgeModel()
+    with pytest.raises(ValueError, match="context_renderer"):
+        run_locomo(
+            LoCoMoRunConfig(
+                dataset_path=FIXTURE,
+                output_root=tmp_path / "preflight-must-not-exist",
+                run_id="protocol-drift",
+                repository_commit="abc123",
+                expected_dataset_sha256=None,
+                retrieval_config={
+                    **FAKE_RETRIEVAL_CONFIG,
+                    "planner": RecallPlannerConfig().public_config,
+                },
+                question_set_path=drifted_definition_path,
+            ),
+            memory_factory=FakeMemory,
+            answer_model=answer_model,
+            judge_model=judge_model,
+        )
+    assert answer_model.calls == 0
+    assert judge_model.calls == 0
+    assert not (tmp_path / "preflight-must-not-exist").exists()
+
     run_paths: dict[str, Path] = {}
     for mode in ("episode-only", "hierarchy-no-neighbors", "hierarchy"):
         retrieval_config = {
             **FAKE_RETRIEVAL_CONFIG,
-            "planner": {
-                "mode": mode,
-                "primary_candidate_multiplier": 2,
-                "secondary_candidate_multiplier": 1,
-                "minimum_primary_candidates": 40,
-                "minimum_secondary_candidates": 20,
-                "neighbor_snippet_budget": 20,
-                "enrichment_order": "matched-diverse-channel-temporal-window-v3",
-            },
+            "planner": RecallPlannerConfig.for_mode(mode).public_config,
         }
 
         class ConfiguredMemory(FakeMemory):
@@ -1544,6 +1628,25 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
     assert report["selected_variant"] == "hierarchy"
     assert (tmp_path / "ablation-report.json").is_file()
 
+    hierarchy_checkpoint_path = sorted(
+        (run_paths["hierarchy"] / "checkpoints" / "questions").glob("*/*.json")
+    )[0]
+    hierarchy_checkpoint = json.loads(hierarchy_checkpoint_path.read_text(encoding="utf-8"))
+    without_trace = json.loads(json.dumps(hierarchy_checkpoint))
+    without_trace["retrieval"].pop("context_trace")
+    hierarchy_checkpoint_path.write_text(json.dumps(without_trace), encoding="utf-8")
+    with pytest.raises(ValueError, match="no Recall Context trace"):
+        build_locomo_ablation_report(
+            LoCoMoAblationConfig(
+                question_set_path=definition_path,
+                episode_only_run=run_paths["episode-only"],
+                hierarchy_no_neighbors_run=run_paths["hierarchy-no-neighbors"],
+                hierarchy_run=run_paths["hierarchy"],
+                output_path=tmp_path / "missing-trace-ablation-report.json",
+            )
+        )
+    hierarchy_checkpoint_path.write_text(json.dumps(hierarchy_checkpoint), encoding="utf-8")
+
     episode_manifest_path = run_paths["episode-only"] / "manifest.json"
     episode_manifest = json.loads(episode_manifest_path.read_text(encoding="utf-8"))
     episode_manifest["max_workers"] = 2
@@ -1557,6 +1660,119 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 hierarchy_run=run_paths["hierarchy"],
                 output_path=tmp_path / "drifted-ablation-report.json",
             )
+        )
+
+    episode_manifest["max_workers"] = 1
+    episode_retrieval = episode_manifest["retrieval"]
+    assert isinstance(episode_retrieval, dict)
+    episode_planner = episode_retrieval["planner"]
+    assert isinstance(episode_planner, dict)
+    episode_planner["context_renderer"] = "incompatible-renderer"
+    episode_manifest_path.write_text(json.dumps(episode_manifest), encoding="utf-8")
+    mutated_retrieval_config = {
+        key: value for key, value in episode_retrieval.items() if key != "top_k"
+    }
+    mutated_config_sha256 = retrieval_config_sha256(mutated_retrieval_config)
+    for checkpoint_path in sorted(
+        (run_paths["episode-only"] / "checkpoints" / "questions").glob("*/*.json")
+    ):
+        checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+        checkpoint["retrieval"]["retrieval_config_sha256"] = mutated_config_sha256
+        checkpoint["retrieval"]["context_trace"]["renderer"] = "incompatible-renderer"
+        checkpoint_path.write_text(json.dumps(checkpoint), encoding="utf-8")
+    with pytest.raises(ValueError, match="context_renderer"):
+        build_locomo_ablation_report(
+            LoCoMoAblationConfig(
+                question_set_path=definition_path,
+                episode_only_run=run_paths["episode-only"],
+                hierarchy_no_neighbors_run=run_paths["hierarchy-no-neighbors"],
+                hierarchy_run=run_paths["hierarchy"],
+                output_path=tmp_path / "renderer-drifted-ablation-report.json",
+            )
+        )
+
+
+def test_official_v12_command_contract_passes_preflight() -> None:
+    definition = json.loads(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v12.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    protocol = definition["protocol"]
+    question_set = LoCoMoQuestionSet(
+        selection_id="test",
+        definition_sha256="a" * 64,
+        dataset_sha256="b" * 64,
+        algorithm="stratified-sha256-v1",
+        seed="test",
+        category_targets=((1, 1),),
+        question_ids=("q1",),
+        selection_sha256="c" * 64,
+        protocol=protocol,
+    )
+    retrieval_config = {
+        "inference_threads": 1,
+        "tokenizer_parallelism": False,
+        "tokenizer_threads": 1,
+        "embedding": {
+            "adapter": "dashscope-openai-compatible",
+            "model": "text-embedding-v4",
+            "dimension": 1024,
+        },
+        "reranker": {
+            "model": "Xenova/ms-marco-MiniLM-L-6-v2",
+            "batch_size": 8,
+        },
+        "planner": RecallPlannerConfig().public_config,
+    }
+    worker_contract = {
+        "name": "verified-shared-corpus-exec-per-conversation-v2",
+        "max_rss_bytes": 2147483648,
+        "stall_timeout_seconds": 600.0,
+        "poll_interval_seconds": 0.25,
+        "rss_poll_interval_seconds": 1.0,
+        "progress_signal": "heartbeat-evidence-and-durable-question-checkpoint-deadline-v2",
+        "publish_policy": "conversation-directory-atomic-rename-v1",
+    }
+
+    class FrozenProtocolModel(FakeAnswerModel):
+        @property
+        def model_id(self) -> str:
+            return "deepseek-v4-flash"
+
+    config = LoCoMoRunConfig(
+        dataset_path=FIXTURE,
+        output_root=Path("unused"),
+        run_id="official-v12",
+        repository_commit="abc123",
+        max_workers=10,
+        retrieval_config=retrieval_config,
+        corpus_path=Path("content-addressed-corpus"),
+    )
+    validate_run_protocol(
+        question_set,
+        config=config,
+        answer_model=FrozenProtocolModel(),
+        judge_model=FrozenProtocolModel(),
+        question_worker_contract=worker_contract,
+    )
+    drifted_retrieval_config = json.loads(json.dumps(retrieval_config))
+    drifted_retrieval_config["planner"]["neighbor_window"] = 9
+    with pytest.raises(ValueError, match="neighbor_window"):
+        validate_run_protocol(
+            question_set,
+            config=replace(config, retrieval_config=drifted_retrieval_config),
+            answer_model=FrozenProtocolModel(),
+            judge_model=FrozenProtocolModel(),
+            question_worker_contract=worker_contract,
+        )
+    with pytest.raises(ValueError, match="max_workers"):
+        validate_run_protocol(
+            question_set,
+            config=replace(config, max_workers=1),
+            answer_model=FrozenProtocolModel(),
+            judge_model=FrozenProtocolModel(),
+            question_worker_contract=worker_contract,
         )
 
 
@@ -1770,6 +1986,123 @@ def test_report_rejects_answer_citations_outside_retrieved_evidence(tmp_path: Pa
     write_json_exclusive(question_path, question)
 
     with pytest.raises(ValueError, match="do not match retrieved evidence"):
+        report_locomo(artifact.run_dir)
+
+
+def test_report_rejects_answer_citations_omitted_from_compiled_context(
+    tmp_path: Path,
+) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-omitted-answer-citation",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
+    question = json.loads(question_path.read_text(encoding="utf-8"))
+    question["retrieval"]["ranked"] = [
+        {
+            "memory_id": "memory-1",
+            "snippets": [
+                {"fact_id": "fact-rendered"},
+                {"fact_id": "fact-omitted"},
+            ],
+        }
+    ]
+    question["retrieval"]["context_trace"] = {
+        "renderer": "facts-first-round-robin-v1",
+        "char_count": len(question["recall_markdown"]),
+        "rendered_memory_ids": ["memory-1"],
+        "rendered_fact_ids": ["fact-rendered"],
+        "omitted_memory_ids": [],
+        "omitted_snippet_count": 1,
+    }
+    question["answer_evidence"]["evidence_ids"] = ["fact-omitted"]
+    question_path.unlink()
+    write_json_exclusive(question_path, question)
+
+    with pytest.raises(ValueError, match="do not match retrieved evidence"):
+        report_locomo(artifact.run_dir)
+
+
+def test_report_rejects_forged_context_trace_evidence(tmp_path: Path) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-forged-context-trace",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
+    question = json.loads(question_path.read_text(encoding="utf-8"))
+    question["retrieval"]["ranked"] = [
+        {
+            "memory_id": "memory-real",
+            "snippets": [{"fact_id": "fact-real"}],
+            "episode_fact_ids": [],
+        }
+    ]
+    question["retrieval"]["context_trace"] = {
+        "renderer": "facts-first-round-robin-v1",
+        "char_count": len(question["recall_markdown"]),
+        "rendered_memory_ids": ["memory-forged"],
+        "rendered_fact_ids": ["fact-forged"],
+        "omitted_memory_ids": [],
+        "omitted_snippet_count": 0,
+    }
+    question["answer_evidence"]["evidence_ids"] = ["fact-forged"]
+    question_path.unlink()
+    write_json_exclusive(question_path, question)
+
+    with pytest.raises(ValueError, match="unavailable evidence"):
+        report_locomo(artifact.run_dir)
+
+
+def test_report_rejects_incomplete_context_trace_partition(tmp_path: Path) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-incomplete-context-trace",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
+    question = json.loads(question_path.read_text(encoding="utf-8"))
+    question["retrieval"]["ranked"] = [
+        {
+            "memory_id": "memory-real",
+            "snippets": [{"fact_id": "fact-real"}],
+            "episode_fact_ids": [],
+        }
+    ]
+    question["retrieval"]["context_trace"] = {
+        "renderer": "facts-first-round-robin-v1",
+        "char_count": len(question["recall_markdown"]),
+        "rendered_memory_ids": [],
+        "rendered_fact_ids": [],
+        "omitted_memory_ids": [],
+        "omitted_snippet_count": 999_999,
+    }
+    question_path.unlink()
+    write_json_exclusive(question_path, question)
+
+    with pytest.raises(ValueError, match="unavailable evidence"):
         report_locomo(artifact.run_dir)
 
 

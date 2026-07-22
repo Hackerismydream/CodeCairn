@@ -178,6 +178,7 @@ class LoCoMoQuestionSet:
     category_targets: tuple[tuple[int, int], ...]
     question_ids: tuple[str, ...]
     selection_sha256: str
+    protocol: dict[str, object] | None = None
 
     @property
     def public_manifest(self) -> dict[str, object]:
@@ -191,6 +192,9 @@ class LoCoMoQuestionSet:
             "question_count": len(self.question_ids),
             "question_ids": list(self.question_ids),
             "selection_sha256": self.selection_sha256,
+            "protocol_sha256": (
+                None if self.protocol is None else _canonical_sha256(self.protocol)
+            ),
         }
 
 
@@ -340,9 +344,16 @@ def _answer_payload(
 def _temporal_hints(question: str, *, recall: RecallResult) -> list[dict[str, object]]:
     query_terms = _temporal_terms(question)
     prefixes = tuple(recall.sidecar.query_temporal_prefixes)
+    rendered_fact_ids = (
+        None
+        if recall.sidecar.context_trace is None
+        else set(recall.sidecar.context_trace.rendered_fact_ids)
+    )
     candidates: list[tuple[int, int, int, dict[str, object]]] = []
     for item in recall.sidecar.ranked:
         for snippet_index, snippet in enumerate(item.snippets):
+            if rendered_fact_ids is not None and snippet.fact_id not in rendered_fact_ids:
+                continue
             report_time = _summary_time(snippet.source_summary)
             if report_time is None:
                 continue
@@ -680,6 +691,12 @@ def load_locomo_question_set(path: Path, *, dataset: LoCoMoDataset) -> LoCoMoQue
     ).hexdigest()
     if _required_str(raw, "selection_sha256") != selection_sha256:
         raise ValueError("LoCoMo question-set digest does not match its deterministic selection")
+    raw_protocol = raw.get("protocol")
+    protocol = (
+        None
+        if raw_protocol is None
+        else _required_dict(raw_protocol, field="LoCoMo question-set protocol")
+    )
     return LoCoMoQuestionSet(
         selection_id=selection_id,
         definition_sha256=file_sha256(path),
@@ -689,6 +706,7 @@ def load_locomo_question_set(path: Path, *, dataset: LoCoMoDataset) -> LoCoMoQue
         category_targets=tuple(sorted(targets)),
         question_ids=question_ids,
         selection_sha256=selection_sha256,
+        protocol=protocol,
     )
 
 
@@ -1091,6 +1109,8 @@ def build_locomo_query_vectors(
         if config.question_set_path is None
         else load_locomo_question_set(config.question_set_path, dataset=dataset)
     )
+    if question_set is not None:
+        _validate_query_vector_protocol(question_set, embedder=embedder)
     selected_question_ids = None if question_set is None else set(question_set.question_ids)
     questions = [
         question
@@ -1376,6 +1396,157 @@ def _normalize_query(text: str) -> str:
     return normalized
 
 
+_PROTOCOL_GENERATION_FIELDS = frozenset(
+    {
+        "answer_model",
+        "answer_evidence_contract",
+        "judge_model",
+        "judge_contract",
+        "judge_votes",
+    }
+)
+_PROTOCOL_METADATA_FIELDS = frozenset({"purpose", "claim_policy", "query_vector_policy"})
+_FROZEN_PLANNER_PROTOCOL_FIELDS = (
+    "router",
+    "hard_route_cutoff",
+    "primary_candidate_multiplier",
+    "secondary_candidate_multiplier",
+    "minimum_primary_candidates",
+    "minimum_secondary_candidates",
+    "maximum_channel_candidates",
+    "rerank_candidate_multiplier",
+    "minimum_rerank_candidates",
+    "maximum_rerank_candidates",
+    "maximum_exploration_results",
+    "neighbor_snippet_budget",
+    "temporal_lane",
+    "enrichment_order",
+    "matched_facts_per_memory",
+    "diverse_matched_facts_per_memory",
+    "sibling_facts_per_memory",
+    "temporal_sibling_facts_per_memory",
+    "context_renderer",
+    "context_max_chars",
+    "context_summary_chars",
+    "context_snippet_chars",
+    "context_snippets_per_memory",
+    "context_temporal_snippets_per_memory",
+)
+
+
+def _validate_run_protocol(
+    question_set: LoCoMoQuestionSet,
+    *,
+    config: LoCoMoRunConfig,
+    answer_model: TextModel | None,
+    judge_model: TextModel | None,
+    question_worker_contract: dict[str, object] | None,
+) -> None:
+    protocol = question_set.protocol
+    if protocol is None:
+        return
+    retrieval = config.retrieval_config or {}
+    embedding = _optional_protocol_section(retrieval.get("embedding"))
+    reranker = _optional_protocol_section(retrieval.get("reranker"))
+    planner = _optional_protocol_section(retrieval.get("planner"))
+    worker = question_worker_contract or {}
+    answer = {} if answer_model is None else answer_model.public_config
+    judge = {} if judge_model is None else judge_model.public_config
+    execution_phase_contract = (
+        "process-isolated-ingest-then-questions-v1"
+        if config.corpus_path is None
+        else (
+            "verified-shared-corpus-v1" if question_worker_contract is None else worker.get("name")
+        )
+    )
+    observed: dict[str, object] = {
+        "answer_model": answer.get("model"),
+        "answer_evidence_contract": _ANSWER_EVIDENCE_CONTRACT,
+        "judge_model": judge.get("model"),
+        "judge_contract": _JUDGE_CONTRACT if config.mode == "full" else None,
+        "judge_votes": config.judge_votes if config.mode == "full" else 0,
+        "top_k": config.top_k,
+        "inference_threads": retrieval.get("inference_threads"),
+        "tokenizer_parallelism": retrieval.get("tokenizer_parallelism"),
+        "tokenizer_threads": retrieval.get("tokenizer_threads"),
+        "max_workers": config.max_workers,
+        "ingest_max_workers": 1,
+        "retrieval_max_workers": 1,
+        "retrieval_thread_count": 1,
+        "execution_phase_contract": execution_phase_contract,
+        "worker_contract": worker.get("name"),
+        "worker_max_rss_bytes": worker.get("max_rss_bytes"),
+        "worker_stall_timeout_seconds": worker.get("stall_timeout_seconds"),
+        "worker_poll_interval_seconds": worker.get("poll_interval_seconds"),
+        "worker_rss_poll_interval_seconds": worker.get("rss_poll_interval_seconds"),
+        "worker_progress_signal": worker.get("progress_signal"),
+        "worker_publish_policy": worker.get("publish_policy"),
+        "embedding_adapter": embedding.get("adapter"),
+        "embedding_model": embedding.get("model"),
+        "embedding_dimension": embedding.get("dimension"),
+        "reranker_model": reranker.get("model"),
+        "reranker_batch_size": reranker.get("batch_size"),
+        **{field: planner.get(field) for field in _FROZEN_PLANNER_PROTOCOL_FIELDS},
+    }
+    fields = set(protocol)
+    raw_neighbor_windows = protocol.get("neighbor_windows")
+    if raw_neighbor_windows is not None:
+        neighbor_windows = _required_dict(
+            raw_neighbor_windows,
+            field="LoCoMo neighbor-window protocol",
+        )
+        mode = planner.get("mode")
+        if not isinstance(mode, str) or mode not in neighbor_windows:
+            raise ValueError("LoCoMo run has no frozen neighbor-window mode")
+        expected_windows = _required_dict(
+            neighbor_windows[mode],
+            field="LoCoMo mode neighbor-window protocol",
+        )
+        for field in ("neighbor_window", "temporal_neighbor_window"):
+            if planner.get(field) != expected_windows.get(field):
+                raise ValueError(f"LoCoMo run changes the frozen question-set protocol: {field}")
+    fields.discard("neighbor_windows")
+    fields.difference_update(_PROTOCOL_METADATA_FIELDS)
+    if config.mode != "full":
+        fields.difference_update(_PROTOCOL_GENERATION_FIELDS)
+    unknown = fields - observed.keys()
+    if unknown:
+        raise ValueError(
+            "LoCoMo question set contains unknown frozen protocol fields: "
+            + ", ".join(sorted(unknown))
+        )
+    for field in sorted(fields):
+        if observed[field] != protocol[field]:
+            raise ValueError(f"LoCoMo run changes the frozen question-set protocol: {field}")
+
+
+def _validate_query_vector_protocol(
+    question_set: LoCoMoQuestionSet,
+    *,
+    embedder: EmbeddingProvider,
+) -> None:
+    protocol = question_set.protocol
+    if protocol is None:
+        return
+    expected_model = protocol.get("embedding_model")
+    expected_dimension = protocol.get("embedding_dimension")
+    expected_adapter = protocol.get("embedding_adapter")
+    observed_adapter = embedder.index_identity.split("@", 1)[0]
+    for field, expected, observed in (
+        ("embedding_model", expected_model, embedder.model_id),
+        ("embedding_dimension", expected_dimension, embedder.dimension),
+        ("embedding_adapter", expected_adapter, observed_adapter),
+    ):
+        if expected is not None and observed != expected:
+            raise ValueError(f"LoCoMo query vectors change the frozen protocol: {field}")
+
+
+def _optional_protocol_section(value: object) -> dict[str, object]:
+    if value is None:
+        return {}
+    return _required_dict(value, field="LoCoMo protocol section")
+
+
 def _validate_frozen_vector(vector: tuple[float, ...], *, dimension: int) -> None:
     if len(vector) != dimension or any(not math.isfinite(value) for value in vector):
         raise ValueError("LoCoMo query vector does not match its finite dimension contract")
@@ -1404,6 +1575,14 @@ def run_locomo(
         if config.question_set_path is None
         else load_locomo_question_set(config.question_set_path, dataset=dataset)
     )
+    if question_set is not None:
+        _validate_run_protocol(
+            question_set,
+            config=config,
+            answer_model=answer_model,
+            judge_model=judge_model,
+            question_worker_contract=question_worker_contract,
+        )
     selected_question_ids = None if question_set is None else set(question_set.question_ids)
     selected = _select_conversations(dataset, config.conversation_ids)
     question_ids_by_conversation: dict[str, tuple[str, ...]] = {}
@@ -1908,6 +2087,9 @@ def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> d
     retrieval_latencies: list[float] = []
     route_counts: Counter[str] = Counter()
     candidate_totals: Counter[str] = Counter()
+    context_totals: Counter[str] = Counter()
+    context_renderer_counts: Counter[str] = Counter()
+    context_trace_count = 0
     answer_evidence_observed = False
     structured_answer_count = 0
     cited_answer_count = 0
@@ -1941,6 +2123,25 @@ def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> d
                 if type(value) is not int or value < 0:
                     raise ValueError("Diagnostic retrieval sidecar has invalid candidate counts")
                 candidate_totals[field] += value
+            raw_context_trace = retrieval.get("context_trace")
+            if isinstance(raw_context_trace, dict):
+                context_trace = cast(dict[str, object], raw_context_trace)
+                context_trace_count += 1
+                context_renderer_counts[_required_str(context_trace, "renderer")] += 1
+                context_totals["char_count"] += _required_int(context_trace, "char_count")
+                context_totals["rendered_parent_count"] += len(
+                    cast(list[object], context_trace["rendered_memory_ids"])
+                )
+                context_totals["rendered_fact_count"] += len(
+                    cast(list[object], context_trace["rendered_fact_ids"])
+                )
+                context_totals["omitted_parent_count"] += len(
+                    cast(list[object], context_trace["omitted_memory_ids"])
+                )
+                context_totals["omitted_snippet_count"] += _required_int(
+                    context_trace,
+                    "omitted_snippet_count",
+                )
         answer_evidence = record.get("answer_evidence")
         if answer_evidence is not None:
             if not isinstance(answer_evidence, dict):
@@ -2120,6 +2321,16 @@ def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> d
                 for field, total in sorted(candidate_totals.items())
             },
         }
+        if context_trace_count not in {0, len(records)}:
+            raise ValueError("Diagnostic run is missing Recall Context traces")
+        if context_trace_count:
+            cast(dict[str, object], report["retrieval_diagnostics"])["context"] = {
+                "renderer_counts": dict(sorted(context_renderer_counts.items())),
+                "averages": {
+                    field: round(total / context_trace_count, 3)
+                    for field, total in sorted(context_totals.items())
+                },
+            }
     if _include_worker_resources:
         worker_resources = _report_worker_resources(run_dir, manifest=manifest)
         if worker_resources is not None:
@@ -2131,6 +2342,9 @@ def _reported_evidence_allowlist(record: dict[str, object]) -> set[str]:
     retrieval = record.get("retrieval")
     if not isinstance(retrieval, dict):
         return set()
+    context_trace = retrieval.get("context_trace")
+    if isinstance(context_trace, dict):
+        return _validate_context_trace(record, retrieval=retrieval)
     ranked = retrieval.get("ranked")
     if not isinstance(ranked, list):
         return set()
@@ -2148,6 +2362,94 @@ def _reported_evidence_allowlist(record: dict[str, object]) -> set[str]:
             if isinstance(snippet, dict) and isinstance(snippet.get("fact_id"), str):
                 allowed.add(cast(str, snippet["fact_id"]))
     return allowed
+
+
+def _validate_context_trace(
+    record: dict[str, object],
+    *,
+    retrieval: dict[str, object],
+) -> set[str]:
+    raw_trace = retrieval.get("context_trace")
+    if raw_trace is None:
+        return set()
+    trace = _required_dict(raw_trace, field="retrieval context trace")
+    renderer = trace.get("renderer")
+    char_count = trace.get("char_count")
+    omitted_snippet_count = trace.get("omitted_snippet_count")
+    raw_rendered_memory_ids = trace.get("rendered_memory_ids")
+    raw_rendered_fact_ids = trace.get("rendered_fact_ids")
+    raw_omitted_memory_ids = trace.get("omitted_memory_ids")
+    identifier_lists = (
+        raw_rendered_memory_ids,
+        raw_rendered_fact_ids,
+        raw_omitted_memory_ids,
+    )
+    if (
+        not isinstance(renderer, str)
+        or not renderer
+        or type(char_count) is not int
+        or char_count < 0
+        or type(omitted_snippet_count) is not int
+        or omitted_snippet_count < 0
+        or any(
+            not isinstance(values, list)
+            or any(not isinstance(value, str) or not value for value in values)
+            for values in identifier_lists
+        )
+    ):
+        raise ValueError("LoCoMo retrieval context trace is invalid")
+    rendered_memory_ids = cast(list[str], raw_rendered_memory_ids)
+    rendered_fact_ids = cast(list[str], raw_rendered_fact_ids)
+    omitted_memory_ids = cast(list[str], raw_omitted_memory_ids)
+    typed_identifier_lists = (
+        rendered_memory_ids,
+        rendered_fact_ids,
+        omitted_memory_ids,
+    )
+    if any(len(values) != len(set(values)) for values in typed_identifier_lists):
+        raise ValueError("LoCoMo retrieval context trace has duplicate identifiers")
+
+    ranked = retrieval.get("ranked")
+    if not isinstance(ranked, list):
+        raise ValueError("LoCoMo retrieval context trace has no ranked evidence")
+    ranked_memory_ids: set[str] = set()
+    ranked_fact_ids: set[str] = set()
+    ranked_snippet_fact_ids: set[str] = set()
+    for raw_item in ranked:
+        item = _required_dict(raw_item, field="ranked recall")
+        memory_id = _required_str(item, "memory_id")
+        ranked_memory_ids.add(memory_id)
+        raw_snippets = item.get("snippets", [])
+        raw_episode_fact_ids = item.get("episode_fact_ids", [])
+        for values, field in (
+            (raw_snippets, "ranked snippets"),
+            (raw_episode_fact_ids, "ranked episode fact IDs"),
+        ):
+            if not isinstance(values, list):
+                raise ValueError(f"{field} must be an array")
+        for raw_snippet in cast(list[object], raw_snippets):
+            snippet = _required_dict(raw_snippet, field="ranked snippet")
+            fact_id = snippet.get("fact_id")
+            if isinstance(fact_id, str) and fact_id:
+                ranked_fact_ids.add(fact_id)
+                ranked_snippet_fact_ids.add(fact_id)
+        for fact_id in cast(list[object], raw_episode_fact_ids):
+            if not isinstance(fact_id, str) or not fact_id:
+                raise ValueError("Ranked episode fact ID must be non-empty text")
+            ranked_fact_ids.add(fact_id)
+    rendered_memory_set = set(rendered_memory_ids)
+    omitted_memory_set = set(omitted_memory_ids)
+    if (
+        rendered_memory_set | omitted_memory_set != ranked_memory_ids
+        or rendered_memory_set & omitted_memory_set
+        or not set(rendered_fact_ids) <= ranked_fact_ids
+        or omitted_snippet_count != len(ranked_snippet_fact_ids - set(rendered_fact_ids))
+    ):
+        raise ValueError("LoCoMo retrieval context trace cites unavailable evidence")
+    recall_markdown = record.get("recall_markdown")
+    if isinstance(recall_markdown, str) and len(recall_markdown) != char_count:
+        raise ValueError("LoCoMo retrieval context trace character count does not match")
+    return {*rendered_memory_set, *rendered_fact_ids}
 
 
 def _validate_question_inventory(
@@ -3324,9 +3626,6 @@ def _validate_report_retrieval(
     *,
     contract: tuple[dict[str, object], int, str] | None,
 ) -> None:
-    if contract is None:
-        return
-    provider_config, top_k, config_sha256 = contract
     raw = record.get("retrieval")
     if (
         raw is None
@@ -3334,7 +3633,16 @@ def _validate_report_retrieval(
         and record.get("phase") == "retrieval"
     ):
         return
+    if raw is None:
+        if contract is None:
+            return
+        raise ValueError("Question checkpoint has no retrieval sidecar")
     retrieval = _required_dict(raw, field="question retrieval sidecar")
+    if retrieval.get("context_trace") is not None:
+        _validate_context_trace(record, retrieval=retrieval)
+    if contract is None:
+        return
+    provider_config, top_k, config_sha256 = contract
     sample_id = _required_str(record, "sample_id")
     if retrieval.get("repo_key") != f"locomo/{sample_id}":
         raise ValueError("LoCoMo retrieval sidecar repository does not match its sample")
@@ -3355,6 +3663,20 @@ def _validate_report_retrieval(
                 raise ValueError(
                     f"LoCoMo {provider_name} {identity_field} does not match its manifest"
                 )
+    planner = provider_config.get("planner")
+    context_trace = retrieval.get("context_trace")
+    if isinstance(planner, dict):
+        expected_renderer = planner.get("context_renderer")
+        if expected_renderer == "facts-first-round-robin-v1" and not isinstance(
+            context_trace, dict
+        ):
+            raise ValueError("LoCoMo facts-first retrieval has no Recall Context trace")
+        if (
+            expected_renderer is not None
+            and isinstance(context_trace, dict)
+            and context_trace.get("renderer") != expected_renderer
+        ):
+            raise ValueError("LoCoMo context renderer does not match its manifest")
 
 
 def _required_dict(value: object, *, field: str) -> dict[str, object]:

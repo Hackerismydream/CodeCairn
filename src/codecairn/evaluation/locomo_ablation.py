@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import cast
 
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
-from codecairn.evaluation.locomo import report_locomo
+from codecairn.evaluation.locomo import _FROZEN_PLANNER_PROTOCOL_FIELDS, report_locomo
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,6 +23,13 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
     definition = _dict(read_json(config.question_set_path), field="question set")
     definition_sha256 = file_sha256(config.question_set_path)
     expected_selection_sha256 = _str(definition, "selection_sha256")
+    protocol = _dict(definition.get("protocol"), field="protocol")
+    raw_neighbor_windows = protocol.get("neighbor_windows")
+    neighbor_windows = (
+        None
+        if raw_neighbor_windows is None
+        else _dict(raw_neighbor_windows, field="neighbor windows")
+    )
     expected_variants = {
         _str(_dict(item, field="variant"), "id"): _str(_dict(item, field="variant"), "recall_mode")
         for item in _list(definition, "variants")
@@ -47,6 +54,11 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
             manifest,
             variant=variant,
             expected_mode=expected_variants[variant],
+            expected_neighbor_windows=(
+                None
+                if neighbor_windows is None
+                else _dict(neighbor_windows.get(variant), field=f"{variant} neighbor windows")
+            ),
             definition_sha256=definition_sha256,
             selection_sha256=expected_selection_sha256,
         )
@@ -55,7 +67,7 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
     _validate_constant_protocol(manifests)
     _validate_definition_protocol(
         manifests["hierarchy"],
-        protocol=_dict(definition.get("protocol"), field="protocol"),
+        protocol=protocol,
     )
 
     gates = _dict(definition.get("gates"), field="gates")
@@ -194,6 +206,7 @@ def _validate_run_manifest(
     *,
     variant: str,
     expected_mode: str,
+    expected_neighbor_windows: dict[str, object] | None,
     definition_sha256: str,
     selection_sha256: str,
 ) -> None:
@@ -210,6 +223,10 @@ def _validate_run_manifest(
     planner = _dict(retrieval.get("planner"), field=f"{variant} planner")
     if planner.get("mode") != expected_mode:
         raise ValueError(f"{variant} retrieval mode does not match the ablation definition")
+    if expected_neighbor_windows is not None:
+        for field in ("neighbor_window", "temporal_neighbor_window"):
+            if planner.get(field) != expected_neighbor_windows.get(field):
+                raise ValueError(f"{variant} changes the frozen planner field: {field}")
 
 
 def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None:
@@ -221,6 +238,7 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
         "answer_model",
         "answer_evidence_contract",
         "judge_model",
+        "judge_contract",
         "judge_votes",
         "judge_response_max_attempts",
         "judge_response_max_chars",
@@ -252,18 +270,7 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
                 raise ValueError(f"{variant} changes the frozen retrieval field: {field}")
         planner = _dict(retrieval.get("planner"), field=f"{variant} planner")
         reference_planner = _dict(reference_retrieval.get("planner"), field="hierarchy planner")
-        for field in (
-            "router",
-            "hard_route_cutoff",
-            "primary_candidate_multiplier",
-            "secondary_candidate_multiplier",
-            "minimum_primary_candidates",
-            "minimum_secondary_candidates",
-            "neighbor_snippet_budget",
-            "enrichment_order",
-            "matched_facts_per_memory",
-            "sibling_facts_per_memory",
-        ):
+        for field in _FROZEN_PLANNER_PROTOCOL_FIELDS:
             if planner.get(field) != reference_planner.get(field):
                 raise ValueError(f"{variant} changes the frozen planner field: {field}")
 
@@ -285,6 +292,7 @@ def _validate_definition_protocol(
         "answer_model": answer.get("model"),
         "answer_evidence_contract": manifest.get("answer_evidence_contract"),
         "judge_model": judge.get("model"),
+        "judge_contract": manifest.get("judge_contract"),
         "judge_votes": manifest.get("judge_votes"),
         "top_k": retrieval.get("top_k"),
         "inference_threads": retrieval.get("inference_threads"),
@@ -307,12 +315,7 @@ def _validate_definition_protocol(
         "embedding_dimension": embedding.get("dimension"),
         "reranker_model": reranker.get("model"),
         "reranker_batch_size": reranker.get("batch_size"),
-        "primary_candidate_multiplier": planner.get("primary_candidate_multiplier"),
-        "secondary_candidate_multiplier": planner.get("secondary_candidate_multiplier"),
-        "minimum_primary_candidates": planner.get("minimum_primary_candidates"),
-        "minimum_secondary_candidates": planner.get("minimum_secondary_candidates"),
-        "neighbor_snippet_budget": planner.get("neighbor_snippet_budget"),
-        "enrichment_order": planner.get("enrichment_order"),
+        **{field: planner.get(field) for field in _FROZEN_PLANNER_PROTOCOL_FIELDS},
     }
     for field, value in observed.items():
         if value != protocol.get(field):

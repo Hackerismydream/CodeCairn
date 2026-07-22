@@ -48,7 +48,7 @@ def test_diagnostic_top_k_uses_bounded_route_aware_candidate_pools() -> None:
         fact_first.rerank_candidate_limit,
         fact_first.core_rerank_candidate_limit,
         fact_first.exploration_result_limit,
-    ) == (128, 128, 20, 40, 96, 32, 4)
+    ) == (20, 40, 20, 40, 96, 32, 4)
     assert (
         episode_first.episode_candidate_limit,
         episode_first.atomic_fact_candidate_limit,
@@ -57,7 +57,7 @@ def test_diagnostic_top_k_uses_bounded_route_aware_candidate_pools() -> None:
         episode_first.rerank_candidate_limit,
         episode_first.core_rerank_candidate_limit,
         episode_first.exploration_result_limit,
-    ) == (128, 128, 40, 20, 96, 32, 4)
+    ) == (40, 20, 40, 20, 96, 32, 4)
 
 
 def test_small_top_k_keeps_adaptive_candidate_budgets_bounded() -> None:
@@ -74,7 +74,7 @@ def test_small_top_k_keeps_adaptive_candidate_budgets_bounded() -> None:
         fact_first.rerank_candidate_limit,
         fact_first.core_rerank_candidate_limit,
         fact_first.exploration_result_limit,
-    ) == (35, 40, 20, 40, 32, 32, 0)
+    ) == (20, 40, 20, 40, 32, 32, 0)
     assert (
         episode_first.episode_candidate_limit,
         episode_first.atomic_fact_candidate_limit,
@@ -83,12 +83,19 @@ def test_small_top_k_keeps_adaptive_candidate_budgets_bounded() -> None:
         episode_first.rerank_candidate_limit,
         episode_first.core_rerank_candidate_limit,
         episode_first.exploration_result_limit,
-    ) == (40, 35, 40, 20, 32, 32, 0)
+    ) == (40, 20, 40, 20, 32, 32, 0)
 
 
 def test_neighbor_expansion_requires_the_full_hierarchy_mode() -> None:
     with pytest.raises(ValueError, match="Only hierarchy mode"):
         RecallPlannerConfig(mode="hierarchy-no-neighbors", neighbor_window=1)
+
+
+def test_procedure_cues_require_word_boundaries() -> None:
+    planner = RecallPlanner()
+
+    assert planner.plan("How did the fix work?", limit=5).query_sketch.wants_procedure is True
+    assert planner.plan("Inspect the prefix fixture", limit=5).query_sketch.wants_procedure is False
 
 
 def test_explicit_month_query_reserves_a_temporal_lane_and_wider_neighbors() -> None:

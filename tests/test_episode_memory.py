@@ -44,7 +44,7 @@ def test_attributed_episode_round_trips_exact_truth_and_semantic_projection(
     assert restored == (decision.memory,)
 
 
-def test_fact_hit_hydrates_the_complete_parent_episode(tmp_path: Path) -> None:
+def test_fact_hit_compiles_all_grounded_excerpts_before_parent_hydration(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     runtime = create_runtime(root)
     decision = runtime.write_episode(_episode())
@@ -56,10 +56,38 @@ def test_fact_hit_hydrates_the_complete_parent_episode(tmp_path: Path) -> None:
     assert "Caroline: I adopted a beagle named Poppy." in recalled.markdown
     assert "Melanie: Poppy sounds wonderful." in recalled.markdown
     assert "Caroline: We finished the charity race." in recalled.markdown
+    assert recalled.sidecar.hydrated_episode_count == 0
+    assert recalled.sidecar.partial_episode_ids == (recalled.sidecar.ranked[0].memory_id,)
+    assert recalled.sidecar.dropped_episode_ids == ()
+    assert recalled.sidecar.context_trace is not None
+    assert recalled.sidecar.context_trace.renderer == "facts-first-round-robin-v1"
+    assert len(recalled.sidecar.context_trace.rendered_fact_ids) == 3
+    assert recalled.sidecar.ranked[0].episode_text == ""
+
+
+def test_procedure_query_uses_remaining_budget_for_complete_parent_episode(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    assert runtime.write_episode(_episode()).accepted is True
+    assert create_cascade(root).rebuild().parity is True
+
+    recalled = runtime.recall(
+        "How did Caroline finish the charity race?",
+        repo_key="locomo/conv-test",
+        limit=1,
+    )
+
+    assert "Evidence excerpts:" in recalled.markdown
+    assert "Complete parent episode:" in recalled.markdown
     assert recalled.sidecar.hydrated_episode_count == 1
     assert recalled.sidecar.partial_episode_ids == ()
     assert recalled.sidecar.dropped_episode_ids == ()
-    assert recalled.sidecar.ranked[0].episode_text == ""
+    assert recalled.sidecar.context_trace is not None
+    assert set(recalled.sidecar.context_trace.rendered_fact_ids) == set(
+        recalled.sidecar.ranked[0].episode_fact_ids
+    )
 
 
 def test_multi_anchor_query_keeps_distinct_evidence_parents(tmp_path: Path) -> None:
@@ -91,7 +119,48 @@ def test_multi_anchor_query_keeps_distinct_evidence_parents(tmp_path: Path) -> N
     assert recalled.sidecar.missing_slots == ()
     assert "Alice: I adopted a beagle named Poppy." in recalled.markdown
     assert "Bob: I finished the charity marathon." in recalled.markdown
-    assert recalled.sidecar.hydrated_episode_count == 2
+    assert recalled.sidecar.hydrated_episode_count == 0
+    assert recalled.sidecar.context_trace is not None
+    assert set(recalled.sidecar.context_trace.rendered_memory_ids) == {
+        item.memory_id for item in recalled.sidecar.ranked
+    }
+
+
+def test_recall_context_keeps_compact_evidence_from_every_selected_large_episode(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "runtime"
+    runtime = create_runtime(root)
+    alice = _single_turn_episode(
+        source_episode_id="alice-large-session",
+        actor="Alice",
+        text="Alice adopted Poppy the beagle. " + "alice-filler " * 1_000,
+        event_index=1,
+    )
+    bob = _single_turn_episode(
+        source_episode_id="bob-large-session",
+        actor="Bob",
+        text="Bob finished the charity marathon. " + "bob-filler " * 1_000,
+        event_index=2,
+    )
+    assert runtime.write_episode(alice).accepted is True
+    assert runtime.write_episode(bob).accepted is True
+    assert create_cascade(root).rebuild().parity is True
+
+    recalled = runtime.recall(
+        "What did Alice adopt and Bob finish?",
+        repo_key="locomo/conv-test",
+        limit=2,
+    )
+
+    assert "Alice adopted Poppy the beagle." in recalled.markdown
+    assert "Bob finished the charity marathon." in recalled.markdown
+    assert len(recalled.markdown) <= 23_900
+    assert recalled.sidecar.dropped_episode_ids == ()
+    assert recalled.sidecar.context_trace is not None
+    assert len(recalled.sidecar.context_trace.rendered_memory_ids) == 2
+    assert recalled.sidecar.context_trace.omitted_memory_ids == ()
+    assert recalled.sidecar.context_trace.char_count == len(recalled.markdown)
 
 
 def test_semantic_annotation_cannot_reference_unknown_evidence(tmp_path: Path) -> None:

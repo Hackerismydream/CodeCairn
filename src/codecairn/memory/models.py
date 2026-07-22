@@ -63,6 +63,7 @@ RecallDocumentSource = Literal[
     "entity_posting",
 ]
 RecallSnippetRelation = Literal["matched", "sibling", "neighbor"]
+RecallStageName = Literal["candidate_recall", "fusion", "rerank", "selection", "context"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -425,6 +426,25 @@ class RankedRecall:
     matched_documents: tuple[RecallMatch, ...] = ()
     snippets: tuple[RecallSnippet, ...] = ()
     episode_text: str = ""
+    episode_fact_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class RecallStageTrace:
+    stage: RecallStageName
+    input_count: int
+    output_count: int
+    output_memory_ids: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class RecallContextTrace:
+    renderer: str
+    char_count: int
+    rendered_memory_ids: tuple[str, ...]
+    rendered_fact_ids: tuple[str, ...]
+    omitted_memory_ids: tuple[str, ...]
+    omitted_snippet_count: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -465,6 +485,8 @@ class RecallSidecar:
     hydrated_episode_ids: tuple[str, ...] = ()
     partial_episode_ids: tuple[str, ...] = ()
     dropped_episode_ids: tuple[str, ...] = ()
+    stage_trace: tuple[RecallStageTrace, ...] = ()
+    context_trace: RecallContextTrace | None = None
 
 
 @dataclass(frozen=True, slots=True)
