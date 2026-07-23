@@ -3231,6 +3231,13 @@ class FrozenQueryEmbeddingAdapter:
         self._revision = _required_str(embedding, "revision")
         self._index_identity = _required_str(embedding, "index_identity")
         self._dimension = _required_int(embedding, "dimension")
+        self._input_price_cny_per_million: float | None = None
+        if "pricing" in embedding:
+            _validate_paid_embedding_pricing(embedding)
+            pricing = _required_dict(embedding.get("pricing"), field="query-vector pricing")
+            self._input_price_cny_per_million = float(
+                cast(int | float, pricing["input_per_million"])
+            )
         self._vectors: dict[str, tuple[float, ...]] = {}
         self._vectors_loaded = load_vectors
         if not load_vectors:
@@ -3289,6 +3296,10 @@ class FrozenQueryEmbeddingAdapter:
     @property
     def index_identity(self) -> str:
         return self._index_identity
+
+    @property
+    def input_price_cny_per_million(self) -> float | None:
+        return self._input_price_cny_per_million
 
     @property
     def query_batch_size(self) -> int:

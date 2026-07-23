@@ -56,7 +56,7 @@ from codecairn.memory.models import (
     RecallSnippet,
 )
 from codecairn.memory.recall_planner import RecallPlannerConfig
-from codecairn.memory.retrieval import retrieval_config_sha256
+from codecairn.memory.retrieval import RetrievalProviders, retrieval_config_sha256
 from codecairn.storage.sqlite import SQLiteState
 
 FIXTURE = Path(__file__).parent / "fixtures" / "locomo" / "synthetic.json"
@@ -2953,6 +2953,54 @@ def test_frozen_query_vectors_fail_closed_without_provider_fallback(tmp_path: Pa
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
     with pytest.raises(ValueError, match="record count"):
         FrozenQueryEmbeddingAdapter(vectors.vector_set_dir)
+
+
+def test_frozen_query_vectors_preserve_the_document_embedding_contract(
+    tmp_path: Path,
+) -> None:
+    class PricedEmbedder:
+        model_id = "test/embedding"
+        source_id = "test/embedding-source"
+        revision = "a" * 40
+        dimension = 3
+        index_identity = "test:embedding@revision:3"
+        input_price_cny_per_million = 0.5
+
+        def embed_query(self, text: str) -> tuple[float, ...]:
+            return (1.0, 2.0, 3.0)
+
+        def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+            raise AssertionError("query-vector construction must not embed documents")
+
+    class Reranker:
+        model_id = "test/reranker"
+        source_id = "test/reranker-source"
+        revision = "b" * 40
+        batch_size = 8
+
+    embedder = PricedEmbedder()
+    vectors = build_locomo_query_vectors(
+        LoCoMoQueryVectorConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "query-vectors",
+            vector_set_id="priced-query-vectors",
+            expected_dataset_sha256=None,
+        ),
+        embedder=embedder,
+    )
+    providers = RetrievalProviders(
+        profile="dashscope",
+        embedder=embedder,
+        reranker=Reranker(),
+        embedding_license="test embedding license",
+        reranker_license="test reranker license",
+    )
+    frozen = replace(
+        providers,
+        embedder=FrozenQueryEmbeddingAdapter(vectors.vector_set_dir),
+    )
+
+    assert frozen.public_config["embedding"] == providers.public_config["embedding"]
 
 
 def test_query_vectors_reject_top_level_payload_digest_rebinding(tmp_path: Path) -> None:
