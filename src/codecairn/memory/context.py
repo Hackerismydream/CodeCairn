@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 CONTEXT_TOKENIZER_ID = "codecairn/utf8-two-byte-upper-bound-v1"
+CONTEXT_RENDERER_ID = "scored-facts-first-v5"
+TOKEN_BUDGET_CONTEXT_RENDERERS = frozenset(
+    {
+        "facts-first-round-robin-v4",
+        CONTEXT_RENDERER_ID,
+    }
+)
 
 
 def count_context_tokens(text: str) -> int:

@@ -4,7 +4,11 @@ from dataclasses import replace
 from pathlib import Path
 
 from codecairn.bootstrap import create_cascade, create_runtime
-from codecairn.memory.context import CONTEXT_TOKENIZER_ID, count_context_tokens
+from codecairn.memory.context import (
+    CONTEXT_RENDERER_ID,
+    CONTEXT_TOKENIZER_ID,
+    count_context_tokens,
+)
 from codecairn.memory.episode import AttributedEpisode, AttributedTurn
 from codecairn.memory.models import (
     EvidenceReference,
@@ -36,7 +40,7 @@ def test_recall_context_obeys_the_pinned_four_thousand_token_budget(tmp_path: Pa
     assert trace.token_limit == 4_000
     assert trace.token_count == count_context_tokens(recalled.markdown)
     assert trace.token_count <= trace.token_limit
-    assert trace.renderer == "facts-first-round-robin-v4"
+    assert trace.renderer == CONTEXT_RENDERER_ID
     assert all(f"[{fact_id}]" in recalled.markdown for fact_id in trace.rendered_fact_ids)
 
 
@@ -254,6 +258,89 @@ def test_context_packs_all_matched_facts_across_parents_before_any_sibling() -> 
     assert compiled.trace.rendered_memory_ids == ("memory-a", "memory-b")
     assert "fact-b-second" in compiled.trace.rendered_fact_ids
     assert "fact-a-second" not in compiled.trace.rendered_fact_ids
+
+
+def test_context_admission_prefers_the_query_entity_answer_over_a_restatement() -> None:
+    def parent(
+        *,
+        rank: int,
+        memory_id: str,
+        snippets: tuple[RecallSnippet, ...],
+    ) -> RankedRecall:
+        return replace(
+            _ranked_parent(snippet_text="unused"),
+            rank=rank,
+            memory_id=memory_id,
+            title=f"Conversation {rank}",
+            source_uri=f"codecairn://memory/{memory_id}",
+            snippets=snippets,
+        )
+
+    def matched(
+        *,
+        memory_id: str,
+        fact_id: str,
+        text: str,
+        raw_event_index: int,
+        relevance_score: float,
+    ) -> RecallSnippet:
+        return replace(
+            _snippet(
+                fact_id=fact_id,
+                text=text.ljust(600, "X"),
+                raw_event_index=raw_event_index,
+            ),
+            relation="matched",
+            source_memory_id=memory_id,
+            source_uri=f"codecairn://memory/{memory_id}",
+            relevance_score=relevance_score,
+            selection_source="bounded-authoritative-cross-encoder-v1",
+        )
+
+    answer = matched(
+        memory_id="memory-top",
+        fact_id="fact-0000000000000002",
+        text='Melanie: I loved reading "Charlotte\'s Web" as a child.',
+        raw_event_index=2,
+        relevance_score=1.0,
+    )
+    budget_template = compile_context(
+        "What was Melanie's favorite book from her childhood?",
+        repo_key="locomo/conv-test",
+        ranked=(parent(rank=1, memory_id="memory-top", snippets=(answer,)),),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(),
+    )
+    assert budget_template.trace is not None
+
+    compiled = compile_context(
+        "What was Melanie's favorite book from her childhood?",
+        repo_key="locomo/conv-test",
+        ranked=(
+            parent(
+                rank=1,
+                memory_id="memory-top",
+                snippets=(
+                    matched(
+                        memory_id="memory-top",
+                        fact_id="fact-0000000000000001",
+                        text=("Caroline: What favorite book do you remember from your childhood?"),
+                        raw_event_index=1,
+                        relevance_score=0.0,
+                    ),
+                    answer,
+                ),
+            ),
+        ),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(
+            context_max_tokens=budget_template.trace.token_count,
+        ),
+    )
+
+    assert compiled.trace is not None
+    assert "fact-0000000000000002" in compiled.trace.rendered_fact_ids
+    assert "fact-0000000000000001" not in compiled.trace.rendered_fact_ids
 
 
 def test_context_keeps_a_parent_when_a_later_fact_fits_after_an_oversized_first_fact() -> None:

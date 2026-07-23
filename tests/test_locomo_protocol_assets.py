@@ -17,8 +17,8 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     tmp_path: Path,
 ) -> None:
     benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
-    diagnostic_40 = json.loads((benchmark_root / "diagnostic-40-v13.json").read_text())
-    diagnostic_200 = json.loads((benchmark_root / "diagnostic-200-v13.json").read_text())
+    diagnostic_40 = json.loads((benchmark_root / "diagnostic-40-v14.json").read_text())
+    diagnostic_200 = json.loads((benchmark_root / "diagnostic-200-v14.json").read_text())
 
     assert diagnostic_40["category_targets"] == {str(category): 10 for category in range(1, 5)}
     assert diagnostic_200["category_targets"] == {str(category): 50 for category in range(1, 5)}
@@ -36,6 +36,12 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     assert diagnostic_40["protocol"]["judge_response_max_attempts"] == 3
     assert diagnostic_40["protocol"]["judge_response_max_chars"] == 32_768
     assert diagnostic_40["protocol"]["seed"] == 17
+    assert diagnostic_40["protocol"]["fact_selector"] == ("bounded-authoritative-cross-encoder-v1")
+    assert diagnostic_40["protocol"]["fact_rerank_max_candidates"] == 256
+    assert diagnostic_40["protocol"]["fact_rerank_max_candidates_per_parent"] == 16
+    assert diagnostic_40["protocol"]["fact_rerank_max_selected_per_parent"] == 8
+    assert diagnostic_40["protocol"]["fact_rerank_max_document_chars"] == 2_048
+    assert diagnostic_40["protocol"]["context_renderer"] == "scored-facts-first-v5"
     assert diagnostic_40["algorithm"] == diagnostic_200["algorithm"]
     assert diagnostic_40["seed"] == diagnostic_200["seed"]
 
@@ -99,7 +105,7 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     assert promotion["source_selection"] == {
         "selection_id": diagnostic_40["selection_id"],
         "question_set_sha256": hashlib.sha256(
-            (benchmark_root / "diagnostic-40-v13.json").read_bytes()
+            (benchmark_root / "diagnostic-40-v14.json").read_bytes()
         ).hexdigest(),
         "selection_sha256": diagnostic_40["selection_sha256"],
         "protocol_sha256": _canonical_sha256(diagnostic_40["protocol"]),

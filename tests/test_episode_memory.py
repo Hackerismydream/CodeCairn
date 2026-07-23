@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from codecairn.bootstrap import create_cascade, create_runtime
+from codecairn.memory.context import CONTEXT_RENDERER_ID
 from codecairn.memory.episode import AttributedEpisode, AttributedTurn
 from codecairn.memory.models import (
     CodingMemory,
@@ -223,7 +224,7 @@ def test_fact_hit_compiles_all_grounded_excerpts_before_parent_hydration(tmp_pat
     assert recalled.sidecar.partial_episode_ids == (recalled.sidecar.ranked[0].memory_id,)
     assert recalled.sidecar.dropped_episode_ids == ()
     assert recalled.sidecar.context_trace is not None
-    assert recalled.sidecar.context_trace.renderer == "facts-first-round-robin-v4"
+    assert recalled.sidecar.context_trace.renderer == CONTEXT_RENDERER_ID
     assert len(recalled.sidecar.context_trace.rendered_fact_ids) == 3
     assert recalled.sidecar.ranked[0].episode_text == ""
 

@@ -386,6 +386,8 @@ class RecallSnippet:
     source_title: str
     source_summary: str
     raw_event_index: int | None
+    relevance_score: float | None = None
+    selection_source: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

@@ -46,7 +46,12 @@ from codecairn.evaluation.grounded_answer import (
     RenderedEvidence,
 )
 from codecairn.evaluation.model import ModelResponse, TextModel
-from codecairn.memory.context import CONTEXT_TOKENIZER_ID, count_context_tokens
+from codecairn.memory.context import (
+    CONTEXT_RENDERER_ID,
+    CONTEXT_TOKENIZER_ID,
+    TOKEN_BUDGET_CONTEXT_RENDERERS,
+    count_context_tokens,
+)
 from codecairn.memory.embedding import EmbeddingProvider
 from codecairn.memory.episode import AttributedEpisode, AttributedTurn
 from codecairn.memory.models import EvidenceReference, RecallResult
@@ -450,7 +455,7 @@ def _answer_payload(
     trace = recall.sidecar.context_trace
     memory_context = (
         context.markdown
-        if trace is not None and trace.renderer == "facts-first-round-robin-v4"
+        if trace is not None and trace.renderer in TOKEN_BUDGET_CONTEXT_RENDERERS
         else context.markdown[:_ANSWER_CONTEXT_CHARS]
     )
     payload: dict[str, object] = {
@@ -520,7 +525,7 @@ def _validate_answer_context_trace(recall: RecallResult) -> None:
         raise ValueError("Recall Context contains duplicate rendered fact identifiers")
     if any(f"[{fact_id}]" not in recall.markdown for fact_id in trace.rendered_fact_ids):
         raise ValueError("Recall Context claims a rendered fact missing from its Markdown")
-    if trace.renderer != "facts-first-round-robin-v4":
+    if trace.renderer not in TOKEN_BUDGET_CONTEXT_RENDERERS:
         return
     actual_token_count = count_context_tokens(recall.markdown)
     if (
@@ -3586,6 +3591,13 @@ _PROTOCOL_GENERATION_FIELDS = frozenset(
     }
 )
 _PROTOCOL_METADATA_FIELDS = frozenset({"purpose", "claim_policy", "query_vector_policy"})
+_FACT_SELECTOR_PROTOCOL_FIELDS = (
+    "fact_selector",
+    "fact_rerank_max_candidates",
+    "fact_rerank_max_candidates_per_parent",
+    "fact_rerank_max_selected_per_parent",
+    "fact_rerank_max_document_chars",
+)
 _FROZEN_PLANNER_PROTOCOL_FIELDS = (
     "router",
     "hard_route_cutoff",
@@ -3613,6 +3625,7 @@ _FROZEN_PLANNER_PROTOCOL_FIELDS = (
     "diverse_matched_facts_per_memory",
     "sibling_facts_per_memory",
     "temporal_sibling_facts_per_memory",
+    *_FACT_SELECTOR_PROTOCOL_FIELDS,
     "context_renderer",
     "context_max_chars",
     "context_max_tokens",
@@ -3644,8 +3657,15 @@ def _validate_corpus_protocol(
     protocol = question_set.protocol
     if protocol is None:
         raise ValueError("LoCoMo corpus question set has no frozen protocol")
+    optional_legacy_fields = (
+        set(_FACT_SELECTOR_PROTOCOL_FIELDS)
+        if protocol.get("context_renderer") != CONTEXT_RENDERER_ID
+        else set()
+    )
     missing_fields = [
-        field for field in _FROZEN_CORPUS_RETRIEVAL_PROTOCOL_FIELDS if field not in protocol
+        field
+        for field in _FROZEN_CORPUS_RETRIEVAL_PROTOCOL_FIELDS
+        if field not in protocol and field not in optional_legacy_fields
     ]
     if "neighbor_windows" not in protocol:
         missing_fields.append("neighbor_windows")
@@ -3700,6 +3720,15 @@ def _validate_run_protocol(
     protocol = question_set.protocol
     if protocol is None:
         return
+    if protocol.get("context_renderer") == CONTEXT_RENDERER_ID:
+        missing_fact_selector_fields = [
+            field for field in _FACT_SELECTOR_PROTOCOL_FIELDS if field not in protocol
+        ]
+        if missing_fact_selector_fields:
+            raise ValueError(
+                "LoCoMo scored facts-first protocol omits frozen fields: "
+                + ", ".join(missing_fact_selector_fields)
+            )
     retrieval = config.retrieval_config or {}
     embedding = _optional_protocol_section(retrieval.get("embedding"))
     reranker = _optional_protocol_section(retrieval.get("reranker"))
@@ -5285,7 +5314,7 @@ def _validate_context_trace(
     recall_markdown = record.get("recall_markdown")
     if isinstance(recall_markdown, str) and len(recall_markdown) != char_count:
         raise ValueError("LoCoMo retrieval context trace character count does not match")
-    if renderer == "facts-first-round-robin-v4":
+    if renderer in TOKEN_BUDGET_CONTEXT_RENDERERS:
         token_count = _required_int(trace, "token_count")
         token_limit = _required_int(trace, "token_limit")
         tokenizer_id = _required_str(trace, "tokenizer_id")
@@ -6651,7 +6680,7 @@ def _validate_report_retrieval(
         expected_renderer = planner.get("context_renderer")
         if (
             isinstance(expected_renderer, str)
-            and expected_renderer.startswith("facts-first-round-robin-")
+            and expected_renderer in TOKEN_BUDGET_CONTEXT_RENDERERS
             and not isinstance(context_trace, dict)
         ):
             raise ValueError("LoCoMo facts-first retrieval has no Recall Context trace")
@@ -6662,7 +6691,7 @@ def _validate_report_retrieval(
         ):
             raise ValueError("LoCoMo context renderer does not match its manifest")
         if (
-            expected_renderer == "facts-first-round-robin-v4"
+            expected_renderer in TOKEN_BUDGET_CONTEXT_RENDERERS
             and isinstance(context_trace, dict)
             and (
                 context_trace.get("token_limit") != planner.get("context_max_tokens")
@@ -6670,6 +6699,18 @@ def _validate_report_retrieval(
             )
         ):
             raise ValueError("LoCoMo context token budget does not match its manifest")
+        reranker_config = _required_dict(
+            provider_config.get("reranker"),
+            field="retrieval reranker",
+        )
+        if (
+            expected_renderer == CONTEXT_RENDERER_ID
+            and reranker_config.get("batch_size") is not None
+        ):
+            _validate_scored_fact_selection(
+                retrieval,
+                selector=planner.get("fact_selector"),
+            )
         if planner.get("expansion_contract") == "typed-bounded-one-hop-v2":
             component_fields = (
                 "episode_entity_lexical_candidate_count",
@@ -6737,6 +6778,36 @@ def _validate_report_retrieval(
                 raise ValueError("LoCoMo episode-only trace contains AtomicFact recall")
             if mode == "hierarchy-no-neighbors" and components["neighbor_expansion_count"]:
                 raise ValueError("LoCoMo no-neighbor trace contains neighbor expansion")
+
+
+def _validate_scored_fact_selection(
+    retrieval: dict[str, object],
+    *,
+    selector: object,
+) -> None:
+    if not isinstance(selector, str) or not selector:
+        raise ValueError("LoCoMo scored facts-first retrieval has no selector identity")
+    ranked = retrieval.get("ranked")
+    if not isinstance(ranked, list):
+        raise ValueError("LoCoMo scored facts-first retrieval has no ranked evidence")
+    for raw_item in ranked:
+        item = _required_dict(raw_item, field="ranked recall")
+        parent_memory_id = _required_str(item, "memory_id")
+        raw_snippets = item.get("snippets")
+        if not isinstance(raw_snippets, list):
+            raise ValueError("LoCoMo scored facts-first snippets must be an array")
+        for raw_snippet in raw_snippets:
+            snippet = _required_dict(raw_snippet, field="ranked snippet")
+            if snippet.get("source_memory_id") != parent_memory_id:
+                continue
+            score = snippet.get("relevance_score")
+            if (
+                snippet.get("selection_source") != selector
+                or isinstance(score, bool)
+                or not isinstance(score, (int, float))
+                or not math.isfinite(float(score))
+            ):
+                raise ValueError("LoCoMo scored facts-first snippet has invalid selection evidence")
 
 
 def _required_dict(value: object, *, field: str) -> dict[str, object]:

@@ -4,6 +4,14 @@ import re
 from dataclasses import dataclass
 from typing import Literal
 
+from codecairn.memory.context import CONTEXT_RENDERER_ID, CONTEXT_TOKENIZER_ID
+from codecairn.memory.evidence_selector import (
+    FACT_SELECTOR_ID,
+    MAX_FACT_RERANK_CANDIDATES,
+    MAX_FACT_RERANK_CANDIDATES_PER_PARENT,
+    MAX_FACT_RERANK_DOCUMENT_CHARS,
+    MAX_SELECTED_FACTS_PER_PARENT,
+)
 from codecairn.memory.models import RecallRoute
 
 RecallPlannerMode = Literal["episode-only", "hierarchy-no-neighbors", "hierarchy"]
@@ -191,6 +199,10 @@ class RecallPlannerConfig:
     diverse_matched_facts_per_memory: int = 1
     sibling_facts_per_memory: int = 2
     temporal_sibling_facts_per_memory: int = 5
+    fact_rerank_max_candidates: int = MAX_FACT_RERANK_CANDIDATES
+    fact_rerank_max_candidates_per_parent: int = MAX_FACT_RERANK_CANDIDATES_PER_PARENT
+    fact_rerank_max_selected_per_parent: int = MAX_SELECTED_FACTS_PER_PARENT
+    fact_rerank_max_document_chars: int = MAX_FACT_RERANK_DOCUMENT_CHARS
     context_max_chars: int = 23_900
     context_max_tokens: int = 4_000
     context_summary_chars: int = 60
@@ -235,6 +247,20 @@ class RecallPlannerConfig:
             raise ValueError(
                 "temporal_sibling_facts_per_memory must cover sibling_facts_per_memory"
             )
+        if self.fact_rerank_max_candidates < 1:
+            raise ValueError("fact_rerank_max_candidates must be positive")
+        if not (1 <= self.fact_rerank_max_candidates_per_parent <= self.fact_rerank_max_candidates):
+            raise ValueError("fact_rerank_max_candidates_per_parent exceeds the global limit")
+        if not (
+            1
+            <= self.fact_rerank_max_selected_per_parent
+            <= self.fact_rerank_max_candidates_per_parent
+        ):
+            raise ValueError(
+                "fact_rerank_max_selected_per_parent exceeds the parent candidate limit"
+            )
+        if self.fact_rerank_max_document_chars < 256:
+            raise ValueError("fact_rerank_max_document_chars must be at least 256")
         if self.context_max_chars < 1_000:
             raise ValueError("context_max_chars must be at least 1000")
         if self.context_max_tokens < 256:
@@ -289,15 +315,20 @@ class RecallPlannerConfig:
             "expansion_max_time_facts": self.expansion_plan.max_time_facts,
             "expansion_max_provenance_facts": self.expansion_plan.max_provenance_facts,
             "temporal_lane": "explicit-month-prefix-v1",
-            "enrichment_order": "matched-diverse-channel-temporal-window-v3",
+            "enrichment_order": "matched-neighbor-then-bounded-fact-rerank-v4",
             "matched_facts_per_memory": self.matched_facts_per_memory,
             "diverse_matched_facts_per_memory": self.diverse_matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
             "temporal_sibling_facts_per_memory": self.temporal_sibling_facts_per_memory,
-            "context_renderer": "facts-first-round-robin-v4",
+            "fact_selector": FACT_SELECTOR_ID,
+            "fact_rerank_max_candidates": self.fact_rerank_max_candidates,
+            "fact_rerank_max_candidates_per_parent": (self.fact_rerank_max_candidates_per_parent),
+            "fact_rerank_max_selected_per_parent": (self.fact_rerank_max_selected_per_parent),
+            "fact_rerank_max_document_chars": self.fact_rerank_max_document_chars,
+            "context_renderer": CONTEXT_RENDERER_ID,
             "context_max_chars": self.context_max_chars,
             "context_max_tokens": self.context_max_tokens,
-            "context_tokenizer": "codecairn/utf8-two-byte-upper-bound-v1",
+            "context_tokenizer": CONTEXT_TOKENIZER_ID,
             "context_summary_chars": self.context_summary_chars,
             "context_snippet_chars": self.context_snippet_chars,
             "context_snippets_per_memory": self.context_snippets_per_memory,

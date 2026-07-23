@@ -42,12 +42,17 @@ from codecairn.evaluation.locomo import (
 from codecairn.evaluation.locomo import _recall_question as recall_question
 from codecairn.evaluation.locomo import _run_question as run_question
 from codecairn.evaluation.locomo import _validate_run_protocol as validate_run_protocol
+from codecairn.evaluation.locomo import (
+    _validate_scored_fact_selection as validate_scored_fact_selection,
+)
 from codecairn.evaluation.locomo_ablation import (
     LoCoMoAblationConfig,
     build_locomo_ablation_report,
 )
 from codecairn.evaluation.model import ModelResponse
 from codecairn.evaluation.providers import OpenAICompatibleTextModel
+from codecairn.memory.context import CONTEXT_RENDERER_ID
+from codecairn.memory.evidence_selector import FACT_SELECTOR_ID
 from codecairn.memory.models import (
     RankedRecall,
     RecallContextTrace,
@@ -97,7 +102,7 @@ def _write_corpus_protocol_question_set(
         if question.category in {1, 2, 3, 4}
     )
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v13.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v14.json").read_text(
             encoding="utf-8"
         )
     )
@@ -231,6 +236,8 @@ class FakeMemory:
             source_title="Fixture memory",
             source_summary="A relevant attributed memory.",
             raw_event_index=1,
+            relevance_score=1.0,
+            selection_source=FACT_SELECTOR_ID,
         )
         ranked = RankedRecall(
             rank=1,
@@ -269,7 +276,7 @@ class FakeMemory:
                 query_sketcher_id="codecairn/deterministic-query-sketch-v2",
                 expansion_fact_limit=24,
                 context_trace=RecallContextTrace(
-                    renderer="facts-first-round-robin-v4",
+                    renderer=CONTEXT_RENDERER_ID,
                     char_count=69,
                     rendered_memory_ids=("fixture-memory",),
                     rendered_fact_ids=("fixture-evidence",),
@@ -3522,7 +3529,7 @@ def test_frozen_question_set_selects_exact_strata_and_reports_retrieval_diagnost
             "neighbor_expansion_count": 0.0,
         },
         "context": {
-            "renderer_counts": {"facts-first-round-robin-v4": 2},
+            "renderer_counts": {CONTEXT_RENDERER_ID: 2},
             "averages": {
                 "char_count": 69.0,
                 "omitted_parent_count": 0.0,
@@ -3808,9 +3815,9 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         )
 
 
-def test_official_v12_command_contract_passes_preflight() -> None:
+def test_official_v14_command_contract_passes_preflight() -> None:
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v13.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v14.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3859,7 +3866,7 @@ def test_official_v12_command_contract_passes_preflight() -> None:
     config = LoCoMoRunConfig(
         dataset_path=FIXTURE,
         output_root=Path("unused"),
-        run_id="official-v13",
+        run_id="official-v14",
         repository_commit="abc123",
         max_workers=10,
         retrieval_config=retrieval_config,
@@ -3872,6 +3879,26 @@ def test_official_v12_command_contract_passes_preflight() -> None:
         judge_model=FrozenProtocolModel(),
         question_worker_contract=worker_contract,
     )
+    missing_selector_protocol = dict(protocol)
+    missing_selector_protocol.pop("fact_selector")
+    with pytest.raises(ValueError, match="fact_selector"):
+        validate_run_protocol(
+            replace(question_set, protocol=missing_selector_protocol),
+            config=config,
+            answer_model=FrozenProtocolModel(),
+            judge_model=FrozenProtocolModel(),
+            question_worker_contract=worker_contract,
+        )
+    drifted_fact_limit_config = json.loads(json.dumps(retrieval_config))
+    drifted_fact_limit_config["planner"]["fact_rerank_max_candidates"] = 255
+    with pytest.raises(ValueError, match="fact_rerank_max_candidates"):
+        validate_run_protocol(
+            question_set,
+            config=replace(config, retrieval_config=drifted_fact_limit_config),
+            answer_model=FrozenProtocolModel(),
+            judge_model=FrozenProtocolModel(),
+            question_worker_contract=worker_contract,
+        )
     drifted_retrieval_config = json.loads(json.dumps(retrieval_config))
     drifted_retrieval_config["planner"]["neighbor_window"] = 9
     with pytest.raises(ValueError, match="neighbor_window"):
@@ -4234,13 +4261,39 @@ def test_report_rejects_v3_parent_memory_id_as_an_answer_citation(tmp_path: Path
     question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
     question = json.loads(question_path.read_text(encoding="utf-8"))
     context_trace = question["retrieval"]["context_trace"]
-    assert context_trace["renderer"] == "facts-first-round-robin-v4"
+    assert context_trace["renderer"] == CONTEXT_RENDERER_ID
     question["answer_evidence"]["evidence_ids"] = [context_trace["rendered_memory_ids"][0]]
     question_path.unlink()
     write_json_exclusive(question_path, question)
 
     with pytest.raises(ValueError, match="do not match retrieved evidence"):
         report_locomo(artifact.run_dir)
+
+
+def test_v5_selection_validation_rejects_fact_without_selector_evidence(
+    tmp_path: Path,
+) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-missing-selector-evidence",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
+    question = json.loads(question_path.read_text(encoding="utf-8"))
+    question["retrieval"]["ranked"][0]["snippets"][0]["selection_source"] = None
+
+    with pytest.raises(ValueError, match="invalid selection evidence"):
+        validate_scored_fact_selection(
+            question["retrieval"],
+            selector=FACT_SELECTOR_ID,
+        )
 
 
 def test_report_rejects_answer_retry_usage_that_omits_a_failed_attempt(tmp_path: Path) -> None:

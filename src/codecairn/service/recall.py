@@ -10,9 +10,14 @@ from math import isfinite
 from typing import Protocol
 from urllib.parse import quote
 
-from codecairn.memory.context import CONTEXT_TOKENIZER_ID, count_context_tokens
+from codecairn.memory.context import (
+    CONTEXT_RENDERER_ID,
+    CONTEXT_TOKENIZER_ID,
+    count_context_tokens,
+)
 from codecairn.memory.embedding import EmbeddingProvider
 from codecairn.memory.episode import render_attributed_fact, render_episode
+from codecairn.memory.evidence_selector import EvidenceSelector
 from codecairn.memory.models import (
     CandidateSource,
     CodingMemory,
@@ -419,6 +424,35 @@ class RecallEngine:
                 ),
                 priority_memory_ids=temporal_exploration_ids,
                 wide_sibling_memory_ids=temporal_snippet_priority_ids,
+            )
+        if self._reranker is not None and getattr(self._reranker, "batch_size", None) is not None:
+            selected_memories = {
+                item.memory_id: memory
+                for item in selected_ranked
+                if (
+                    memory := self._state.get_memory(
+                        repo_key=repo_key,
+                        memory_id=item.memory_id,
+                    )
+                )
+                is not None
+            }
+            selected_ranked = list(
+                EvidenceSelector(
+                    reranker=self._reranker,
+                    max_candidates=self._planner.config.fact_rerank_max_candidates,
+                    max_candidates_per_parent=(
+                        self._planner.config.fact_rerank_max_candidates_per_parent
+                    ),
+                    max_selected_per_parent=(
+                        self._planner.config.fact_rerank_max_selected_per_parent
+                    ),
+                    max_document_chars=self._planner.config.fact_rerank_max_document_chars,
+                ).select(
+                    normalized_query,
+                    ranked=tuple(selected_ranked),
+                    memories=selected_memories,
+                )
             )
         selected = tuple(
             replace(item, rank=rank) for rank, item in enumerate(selected_ranked, start=1)
@@ -1851,7 +1885,7 @@ def _compile_context(
         return _CompiledContext(
             markdown=markdown,
             trace=RecallContextTrace(
-                renderer="facts-first-round-robin-v4",
+                renderer=CONTEXT_RENDERER_ID,
                 char_count=len(markdown),
                 rendered_memory_ids=(),
                 rendered_fact_ids=(),
@@ -1888,57 +1922,111 @@ def _compile_context(
     attempted_snippet_indexes: list[set[int]] = [set() for _item in ranked]
     rendered_indexes: list[int] = []
     dropped: list[str] = []
-    # Admission is a coverage floor: reserve each parent base plus its best
-    # evidence before enriching any already admitted parent. Within the
-    # remaining budget, relation phases are global so a higher-ranked sibling
-    # cannot displace another parent's still-unrendered matched fact.
-    for item_index, item in enumerate(ranked):
-        excerpts = snippet_lines[item_index]
-        for snippet_index in range(len(excerpts)):
+    has_fact_relevance = any(
+        snippet.relevance_score is not None for snippets in snippet_values for snippet in snippets
+    )
+    if has_fact_relevance:
+        candidates = sorted(
+            (
+                (item_index, snippet_index, snippet)
+                for item_index, snippets in enumerate(snippet_values)
+                for snippet_index, snippet in enumerate(snippets)
+            ),
+            key=lambda value: (
+                -(
+                    value[2].relevance_score
+                    if value[2].relevance_score is not None
+                    else float("-inf")
+                ),
+                ranked[value[0]].rank,
+                value[1],
+                value[2].fact_id,
+            ),
+        )
+        rendered_fact_keys: set[tuple[str, str]] = set()
+        for item_index, snippet_index, snippet in candidates:
             attempted_snippet_indexes[item_index].add(snippet_index)
-            first_evidence = [*bases[item_index], excerpts[snippet_index]]
-            cost = _line_token_cost(first_evidence)
+            fact_key = (snippet.source_memory_id, snippet.fact_id)
+            if fact_key in rendered_fact_keys:
+                continue
+            item = ranked[item_index]
+            allowed = (
+                config.context_temporal_snippets_per_memory
+                if item.memory_id in temporal_priority_memory_ids
+                else config.context_snippets_per_memory
+            )
+            if len(selected_snippet_indexes[item_index]) >= allowed:
+                continue
+            first_parent_fact = not selected_snippet_indexes[item_index]
+            allocation = (
+                [*bases[item_index], snippet_lines[item_index][snippet_index]]
+                if first_parent_fact
+                else [snippet_lines[item_index][snippet_index]]
+            )
+            cost = _line_token_cost(allocation)
             if cost > remaining_tokens:
                 continue
-            rendered_indexes.append(item_index)
+            if first_parent_fact:
+                rendered_indexes.append(item_index)
             selected_snippet_indexes[item_index].append(snippet_index)
             remaining_tokens -= cost
-            break
-        if not selected_snippet_indexes[item_index]:
-            dropped.append(item.memory_id)
-
-    maximum_rounds = max(
-        config.context_snippets_per_memory,
-        config.context_temporal_snippets_per_memory,
-    )
-    for relation in ("matched", "sibling", "neighbor"):
-        for _round_index in range(1, maximum_rounds):
-            selected_in_round = False
-            for item_index in rendered_indexes:
-                item = ranked[item_index]
-                allowed = (
-                    config.context_temporal_snippets_per_memory
-                    if item.memory_id in temporal_priority_memory_ids
-                    else config.context_snippets_per_memory
-                )
-                excerpts = snippet_lines[item_index]
-                selected_indexes = selected_snippet_indexes[item_index]
-                if len(selected_indexes) >= allowed:
+            rendered_fact_keys.add(fact_key)
+        rendered_indexes.sort()
+        dropped.extend(
+            item.memory_id
+            for item_index, item in enumerate(ranked)
+            if not selected_snippet_indexes[item_index]
+        )
+    else:
+        # Legacy and deterministic-test Adapters have no fact relevance score.
+        # Preserve their breadth-first context contract.
+        for item_index, item in enumerate(ranked):
+            excerpts = snippet_lines[item_index]
+            for snippet_index in range(len(excerpts)):
+                attempted_snippet_indexes[item_index].add(snippet_index)
+                first_evidence = [*bases[item_index], excerpts[snippet_index]]
+                cost = _line_token_cost(first_evidence)
+                if cost > remaining_tokens:
                     continue
-                attempted_indexes = attempted_snippet_indexes[item_index]
-                for snippet_index, snippet in enumerate(snippet_values[item_index]):
-                    if snippet_index in attempted_indexes or snippet.relation != relation:
-                        continue
-                    attempted_indexes.add(snippet_index)
-                    cost = _line_token_cost([excerpts[snippet_index]])
-                    if cost > remaining_tokens:
-                        continue
-                    selected_indexes.append(snippet_index)
-                    remaining_tokens -= cost
-                    selected_in_round = True
-                    break
-            if not selected_in_round:
+                rendered_indexes.append(item_index)
+                selected_snippet_indexes[item_index].append(snippet_index)
+                remaining_tokens -= cost
                 break
+            if not selected_snippet_indexes[item_index]:
+                dropped.append(item.memory_id)
+
+        maximum_rounds = max(
+            config.context_snippets_per_memory,
+            config.context_temporal_snippets_per_memory,
+        )
+        for relation in ("matched", "sibling", "neighbor"):
+            for _round_index in range(1, maximum_rounds):
+                selected_in_round = False
+                for item_index in rendered_indexes:
+                    item = ranked[item_index]
+                    allowed = (
+                        config.context_temporal_snippets_per_memory
+                        if item.memory_id in temporal_priority_memory_ids
+                        else config.context_snippets_per_memory
+                    )
+                    excerpts = snippet_lines[item_index]
+                    selected_indexes = selected_snippet_indexes[item_index]
+                    if len(selected_indexes) >= allowed:
+                        continue
+                    attempted_indexes = attempted_snippet_indexes[item_index]
+                    for snippet_index, snippet in enumerate(snippet_values[item_index]):
+                        if snippet_index in attempted_indexes or snippet.relation != relation:
+                            continue
+                        attempted_indexes.add(snippet_index)
+                        cost = _line_token_cost([excerpts[snippet_index]])
+                        if cost > remaining_tokens:
+                            continue
+                        selected_indexes.append(snippet_index)
+                        remaining_tokens -= cost
+                        selected_in_round = True
+                        break
+                if not selected_in_round:
+                    break
 
     hydrated_indexes: set[int] = set()
     hydration_lines: dict[int, list[str]] = {}
@@ -2041,7 +2129,7 @@ def _compile_context(
         ),
         dropped_episode_ids=tuple(dropped),
         trace=RecallContextTrace(
-            renderer="facts-first-round-robin-v4",
+            renderer=CONTEXT_RENDERER_ID,
             char_count=len(markdown),
             rendered_memory_ids=tuple(rendered_memory_ids),
             rendered_fact_ids=tuple(dict.fromkeys(rendered_fact_ids)),
