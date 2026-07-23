@@ -7,7 +7,7 @@ import threading
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import suppress
-from dataclasses import dataclass, field, replace
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import ClassVar
 
@@ -41,6 +41,10 @@ from codecairn.evaluation.locomo import (
 )
 from codecairn.evaluation.locomo import _recall_question as recall_question
 from codecairn.evaluation.locomo import _run_question as run_question
+from codecairn.evaluation.locomo import (
+    _validate_context_slot_replay as validate_context_slot_replay,
+)
+from codecairn.evaluation.locomo import _validate_context_trace as validate_context_trace
 from codecairn.evaluation.locomo import _validate_run_protocol as validate_run_protocol
 from codecairn.evaluation.locomo import (
     _validate_scored_fact_selection as validate_scored_fact_selection,
@@ -51,17 +55,22 @@ from codecairn.evaluation.locomo_ablation import (
 )
 from codecairn.evaluation.model import ModelResponse
 from codecairn.evaluation.providers import OpenAICompatibleTextModel
-from codecairn.memory.context import CONTEXT_RENDERER_ID
+from codecairn.memory.context import (
+    CONTEXT_RENDERER_ID,
+    LEGACY_EXACT_SOURCE_CONTEXT_RENDERER_ID,
+)
 from codecairn.memory.evidence_selector import FACT_SELECTOR_ID
 from codecairn.memory.models import (
     RankedRecall,
     RecallContextTrace,
+    RecallMatch,
     RecallResult,
     RecallSidecar,
     RecallSnippet,
 )
-from codecairn.memory.recall_planner import RecallPlannerConfig
+from codecairn.memory.recall_planner import QUERY_SKETCHER_ID, RecallPlannerConfig
 from codecairn.memory.retrieval import RetrievalProviders, retrieval_config_sha256
+from codecairn.service.recall import replay_context_slot_traces
 from codecairn.storage.sqlite import SQLiteState
 
 FIXTURE = Path(__file__).parent / "fixtures" / "locomo" / "synthetic.json"
@@ -102,7 +111,7 @@ def _write_corpus_protocol_question_set(
         if question.category in {1, 2, 3, 4}
     )
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v15.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v16.json").read_text(
             encoding="utf-8"
         )
     )
@@ -238,6 +247,7 @@ class FakeMemory:
             raw_event_index=1,
             relevance_score=1.0,
             selection_source=FACT_SELECTOR_ID,
+            semantic_fact_ids=("fixture-semantic",),
         )
         ranked = RankedRecall(
             rank=1,
@@ -254,13 +264,25 @@ class FakeMemory:
             lexical_rank=1,
             final_score=1.0,
             evidence=(),
+            matched_documents=(
+                RecallMatch(
+                    document_id="fixture-semantic",
+                    document_kind="atomic_fact",
+                    source="atomic_fact_lexical",
+                    score=1.0,
+                    rank=1,
+                    fact_id="fixture-semantic",
+                ),
+            ),
             snippets=(snippet,),
         )
+        planner_config = RecallPlannerConfig()
+        repo_key = f"locomo/{self.root.name}"
         return RecallResult(
             markdown=("# Recall Context\n\n- [fixture-evidence] A relevant attributed memory.\n"),
             sidecar=RecallSidecar(
                 query=question,
-                repo_key=f"locomo/{self.root.name}",
+                repo_key=repo_key,
                 limit=limit,
                 latency_ms=1.25,
                 vector_candidate_count=1,
@@ -273,7 +295,7 @@ class FakeMemory:
                 embedding_source="test/embedding-source",
                 embedding_revision="a" * 40,
                 retrieval_config_sha256=retrieval_config_sha256(FAKE_RETRIEVAL_CONFIG),
-                query_sketcher_id="codecairn/deterministic-query-sketch-v2",
+                query_sketcher_id=QUERY_SKETCHER_ID,
                 expansion_fact_limit=24,
                 context_trace=RecallContextTrace(
                     renderer=CONTEXT_RENDERER_ID,
@@ -283,6 +305,14 @@ class FakeMemory:
                     omitted_memory_ids=(),
                     omitted_snippet_count=0,
                     token_count=35,
+                    admission_candidate_fact_ids=("fixture-evidence",),
+                    slot_traces=replay_context_slot_traces(
+                        question,
+                        repo_key=repo_key,
+                        ranked=(ranked,),
+                        config=planner_config,
+                        limit=limit,
+                    ),
                 ),
             ),
         )
@@ -3815,9 +3845,9 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         )
 
 
-def test_official_v15_command_contract_passes_preflight() -> None:
+def test_official_v16_command_contract_passes_preflight() -> None:
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v15.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v16.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3867,7 +3897,7 @@ def test_official_v15_command_contract_passes_preflight() -> None:
     config = LoCoMoRunConfig(
         dataset_path=FIXTURE,
         output_root=Path("unused"),
-        run_id="official-v15",
+        run_id="official-v16",
         repository_commit="abc123",
         max_workers=10,
         retrieval_config=retrieval_config,
@@ -4351,6 +4381,63 @@ def test_report_rejects_v3_context_token_trace_drift(tmp_path: Path) -> None:
         report_locomo(artifact.run_dir)
 
 
+def test_historical_v7_context_trace_keeps_token_budget_validation(tmp_path: Path) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-v7-drifted-token-trace",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
+    question = json.loads(question_path.read_text(encoding="utf-8"))
+    retrieval = question["retrieval"]
+    retrieval["context_trace"]["renderer"] = LEGACY_EXACT_SOURCE_CONTEXT_RENDERER_ID
+    retrieval["context_trace"]["token_count"] += 1
+
+    with pytest.raises(ValueError, match="token trace does not match"):
+        validate_context_trace(question, retrieval=retrieval)
+
+
+def test_report_rejects_forged_v8_context_slot_attempt(tmp_path: Path) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-forged-v8-slot-attempt",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=FakeAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
+    question = json.loads(question_path.read_text(encoding="utf-8"))
+    question["retrieval"]["context_trace"]["slot_traces"] = [
+        {
+            "slot_kind": "semantic_child_support",
+            "max_facts": 16,
+            "attempts": [
+                {
+                    "fact_id": "forged-fact",
+                    "outcome": "admitted",
+                }
+            ],
+        }
+    ]
+    question_path.unlink()
+    write_json_exclusive(question_path, question)
+
+    with pytest.raises(ValueError, match="evidence-slot attempt is invalid"):
+        report_locomo(artifact.run_dir)
+
+
 def test_report_rejects_unstructured_answer_under_v13_contract(tmp_path: Path) -> None:
     artifact = run_locomo(
         LoCoMoRunConfig(
@@ -4408,9 +4495,12 @@ def _typed_expansion_question(
         answer_model=FakeAnswerModel(),
         judge_model=AlternatingJudgeModel(),
     )
-    question_path = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))[0]
-    question = json.loads(question_path.read_text(encoding="utf-8"))
-    return question_path, question
+    question_paths = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))
+    for question_path in question_paths:
+        question = json.loads(question_path.read_text(encoding="utf-8"))
+        if question["retrieval"]["context_trace"]["slot_traces"]:
+            return question_path, question
+    raise AssertionError("Typed expansion fixture produced no evidence-slot trace")
 
 
 def test_report_rejects_typed_expansion_over_its_manifest_budget(tmp_path: Path) -> None:
@@ -4424,6 +4514,135 @@ def test_report_rejects_typed_expansion_over_its_manifest_budget(tmp_path: Path)
 
     with pytest.raises(ValueError, match="exceeds its manifest budget"):
         report_locomo(question_path.parents[3])
+
+
+def test_report_accepts_deterministic_v8_context_slot_replay(tmp_path: Path) -> None:
+    question_path, _question = _typed_expansion_question(
+        tmp_path,
+        run_id="locomo-valid-v8-context-slot-replay",
+    )
+
+    report = report_locomo(question_path.parents[3])
+
+    assert report["completed_question_count"] == 4
+    assert report["infrastructure_failed_count"] == 0
+
+
+def test_report_rejects_missing_v8_context_slot_trace(tmp_path: Path) -> None:
+    question_path, question = _typed_expansion_question(
+        tmp_path,
+        run_id="locomo-missing-v8-context-slot-trace",
+    )
+    question["retrieval"]["context_trace"]["slot_traces"] = []
+    question_path.unlink()
+    write_json_exclusive(question_path, question)
+
+    with pytest.raises(ValueError, match="does not match deterministic replay"):
+        report_locomo(question_path.parents[3])
+
+
+def test_report_rejects_forged_v8_context_slot_outcome(tmp_path: Path) -> None:
+    question_path, question = _typed_expansion_question(
+        tmp_path,
+        run_id="locomo-forged-v8-context-slot-outcome",
+    )
+    slot_traces = question["retrieval"]["context_trace"]["slot_traces"]
+    attempt = next(
+        attempt
+        for slot_trace in slot_traces
+        for attempt in slot_trace["attempts"]
+        if attempt["outcome"] == "admitted"
+    )
+    attempt["outcome"] = "budget"
+    question_path.unlink()
+    write_json_exclusive(question_path, question)
+
+    with pytest.raises(ValueError, match="does not match deterministic replay"):
+        report_locomo(question_path.parents[3])
+
+
+def test_v8_context_slot_replay_uses_the_pre_hydration_candidate_boundary() -> None:
+    query = "How many steps did Alice complete?"
+    first = RecallSnippet(
+        relation="matched",
+        source_memory_id="memory-procedure",
+        source_uri="codecairn://memory/memory-procedure",
+        fact_id="fact-first",
+        text="2024-01-01T00:00:00+00:00 — Alice: I completed my first step.",
+        source_title="Procedure",
+        source_summary="2024-01-01T00:00:00+00:00 — attributed episode.",
+        raw_event_index=1,
+        relevance_score=2.0,
+        selection_source=FACT_SELECTOR_ID,
+    )
+    hydrated_second = RecallSnippet(
+        relation="sibling",
+        source_memory_id="memory-procedure",
+        source_uri="codecairn://memory/memory-procedure",
+        fact_id="fact-second",
+        text="2024-01-01T00:01:00+00:00 — Alice: I completed my second step.",
+        source_title="Procedure",
+        source_summary="2024-01-01T00:00:00+00:00 — attributed episode.",
+        raw_event_index=2,
+    )
+    admission_ranked = RankedRecall(
+        rank=1,
+        memory_id="memory-procedure",
+        memory_type="conversation_episode",
+        title="Procedure",
+        summary="2024-01-01T00:00:00+00:00 — attributed episode.",
+        source_uri="codecairn://memory/memory-procedure",
+        content_sha256="a" * 64,
+        candidate_sources=("lexical",),
+        vector_score=None,
+        vector_rank=None,
+        lexical_score=1.0,
+        lexical_rank=1,
+        final_score=1.0,
+        evidence=(),
+        snippets=(first,),
+    )
+    config = RecallPlannerConfig()
+    slot_traces = replay_context_slot_traces(
+        query,
+        repo_key="locomo/procedure",
+        ranked=(admission_ranked,),
+        config=config,
+        limit=20,
+    )
+    persisted_ranked = replace(
+        admission_ranked,
+        snippets=(first, hydrated_second),
+    )
+    trace = RecallContextTrace(
+        renderer=CONTEXT_RENDERER_ID,
+        char_count=0,
+        rendered_memory_ids=("memory-procedure",),
+        rendered_fact_ids=("fact-first", "fact-second"),
+        omitted_memory_ids=(),
+        omitted_snippet_count=0,
+        token_count=0,
+        admission_candidate_fact_ids=("fact-first",),
+        slot_traces=slot_traces,
+    )
+    retrieval = json.loads(
+        json.dumps(
+            {
+                "query": query,
+                "repo_key": "locomo/procedure",
+                "ranked": [asdict(persisted_ranked)],
+                "context_trace": asdict(trace),
+            }
+        )
+    )
+
+    validate_scored_fact_selection(retrieval, selector=FACT_SELECTOR_ID)
+    validate_context_slot_replay(
+        {"question_id": "procedure-quantity", "question": query},
+        retrieval=retrieval,
+        planner=config.public_config,
+        top_k=20,
+    )
 
 
 def test_report_rejects_expansion_total_that_disagrees_with_components(

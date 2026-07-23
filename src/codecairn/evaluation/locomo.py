@@ -47,18 +47,31 @@ from codecairn.evaluation.grounded_answer import (
 )
 from codecairn.evaluation.model import ModelResponse, TextModel
 from codecairn.memory.context import (
+    CONTEXT_EVIDENCE_SLOT_KINDS,
     CONTEXT_RENDERER_ID,
+    CONTEXT_SLOT_ADMISSION_OUTCOMES,
     CONTEXT_TOKENIZER_ID,
     TOKEN_BUDGET_CONTEXT_RENDERERS,
     count_context_tokens,
 )
 from codecairn.memory.embedding import EmbeddingProvider
 from codecairn.memory.episode import AttributedEpisode, AttributedTurn
-from codecairn.memory.models import EvidenceReference, RecallResult
+from codecairn.memory.models import (
+    EvidenceReference,
+    RankedRecall,
+    RecallDocumentKind,
+    RecallDocumentSource,
+    RecallMatch,
+    RecallResult,
+    RecallSnippet,
+    RecallSnippetRelation,
+)
+from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.memory.reranking import RERANKER_WARMUP_CONTRACT
 from codecairn.memory.retrieval import retrieval_config_sha256
 from codecairn.memory.trace import stable_id
 from codecairn.service.cascade import MiniCascade
+from codecairn.service.recall import replay_context_slot_traces
 from codecairn.service.runtime import MemoryRuntime
 
 LOCOMO_DATASET_URL = (
@@ -238,11 +251,12 @@ class LoCoMoQuestionSet:
     category_targets: tuple[tuple[int, int], ...]
     question_ids: tuple[str, ...]
     selection_sha256: str
+    category_offsets: tuple[tuple[int, int], ...] = ()
     protocol: dict[str, object] | None = None
 
     @property
     def public_manifest(self) -> dict[str, object]:
-        return {
+        manifest: dict[str, object] = {
             "selection_id": self.selection_id,
             "definition_sha256": self.definition_sha256,
             "dataset_sha256": self.dataset_sha256,
@@ -256,6 +270,11 @@ class LoCoMoQuestionSet:
                 None if self.protocol is None else _canonical_sha256(self.protocol)
             ),
         }
+        if self.category_offsets:
+            manifest["category_offsets"] = {
+                str(category): offset for category, offset in self.category_offsets
+            }
+        return manifest
 
 
 @dataclass(frozen=True, slots=True)
@@ -912,7 +931,10 @@ def load_locomo_question_set(path: Path, *, dataset: LoCoMoDataset) -> LoCoMoQue
     if dataset_sha256 != dataset.sha256:
         raise ValueError("LoCoMo question set targets a different dataset")
     algorithm = _required_str(raw, "algorithm")
-    if algorithm != "stratified-sha256-v1":
+    if algorithm not in {
+        "stratified-sha256-v1",
+        "stratified-sha256-window-v1",
+    }:
         raise ValueError("Unknown LoCoMo question-set algorithm")
     seed = _required_str(raw, "seed")
     raw_targets = _required_dict(raw.get("category_targets"), field="category targets")
@@ -927,21 +949,45 @@ def load_locomo_question_set(path: Path, *, dataset: LoCoMoDataset) -> LoCoMoQue
         targets.append((category, raw_count))
     if not targets:
         raise ValueError("LoCoMo question set must select at least one category")
+    offsets: list[tuple[int, int]] = []
+    raw_offsets = raw.get("category_offsets")
+    if algorithm == "stratified-sha256-window-v1":
+        offset_map = _required_dict(raw_offsets, field="category offsets")
+        for raw_category, raw_offset in offset_map.items():
+            try:
+                category = int(raw_category)
+            except ValueError as error:
+                raise ValueError("LoCoMo category offset key must be an integer") from error
+            if category not in CATEGORY_NAMES or type(raw_offset) is not int or raw_offset < 0:
+                raise ValueError("LoCoMo category offsets must be non-negative known categories")
+            offsets.append((category, raw_offset))
+        if {category for category, _ in offsets} != {category for category, _ in targets} or len(
+            offsets
+        ) != len(targets):
+            raise ValueError("LoCoMo category offsets must match category targets")
+    elif raw_offsets is not None:
+        raise ValueError("LoCoMo legacy question-set algorithm does not accept category offsets")
+    offset_by_category = dict(offsets)
     questions = [
         question for conversation in dataset.conversations for question in conversation.questions
     ]
     selected_ids: set[str] = set()
     for category, target in sorted(targets):
         candidates = [question for question in questions if question.category == category]
-        if len(candidates) < target:
-            raise ValueError("LoCoMo category target exceeds available questions")
+        offset = offset_by_category.get(category, 0)
+        if len(candidates) < offset + target:
+            if algorithm == "stratified-sha256-v1":
+                raise ValueError("LoCoMo category target exceeds available questions")
+            raise ValueError("LoCoMo category window exceeds available questions")
         candidates.sort(
             key=lambda question: (
                 hashlib.sha256(f"{seed}\0{question.question_id}".encode()).hexdigest(),
                 question.question_id,
             )
         )
-        selected_ids.update(question.question_id for question in candidates[:target])
+        selected_ids.update(
+            question.question_id for question in candidates[offset : offset + target]
+        )
     question_ids = tuple(
         question.question_id for question in questions if question.question_id in selected_ids
     )
@@ -969,6 +1015,7 @@ def load_locomo_question_set(path: Path, *, dataset: LoCoMoDataset) -> LoCoMoQue
         category_targets=tuple(sorted(targets)),
         question_ids=question_ids,
         selection_sha256=selection_sha256,
+        category_offsets=tuple(sorted(offsets)),
         protocol=protocol,
     )
 
@@ -3599,7 +3646,14 @@ _FACT_SELECTOR_PROTOCOL_FIELDS = (
     "fact_rerank_max_selected_per_parent",
     "fact_rerank_max_document_chars",
 )
-_CONTEXT_SELECTOR_PROTOCOL_FIELDS = ("context_direct_match_prior",)
+_CONTEXT_SELECTOR_PROTOCOL_FIELDS = (
+    "context_direct_match_prior",
+    "context_evidence_slot_policy",
+    "context_semantic_support_fact_limit",
+    "context_quantity_transition_fact_limit",
+    "context_vocative_alias_fact_limit",
+    "context_prior_state_fact_limit",
+)
 _FROZEN_PLANNER_PROTOCOL_FIELDS = (
     "router",
     "hard_route_cutoff",
@@ -5344,10 +5398,79 @@ def _validate_context_trace(
             or any(f"[{fact_id}]" not in recall_markdown for fact_id in rendered_fact_ids)
         ):
             raise ValueError("LoCoMo retrieval context token trace does not match its context")
+    slot_candidate_fact_ids = ranked_snippet_fact_ids
+    if renderer == CONTEXT_RENDERER_ID:
+        raw_candidate_fact_ids = trace.get("admission_candidate_fact_ids")
+        if (
+            not isinstance(raw_candidate_fact_ids, list)
+            or any(
+                not isinstance(fact_id, str) or not fact_id for fact_id in raw_candidate_fact_ids
+            )
+            or len(raw_candidate_fact_ids) != len(set(raw_candidate_fact_ids))
+            or not set(raw_candidate_fact_ids) <= ranked_snippet_fact_ids
+        ):
+            raise ValueError("LoCoMo v8 context trace has invalid admission candidates")
+        slot_candidate_fact_ids = set(cast(list[str], raw_candidate_fact_ids))
+    _validate_context_slot_traces(
+        trace,
+        renderer=renderer,
+        candidate_fact_ids=slot_candidate_fact_ids,
+        rendered_fact_ids=set(rendered_fact_ids),
+    )
     allowed = set(rendered_fact_ids)
     if renderer in _LEGACY_PARENT_CITATION_RENDERERS:
         allowed.update(rendered_memory_set)
     return allowed
+
+
+def _validate_context_slot_traces(
+    trace: dict[str, object],
+    *,
+    renderer: object,
+    candidate_fact_ids: set[str],
+    rendered_fact_ids: set[str],
+) -> None:
+    raw_slot_traces = trace.get("slot_traces")
+    if renderer == CONTEXT_RENDERER_ID and not isinstance(raw_slot_traces, list):
+        raise ValueError("LoCoMo v8 context trace has no evidence-slot trace")
+    if raw_slot_traces is None:
+        return
+    if not isinstance(raw_slot_traces, list):
+        raise ValueError("LoCoMo context evidence-slot trace must be an array")
+    seen_kinds: set[str] = set()
+    for raw_slot_trace in raw_slot_traces:
+        slot_trace = _required_dict(
+            raw_slot_trace,
+            field="context evidence-slot trace",
+        )
+        slot_kind = _required_str(slot_trace, "slot_kind")
+        max_facts = _required_int(slot_trace, "max_facts")
+        raw_attempts = slot_trace.get("attempts")
+        if (
+            slot_kind not in CONTEXT_EVIDENCE_SLOT_KINDS
+            or slot_kind in seen_kinds
+            or not 1 <= max_facts <= 20
+            or not isinstance(raw_attempts, list)
+            or len(raw_attempts) > max_facts
+        ):
+            raise ValueError("LoCoMo context evidence-slot trace is invalid")
+        seen_kinds.add(slot_kind)
+        seen_fact_ids: set[str] = set()
+        for raw_attempt in raw_attempts:
+            attempt = _required_dict(
+                raw_attempt,
+                field="context evidence-slot attempt",
+            )
+            fact_id = _required_str(attempt, "fact_id")
+            outcome = _required_str(attempt, "outcome")
+            if (
+                fact_id in seen_fact_ids
+                or fact_id not in candidate_fact_ids
+                or outcome not in CONTEXT_SLOT_ADMISSION_OUTCOMES
+                or (outcome in {"admitted", "duplicate"} and fact_id not in rendered_fact_ids)
+            ):
+                raise ValueError("LoCoMo context evidence-slot attempt is invalid")
+            seen_fact_ids.add(fact_id)
 
 
 def _validate_question_inventory(
@@ -6718,17 +6841,43 @@ def _validate_report_retrieval(
             )
         ):
             raise ValueError("LoCoMo context token budget does not match its manifest")
+        if expected_renderer == CONTEXT_RENDERER_ID and isinstance(context_trace, dict):
+            slot_limits = {
+                "semantic_child_support": planner.get("context_semantic_support_fact_limit"),
+                "quantity_transition": planner.get("context_quantity_transition_fact_limit"),
+                "vocative_alias": planner.get("context_vocative_alias_fact_limit"),
+                "prior_state": planner.get("context_prior_state_fact_limit"),
+            }
+            raw_slot_traces = context_trace.get("slot_traces")
+            invalid_slot_budget = not isinstance(raw_slot_traces, list)
+            if isinstance(raw_slot_traces, list):
+                for raw_slot in raw_slot_traces:
+                    if not isinstance(raw_slot, dict):
+                        invalid_slot_budget = True
+                        break
+                    slot_kind = raw_slot.get("slot_kind")
+                    if not isinstance(slot_kind, str) or raw_slot.get(
+                        "max_facts"
+                    ) != slot_limits.get(slot_kind):
+                        invalid_slot_budget = True
+                        break
+            if invalid_slot_budget:
+                raise ValueError("LoCoMo context evidence-slot trace exceeds its manifest budget")
         reranker_config = _required_dict(
             provider_config.get("reranker"),
             field="retrieval reranker",
         )
-        if (
-            expected_renderer == CONTEXT_RENDERER_ID
-            and reranker_config.get("batch_size") is not None
-        ):
-            _validate_scored_fact_selection(
-                retrieval,
-                selector=planner.get("fact_selector"),
+        if expected_renderer == CONTEXT_RENDERER_ID:
+            if reranker_config.get("batch_size") is not None:
+                _validate_scored_fact_selection(
+                    retrieval,
+                    selector=planner.get("fact_selector"),
+                )
+            _validate_context_slot_replay(
+                record,
+                retrieval=retrieval,
+                planner=planner,
+                top_k=top_k,
             )
         if planner.get("expansion_contract") == "typed-bounded-one-hop-v2":
             component_fields = (
@@ -6809,6 +6958,19 @@ def _validate_scored_fact_selection(
     ranked = retrieval.get("ranked")
     if not isinstance(ranked, list):
         raise ValueError("LoCoMo scored facts-first retrieval has no ranked evidence")
+    context_trace = _required_dict(
+        retrieval.get("context_trace"),
+        field="retrieval context trace",
+    )
+    raw_candidate_fact_ids = context_trace.get("admission_candidate_fact_ids")
+    raw_rendered_fact_ids = context_trace.get("rendered_fact_ids")
+    if not isinstance(raw_candidate_fact_ids, list) or not isinstance(
+        raw_rendered_fact_ids,
+        list,
+    ):
+        raise ValueError("LoCoMo scored facts-first trace has no admission boundary")
+    candidate_fact_ids = set(cast(list[str], raw_candidate_fact_ids))
+    rendered_fact_ids = set(cast(list[str], raw_rendered_fact_ids))
     for raw_item in ranked:
         item = _required_dict(raw_item, field="ranked recall")
         parent_memory_id = _required_str(item, "memory_id")
@@ -6817,16 +6979,248 @@ def _validate_scored_fact_selection(
             raise ValueError("LoCoMo scored facts-first snippets must be an array")
         for raw_snippet in raw_snippets:
             snippet = _required_dict(raw_snippet, field="ranked snippet")
+            fact_id = _required_str(snippet, "fact_id")
             if snippet.get("source_memory_id") != parent_memory_id:
+                if fact_id not in candidate_fact_ids:
+                    raise ValueError(
+                        "LoCoMo external context snippet is outside its admission boundary"
+                    )
                 continue
             score = snippet.get("relevance_score")
-            if (
+            if fact_id in candidate_fact_ids and (
                 snippet.get("selection_source") != selector
                 or isinstance(score, bool)
                 or not isinstance(score, (int, float))
                 or not math.isfinite(float(score))
             ):
                 raise ValueError("LoCoMo scored facts-first snippet has invalid selection evidence")
+            if fact_id not in candidate_fact_ids and (
+                fact_id not in rendered_fact_ids
+                or snippet.get("relation") != "sibling"
+                or snippet.get("selection_source") is not None
+                or score is not None
+            ):
+                raise ValueError("LoCoMo hydrated context snippet has invalid provenance")
+
+
+def _validate_context_slot_replay(
+    record: dict[str, object],
+    *,
+    retrieval: dict[str, object],
+    planner: dict[str, object],
+    top_k: int,
+) -> None:
+    trace = _required_dict(
+        retrieval.get("context_trace"),
+        field="retrieval context trace",
+    )
+    raw_slot_traces = trace.get("slot_traces")
+    if not isinstance(raw_slot_traces, list):
+        raise ValueError("LoCoMo v8 context trace has no evidence-slot trace")
+    raw_candidate_fact_ids = trace.get("admission_candidate_fact_ids")
+    if not isinstance(raw_candidate_fact_ids, list):
+        raise ValueError("LoCoMo v8 context trace has no admission candidates")
+    ranked = _context_replay_ranked(
+        retrieval,
+        candidate_fact_ids=set(cast(list[str], raw_candidate_fact_ids)),
+    )
+    expected = replay_context_slot_traces(
+        _required_str(retrieval, "query"),
+        repo_key=_required_str(retrieval, "repo_key"),
+        ranked=ranked,
+        config=_context_replay_config(planner),
+        limit=top_k,
+    )
+    expected_payload = [
+        {
+            "slot_kind": slot.slot_kind,
+            "max_facts": slot.max_facts,
+            "attempts": [
+                {
+                    "fact_id": attempt.fact_id,
+                    "outcome": attempt.outcome,
+                }
+                for attempt in slot.attempts
+            ],
+        }
+        for slot in expected
+    ]
+    if raw_slot_traces != expected_payload:
+        question_id = _required_str(record, "question_id")
+        raise ValueError(
+            f"LoCoMo context evidence-slot trace does not match deterministic replay: {question_id}"
+        )
+
+
+def _context_replay_config(planner: dict[str, object]) -> RecallPlannerConfig:
+    return RecallPlannerConfig(
+        maximum_exploration_results=_required_int(
+            planner,
+            "maximum_exploration_results",
+        ),
+        context_max_chars=_required_int(planner, "context_max_chars"),
+        context_max_tokens=_required_int(planner, "context_max_tokens"),
+        context_snippets_per_memory=_required_int(
+            planner,
+            "context_snippets_per_memory",
+        ),
+        context_temporal_snippets_per_memory=_required_int(
+            planner,
+            "context_temporal_snippets_per_memory",
+        ),
+        context_semantic_support_fact_limit=_required_int(
+            planner,
+            "context_semantic_support_fact_limit",
+        ),
+        context_quantity_transition_fact_limit=_required_int(
+            planner,
+            "context_quantity_transition_fact_limit",
+        ),
+        context_vocative_alias_fact_limit=_required_int(
+            planner,
+            "context_vocative_alias_fact_limit",
+        ),
+        context_prior_state_fact_limit=_required_int(
+            planner,
+            "context_prior_state_fact_limit",
+        ),
+    )
+
+
+def _context_replay_ranked(
+    retrieval: dict[str, object],
+    *,
+    candidate_fact_ids: set[str],
+) -> tuple[RankedRecall, ...]:
+    raw_ranked = retrieval.get("ranked")
+    if not isinstance(raw_ranked, list):
+        raise ValueError("LoCoMo context slot replay has no ranked evidence")
+    ranked: list[RankedRecall] = []
+    observed_fact_ids: set[str] = set()
+    for raw_item in raw_ranked:
+        item = _required_dict(raw_item, field="ranked recall")
+        raw_snippets = item.get("snippets")
+        raw_matches = item.get("matched_documents")
+        if not isinstance(raw_snippets, list) or not isinstance(raw_matches, list):
+            raise ValueError("LoCoMo context slot replay has invalid ranked evidence")
+        snippets = tuple(
+            _context_replay_snippet(value)
+            for value in raw_snippets
+            if (
+                isinstance(value, dict)
+                and isinstance(value.get("fact_id"), str)
+                and value["fact_id"] in candidate_fact_ids
+            )
+        )
+        observed_fact_ids.update(snippet.fact_id for snippet in snippets)
+        matches = tuple(_context_replay_match(value) for value in raw_matches)
+        rank = _required_int(item, "rank")
+        if rank < 1:
+            raise ValueError("LoCoMo context slot replay has an invalid parent rank")
+        ranked.append(
+            RankedRecall(
+                rank=rank,
+                memory_id=_required_str(item, "memory_id"),
+                memory_type="conversation_episode",
+                title=_required_str(item, "title"),
+                summary=_required_str(item, "summary"),
+                source_uri=_required_str(item, "source_uri"),
+                content_sha256="",
+                candidate_sources=(),
+                vector_score=None,
+                vector_rank=None,
+                lexical_score=None,
+                lexical_rank=None,
+                final_score=0.0,
+                evidence=(),
+                matched_documents=matches,
+                snippets=snippets,
+            )
+        )
+    if observed_fact_ids != candidate_fact_ids:
+        raise ValueError("LoCoMo context slot replay candidates do not match ranked evidence")
+    return tuple(ranked)
+
+
+def _context_replay_snippet(value: object) -> RecallSnippet:
+    snippet = _required_dict(value, field="ranked snippet")
+    relation = _required_str(snippet, "relation")
+    if relation not in {"matched", "sibling", "neighbor"}:
+        raise ValueError("LoCoMo context slot replay has an invalid snippet relation")
+    raw_event_index = snippet.get("raw_event_index")
+    if raw_event_index is not None and (type(raw_event_index) is not int or raw_event_index < 0):
+        raise ValueError("LoCoMo context slot replay has an invalid event index")
+    relevance_score = snippet.get("relevance_score")
+    if relevance_score is not None and (
+        isinstance(relevance_score, bool)
+        or not isinstance(relevance_score, int | float)
+        or not math.isfinite(float(relevance_score))
+    ):
+        raise ValueError("LoCoMo context slot replay has an invalid relevance score")
+    selection_source = snippet.get("selection_source")
+    semantic_text = snippet.get("semantic_text")
+    raw_semantic_fact_ids = snippet.get("semantic_fact_ids", [])
+    if (
+        (selection_source is not None and not isinstance(selection_source, str))
+        or (semantic_text is not None and not isinstance(semantic_text, str))
+        or not isinstance(raw_semantic_fact_ids, list)
+        or any(not isinstance(fact_id, str) or not fact_id for fact_id in raw_semantic_fact_ids)
+    ):
+        raise ValueError("LoCoMo context slot replay has invalid semantic metadata")
+    return RecallSnippet(
+        relation=cast(RecallSnippetRelation, relation),
+        source_memory_id=_required_str(snippet, "source_memory_id"),
+        source_uri=_required_str(snippet, "source_uri"),
+        fact_id=_required_str(snippet, "fact_id"),
+        text=_required_str(snippet, "text"),
+        source_title=_required_str(snippet, "source_title"),
+        source_summary=_required_str(snippet, "source_summary"),
+        raw_event_index=raw_event_index,
+        relevance_score=(None if relevance_score is None else float(relevance_score)),
+        selection_source=selection_source,
+        semantic_text=semantic_text,
+        semantic_fact_ids=tuple(cast(list[str], raw_semantic_fact_ids)),
+    )
+
+
+def _context_replay_match(value: object) -> RecallMatch:
+    match = _required_dict(value, field="ranked match")
+    document_kind = _required_str(match, "document_kind")
+    source = _required_str(match, "source")
+    allowed_sources = {
+        "episode_lexical",
+        "episode_entity_lexical",
+        "episode_temporal_lexical",
+        "episode_vector",
+        "atomic_fact_lexical",
+        "atomic_fact_entity_lexical",
+        "atomic_fact_temporal_lexical",
+        "atomic_fact_vector",
+        "entity_posting",
+        "provenance_posting",
+    }
+    score = match.get("score")
+    rank = _required_int(match, "rank")
+    if (
+        document_kind not in {"episode", "atomic_fact"}
+        or source not in allowed_sources
+        or isinstance(score, bool)
+        or not isinstance(score, int | float)
+        or not math.isfinite(float(score))
+        or rank < 1
+    ):
+        raise ValueError("LoCoMo context slot replay has an invalid ranked match")
+    fact_id = match.get("fact_id", "")
+    if not isinstance(fact_id, str):
+        raise ValueError("LoCoMo context slot replay has an invalid match fact ID")
+    return RecallMatch(
+        document_id=_required_str(match, "document_id"),
+        document_kind=cast(RecallDocumentKind, document_kind),
+        source=cast(RecallDocumentSource, source),
+        score=float(score),
+        rank=rank,
+        fact_id=fact_id,
+    )
 
 
 def _required_dict(value: object, *, field: str) -> dict[str, object]:

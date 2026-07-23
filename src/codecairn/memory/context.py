@@ -2,12 +2,31 @@ from __future__ import annotations
 
 CONTEXT_TOKENIZER_ID = "codecairn/utf8-two-byte-upper-bound-v1"
 CONTEXT_DIRECT_MATCH_PRIOR = 2.0
-CONTEXT_RENDERER_ID = "exact-source-prioritized-facts-first-v7"
+CONTEXT_EVIDENCE_SLOT_POLICY_ID = "typed-protected-child-support-v1"
+LEGACY_EXACT_SOURCE_CONTEXT_RENDERER_ID = "exact-source-prioritized-facts-first-v7"
+CONTEXT_RENDERER_ID = "exact-source-coverage-aware-facts-first-v8"
+CONTEXT_EVIDENCE_SLOT_KINDS = frozenset(
+    {
+        "prior_state",
+        "quantity_transition",
+        "semantic_child_support",
+        "vocative_alias",
+    }
+)
+CONTEXT_SLOT_ADMISSION_OUTCOMES = frozenset(
+    {
+        "admitted",
+        "budget",
+        "duplicate",
+        "parent_limit",
+    }
+)
 TOKEN_BUDGET_CONTEXT_RENDERERS = frozenset(
     {
         "facts-first-round-robin-v4",
         "scored-facts-first-v5",
         "exact-source-facts-first-v6",
+        LEGACY_EXACT_SOURCE_CONTEXT_RENDERER_ID,
         CONTEXT_RENDERER_ID,
     }
 )

@@ -14,12 +14,14 @@ from codecairn.memory.evidence_selector import FACT_SELECTOR_ID
 from codecairn.memory.models import (
     EvidenceReference,
     RankedRecall,
+    RecallMatch,
     RecallSnippet,
     RecallSnippetRelation,
 )
-from codecairn.memory.recall_planner import RecallPlannerConfig
+from codecairn.memory.recall_planner import ContextEvidenceSlot, RecallPlannerConfig
 from codecairn.service.recall import _compile_context as compile_context
 from codecairn.service.recall import _context_effective_relevance
+from codecairn.service.recall import _context_slot_candidates as context_slot_candidates
 from codecairn.service.recall import _render_context as render_context
 
 
@@ -602,6 +604,382 @@ def test_parent_hydration_spends_budget_only_on_facts_not_already_rendered() -> 
     assert compiled.trace is not None
     assert compiled.trace.rendered_fact_ids == ("fact-source", "fact-hydrated")
     assert compiled.trace.token_count <= compiled.trace.token_limit == 4_000
+
+
+def test_context_protects_a_semantic_child_hit_from_raw_score_starvation() -> None:
+    supported_memory_id = "memory-supported"
+    supported = replace(
+        _snippet(
+            fact_id="fact-supported",
+            text=(
+                "2023-07-11T10:05:00+00:00 — Andrew: "
+                "I miss hiking after stressful work. " + "S" * 500
+            ),
+            raw_event_index=2,
+        ),
+        relation="matched",
+        source_memory_id=supported_memory_id,
+        source_uri=f"codecairn://memory/{supported_memory_id}",
+        relevance_score=-10.0,
+        semantic_fact_ids=("semantic-supported",),
+    )
+    supported_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        rank=2,
+        memory_id=supported_memory_id,
+        title="Supported conversation",
+        source_uri=f"codecairn://memory/{supported_memory_id}",
+        snippets=(supported,),
+        matched_documents=(
+            RecallMatch(
+                document_id="document-supported",
+                document_kind="atomic_fact",
+                source="atomic_fact_vector",
+                score=0.5,
+                rank=1,
+                fact_id="semantic-supported",
+            ),
+        ),
+    )
+    high_score = replace(
+        _snippet(
+            fact_id="fact-high-score",
+            text=("2023-07-12T10:05:00+00:00 — Andrew: An unrelated high-score turn. " + "H" * 500),
+            raw_event_index=3,
+        ),
+        relation="matched",
+        relevance_score=10.0,
+    )
+    high_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        snippets=(high_score,),
+    )
+    template = compile_context(
+        "What could Andrew do?",
+        repo_key="locomo/conv-test",
+        ranked=(supported_parent,),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(),
+    )
+    assert template.trace is not None
+
+    compiled = compile_context(
+        "What could Andrew do?",
+        repo_key="locomo/conv-test",
+        ranked=(high_parent, supported_parent),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(context_max_tokens=template.trace.token_count),
+        evidence_slots=(ContextEvidenceSlot(kind="semantic_child_support", max_facts=1),),
+    )
+
+    assert compiled.trace is not None
+    assert "fact-supported" in compiled.trace.rendered_fact_ids
+    assert "fact-high-score" not in compiled.trace.rendered_fact_ids
+
+
+def test_quantity_slot_keeps_state_transitions_and_the_following_answer() -> None:
+    high_score_facts = tuple(
+        replace(
+            _snippet(
+                fact_id=f"fact-high-{index}",
+                text=f"2022-01-0{index}T10:00:00+00:00 — Joanna: Unrelated detail {index}.",
+                raw_event_index=index,
+            ),
+            relation="matched",
+            relevance_score=20.0 - index,
+        )
+        for index in range(1, 4)
+    )
+    transition_facts = (
+        replace(
+            _snippet(
+                fact_id="fact-first",
+                text="2022-01-04T10:00:00+00:00 — Joanna: I finished my first screenplay.",
+                raw_event_index=4,
+            ),
+            relation="matched",
+            relevance_score=-5.0,
+        ),
+        replace(
+            _snippet(
+                fact_id="fact-another",
+                text="2022-01-05T10:00:00+00:00 — Joanna: I started another screenplay.",
+                raw_event_index=5,
+            ),
+            relation="matched",
+            relevance_score=-6.0,
+        ),
+        replace(
+            _snippet(
+                fact_id="fact-second",
+                text="2022-01-06T10:00:00+00:00 — Joanna: I finished my second script.",
+                raw_event_index=6,
+            ),
+            relation="matched",
+            relevance_score=-7.0,
+            semantic_text="Joanna completed her second screenplay.",
+        ),
+        replace(
+            _snippet(
+                fact_id="fact-third-question",
+                text="2022-01-07T10:00:00+00:00 — Nate: Joanna, is that your third one?",
+                raw_event_index=7,
+            ),
+            relevance_score=-8.0,
+        ),
+        replace(
+            _snippet(
+                fact_id="fact-third-answer",
+                text="2022-01-07T10:00:00+00:00 — Joanna: Yes, I am proud of it.",
+                raw_event_index=8,
+            ),
+            relevance_score=-9.0,
+        ),
+    )
+    parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        snippets=(*high_score_facts, *transition_facts),
+    )
+
+    compiled = compile_context(
+        "How many screenplays has Joanna written?",
+        repo_key="locomo/conv-test",
+        ranked=(parent,),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(
+            context_snippets_per_memory=8,
+            context_temporal_snippets_per_memory=8,
+        ),
+        evidence_slots=(
+            ContextEvidenceSlot(
+                kind="quantity_transition",
+                max_facts=12,
+                anchors=("joanna",),
+                topic_terms=("screenplay", "written"),
+            ),
+        ),
+    )
+
+    assert compiled.trace is not None
+    assert {
+        "fact-first",
+        "fact-another",
+        "fact-second",
+        "fact-third-question",
+        "fact-third-answer",
+    }.issubset(compiled.trace.rendered_fact_ids)
+    assert len(compiled.trace.slot_traces) == 1
+    slot_trace = compiled.trace.slot_traces[0]
+    assert slot_trace.slot_kind == "quantity_transition"
+    assert slot_trace.max_facts == 12
+    assert {
+        attempt.fact_id for attempt in slot_trace.attempts if attempt.outcome == "admitted"
+    } == {
+        "fact-first",
+        "fact-another",
+        "fact-second",
+        "fact-third-question",
+        "fact-third-answer",
+    }
+
+
+def test_quantity_slot_prefers_topic_evidence_across_unordered_parents() -> None:
+    relevant = replace(
+        _snippet(
+            fact_id="fact-book",
+            text="2022-02-01T10:00:00+00:00 — Alice: My first book is nearly done.",
+            raw_event_index=100,
+        ),
+        source_memory_id="memory-book",
+        source_uri="codecairn://memory/memory-book",
+        relevance_score=-5.0,
+    )
+    distractor = replace(
+        _snippet(
+            fact_id="fact-dog",
+            text="2021-01-01T10:00:00+00:00 — Alice: My first dog was a beagle.",
+            raw_event_index=1,
+        ),
+        source_memory_id="memory-dog",
+        source_uri="codecairn://memory/memory-dog",
+        relevance_score=5.0,
+    )
+    book_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        rank=1,
+        memory_id="memory-book",
+        source_uri="codecairn://memory/memory-book",
+        snippets=(relevant,),
+    )
+    dog_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        rank=5,
+        memory_id="memory-dog",
+        source_uri="codecairn://memory/memory-dog",
+        snippets=(distractor,),
+    )
+    ranked = (book_parent, dog_parent)
+    candidates = ((0, 0, relevant), (1, 0, distractor))
+
+    selected = context_slot_candidates(
+        ContextEvidenceSlot(
+            kind="quantity_transition",
+            max_facts=1,
+            anchors=("alice",),
+            topic_terms=("book",),
+        ),
+        ranked=ranked,
+        snippet_values=((relevant,), (distractor,)),
+        candidates=candidates,
+    )
+
+    assert tuple(candidate[2].fact_id for candidate in selected) == ("fact-book",)
+
+
+def test_vocative_alias_slot_protects_a_shortened_name() -> None:
+    alias = replace(
+        _snippet(
+            fact_id="fact-alias",
+            text="2022-04-15T19:37:00+00:00 — Nate: Hey Jo, come see!",
+            raw_event_index=2,
+        ),
+        relevance_score=-10.0,
+    )
+    distractor = replace(
+        _snippet(
+            fact_id="fact-distractor",
+            text="2022-04-15T19:37:00+00:00 — Nate: An unrelated statement.",
+            raw_event_index=1,
+        ),
+        relation="matched",
+        relevance_score=10.0,
+    )
+
+    compiled = compile_context(
+        "What nickname does Nate use for Joanna?",
+        repo_key="locomo/conv-test",
+        ranked=(replace(_ranked_parent(snippet_text="unused"), snippets=(distractor, alias)),),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(
+            context_snippets_per_memory=1,
+            context_temporal_snippets_per_memory=1,
+        ),
+        evidence_slots=(
+            ContextEvidenceSlot(
+                kind="vocative_alias",
+                max_facts=2,
+                anchors=("nate", "joanna"),
+            ),
+        ),
+    )
+
+    assert compiled.trace is not None
+    assert compiled.trace.rendered_fact_ids == ("fact-alias",)
+
+
+def test_prior_state_slot_protects_exclusive_affect_evidence() -> None:
+    prior_state = replace(
+        _snippet(
+            fact_id="fact-prior-state",
+            text=(
+                "2022-05-04T19:01:00+00:00 — James: My pets and games are all "
+                "that bring me happiness."
+            ),
+            raw_event_index=2,
+        ),
+        relation="matched",
+        relevance_score=-10.0,
+    )
+    distractor = replace(
+        _snippet(
+            fact_id="fact-after",
+            text="2022-10-31T00:37:00+00:00 — James: Samantha and I moved in together.",
+            raw_event_index=3,
+        ),
+        relation="matched",
+        relevance_score=10.0,
+    )
+
+    compiled = compile_context(
+        "Was James lonely before meeting Samantha?",
+        repo_key="locomo/conv-test",
+        ranked=(
+            replace(
+                _ranked_parent(snippet_text="unused"),
+                snippets=(distractor, prior_state),
+            ),
+        ),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(
+            context_snippets_per_memory=1,
+            context_temporal_snippets_per_memory=1,
+        ),
+        evidence_slots=(
+            ContextEvidenceSlot(
+                kind="prior_state",
+                max_facts=4,
+                anchors=("james",),
+            ),
+        ),
+    )
+
+    assert compiled.trace is not None
+    assert compiled.trace.rendered_fact_ids == ("fact-prior-state",)
+
+
+def test_prior_state_slot_does_not_compare_raw_indexes_across_parents() -> None:
+    relevant = replace(
+        _snippet(
+            fact_id="fact-relevant-state",
+            text=(
+                "2021-04-01T10:00:00+00:00 — James: My work friends were the "
+                "only people who brought me happiness."
+            ),
+            raw_event_index=50,
+        ),
+        source_memory_id="memory-relevant",
+        source_uri="codecairn://memory/memory-relevant",
+        relevance_score=5.0,
+    )
+    distractor = replace(
+        _snippet(
+            fact_id="fact-low-rank-state",
+            text=(
+                "2022-01-01T10:00:00+00:00 — James: My cat was my only friend when I felt lonely."
+            ),
+            raw_event_index=1,
+        ),
+        source_memory_id="memory-distractor",
+        source_uri="codecairn://memory/memory-distractor",
+        relevance_score=-5.0,
+    )
+    relevant_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        rank=1,
+        memory_id="memory-relevant",
+        source_uri="codecairn://memory/memory-relevant",
+        snippets=(relevant,),
+    )
+    distractor_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        rank=5,
+        memory_id="memory-distractor",
+        source_uri="codecairn://memory/memory-distractor",
+        snippets=(distractor,),
+    )
+
+    selected = context_slot_candidates(
+        ContextEvidenceSlot(
+            kind="prior_state",
+            max_facts=1,
+            anchors=("james",),
+        ),
+        ranked=(relevant_parent, distractor_parent),
+        snippet_values=((relevant,), (distractor,)),
+        candidates=((0, 0, relevant), (1, 0, distractor)),
+    )
+
+    assert tuple(candidate[2].fact_id for candidate in selected) == ("fact-relevant-state",)
 
 
 def _ranked_parent(

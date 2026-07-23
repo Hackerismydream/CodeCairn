@@ -6,6 +6,8 @@ from typing import Literal
 
 from codecairn.memory.context import (
     CONTEXT_DIRECT_MATCH_PRIOR,
+    CONTEXT_EVIDENCE_SLOT_KINDS,
+    CONTEXT_EVIDENCE_SLOT_POLICY_ID,
     CONTEXT_RENDERER_ID,
     CONTEXT_TOKENIZER_ID,
 )
@@ -24,6 +26,12 @@ SetOperation = Literal["none", "union", "intersection"]
 RelationRequirementKind = Literal["temporal_order", "procedure_order"]
 ProvenanceStage = Literal["failure", "change", "verification"]
 QueryVariantKind = Literal["original", "entity", "temporal"]
+ContextEvidenceSlotKind = Literal[
+    "prior_state",
+    "quantity_transition",
+    "semantic_child_support",
+    "vocative_alias",
+]
 
 _FACT_CUES = re.compile(
     r"\b(when|where|who|which|what|how many|how much|before|after|first|last|"
@@ -37,6 +45,30 @@ _EPISODE_CUES = re.compile(
 )
 _PROCEDURE_CUES = re.compile(
     r"\b(how\s+did|steps?|procedure|fix(?:ed|es|ing)?|verif(?:y|ied|ies|ying))\b",
+    re.IGNORECASE,
+)
+_QUANTITY_CUES = re.compile(
+    r"\b(how\s+many|number\s+of|count\s+of)\b",
+    re.IGNORECASE,
+)
+_INFERENCE_CUES = re.compile(
+    r"\b(could|would|might|likely|potentially|considering|infer)\b",
+    re.IGNORECASE,
+)
+_ALIAS_CUES = re.compile(
+    r"\b(nickname|also\s+called|known\s+as)\b",
+    re.IGNORECASE,
+)
+_TEMPORAL_ORDER_CUES = re.compile(
+    r"\b(before|after|first|then|order)\b",
+    re.IGNORECASE,
+)
+_PRIOR_STATE_CUES = re.compile(
+    r"^\s*(?:was|were|did)\s+[A-Z][A-Za-z0-9_-]{1,63}\b(?P<predicate>.*?)\bbefore\b",
+    re.IGNORECASE,
+)
+_PRIOR_STATE_PREDICATE_CUES = re.compile(
+    r"\b(alone|lonel\w*|happ\w*|joy\w*|friend\w*|single|dating|relationship)\b",
     re.IGNORECASE,
 )
 _FAILURE_CUES = re.compile(r"\b(error|fail(?:ed|ure)?|timeout)\b", re.IGNORECASE)
@@ -76,6 +108,8 @@ _ANCHOR_STOPWORDS = {
     "Did",
     "Do",
     "Does",
+    "Has",
+    "Have",
     "How",
     "In",
     "Is",
@@ -87,7 +121,45 @@ _ANCHOR_STOPWORDS = {
     "Which",
     "Who",
     "Why",
+    "Was",
+    "Were",
 }
+_TOPIC_TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]*")
+_TOPIC_STOPWORDS = frozenset(
+    {
+        "a",
+        "an",
+        "and",
+        "are",
+        "count",
+        "did",
+        "do",
+        "does",
+        "for",
+        "from",
+        "has",
+        "have",
+        "how",
+        "in",
+        "is",
+        "many",
+        "number",
+        "of",
+        "on",
+        "or",
+        "the",
+        "to",
+        "was",
+        "were",
+        "what",
+        "when",
+        "where",
+        "which",
+        "who",
+        "why",
+        "with",
+    }
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -123,6 +195,22 @@ class QueryVariant:
     text: str
 
 
+@dataclass(frozen=True, slots=True)
+class ContextEvidenceSlot:
+    """One deterministic admission lane used before global fact-score packing."""
+
+    kind: ContextEvidenceSlotKind
+    max_facts: int
+    anchors: tuple[str, ...] = ()
+    topic_terms: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.kind not in CONTEXT_EVIDENCE_SLOT_KINDS:
+            raise ValueError("Unknown context evidence slot kind")
+        if type(self.max_facts) is not int or not 1 <= self.max_facts <= 20:
+            raise ValueError("Context evidence slot max_facts must be within [1, 20]")
+
+
 CoverageRequirement = (
     EntityCoverageRequirement
     | TemporalCoverageRequirement
@@ -130,6 +218,8 @@ CoverageRequirement = (
     | RelationCoverageRequirement
     | ProvenanceCoverageRequirement
 )
+
+QUERY_SKETCHER_ID = "codecairn/deterministic-query-sketch-v3"
 
 
 @dataclass(frozen=True, slots=True)
@@ -144,7 +234,8 @@ class QuerySketch:
     temporal_prefixes: tuple[str, ...]
     coverage_requirements: tuple[CoverageRequirement, ...] = ()
     query_variants: tuple[QueryVariant, ...] = ()
-    sketcher_id: str = "codecairn/deterministic-query-sketch-v2"
+    evidence_slots: tuple[ContextEvidenceSlot, ...] = ()
+    sketcher_id: str = QUERY_SKETCHER_ID
     query_time_llm_calls: Literal[0] = 0
 
 
@@ -215,6 +306,10 @@ class RecallPlannerConfig:
     context_snippet_chars: int = 200
     context_snippets_per_memory: int = 5
     context_temporal_snippets_per_memory: int = 8
+    context_semantic_support_fact_limit: int = 16
+    context_quantity_transition_fact_limit: int = 12
+    context_vocative_alias_fact_limit: int = 2
+    context_prior_state_fact_limit: int = 4
     expansion_plan: ExpansionPlan = ExpansionPlan()
 
     def __post_init__(self) -> None:
@@ -281,6 +376,27 @@ class RecallPlannerConfig:
             raise ValueError(
                 "context_temporal_snippets_per_memory must cover context_snippets_per_memory"
             )
+        evidence_slot_limits = {
+            "context_semantic_support_fact_limit": (
+                self.context_semantic_support_fact_limit,
+                20,
+            ),
+            "context_quantity_transition_fact_limit": (
+                self.context_quantity_transition_fact_limit,
+                12,
+            ),
+            "context_vocative_alias_fact_limit": (
+                self.context_vocative_alias_fact_limit,
+                2,
+            ),
+            "context_prior_state_fact_limit": (
+                self.context_prior_state_fact_limit,
+                4,
+            ),
+        }
+        for field_name, (value, hard_ceiling) in evidence_slot_limits.items():
+            if type(value) is not int or not 1 <= value <= hard_ceiling:
+                raise ValueError(f"{field_name} exceeds its context-slot hard ceiling")
         if self.mode != "hierarchy" and self.neighbor_window != 0:
             raise ValueError("Only hierarchy mode may expand temporal neighbors")
 
@@ -298,7 +414,7 @@ class RecallPlannerConfig:
             "mode": self.mode,
             "router": "deterministic-cues-v1",
             "hard_route_cutoff": False,
-            "query_sketcher": "codecairn/deterministic-query-sketch-v2",
+            "query_sketcher": QUERY_SKETCHER_ID,
             "query_time_llm_calls": 0,
             "primary_candidate_multiplier": self.primary_candidate_multiplier,
             "secondary_candidate_multiplier": self.secondary_candidate_multiplier,
@@ -333,6 +449,11 @@ class RecallPlannerConfig:
             "fact_rerank_max_document_chars": self.fact_rerank_max_document_chars,
             "context_renderer": CONTEXT_RENDERER_ID,
             "context_direct_match_prior": CONTEXT_DIRECT_MATCH_PRIOR,
+            "context_evidence_slot_policy": CONTEXT_EVIDENCE_SLOT_POLICY_ID,
+            "context_semantic_support_fact_limit": (self.context_semantic_support_fact_limit),
+            "context_quantity_transition_fact_limit": (self.context_quantity_transition_fact_limit),
+            "context_vocative_alias_fact_limit": self.context_vocative_alias_fact_limit,
+            "context_prior_state_fact_limit": self.context_prior_state_fact_limit,
             "context_max_chars": self.context_max_chars,
             "context_max_tokens": self.context_max_tokens,
             "context_tokenizer": CONTEXT_TOKENIZER_ID,
@@ -367,7 +488,7 @@ class RecallPlanner:
         self.config = config or RecallPlannerConfig()
 
     def plan(self, query: str, *, limit: int) -> RecallPlan:
-        query_sketch = _query_sketch(query)
+        query_sketch = _query_sketch(query, config=self.config)
         route = _route(query)
         primary_limit = min(
             self.config.maximum_channel_candidates,
@@ -434,7 +555,11 @@ class RecallPlanner:
         )
 
 
-def _query_sketch(query: str) -> QuerySketch:
+def _query_sketch(
+    query: str,
+    *,
+    config: RecallPlannerConfig,
+) -> QuerySketch:
     anchors = tuple(
         dict.fromkeys(
             match.group(0).casefold()
@@ -450,7 +575,7 @@ def _query_sketch(query: str) -> QuerySketch:
             for match in _MONTH_YEAR.finditer(query)
         )
     )
-    if any(cue in lowered for cue in ("before", "after", "first", "then", "order")):
+    if _TEMPORAL_ORDER_CUES.search(query) is not None:
         temporal_op: TemporalOperation = "order"
     elif any(cue in lowered for cue in ("latest", "most recent", "last")):
         temporal_op = "latest"
@@ -489,7 +614,105 @@ def _query_sketch(query: str) -> QuerySketch:
             anchors=anchors,
             temporal_prefixes=temporal_prefixes,
         ),
+        evidence_slots=_context_evidence_slots(
+            query,
+            anchors=anchors,
+            temporal_op=temporal_op,
+            set_op=set_op,
+            wants_procedure=wants_procedure,
+            config=config,
+        ),
     )
+
+
+def _context_evidence_slots(
+    query: str,
+    *,
+    anchors: tuple[str, ...],
+    temporal_op: TemporalOperation,
+    set_op: SetOperation,
+    wants_procedure: bool,
+    config: RecallPlannerConfig,
+) -> tuple[ContextEvidenceSlot, ...]:
+    slots: list[ContextEvidenceSlot] = []
+    quantity = _QUANTITY_CUES.search(query) is not None
+    alias = _ALIAS_CUES.search(query) is not None
+    inference = _INFERENCE_CUES.search(query) is not None
+    prior_match = _PRIOR_STATE_CUES.search(query)
+    prior_state = (
+        prior_match is not None
+        and _PRIOR_STATE_PREDICATE_CUES.search(prior_match.group("predicate")) is not None
+    )
+    if alias and len(anchors) >= 2:
+        slots.append(
+            ContextEvidenceSlot(
+                kind="vocative_alias",
+                max_facts=config.context_vocative_alias_fact_limit,
+                anchors=anchors,
+            )
+        )
+    if quantity:
+        slots.append(
+            ContextEvidenceSlot(
+                kind="quantity_transition",
+                max_facts=config.context_quantity_transition_fact_limit,
+                anchors=anchors,
+                topic_terms=_query_topic_terms(query, anchors=anchors),
+            )
+        )
+    if prior_state and anchors:
+        slots.append(
+            ContextEvidenceSlot(
+                kind="prior_state",
+                max_facts=config.context_prior_state_fact_limit,
+                anchors=anchors[:1],
+            )
+        )
+    if (
+        quantity
+        or alias
+        or inference
+        or prior_state
+        or temporal_op == "order"
+        or set_op != "none"
+        or wants_procedure
+    ):
+        slots.append(
+            ContextEvidenceSlot(
+                kind="semantic_child_support",
+                max_facts=config.context_semantic_support_fact_limit,
+            )
+        )
+    return tuple(slots)
+
+
+def _query_topic_terms(
+    query: str,
+    *,
+    anchors: tuple[str, ...],
+) -> tuple[str, ...]:
+    anchor_terms = set(anchors)
+    terms = (match.group(0).casefold() for match in _TOPIC_TERM.finditer(query))
+    return tuple(
+        dict.fromkeys(
+            _normalize_topic_term(term)
+            for term in terms
+            if term not in _TOPIC_STOPWORDS and term not in anchor_terms
+        )
+    )
+
+
+def _normalize_topic_term(value: str) -> str:
+    term = value.casefold()
+    if term in {"news", "series", "species"}:
+        return term
+    if len(term) > 4 and term.endswith("ies"):
+        return f"{term[:-3]}y"
+    if len(term) > 4 and term.endswith(("sses", "shes", "ches", "xes", "zes")):
+        return term[:-2]
+    if len(term) > 3 and term.endswith("s") and not term.endswith(("ss", "us", "is")):
+        return term[:-1]
+    return term
 
 
 def _coverage_requirements(

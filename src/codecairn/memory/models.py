@@ -447,6 +447,27 @@ class RecallStageTrace:
     output_memory_ids: tuple[str, ...]
 
 
+ContextSlotAdmissionOutcome = Literal[
+    "admitted",
+    "budget",
+    "duplicate",
+    "parent_limit",
+]
+
+
+@dataclass(frozen=True, slots=True)
+class RecallContextSlotAttempt:
+    fact_id: str
+    outcome: ContextSlotAdmissionOutcome
+
+
+@dataclass(frozen=True, slots=True)
+class RecallContextSlotTrace:
+    slot_kind: str
+    max_facts: int
+    attempts: tuple[RecallContextSlotAttempt, ...]
+
+
 @dataclass(frozen=True, slots=True)
 class RecallContextTrace:
     renderer: str
@@ -459,6 +480,8 @@ class RecallContextTrace:
     token_limit: int = 4_000
     tokenizer_id: str = "codecairn/utf8-two-byte-upper-bound-v1"
     omitted_fact_ids: tuple[str, ...] = ()
+    admission_candidate_fact_ids: tuple[str, ...] = ()
+    slot_traces: tuple[RecallContextSlotTrace, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

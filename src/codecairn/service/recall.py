@@ -7,7 +7,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 from math import isfinite
-from typing import Protocol
+from typing import Literal, Protocol
 from urllib.parse import quote
 
 from codecairn.memory.context import (
@@ -25,6 +25,8 @@ from codecairn.memory.models import (
     EvidenceFact,
     IndexCandidate,
     RankedRecall,
+    RecallContextSlotAttempt,
+    RecallContextSlotTrace,
     RecallContextTrace,
     RecallDocumentKind,
     RecallDocumentSource,
@@ -39,6 +41,7 @@ from codecairn.memory.models import (
     RerankScore,
 )
 from codecairn.memory.recall_planner import (
+    ContextEvidenceSlot,
     CoverageRequirement,
     EntityCoverageRequirement,
     ExpansionPlan,
@@ -61,6 +64,34 @@ _MAX_TEMPORAL_LEXICAL_CANDIDATES = 32
 _MAX_RERANK_BUNDLE_CHARS = 2_048
 _ENTITY_TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]*")
 _ISO_TIMESTAMP = re.compile(r"\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}")
+_CONTEXT_QUANTITY_TRANSITION = re.compile(
+    r"\b(first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|"
+    r"tenth|another|\d+(?:st|nd|rd|th))\b",
+    re.IGNORECASE,
+)
+_CONTEXT_ANAPHORIC_QUANTITY = re.compile(
+    r"\b(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|"
+    r"tenth|\d+(?:st|nd|rd|th))\s+(?:one|it|this|that)\b",
+    re.IGNORECASE,
+)
+_CONTEXT_VOCATIVE = re.compile(
+    r"^\s*(?:hey|hi|hello)\s+([A-Za-z][A-Za-z'-]{1,31})\b",
+    re.IGNORECASE,
+)
+_CONTEXT_EXCLUSIVITY = re.compile(
+    r"\b(all that|only|nothing but|no one|nobody|alone|lonely)\b",
+    re.IGNORECASE,
+)
+_CONTEXT_AFFECT = re.compile(
+    r"\b(happiness|happy|joy|friend|date|meet)\w*\b",
+    re.IGNORECASE,
+)
+_ContextAdmissionOutcome = Literal[
+    "admitted",
+    "budget",
+    "duplicate",
+    "parent_limit",
+]
 _PROVENANCE_TERMS: dict[str, frozenset[str]] = {
     "failure": frozenset({"error", "fail", "failed", "failure", "timeout"}),
     "change": frozenset({"change", "changed", "fix", "fixed", "patch", "patched"}),
@@ -466,6 +497,7 @@ class RecallEngine:
             temporal_priority_memory_ids=temporal_snippet_priority_ids,
             config=self._planner.config,
             wants_procedure=plan.query_sketch.wants_procedure,
+            evidence_slots=plan.query_sketch.evidence_slots,
         )
         rendered_terms = _entity_terms(rendered_context.evidence_text)
         covered_slots = tuple(
@@ -1866,6 +1898,7 @@ def _compile_context(
     temporal_priority_memory_ids: set[str],
     config: RecallPlannerConfig,
     wants_procedure: bool = False,
+    evidence_slots: tuple[ContextEvidenceSlot, ...] = (),
 ) -> _CompiledContext:
     empty_suffix = ["", "No evidence-backed memory matched this task."]
     header = _context_header(
@@ -1895,6 +1928,15 @@ def _compile_context(
                 token_count=token_count,
                 token_limit=config.context_max_tokens,
                 tokenizer_id=CONTEXT_TOKENIZER_ID,
+                admission_candidate_fact_ids=(),
+                slot_traces=tuple(
+                    RecallContextSlotTrace(
+                        slot_kind=slot.kind,
+                        max_facts=slot.max_facts,
+                        attempts=(),
+                    )
+                    for slot in evidence_slots
+                ),
             ),
         )
 
@@ -1923,6 +1965,7 @@ def _compile_context(
     attempted_snippet_indexes: list[set[int]] = [set() for _item in ranked]
     rendered_indexes: list[int] = []
     dropped: list[str] = []
+    slot_traces: list[RecallContextSlotTrace] = []
     has_fact_relevance = any(
         snippet.relevance_score is not None for snippets in snippet_values for snippet in snippets
     )
@@ -1944,11 +1987,16 @@ def _compile_context(
             ),
         )
         rendered_fact_keys: set[tuple[str, str]] = set()
-        for item_index, snippet_index, snippet in candidates:
+
+        def admit_candidate(
+            candidate: tuple[int, int, RecallSnippet],
+        ) -> _ContextAdmissionOutcome:
+            nonlocal remaining_bytes
+            item_index, snippet_index, snippet = candidate
             attempted_snippet_indexes[item_index].add(snippet_index)
             fact_key = (snippet.source_memory_id, snippet.fact_id)
             if fact_key in rendered_fact_keys:
-                continue
+                return "duplicate"
             item = ranked[item_index]
             allowed = (
                 config.context_temporal_snippets_per_memory
@@ -1956,7 +2004,7 @@ def _compile_context(
                 else config.context_snippets_per_memory
             )
             if len(selected_snippet_indexes[item_index]) >= allowed:
-                continue
+                return "parent_limit"
             first_parent_fact = not selected_snippet_indexes[item_index]
             allocation = (
                 [*bases[item_index], snippet_lines[item_index][snippet_index]]
@@ -1965,12 +2013,41 @@ def _compile_context(
             )
             cost = _line_byte_cost(allocation)
             if cost > remaining_bytes:
-                continue
+                return "budget"
             if first_parent_fact:
                 rendered_indexes.append(item_index)
             selected_snippet_indexes[item_index].append(snippet_index)
             remaining_bytes -= cost
             rendered_fact_keys.add(fact_key)
+            return "admitted"
+
+        candidate_values = tuple(candidates)
+        if any(slot.kind == "quantity_transition" for slot in evidence_slots):
+            for candidate in candidate_values[:3]:
+                admit_candidate(candidate)
+        for slot in evidence_slots:
+            attempts: list[RecallContextSlotAttempt] = []
+            for candidate in _context_slot_candidates(
+                slot,
+                ranked=ranked,
+                snippet_values=tuple(snippet_values),
+                candidates=candidate_values,
+            ):
+                attempts.append(
+                    RecallContextSlotAttempt(
+                        fact_id=candidate[2].fact_id,
+                        outcome=admit_candidate(candidate),
+                    )
+                )
+            slot_traces.append(
+                RecallContextSlotTrace(
+                    slot_kind=slot.kind,
+                    max_facts=slot.max_facts,
+                    attempts=tuple(attempts),
+                )
+            )
+        for candidate in candidate_values:
+            admit_candidate(candidate)
         rendered_indexes.sort()
         dropped.extend(
             item.memory_id
@@ -1978,6 +2055,14 @@ def _compile_context(
             if not selected_snippet_indexes[item_index]
         )
     else:
+        slot_traces.extend(
+            RecallContextSlotTrace(
+                slot_kind=slot.kind,
+                max_facts=slot.max_facts,
+                attempts=(),
+            )
+            for slot in evidence_slots
+        )
         # Legacy and deterministic-test Adapters have no fact relevance score.
         # Preserve their breadth-first context contract.
         for item_index, item in enumerate(ranked):
@@ -2111,6 +2196,14 @@ def _compile_context(
     available_fact_ids = {
         snippet.fact_id for snippets in snippet_values for snippet in snippets if snippet.fact_id
     }
+    admission_candidate_fact_ids = tuple(
+        dict.fromkeys(
+            snippet.fact_id
+            for snippets in snippet_values
+            for snippet in snippets
+            if snippet.fact_id
+        )
+    )
     available_fact_ids.update(
         snippet.fact_id
         for snippets in hydration_snippets.values()
@@ -2139,8 +2232,52 @@ def _compile_context(
             token_limit=config.context_max_tokens,
             tokenizer_id=CONTEXT_TOKENIZER_ID,
             omitted_fact_ids=tuple(sorted(available_fact_ids - set(rendered_fact_ids))),
+            admission_candidate_fact_ids=admission_candidate_fact_ids,
+            slot_traces=tuple(slot_traces),
         ),
     )
+
+
+def replay_context_slot_traces(
+    query: str,
+    *,
+    repo_key: str,
+    ranked: tuple[RankedRecall, ...],
+    config: RecallPlannerConfig,
+    limit: int,
+) -> tuple[RecallContextSlotTrace, ...]:
+    """Replay the deterministic evidence-slot admission transcript.
+
+    Evaluation uses this entry point to verify that a persisted slot trace is
+    the one produced by the frozen query sketch and context compiler. Procedure
+    hydration runs after slot admission, so it is deliberately disabled here.
+    """
+
+    plan = RecallPlanner(config).plan(query, limit=limit)
+    if plan.query_sketch.temporal_prefixes:
+        temporal_priority_memory_ids = {
+            item.memory_id
+            for item in ranked
+            if _matches_temporal_prefix(item, plan.query_sketch.temporal_prefixes)
+        }
+    elif plan.query_sketch.temporal_op != "none":
+        temporal_priority_memory_ids = {
+            item.memory_id for item in ranked[: config.maximum_exploration_results]
+        }
+    else:
+        temporal_priority_memory_ids = set()
+    compiled = _compile_context(
+        query,
+        repo_key=repo_key,
+        ranked=ranked,
+        temporal_priority_memory_ids=temporal_priority_memory_ids,
+        config=config,
+        wants_procedure=False,
+        evidence_slots=plan.query_sketch.evidence_slots,
+    )
+    if compiled.trace is None:
+        raise AssertionError("Context slot replay produced no trace")
+    return compiled.trace.slot_traces
 
 
 def _context_effective_relevance(
@@ -2154,6 +2291,359 @@ def _context_effective_relevance(
     if snippet.relation == "matched" and snippet.source_memory_id == parent_memory_id:
         return score + CONTEXT_DIRECT_MATCH_PRIOR
     return score
+
+
+def _context_slot_candidates(
+    slot: ContextEvidenceSlot,
+    *,
+    ranked: tuple[RankedRecall, ...],
+    snippet_values: tuple[tuple[RecallSnippet, ...], ...],
+    candidates: tuple[tuple[int, int, RecallSnippet], ...],
+) -> tuple[tuple[int, int, RecallSnippet], ...]:
+    if slot.kind == "vocative_alias":
+        selected = _vocative_alias_candidates(
+            slot,
+            ranked=ranked,
+            candidates=candidates,
+        )
+    elif slot.kind == "quantity_transition":
+        selected = _quantity_transition_candidates(
+            slot,
+            ranked=ranked,
+            snippet_values=snippet_values,
+            candidates=candidates,
+        )
+    elif slot.kind == "prior_state":
+        selected = _prior_state_candidates(
+            slot,
+            ranked=ranked,
+            candidates=candidates,
+        )
+    else:
+        selected = tuple(
+            sorted(
+                (
+                    candidate
+                    for candidate in candidates
+                    if _semantic_child_support_score(
+                        ranked[candidate[0]],
+                        candidate[2],
+                    )
+                    > 0.0
+                ),
+                key=lambda candidate: (
+                    -_semantic_child_support_score(
+                        ranked[candidate[0]],
+                        candidate[2],
+                    ),
+                    ranked[candidate[0]].rank,
+                    -_context_effective_relevance(
+                        candidate[2],
+                        parent_memory_id=ranked[candidate[0]].memory_id,
+                    ),
+                    candidate[1],
+                    candidate[2].fact_id,
+                ),
+            )
+        )
+    return selected[: slot.max_facts]
+
+
+def _vocative_alias_candidates(
+    slot: ContextEvidenceSlot,
+    *,
+    ranked: tuple[RankedRecall, ...],
+    candidates: tuple[tuple[int, int, RecallSnippet], ...],
+) -> tuple[tuple[int, int, RecallSnippet], ...]:
+    anchors = set(slot.anchors)
+    selected: list[tuple[int, int, RecallSnippet]] = []
+    for candidate in candidates:
+        item_index, _snippet_index, snippet = candidate
+        item = ranked[item_index]
+        if snippet.source_memory_id != item.memory_id:
+            continue
+        speaker, utterance = _context_turn_parts(snippet.text)
+        speaker_key = speaker.casefold()
+        if speaker_key not in anchors:
+            continue
+        match = _CONTEXT_VOCATIVE.search(utterance)
+        if match is None:
+            continue
+        address = match.group(1).casefold()
+        if not any(
+            anchor != speaker_key and anchor != address and anchor.startswith(address)
+            for anchor in anchors
+        ):
+            continue
+        selected.append(candidate)
+    selected.sort(
+        key=lambda candidate: (
+            ranked[candidate[0]].rank,
+            candidate[2].raw_event_index if candidate[2].raw_event_index is not None else 0,
+            -_context_effective_relevance(
+                candidate[2],
+                parent_memory_id=ranked[candidate[0]].memory_id,
+            ),
+            candidate[2].fact_id,
+        )
+    )
+    return tuple(selected)
+
+
+def _quantity_transition_candidates(
+    slot: ContextEvidenceSlot,
+    *,
+    ranked: tuple[RankedRecall, ...],
+    snippet_values: tuple[tuple[RecallSnippet, ...], ...],
+    candidates: tuple[tuple[int, int, RecallSnippet], ...],
+) -> tuple[tuple[int, int, RecallSnippet], ...]:
+    anchors = set(slot.anchors)
+    topic_terms = set(slot.topic_terms)
+    grouped: dict[str, list[tuple[int, int, RecallSnippet]]] = {}
+    for candidate in candidates:
+        item_index, _snippet_index, snippet = candidate
+        item = ranked[item_index]
+        if snippet.source_memory_id != item.memory_id:
+            continue
+        combined = "\n".join(value for value in (snippet.semantic_text, snippet.text) if value)
+        transitions = tuple(
+            dict.fromkeys(
+                _quantity_transition_key(match.group(1))
+                for match in _CONTEXT_QUANTITY_TRANSITION.finditer(combined)
+            )
+        )
+        if not transitions:
+            continue
+        overlap, _anchor_speaker, anchored_anaphoric, semantic_support = (
+            _quantity_candidate_signals(
+                candidate,
+                ranked=ranked,
+                anchors=anchors,
+                topic_terms=topic_terms,
+            )
+        )
+        if overlap == 0 and not anchored_anaphoric and semantic_support <= 0.0:
+            continue
+        for transition in transitions:
+            grouped.setdefault(transition, []).append(candidate)
+
+    selected: list[tuple[int, int, RecallSnippet]] = []
+    for transition in sorted(grouped, key=_quantity_transition_order):
+        best = min(
+            grouped[transition],
+            key=lambda candidate: _quantity_candidate_priority(
+                candidate,
+                ranked=ranked,
+                anchors=anchors,
+                topic_terms=topic_terms,
+            ),
+        )
+        selected.append(best)
+        if _CONTEXT_ANAPHORIC_QUANTITY.search(
+            "\n".join(value for value in (best[2].semantic_text, best[2].text) if value)
+        ):
+            following = _following_context_candidate(
+                best,
+                snippet_values=snippet_values,
+            )
+            if following is not None:
+                selected.append(following)
+    return tuple(dict.fromkeys(selected))
+
+
+def _quantity_candidate_priority(
+    candidate: tuple[int, int, RecallSnippet],
+    *,
+    ranked: tuple[RankedRecall, ...],
+    anchors: set[str],
+    topic_terms: set[str],
+) -> tuple[int, int, int, float, float, int, int, str]:
+    item_index, _snippet_index, snippet = candidate
+    overlap, anchor_speaker, anchored_anaphoric, semantic_support = _quantity_candidate_signals(
+        candidate,
+        ranked=ranked,
+        anchors=anchors,
+        topic_terms=topic_terms,
+    )
+    return (
+        -overlap,
+        int(not anchor_speaker),
+        int(not anchored_anaphoric),
+        -semantic_support,
+        -_context_effective_relevance(
+            snippet,
+            parent_memory_id=ranked[item_index].memory_id,
+        ),
+        ranked[item_index].rank,
+        snippet.raw_event_index if snippet.raw_event_index is not None else 1_000_000_000,
+        snippet.fact_id,
+    )
+
+
+def _quantity_candidate_signals(
+    candidate: tuple[int, int, RecallSnippet],
+    *,
+    ranked: tuple[RankedRecall, ...],
+    anchors: set[str],
+    topic_terms: set[str],
+) -> tuple[int, bool, bool, float]:
+    item_index, _snippet_index, snippet = candidate
+    combined = "\n".join(value for value in (snippet.semantic_text, snippet.text) if value)
+    speaker, _utterance = _context_turn_parts(snippet.text)
+    anchor_mention = any(_contains_context_term(combined, anchor) for anchor in anchors)
+    return (
+        len(
+            topic_terms
+            & _context_topic_terms(
+                combined,
+                excluded_terms=anchors,
+            )
+        ),
+        speaker.casefold() in anchors,
+        anchor_mention and _CONTEXT_ANAPHORIC_QUANTITY.search(combined) is not None,
+        _semantic_child_support_score(ranked[item_index], snippet),
+    )
+
+
+def _prior_state_candidates(
+    slot: ContextEvidenceSlot,
+    *,
+    ranked: tuple[RankedRecall, ...],
+    candidates: tuple[tuple[int, int, RecallSnippet], ...],
+) -> tuple[tuple[int, int, RecallSnippet], ...]:
+    anchors = set(slot.anchors)
+    selected: list[tuple[int, int, RecallSnippet]] = []
+    for candidate in candidates:
+        item_index, _snippet_index, snippet = candidate
+        item = ranked[item_index]
+        if snippet.source_memory_id != item.memory_id:
+            continue
+        speaker, _utterance = _context_turn_parts(snippet.text)
+        combined = "\n".join(value for value in (snippet.semantic_text, snippet.text) if value)
+        if (
+            speaker.casefold() in anchors
+            and _CONTEXT_EXCLUSIVITY.search(combined) is not None
+            and _CONTEXT_AFFECT.search(combined) is not None
+        ):
+            selected.append(candidate)
+    selected.sort(
+        key=lambda candidate: (
+            ranked[candidate[0]].rank,
+            -_context_effective_relevance(
+                candidate[2],
+                parent_memory_id=ranked[candidate[0]].memory_id,
+            ),
+            candidate[2].raw_event_index
+            if candidate[2].raw_event_index is not None
+            else 1_000_000_000,
+            candidate[2].fact_id,
+        )
+    )
+    return tuple(selected)
+
+
+def _semantic_child_support_score(
+    item: RankedRecall,
+    snippet: RecallSnippet,
+) -> float:
+    semantic_fact_ids = set(snippet.semantic_fact_ids)
+    return sum(
+        1.0 / (_RRF_K + match.rank)
+        for match in item.matched_documents
+        if match.document_kind == "atomic_fact" and match.fact_id in semantic_fact_ids
+    )
+
+
+def _following_context_candidate(
+    candidate: tuple[int, int, RecallSnippet],
+    *,
+    snippet_values: tuple[tuple[RecallSnippet, ...], ...],
+) -> tuple[int, int, RecallSnippet] | None:
+    item_index, _snippet_index, snippet = candidate
+    if snippet.raw_event_index is None:
+        return None
+    expected_index = snippet.raw_event_index + 1
+    following = (
+        (item_index, index, value)
+        for index, value in enumerate(snippet_values[item_index])
+        if value.raw_event_index == expected_index
+        and value.source_memory_id == snippet.source_memory_id
+    )
+    return min(
+        following,
+        default=None,
+        key=lambda value: (
+            value[2].relation != "matched",
+            -_context_effective_relevance(
+                value[2],
+                parent_memory_id=snippet.source_memory_id,
+            ),
+            value[2].fact_id,
+        ),
+    )
+
+
+def _context_turn_parts(text: str) -> tuple[str, str]:
+    _prefix, separator, attributed = text.partition(" — ")
+    if not separator:
+        return "", text
+    speaker, colon, utterance = attributed.partition(":")
+    if not colon:
+        return "", attributed
+    return speaker.strip(), utterance.strip()
+
+
+def _context_topic_terms(
+    text: str,
+    *,
+    excluded_terms: set[str],
+) -> set[str]:
+    return {
+        _normalize_context_term(match.group(0))
+        for match in _ENTITY_TERM.finditer(text)
+        if match.group(0).casefold() not in _QUERY_STOPWORDS
+        and match.group(0).casefold() not in excluded_terms
+    }
+
+
+def _normalize_context_term(value: str) -> str:
+    term = value.casefold()
+    if term in {"news", "series", "species"}:
+        return term
+    if len(term) > 4 and term.endswith("ies"):
+        return f"{term[:-3]}y"
+    if len(term) > 4 and term.endswith(("sses", "shes", "ches", "xes", "zes")):
+        return term[:-2]
+    if len(term) > 3 and term.endswith("s") and not term.endswith(("ss", "us", "is")):
+        return term[:-1]
+    return term
+
+
+def _contains_context_term(text: str, term: str) -> bool:
+    return re.search(rf"\b{re.escape(term)}\b", text, re.IGNORECASE) is not None
+
+
+def _quantity_transition_key(value: str) -> str:
+    return value.casefold()
+
+
+def _quantity_transition_order(value: str) -> tuple[int, str]:
+    order = {
+        "first": 1,
+        "second": 2,
+        "third": 3,
+        "fourth": 4,
+        "fifth": 5,
+        "sixth": 6,
+        "seventh": 7,
+        "eighth": 8,
+        "ninth": 9,
+        "tenth": 10,
+        "another": 11,
+    }
+    match = re.fullmatch(r"(\d+)(?:st|nd|rd|th)", value)
+    numeric = int(match.group(1)) if match is not None else order.get(value, 1_000_000_000)
+    return numeric, value
 
 
 def _line_token_cost(lines: list[str]) -> int:

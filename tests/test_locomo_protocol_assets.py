@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
+
 from codecairn.evaluation.artifacts import write_json_exclusive
 from codecairn.evaluation.locomo import (
     LoCoMoConversation,
@@ -11,6 +13,129 @@ from codecairn.evaluation.locomo import (
     LoCoMoQuestion,
     load_locomo_question_set,
 )
+
+
+def test_windowed_question_set_selects_a_bounded_rank_range(tmp_path: Path) -> None:
+    questions = tuple(
+        LoCoMoQuestion(
+            question_id=f"q-{index}",
+            question=f"Question {index}?",
+            golden_answer=None,
+            adversarial_answer=None,
+            category=1,
+            evidence=(),
+        )
+        for index in range(5)
+    )
+    dataset = LoCoMoDataset(
+        source_path="synthetic",
+        sha256="a" * 64,
+        conversations=(
+            LoCoMoConversation(
+                sample_id="synthetic",
+                speaker_a="A",
+                speaker_b="B",
+                sessions=(),
+                questions=questions,
+            ),
+        ),
+    )
+    path = tmp_path / "windowed-question-set.json"
+    write_json_exclusive(
+        path,
+        {
+            "schema_version": 1,
+            "selection_id": "windowed-question-set",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-window-v1",
+            "seed": "window-seed",
+            "category_targets": {"1": 3},
+            "category_offsets": {"1": 1},
+            "selection_sha256": (
+                "15f89304f4795805e0436f99f42ebab0880d0379ae3ce2c31862a5e94bd42a07"
+            ),
+        },
+    )
+
+    loaded = load_locomo_question_set(path, dataset=dataset)
+
+    assert loaded.question_ids == ("q-0", "q-1", "q-3")
+    assert loaded.public_manifest["category_offsets"] == {"1": 1}
+
+
+def test_windowed_question_set_fails_closed_on_invalid_windows(tmp_path: Path) -> None:
+    questions = tuple(
+        LoCoMoQuestion(
+            question_id=f"q-{index}",
+            question=f"Question {index}?",
+            golden_answer=None,
+            adversarial_answer=None,
+            category=1,
+            evidence=(),
+        )
+        for index in range(2)
+    )
+    dataset = LoCoMoDataset(
+        source_path="synthetic",
+        sha256="b" * 64,
+        conversations=(
+            LoCoMoConversation(
+                sample_id="synthetic",
+                speaker_a="A",
+                speaker_b="B",
+                sessions=(),
+                questions=questions,
+            ),
+        ),
+    )
+    missing_offsets = tmp_path / "missing-offsets.json"
+    write_json_exclusive(
+        missing_offsets,
+        {
+            "schema_version": 1,
+            "selection_id": "missing-offsets",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-window-v1",
+            "seed": "window-seed",
+            "category_targets": {"1": 1},
+            "selection_sha256": "0" * 64,
+        },
+    )
+    oversized_window = tmp_path / "oversized-window.json"
+    write_json_exclusive(
+        oversized_window,
+        {
+            "schema_version": 1,
+            "selection_id": "oversized-window",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-window-v1",
+            "seed": "window-seed",
+            "category_targets": {"1": 2},
+            "category_offsets": {"1": 1},
+            "selection_sha256": "0" * 64,
+        },
+    )
+    legacy_offsets = tmp_path / "legacy-offsets.json"
+    write_json_exclusive(
+        legacy_offsets,
+        {
+            "schema_version": 1,
+            "selection_id": "legacy-offsets",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-v1",
+            "seed": "window-seed",
+            "category_targets": {"1": 1},
+            "category_offsets": {"1": 0},
+            "selection_sha256": "0" * 64,
+        },
+    )
+
+    with pytest.raises(ValueError, match="Category offsets must be a JSON object"):
+        load_locomo_question_set(missing_offsets, dataset=dataset)
+    with pytest.raises(ValueError, match="category window exceeds"):
+        load_locomo_question_set(oversized_window, dataset=dataset)
+    with pytest.raises(ValueError, match="legacy question-set algorithm"):
+        load_locomo_question_set(legacy_offsets, dataset=dataset)
 
 
 def test_v14_protocol_assets_remain_immutable_historical_evidence() -> None:
@@ -29,16 +154,88 @@ def test_v14_protocol_assets_remain_immutable_historical_evidence() -> None:
     assert diagnostic_40["protocol"]["context_renderer"] == "scored-facts-first-v5"
 
 
-def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
+def test_v15_protocol_assets_remain_immutable_historical_evidence() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    diagnostic_40_path = benchmark_root / "diagnostic-40-v15.json"
+    diagnostic_200_path = benchmark_root / "diagnostic-200-v15.json"
+    diagnostic_40 = json.loads(diagnostic_40_path.read_text())
+
+    assert hashlib.sha256(diagnostic_40_path.read_bytes()).hexdigest() == (
+        "fc21653c35707b9f3f85ca20f3d592481c45cea408e3e924a2f48caab171dad8"
+    )
+    assert hashlib.sha256(diagnostic_200_path.read_bytes()).hexdigest() == (
+        "9b2cf00627fbfd9c98ecff367c96b114b1aaf18a50a920b7faf6c1edd0df147e"
+    )
+    assert diagnostic_40["protocol"]["query_sketcher"] == (
+        "codecairn/deterministic-query-sketch-v2"
+    )
+    assert diagnostic_40["protocol"]["fact_selector"] == ("bounded-dialogue-aware-cross-encoder-v4")
+    assert diagnostic_40["protocol"]["context_renderer"] == (
+        "exact-source-prioritized-facts-first-v7"
+    )
+    assert "context_evidence_slot_policy" not in diagnostic_40["protocol"]
+
+
+def test_v16_preflight_holdout_and_promotion_share_runtime_protocol(
     tmp_path: Path,
 ) -> None:
     benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
-    diagnostic_40 = json.loads((benchmark_root / "diagnostic-40-v15.json").read_text())
-    diagnostic_200 = json.loads((benchmark_root / "diagnostic-200-v15.json").read_text())
+    diagnostic_40_v15 = json.loads((benchmark_root / "diagnostic-40-v15.json").read_text())
+    diagnostic_200_v15 = json.loads((benchmark_root / "diagnostic-200-v15.json").read_text())
+    diagnostic_40 = json.loads((benchmark_root / "diagnostic-40-v16.json").read_text())
+    diagnostic_160 = json.loads((benchmark_root / "diagnostic-160-holdout-v16.json").read_text())
+    diagnostic_200 = json.loads((benchmark_root / "diagnostic-200-v16.json").read_text())
 
+    assert (
+        hashlib.sha256((benchmark_root / "diagnostic-40-v16.json").read_bytes()).hexdigest()
+        == "85ea8afa0936519762f8ca57aa9edfde9aa7748644b3c638372c48d2e7756a99"
+    )
+    assert (
+        hashlib.sha256(
+            (benchmark_root / "diagnostic-160-holdout-v16.json").read_bytes()
+        ).hexdigest()
+        == "02a28013feb64ad034f736ebab1a86e665ebc05ccde0f0410a1dc14acef38e2c"
+    )
+    assert (
+        hashlib.sha256((benchmark_root / "diagnostic-200-v16.json").read_bytes()).hexdigest()
+        == "04517fed9274f85e03e46fc9c07b79ce61cd1e6ba9f61174a66ae99a83eae2f4"
+    )
     assert diagnostic_40["category_targets"] == {str(category): 10 for category in range(1, 5)}
+    assert diagnostic_160["category_targets"] == {str(category): 40 for category in range(1, 5)}
+    assert diagnostic_160["category_offsets"] == {str(category): 10 for category in range(1, 5)}
     assert diagnostic_200["category_targets"] == {str(category): 50 for category in range(1, 5)}
-    assert diagnostic_40["protocol"] == diagnostic_200["protocol"]
+    selection_keys = (
+        "schema_version",
+        "selection_id",
+        "dataset_sha256",
+        "algorithm",
+        "seed",
+        "category_targets",
+        "selection_sha256",
+    )
+    assert {key: diagnostic_40[key] for key in selection_keys} == {
+        key: diagnostic_40_v15[key] for key in selection_keys
+    }
+    assert {key: diagnostic_200[key] for key in selection_keys} == {
+        key: diagnostic_200_v15[key] for key in selection_keys
+    }
+    assert diagnostic_40["variants"] == diagnostic_40_v15["variants"]
+    assert diagnostic_40["gates"] == diagnostic_40_v15["gates"]
+    assert diagnostic_40["protocol"] == diagnostic_160["protocol"]
+    assert diagnostic_160["protocol"] == diagnostic_200["protocol"]
+    expected_protocol = dict(diagnostic_40_v15["protocol"])
+    expected_protocol.update(
+        {
+            "query_sketcher": "codecairn/deterministic-query-sketch-v3",
+            "context_renderer": "exact-source-coverage-aware-facts-first-v8",
+            "context_evidence_slot_policy": "typed-protected-child-support-v1",
+            "context_semantic_support_fact_limit": 16,
+            "context_quantity_transition_fact_limit": 12,
+            "context_vocative_alias_fact_limit": 2,
+            "context_prior_state_fact_limit": 4,
+        }
+    )
+    assert diagnostic_40["protocol"] == expected_protocol
     assert diagnostic_40["protocol"]["answer_retry_contract"] == (
         "grounded-answer-contract-retry-v1"
     )
@@ -63,9 +260,19 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     assert diagnostic_40["protocol"]["worker_reranker_warmup"] == (
         "one-local-document-before-question-timing-v1"
     )
-    assert diagnostic_40["protocol"]["context_renderer"] == (
-        "exact-source-prioritized-facts-first-v7"
+    assert diagnostic_40["protocol"]["query_sketcher"] == (
+        "codecairn/deterministic-query-sketch-v3"
     )
+    assert diagnostic_40["protocol"]["context_renderer"] == (
+        "exact-source-coverage-aware-facts-first-v8"
+    )
+    assert diagnostic_40["protocol"]["context_evidence_slot_policy"] == (
+        "typed-protected-child-support-v1"
+    )
+    assert diagnostic_40["protocol"]["context_semantic_support_fact_limit"] == 16
+    assert diagnostic_40["protocol"]["context_quantity_transition_fact_limit"] == 12
+    assert diagnostic_40["protocol"]["context_vocative_alias_fact_limit"] == 2
+    assert diagnostic_40["protocol"]["context_prior_state_fact_limit"] == 4
     assert diagnostic_40["protocol"]["context_direct_match_prior"] == 2.0
     assert diagnostic_40["algorithm"] == diagnostic_200["algorithm"]
     assert diagnostic_40["seed"] == diagnostic_200["seed"]
@@ -98,12 +305,14 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     loaded = []
     for definition, name in (
         (diagnostic_40, "diagnostic-40.json"),
+        (diagnostic_160, "diagnostic-160.json"),
         (diagnostic_200, "diagnostic-200.json"),
     ):
         question_ids = _select_question_ids(
             synthetic_questions,
             seed=definition["seed"],
             targets=definition["category_targets"],
+            offsets=definition.get("category_offsets"),
         )
         path = tmp_path / name
         write_json_exclusive(
@@ -115,13 +324,25 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
                 "algorithm": definition["algorithm"],
                 "seed": definition["seed"],
                 "category_targets": definition["category_targets"],
+                **(
+                    {}
+                    if "category_offsets" not in definition
+                    else {"category_offsets": definition["category_offsets"]}
+                ),
                 "selection_sha256": hashlib.sha256(
                     json.dumps(sorted(question_ids), separators=(",", ":")).encode()
                 ).hexdigest(),
             },
         )
         loaded.append(load_locomo_question_set(path, dataset=dataset))
-    assert set(loaded[0].question_ids) <= set(loaded[1].question_ids)
+    preflight_ids = set(loaded[0].question_ids)
+    holdout_ids = set(loaded[1].question_ids)
+    diagnostic_ids = set(loaded[2].question_ids)
+    assert len(preflight_ids) == 40
+    assert len(holdout_ids) == 160
+    assert not preflight_ids & holdout_ids
+    assert preflight_ids | holdout_ids == diagnostic_ids
+    assert holdout_ids == diagnostic_ids - preflight_ids
 
     assert diagnostic_40["gates"]["required_scored_questions_per_variant"] == 40
     assert "variants" not in diagnostic_200
@@ -130,13 +351,15 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     assert promotion["source_selection"] == {
         "selection_id": diagnostic_40["selection_id"],
         "question_set_sha256": hashlib.sha256(
-            (benchmark_root / "diagnostic-40-v15.json").read_bytes()
+            (benchmark_root / "diagnostic-40-v16.json").read_bytes()
         ).hexdigest(),
         "selection_sha256": diagnostic_40["selection_sha256"],
         "protocol_sha256": _canonical_sha256(diagnostic_40["protocol"]),
         "gates_sha256": _canonical_sha256(diagnostic_40["gates"]),
     }
     assert promotion["required_scored_questions"] == 200
+    assert promotion["frozen_baseline"] == diagnostic_200_v15["promotion"]["frozen_baseline"]
+    assert promotion["gates"] == diagnostic_200_v15["promotion"]["gates"]
     assert promotion["frozen_baseline"] == {
         "run_id": "locomo-v5-diagnostic200-hierarchy-d5fb39c",
         "repository_commit": "d5fb39c31355b66b46a5600d1f4a7116d723dece",
@@ -162,10 +385,12 @@ def _select_question_ids(
     *,
     seed: str,
     targets: dict[str, int],
+    offsets: dict[str, int] | None = None,
 ) -> tuple[str, ...]:
     selected: set[str] = set()
     for raw_category, target in sorted(targets.items()):
         category = int(raw_category)
+        offset = 0 if offsets is None else offsets[raw_category]
         candidates = [question for question in questions if question.category == category]
         candidates.sort(
             key=lambda question: (
@@ -173,7 +398,7 @@ def _select_question_ids(
                 question.question_id,
             )
         )
-        selected.update(question.question_id for question in candidates[:target])
+        selected.update(question.question_id for question in candidates[offset : offset + target])
     return tuple(question.question_id for question in questions if question.question_id in selected)
 
 
