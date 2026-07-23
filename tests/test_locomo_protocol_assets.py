@@ -53,14 +53,20 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     assert diagnostic_40["protocol"]["judge_response_max_chars"] == 32_768
     assert diagnostic_40["protocol"]["seed"] == 17
     assert diagnostic_40["protocol"]["enrichment_order"] == (
-        "matched-neighbor-then-dialogue-aware-fact-rerank-v5"
+        "matched-neighbor-then-capacity-aware-dialogue-rerank-v7"
     )
-    assert diagnostic_40["protocol"]["fact_selector"] == ("bounded-dialogue-aware-cross-encoder-v2")
+    assert diagnostic_40["protocol"]["fact_selector"] == ("bounded-dialogue-aware-cross-encoder-v4")
     assert diagnostic_40["protocol"]["fact_rerank_max_candidates"] == 256
     assert diagnostic_40["protocol"]["fact_rerank_max_candidates_per_parent"] == 24
     assert diagnostic_40["protocol"]["fact_rerank_max_selected_per_parent"] == 12
     assert diagnostic_40["protocol"]["fact_rerank_max_document_chars"] == 2_048
-    assert diagnostic_40["protocol"]["context_renderer"] == "exact-source-facts-first-v6"
+    assert diagnostic_40["protocol"]["worker_reranker_warmup"] == (
+        "one-local-document-before-question-timing-v1"
+    )
+    assert diagnostic_40["protocol"]["context_renderer"] == (
+        "exact-source-prioritized-facts-first-v7"
+    )
+    assert diagnostic_40["protocol"]["context_direct_match_prior"] == 2.0
     assert diagnostic_40["algorithm"] == diagnostic_200["algorithm"]
     assert diagnostic_40["seed"] == diagnostic_200["seed"]
 

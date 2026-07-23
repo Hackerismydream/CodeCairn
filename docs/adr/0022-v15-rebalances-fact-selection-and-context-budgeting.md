@@ -33,6 +33,15 @@ bytes, below 2 GiB. V14 therefore passed run completion, infrastructure,
 context-size, and memory checks, but failed both the 85% complete-context
 coverage gate and the latency gate.
 
+The first v15 40-question retrieval preflight,
+`locomo-diagnostic-40-v15-hierarchy-retrieval-1c473e5`, also failed promotion.
+It completed without infrastructure failures or remote provider usage, but
+complete evidence reached only 25/38 resolvable questions (65.79%) and P95
+latency was 3,230.83 ms. That negative artifact exposed two implementation
+errors: external neighbors were assigned synthetic parent-scale scores and
+every target fact unconditionally repeated the preceding turn. V15 retains
+that failure as diagnosis, not evidence of improvement.
+
 The 56 resolvable questions without complete final evidence separated into
 three first-failure boundaries:
 
@@ -54,19 +63,27 @@ retrieval gate.
 
 ## Decision
 
-### Rank-weighted parent allocation
+### Capacity-aware parent allocation
 
 The global fact-rerank budget remains bounded at 256 candidates, but it is no
-longer divided equally across every selected parent. Parent ranks 1-4 receive
-weight 3, ranks 5-8 receive weight 2, and later parents receive weight 1.
-Deterministic allocation observes a hard cap of 24 candidates per parent.
-After reranking, at most 12 facts from one parent may proceed to context
-compilation.
+longer divided by a rank-weight formula that can starve later parents. Every
+selected parent first receives up to a 12-candidate breadth floor. Remaining
+work is assigned to parents in descending direct-match count, then available
+fact capacity, then parent rank, until the 256 global limit is reached.
+Deterministic allocation retains a hard cap of 24 candidates per parent. After
+reranking, at most 12 facts from one parent may proceed to context compilation.
 
 The prefilter keeps already matched facts first, then facts within two
 attributed turns of a match, then query overlap and source chronology. This
-preserves bounded recall while directing capacity toward the parents most
-likely to contain a second or third required fact.
+preserves breadth while spending otherwise unused work on parents with
+observable direct evidence and enough authoritative facts to benefit. The
+allocator does not read benchmark categories or gold evidence.
+
+On a frozen 192-question prefilter replay, the prior rank-weighted allocator
+retained complete gold candidates for 167 questions. The capacity-aware rule
+retained 170, with five fixes and two regressions; rank-protection variants
+reached at most 169. This is selector design evidence only and does not replace
+the end-to-end retrieval gate.
 
 ### Previous-turn-aware fact reranking
 
@@ -76,11 +93,13 @@ Each CrossEncoder document may combine three bounded components:
 2. the immediately preceding attributed source turn; and
 3. the candidate's exact attributed source turn.
 
-The preceding turn supplies dialogue context for short answers such as “yes,”
-“there,” or a bare date. The following turn is intentionally excluded because
-it can repeat the next question and outrank the turn that contains the answer.
-The final selection still maps to the candidate's authoritative source fact ID;
-dialogue context and semantic text cannot author provenance.
+The preceding turn is included only for short or anaphoric candidates spoken by
+the other participant. It supplies dialogue context for answers such as “yes,”
+“there,” or a bare date without nearly doubling every CrossEncoder document.
+The following turn is intentionally excluded because it can repeat the next
+question and outrank the turn that contains the answer. The final selection
+still maps to the candidate's authoritative source fact ID; dialogue context
+and semantic text cannot author provenance.
 
 ### Semantic ranking, exact-source rendering
 
@@ -95,6 +114,21 @@ remain in the JSON sidecar for audit and citation validation. The semantic
 projection remains derived ranking metadata, not durable truth or presentation
 evidence. Answer citations continue to resolve to rendered authoritative source
 fact IDs.
+
+### Bounded direct-match context prior
+
+Context admission adds a fixed `2.0` prior to a scored fact only when it was a
+direct match from its own parent. The original CrossEncoder score remains
+unchanged in the sidecar. Siblings, external matches, neighbors, and unscored
+facts receive no prior. This is a bounded score adjustment, not a relation-first
+hard partition: a sibling whose score is more than two points higher still
+wins.
+
+An offline replay over the failed 40-question artifact selected `2.0` as the
+first prior that improved complete evidence coverage; `4.0` caused a complete
+evidence regression. The same replay showed a list-evidence tradeoff at `2.0`,
+so the prior remains subject to the new immutable 40-question gate rather than
+being claimed as a verified improvement.
 
 ### Exact upper-bound byte budgeting
 
@@ -114,12 +148,19 @@ memory ID as the deterministic tie-breaker. Scores are restored to the original
 document identities after inference. Grouping similar lengths reduces padding
 work without changing the candidate set, model, or ranking semantics.
 
+The local CrossEncoder uses two inference threads, selected from a 1/2/4-thread
+microbenchmark, and executes one fixed local warmup document before any
+question's retrieval timer starts. Warmup cost remains inside worker wall time
+and RSS accounting, and its duration is recorded in both the raw worker receipt
+and accepted resource evidence; it is excluded only from per-query latency.
+
 ### Protocol and compatibility
 
 V15 freezes the new selector identity, the 256 global candidate limit, the
-rank-weighted per-parent allocation, the 24-candidate and 12-selected-fact
-per-parent limits, previous-turn-aware CrossEncoder input, exact-source
-renderer revision, and exact upper-bound byte accounting.
+capacity-aware per-parent allocation, the 24-candidate and 12-selected-fact
+per-parent limits, conditional previous-turn CrossEncoder input, bounded
+direct-match prior, exact-source renderer revision, and exact upper-bound byte
+accounting.
 
 The v15 question sets retain the frozen v14 question selection and promotion
 gates. A verified v7 corpus and compatible frozen query vectors may be reused
@@ -134,8 +175,8 @@ retrieval contract.
 
 ## Consequences
 
-- High-ranked parents can retain several related facts without making recall or
-  CrossEncoder work unbounded.
+- Parents with direct evidence can retain several related facts without
+  starving later parents or making CrossEncoder work unbounded.
 - Short dialogue answers gain the preceding turn needed to interpret them while
   preserving exact source provenance.
 - Semantic projection can improve fact ranking, but complete exact source text

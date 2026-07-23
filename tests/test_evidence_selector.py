@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from itertools import pairwise
 
 from codecairn.memory.evidence_selector import (
     FACT_SELECTOR_ID,
     EvidenceSelector,
-    _weighted_parent_limits,
+    _allocate_parent_limits,
 )
 from codecairn.memory.models import (
     CodingMemory,
@@ -130,6 +129,16 @@ def test_evidence_selector_reranks_all_authoritative_facts_inside_a_parent() -> 
                     source_summary=memory.summary,
                     raw_event_index=1,
                 ),
+                RecallSnippet(
+                    relation="neighbor",
+                    source_memory_id="memory-neighbor",
+                    source_uri="codecairn://memory/memory-neighbor",
+                    fact_id="fact-neighbor",
+                    text="A bounded neighbor hint.",
+                    source_title="Neighbor",
+                    source_summary="Neighbor episode",
+                    raw_event_index=3,
+                ),
             ),
             episode_fact_ids=(question_fact.fact_id, answer_fact.fact_id),
         ),
@@ -144,9 +153,12 @@ def test_evidence_selector_reranks_all_authoritative_facts_inside_a_parent() -> 
     assert [snippet.fact_id for snippet in selected[0].snippets] == [
         "fact-answer",
         "fact-question",
+        "fact-neighbor",
     ]
     assert selected[0].snippets[0].relevance_score == 10.0
     assert selected[0].snippets[0].selection_source == FACT_SELECTOR_ID
+    assert selected[0].snippets[-1].relevance_score is None
+    assert selected[0].snippets[-1].selection_source is None
 
 
 def test_evidence_selector_bounds_each_local_reranker_document() -> None:
@@ -246,6 +258,19 @@ def test_evidence_selector_preserves_a_short_answer_and_reranks_it_with_previous
         actor="Jon",
         evidence=(replace(reference, raw_event_index=2),),
     )
+    self_contained = EvidenceFact(
+        fact_id="fact-self-contained",
+        repo_key="locomo/conv-test",
+        episode_id="episode-1",
+        kind="conversation_turn",
+        text=(
+            "I independently organized a detailed community workshop about sustainable "
+            "dance costumes for the autumn festival."
+        ),
+        role="participant",
+        actor="Gina",
+        evidence=(replace(reference, raw_event_index=3),),
+    )
     memory = CodingMemory(
         memory_id="memory-parent",
         repo_key="locomo/conv-test",
@@ -256,7 +281,7 @@ def test_evidence_selector_preserves_a_short_answer_and_reranks_it_with_previous
         command=None,
         exit_code=None,
         evidence=(reference,),
-        facts=(question, answer),
+        facts=(question, answer, self_contained),
         content_sha256="b" * 64,
         markdown_path="/runtime/memory-parent.md",
     )
@@ -298,15 +323,15 @@ def test_evidence_selector_preserves_a_short_answer_and_reranks_it_with_previous
                     raw_event_index=2,
                 ),
             ),
-            episode_fact_ids=(question.fact_id, answer.fact_id),
+            episode_fact_ids=(question.fact_id, answer.fact_id, self_contained.fact_id),
         ),
     )
     reranker = CapturingReranker()
 
     selected = EvidenceSelector(
         reranker=reranker,
-        max_candidates=2,
-        max_candidates_per_parent=2,
+        max_candidates=3,
+        max_candidates_per_parent=3,
         max_selected_per_parent=2,
     ).select(
         "What is Jon's attitude towards being part of the dance festival?",
@@ -320,6 +345,12 @@ def test_evidence_selector_preserves_a_short_answer_and_reranks_it_with_previous
         if "Target turn:\nJon: Yeah, awesome!" in document.text
     )
     assert "Previous turn:\nGina: Are you glad" in answer_document.text
+    self_contained_document = next(
+        document
+        for document in reranker.documents
+        if "Target turn:\nGina: I independently organized" in document.text
+    )
+    assert "Previous turn:" not in self_contained_document.text
     assert {snippet.fact_id for snippet in selected[0].snippets} == {
         "fact-festival",
         "fact-attitude",
@@ -404,13 +435,23 @@ def test_evidence_selector_keeps_exact_text_beside_single_source_semantic_text()
     assert snippet.semantic_fact_ids == (semantic.fact_id,)
 
 
-def test_weighted_parent_limits_move_bounded_work_to_higher_ranked_parents() -> None:
-    limits = _weighted_parent_limits(
-        20,
-        max_candidates=256,
-        max_candidates_per_parent=24,
+def test_parent_limits_preserve_breadth_then_follow_direct_evidence_and_capacity() -> None:
+    limits = _allocate_parent_limits(
+        (24, 20, 8),
+        (1, 2, 3),
+        max_candidates=32,
+        coverage_floor=4,
     )
 
-    assert sum(limits) == 256
-    assert limits[:4] == (24, 24, 24, 24)
-    assert all(limit >= later for limit, later in pairwise(limits))
+    assert limits == (4, 20, 8)
+
+
+def test_parent_limits_never_exceed_a_small_global_budget() -> None:
+    limits = _allocate_parent_limits(
+        (24, 24, 24),
+        (3, 2, 1),
+        max_candidates=2,
+        coverage_floor=12,
+    )
+
+    assert limits == (1, 1, 0)

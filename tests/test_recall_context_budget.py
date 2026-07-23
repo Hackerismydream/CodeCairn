@@ -10,6 +10,7 @@ from codecairn.memory.context import (
     count_context_tokens,
 )
 from codecairn.memory.episode import AttributedEpisode, AttributedTurn
+from codecairn.memory.evidence_selector import FACT_SELECTOR_ID
 from codecairn.memory.models import (
     EvidenceReference,
     RankedRecall,
@@ -18,6 +19,7 @@ from codecairn.memory.models import (
 )
 from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.service.recall import _compile_context as compile_context
+from codecairn.service.recall import _context_effective_relevance
 from codecairn.service.recall import _render_context as render_context
 
 
@@ -343,6 +345,109 @@ def test_context_admission_prefers_the_query_entity_answer_over_a_restatement() 
     assert "fact-0000000000000001" not in compiled.trace.rendered_fact_ids
 
 
+def test_context_direct_match_prior_is_bounded_and_keeps_raw_scores() -> None:
+    parent_memory_id = "memory-parent"
+    matched = replace(
+        _snippet(
+            fact_id="fact-matched",
+            text="Direct retrieval match.".ljust(600, "M"),
+            raw_event_index=1,
+        ),
+        relation="matched",
+        source_memory_id=parent_memory_id,
+        relevance_score=0.0,
+        selection_source=FACT_SELECTOR_ID,
+    )
+    sibling = replace(
+        _snippet(
+            fact_id="fact-sibling",
+            text="Higher raw sibling.".ljust(600, "S"),
+            raw_event_index=2,
+        ),
+        relation="sibling",
+        source_memory_id=parent_memory_id,
+        relevance_score=1.9,
+        selection_source=FACT_SELECTOR_ID,
+    )
+    parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        memory_id=parent_memory_id,
+        source_uri=f"codecairn://memory/{parent_memory_id}",
+        snippets=(matched,),
+    )
+    template = compile_context(
+        "What was directly stated?",
+        repo_key="locomo/conv-test",
+        ranked=(parent,),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(),
+    )
+    assert template.trace is not None
+
+    prioritized = compile_context(
+        "What was directly stated?",
+        repo_key="locomo/conv-test",
+        ranked=(replace(parent, snippets=(matched, sibling)),),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(context_max_tokens=template.trace.token_count),
+    )
+
+    assert prioritized.trace is not None
+    assert prioritized.trace.rendered_fact_ids == ("fact-matched",)
+    assert matched.relevance_score == 0.0
+    assert sibling.relevance_score == 1.9
+
+    stronger_sibling = replace(sibling, relevance_score=2.1)
+    unprioritized = compile_context(
+        "What was directly stated?",
+        repo_key="locomo/conv-test",
+        ranked=(replace(parent, snippets=(matched, stronger_sibling)),),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(context_max_tokens=template.trace.token_count),
+    )
+
+    assert unprioritized.trace is not None
+    assert unprioritized.trace.rendered_fact_ids == ("fact-sibling",)
+
+
+def test_context_direct_match_prior_never_activates_unscored_or_external_facts() -> None:
+    unscored = replace(
+        _snippet(fact_id="fact-unscored", text="Unscored.", raw_event_index=1),
+        relation="matched",
+        relevance_score=None,
+    )
+    external = replace(
+        _snippet(fact_id="fact-external", text="External.", raw_event_index=2),
+        relation="matched",
+        source_memory_id="memory-external",
+        relevance_score=1.0,
+    )
+    sibling = replace(
+        _snippet(fact_id="fact-sibling", text="Sibling.", raw_event_index=3),
+        relation="sibling",
+        relevance_score=1.0,
+    )
+
+    assert _context_effective_relevance(
+        unscored,
+        parent_memory_id="memory-source",
+    ) == float("-inf")
+    assert (
+        _context_effective_relevance(
+            external,
+            parent_memory_id="memory-source",
+        )
+        == 1.0
+    )
+    assert (
+        _context_effective_relevance(
+            sibling,
+            parent_memory_id="memory-source",
+        )
+        == 1.0
+    )
+
+
 def test_context_never_lets_a_semantic_projection_replace_exact_source_evidence() -> None:
     exact = _snippet(
         fact_id="fact-source",
@@ -354,7 +459,7 @@ def test_context_never_lets_a_semantic_projection_replace_exact_source_evidence(
         semantic_text="Melanie gave a concise grounded answer.",
         semantic_fact_ids=("semantic-fact",),
         relevance_score=1.0,
-        selection_source="bounded-dialogue-aware-cross-encoder-v2",
+        selection_source="bounded-dialogue-aware-cross-encoder-v4",
     )
 
     compiled = compile_context(
@@ -384,7 +489,7 @@ def test_context_keeps_temporal_source_data_when_projection_is_unreliable() -> N
         semantic_text="Melanie discussed an appointment.",
         semantic_fact_ids=("semantic-fact",),
         relevance_score=1.0,
-        selection_source="bounded-dialogue-aware-cross-encoder-v2",
+        selection_source="bounded-dialogue-aware-cross-encoder-v4",
     )
 
     compiled = compile_context(

@@ -67,7 +67,7 @@ from codecairn.storage.sqlite import SQLiteState
 FIXTURE = Path(__file__).parent / "fixtures" / "locomo" / "synthetic.json"
 FAKE_RETRIEVAL_CONFIG: dict[str, object] = {
     "method": "hybrid-rrf-cross-encoder",
-    "inference_threads": 1,
+    "inference_threads": 2,
     "tokenizer_parallelism": False,
     "tokenizer_threads": 1,
     "embedding": {
@@ -134,7 +134,7 @@ def _write_corpus_protocol_question_set(
     )
     retrieval_config: dict[str, object] = {
         "method": "hybrid-rrf-cross-encoder",
-        "inference_threads": 1,
+        "inference_threads": 2,
         "tokenizer_parallelism": False,
         "tokenizer_threads": 1,
         "embedding": {
@@ -3612,7 +3612,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 "judge_response_max_chars": 32_768,
                 "seed": 17,
                 "top_k": 20,
-                "inference_threads": 1,
+                "inference_threads": 2,
                 "tokenizer_parallelism": False,
                 "tokenizer_threads": 1,
                 "max_workers": 1,
@@ -3834,7 +3834,7 @@ def test_official_v15_command_contract_passes_preflight() -> None:
         protocol=protocol,
     )
     retrieval_config = {
-        "inference_threads": 1,
+        "inference_threads": 2,
         "tokenizer_parallelism": False,
         "tokenizer_threads": 1,
         "embedding": {
@@ -3849,13 +3849,14 @@ def test_official_v15_command_contract_passes_preflight() -> None:
         "planner": RecallPlannerConfig().public_config,
     }
     worker_contract = {
-        "name": "verified-shared-corpus-exec-per-conversation-v2",
+        "name": "verified-shared-corpus-exec-per-conversation-v3",
         "max_rss_bytes": 2147483648,
         "stall_timeout_seconds": 600.0,
         "poll_interval_seconds": 0.25,
         "rss_poll_interval_seconds": 1.0,
         "progress_signal": "heartbeat-evidence-and-durable-question-checkpoint-deadline-v2",
         "publish_policy": "conversation-directory-atomic-rename-v1",
+        "reranker_warmup": "one-local-document-before-question-timing-v1",
     }
 
     class FrozenProtocolModel(FakeAnswerModel):

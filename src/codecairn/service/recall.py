@@ -11,6 +11,7 @@ from typing import Protocol
 from urllib.parse import quote
 
 from codecairn.memory.context import (
+    CONTEXT_DIRECT_MATCH_PRIOR,
     CONTEXT_RENDERER_ID,
     CONTEXT_TOKENIZER_ID,
     count_context_tokens,
@@ -1933,10 +1934,9 @@ def _compile_context(
                 for snippet_index, snippet in enumerate(snippets)
             ),
             key=lambda value: (
-                -(
-                    value[2].relevance_score
-                    if value[2].relevance_score is not None
-                    else float("-inf")
+                -_context_effective_relevance(
+                    value[2],
+                    parent_memory_id=ranked[value[0]].memory_id,
                 ),
                 ranked[value[0]].rank,
                 value[1],
@@ -2141,6 +2141,19 @@ def _compile_context(
             omitted_fact_ids=tuple(sorted(available_fact_ids - set(rendered_fact_ids))),
         ),
     )
+
+
+def _context_effective_relevance(
+    snippet: RecallSnippet,
+    *,
+    parent_memory_id: str,
+) -> float:
+    score = snippet.relevance_score
+    if score is None:
+        return float("-inf")
+    if snippet.relation == "matched" and snippet.source_memory_id == parent_memory_id:
+        return score + CONTEXT_DIRECT_MATCH_PRIOR
+    return score
 
 
 def _line_token_cost(lines: list[str]) -> int:

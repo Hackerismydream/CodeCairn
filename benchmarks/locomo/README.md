@@ -149,18 +149,23 @@ documents through bounded Qwen embedding batches. It publishes one immutable,
 content-addressed corpus after verifying truth/index fingerprints and an idle
 index queue. All variants reuse that corpus. Query vectors are also frozen once
 per question selection and fail closed on a miss; scored runs cannot silently
-call the embedding provider. The local CrossEncoder uses one manifest-recorded
-inference thread, disables tokenizer parallelism, and length-sorts documents
-before batching to reduce padding work. After parent ranking, it performs one
-bounded, dialogue-aware fact pass: at most 256 facts globally; parent ranks
-1-4, 5-8, and 9 onward receive allocation weights 3, 2, and 1; no parent
+call the embedding provider. The local CrossEncoder uses two manifest-recorded
+inference threads, disables tokenizer parallelism, performs one local warmup
+before question timing, records that warmup in worker resource evidence, and
+length-sorts documents before batching to reduce padding work. After parent
+ranking, it performs one bounded, dialogue-aware fact pass: at most 256 facts
+globally; every parent receives up to a 12-candidate breadth floor before spare
+work is assigned by direct-match count, fact capacity, and rank; no parent
 supplies more than 24 candidates or 12 selected facts; and no reranker document
-exceeds 2,048 characters. A candidate document may include the preceding
-attributed turn, an evidence-linked semantic projection, and the candidate's
-exact turn. Semantic projection is ranking metadata only: the facts-first
-compiler renders complete exact attributed source facts, including timestamps,
-and admits UTF-8 bytes under the pinned 4,000-token upper-bound contract without
-per-line rounding. One caller thread performs every local retrieval while
+exceeds 2,048 characters. A short or anaphoric candidate may include
+the preceding other-speaker turn alongside an evidence-linked semantic
+projection and the candidate's exact turn. Semantic projection is ranking
+metadata only. Context admission applies a bounded `2.0` prior only to scored
+direct matches from their own parent; raw scores remain unchanged. The
+facts-first compiler renders complete exact attributed source facts, including
+timestamps, and admits UTF-8 bytes under the pinned 4,000-token upper-bound
+contract without per-line rounding. One caller thread performs every local
+retrieval while
 DeepSeek answer and judge calls are pipelined in a separate pool at
 `--max-workers`.
 Shared-corpus runs execute one conversation per fresh Python process. Each

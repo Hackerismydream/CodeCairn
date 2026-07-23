@@ -172,6 +172,12 @@ def _execute(raw: dict[str, object]) -> None:
     run_retrieval = _mapping(run_manifest.get("retrieval"), "run retrieval config")
     if {key: value for key, value in run_retrieval.items() if key != "top_k"} != expected_retrieval:
         raise ValueError("LoCoMo worker run retrieval configuration does not match")
+    warmup_started = time.perf_counter()
+    retrieval.reranker.warmup()
+    raw["reranker_warmup_ms"] = round(
+        (time.perf_counter() - warmup_started) * 1_000,
+        3,
+    )
 
     mode = _run_mode(raw)
     expected_answer_model = _optional_mapping(raw.get("answer_model"), "answer model")
@@ -353,6 +359,7 @@ def _write_worker_receipt(
             "parent_pid": _integer(raw, "parent_pid"),
             "pid": os.getpid(),
             "wall_time_seconds": round(time.perf_counter() - started, 6),
+            "reranker_warmup_ms": raw.get("reranker_warmup_ms"),
             "max_rss_bytes": max_rss,
             "completed_question_checkpoints": checkpoints,
             "question_checkpoint_sha256": digest.hexdigest(),

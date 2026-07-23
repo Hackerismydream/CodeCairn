@@ -19,7 +19,7 @@ MAX_FACT_RERANK_CANDIDATES = 256
 MAX_FACT_RERANK_CANDIDATES_PER_PARENT = 24
 MAX_SELECTED_FACTS_PER_PARENT = 12
 MAX_FACT_RERANK_DOCUMENT_CHARS = 2_048
-FACT_SELECTOR_ID = "bounded-dialogue-aware-cross-encoder-v2"
+FACT_SELECTOR_ID = "bounded-dialogue-aware-cross-encoder-v4"
 
 _TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]*")
 _STOPWORDS = frozenset(
@@ -100,10 +100,12 @@ class EvidenceSelector:
     ) -> tuple[RankedRecall, ...]:
         if not ranked:
             return ()
-        parent_limits = _weighted_parent_limits(
-            len(ranked),
+        parent_limits = _capacity_aware_parent_limits(
+            ranked,
+            memories=memories,
             max_candidates=self._max_candidates,
             max_candidates_per_parent=self._max_candidates_per_parent,
+            coverage_floor=self._max_selected_per_parent,
         )
         candidates: list[_FactCandidate] = []
         for parent_index, (item, parent_limit) in enumerate(
@@ -176,11 +178,7 @@ class EvidenceSelector:
         for parent_index, item in enumerate(ranked):
             selected_snippets = tuple(selected_by_parent.get(parent_index, ()))
             neighbors = tuple(
-                replace(
-                    snippet,
-                    relevance_score=round(item.final_score - 2.0, 12),
-                    selection_source=FACT_SELECTOR_ID,
-                )
+                snippet
                 for snippet in item.snippets
                 if snippet.source_memory_id != item.memory_id or snippet.relation == "neighbor"
             )
@@ -250,14 +248,23 @@ def _parent_candidates(
         exact_text = render_attributed_fact(fact)
         projection_text = semantic_text.get(fact.fact_id, "")
         position = fact_positions[fact.fact_id]
-        previous_text = render_attributed_fact(facts[position - 1]) if position > 0 else ""
+        previous_fact = facts[position - 1] if position > 0 else None
+        previous_text = (
+            render_attributed_fact(previous_fact)
+            if (
+                previous_fact is not None
+                and previous_fact.actor != fact.actor
+                and _needs_previous_turn(fact)
+            )
+            else ""
+        )
         candidates.append(
             _FactCandidate(
                 candidate_id=f"fact-candidate-{parent_index:02d}-{ordinal:02d}",
                 parent_index=parent_index,
                 fact_id=fact.fact_id,
                 snippet=RecallSnippet(
-                    relation=existing_relations.get(fact.fact_id, "matched"),
+                    relation=existing_relations.get(fact.fact_id, "sibling"),
                     source_memory_id=item.memory_id,
                     source_uri=item.source_uri,
                     fact_id=fact.fact_id,
@@ -315,40 +322,103 @@ def _semantic_projection_by_source(
     )
 
 
-def _weighted_parent_limits(
-    parent_count: int,
+def _capacity_aware_parent_limits(
+    ranked: tuple[RankedRecall, ...],
     *,
+    memories: Mapping[str, CodingMemory],
     max_candidates: int,
     max_candidates_per_parent: int,
+    coverage_floor: int,
 ) -> tuple[int, ...]:
-    """Allocate bounded fact work toward the parents most likely to enter context."""
+    """Preserve parent breadth, then spend spare work where direct evidence is strongest."""
 
-    if parent_count < 1:
+    if not ranked:
         return ()
-    weights = tuple(3 if index < 4 else 2 if index < 8 else 1 for index in range(parent_count))
-    weight_total = sum(weights)
-    ideals = tuple(max_candidates * weight / weight_total for weight in weights)
-    limits = [min(max_candidates_per_parent, int(ideal)) for ideal in ideals]
-    if max_candidates >= parent_count:
-        limits = [max(1, limit) for limit in limits]
-    while sum(limits) > max_candidates:
-        index = max(
-            (item for item in range(parent_count) if limits[item] > 0),
-            key=lambda item: (limits[item] - ideals[item], item),
+    capacities: list[int] = []
+    matched_counts: list[int] = []
+    for item in ranked:
+        memory = memories.get(item.memory_id)
+        fact_ids = set() if memory is None else {fact.fact_id for fact in memory.facts}
+        capacities.append(min(max_candidates_per_parent, len(fact_ids)))
+        matched_counts.append(
+            len(
+                {
+                    snippet.fact_id
+                    for snippet in item.snippets
+                    if (
+                        snippet.source_memory_id == item.memory_id
+                        and snippet.relation == "matched"
+                        and snippet.fact_id in fact_ids
+                    )
+                }
+            )
         )
-        limits[index] -= 1
-    while sum(limits) < max_candidates:
-        eligible = [
-            index for index in range(parent_count) if limits[index] < max_candidates_per_parent
-        ]
-        if not eligible:
+    return _allocate_parent_limits(
+        tuple(capacities),
+        tuple(matched_counts),
+        max_candidates=max_candidates,
+        coverage_floor=coverage_floor,
+    )
+
+
+def _allocate_parent_limits(
+    capacities: tuple[int, ...],
+    matched_counts: tuple[int, ...],
+    *,
+    max_candidates: int,
+    coverage_floor: int,
+) -> tuple[int, ...]:
+    if len(capacities) != len(matched_counts):
+        raise ValueError("Parent capacity and direct-match profiles must align")
+    limits = [0 for _capacity in capacities]
+    remaining = max_candidates
+    for _floor_slot in range(coverage_floor):
+        for index, capacity in enumerate(capacities):
+            if remaining <= 0:
+                break
+            if limits[index] < capacity:
+                limits[index] += 1
+                remaining -= 1
+    priority = sorted(
+        range(len(capacities)),
+        key=lambda index: (-matched_counts[index], -capacities[index], index),
+    )
+    for index in priority:
+        if remaining <= 0:
             break
-        index = max(
-            eligible,
-            key=lambda item: (ideals[item] - limits[item], -item),
-        )
-        limits[index] += 1
+        available = capacities[index] - limits[index]
+        assigned = min(available, remaining)
+        limits[index] += assigned
+        remaining -= assigned
     return tuple(limits)
+
+
+def _needs_previous_turn(fact: EvidenceFact) -> bool:
+    text = " ".join(fact.text.split())
+    if len(text) <= 96 or len(text.split()) <= 12:
+        return True
+    lowered = text.casefold()
+    return lowered.startswith(
+        (
+            "also ",
+            "because ",
+            "he ",
+            "here ",
+            "it ",
+            "no ",
+            "same ",
+            "she ",
+            "that ",
+            "there ",
+            "they ",
+            "this ",
+            "too ",
+            "we ",
+            "yeah ",
+            "yep ",
+            "yes ",
+        )
+    )
 
 
 def _bounded_rerank_text(projection_text: str, exact_text: str, *, max_chars: int) -> str:

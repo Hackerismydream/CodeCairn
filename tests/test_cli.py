@@ -246,12 +246,18 @@ def test_cli_builds_reusable_locomo_corpus_and_query_vectors(
         for spec in worker_specs
     )
     resource_usage = json.loads((run_dir / "resource-usage.json").read_text(encoding="utf-8"))
-    assert resource_usage["worker_contract"] == "verified-shared-corpus-exec-per-conversation-v2"
+    assert resource_usage["worker_contract"] == "verified-shared-corpus-exec-per-conversation-v3"
     assert resource_usage["worker_count"] == 2
     assert 0 < resource_usage["max_worker_rss_bytes"] <= 2 * 1024 * 1024 * 1024
     workers = resource_usage["accepted_workers"]
     assert len({worker["worker_pid"] for worker in workers}) == 2
     assert all(worker["worker_pid"] != worker["parent_pid"] for worker in workers)
+    assert all(
+        isinstance(worker["reranker_warmup_ms"], int | float)
+        and not isinstance(worker["reranker_warmup_ms"], bool)
+        and worker["reranker_warmup_ms"] >= 0
+        for worker in workers
+    )
     assert _stable_corpus_tree(corpus_dir) == corpus_tree_before
     assert all(
         secret.encode() not in path.read_bytes() for path in run_dir.rglob("*") if path.is_file()

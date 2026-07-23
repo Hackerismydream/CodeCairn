@@ -6,7 +6,7 @@ from importlib.metadata import version
 
 _HF_COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 _FASTEMBED_VERSION = version("fastembed")
-FASTEMBED_INFERENCE_THREADS = 1
+FASTEMBED_INFERENCE_THREADS = 2
 FASTEMBED_TOKENIZER_PARALLELISM = False
 FASTEMBED_TOKENIZER_THREADS = 1
 

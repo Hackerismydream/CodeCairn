@@ -50,6 +50,7 @@ from codecairn.memory.reranking import (
     DEFAULT_RERANKER_MODEL,
     DEFAULT_RERANKER_REVISION,
     DEFAULT_RERANKER_SOURCE,
+    RERANKER_WARMUP_CONTRACT,
     FastEmbedRerankingAdapter,
     FusionScoreRerankingAdapter,
 )
@@ -906,13 +907,14 @@ class _LocalOperations(ApplicationOperations):
             ),
         )
         worker_contract = {
-            "name": "verified-shared-corpus-exec-per-conversation-v2",
+            "name": "verified-shared-corpus-exec-per-conversation-v3",
             "max_rss_bytes": worker_limits.max_rss_bytes,
             "stall_timeout_seconds": worker_limits.stall_timeout_seconds,
             "poll_interval_seconds": worker_limits.poll_interval_seconds,
             "rss_poll_interval_seconds": worker_limits.rss_poll_interval_seconds,
             "progress_signal": "heartbeat-evidence-and-durable-question-checkpoint-deadline-v2",
             "publish_policy": "conversation-directory-atomic-rename-v1",
+            "reranker_warmup": RERANKER_WARMUP_CONTRACT,
         }
         lossless_clause_adapter = LosslessClauseProjectionAdapter()
         lossless_semantic_projection = _semantic_projection_public_config(lossless_clause_adapter)
@@ -1144,6 +1146,9 @@ def _execute_locomo_worker_attempt(
         else None
     )
     reported_rss = raw_resource.get("max_rss_bytes") if raw_resource is not None else None
+    reranker_warmup_ms = (
+        raw_resource.get("reranker_warmup_ms") if raw_resource is not None else None
+    )
     valid_reported_rss = type(reported_rss) is int and reported_rss > 0
     max_rss_bytes = max(
         process_result.max_rss_bytes,
@@ -1158,6 +1163,7 @@ def _execute_locomo_worker_attempt(
         and raw_resource.get("parent_pid") == os.getpid()
         and raw_resource.get("pid") == process_result.pid
         and valid_reported_rss
+        and _valid_nonnegative_number(reranker_warmup_ms)
         and max_rss_bytes <= limits.max_rss_bytes
     )
     if accepted:
@@ -1198,6 +1204,7 @@ def _execute_locomo_worker_attempt(
         "max_rss_bytes": max_rss_bytes,
         "rss_limit_bytes": limits.max_rss_bytes,
         "wall_time_seconds": process_result.wall_time_seconds,
+        "reranker_warmup_ms": reranker_warmup_ms,
         "run_manifest_sha256": spec["run_manifest_sha256"],
         "spec_sha256": file_sha256(spec_path),
         "expected_question_ids": list(work.question_ids),
@@ -1459,6 +1466,7 @@ def _recover_interrupted_locomo_worker_receipts(
                     "max_rss_bytes": 0,
                     "rss_limit_bytes": limits.max_rss_bytes,
                     "wall_time_seconds": None,
+                    "reranker_warmup_ms": None,
                     "run_manifest_sha256": spec["run_manifest_sha256"],
                     "spec_sha256": file_sha256(spec_path),
                     "expected_question_ids": list(work.question_ids),
@@ -1476,6 +1484,7 @@ def _recover_interrupted_locomo_worker_receipts(
         except (OSError, ValueError):
             continue
         reported = raw_resource.get("max_rss_bytes")
+        reranker_warmup_ms = raw_resource.get("reranker_warmup_ms")
         worker_pid = raw_resource.get("pid")
         status = raw_resource.get("status")
         if (
@@ -1490,6 +1499,10 @@ def _recover_interrupted_locomo_worker_receipts(
             or worker_pid < 1
             or type(reported) is not int
             or reported < 1
+            or (status == "completed" and not _valid_nonnegative_number(reranker_warmup_ms))
+            or (
+                reranker_warmup_ms is not None and not _valid_nonnegative_number(reranker_warmup_ms)
+            )
             or raw_resource.get("completed_question_checkpoints") != completed_checkpoints
             or raw_resource.get("question_checkpoint_sha256") != checkpoint_sha256
         ):
@@ -1510,6 +1523,7 @@ def _recover_interrupted_locomo_worker_receipts(
             "max_rss_bytes": reported,
             "rss_limit_bytes": limits.max_rss_bytes,
             "wall_time_seconds": raw_resource.get("wall_time_seconds"),
+            "reranker_warmup_ms": raw_resource.get("reranker_warmup_ms"),
             "run_manifest_sha256": spec["run_manifest_sha256"],
             "spec_sha256": file_sha256(spec_path),
             "expected_question_ids": list(work.question_ids),
@@ -1765,6 +1779,7 @@ def _completed_worker_attempt_evidence(
     monitor_pid = monitor.get("pid")
     observed = monitor.get("observed_max_rss_bytes")
     reported = raw_resource.get("max_rss_bytes")
+    reranker_warmup_ms = raw_resource.get("reranker_warmup_ms")
     completed_checkpoints = _worker_question_checkpoint_files(
         question_dir,
         conversation_id=work.conversation.sample_id,
@@ -1790,6 +1805,7 @@ def _completed_worker_attempt_evidence(
         or raw_resource.get("question_checkpoint_sha256") != checkpoint_sha256
         or type(reported) is not int
         or reported < 1
+        or not _valid_nonnegative_number(reranker_warmup_ms)
         or max(observed, reported) > limits.max_rss_bytes
     ):
         return None
@@ -1931,6 +1947,7 @@ def _recover_completed_locomo_worker_attempt(
                 "max_rss_bytes": max(observed, reported),
                 "rss_limit_bytes": limits.max_rss_bytes,
                 "wall_time_seconds": monitor.get("wall_time_seconds"),
+                "reranker_warmup_ms": raw_resource.get("reranker_warmup_ms"),
                 "run_manifest_sha256": spec["run_manifest_sha256"],
                 "spec_sha256": file_sha256(_locomo_attempt_child(attempt_dir, "spec.json")),
                 "expected_question_ids": list(work.question_ids),
@@ -2207,6 +2224,7 @@ def _recover_locomo_worker_receipt(
         )
         observed = monitor.get("observed_max_rss_bytes")
         reported = raw_resource.get("max_rss_bytes")
+        reranker_warmup_ms = raw_resource.get("reranker_warmup_ms")
         worker_pid = monitor.get("pid")
         parent_pid = record.get("parent_pid")
         if (
@@ -2224,6 +2242,7 @@ def _recover_locomo_worker_receipt(
             or parent_pid == worker_pid
             or record.get("observed_max_rss_bytes") != observed
             or record.get("reported_max_rss_bytes") != reported
+            or record.get("reranker_warmup_ms") != reranker_warmup_ms
             or record.get("max_rss_bytes") != max(cast(int, observed), cast(int, reported))
             or record.get("rss_limit_bytes") != limits.max_rss_bytes
             or record.get("run_manifest_sha256") != spec.get("run_manifest_sha256")
@@ -2286,6 +2305,7 @@ def _recover_locomo_worker_receipt(
                 "reported_max_rss_bytes": reported,
                 "max_rss_bytes": max(observed, reported),
                 "rss_limit_bytes": limits.max_rss_bytes,
+                "reranker_warmup_ms": raw_resource.get("reranker_warmup_ms"),
                 "run_manifest_sha256": spec.get("run_manifest_sha256"),
                 "spec_sha256": file_sha256(attempt_dir / "spec.json"),
                 "expected_question_ids": list(work.question_ids),
@@ -2335,6 +2355,15 @@ def _positive_environment_float(name: str, default: float) -> float:
     if not math.isfinite(value) or value <= 0:
         raise ValueError(f"{name} must be positive")
     return value
+
+
+def _valid_nonnegative_number(value: object) -> bool:
+    return (
+        isinstance(value, int | float)
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+        and float(value) >= 0
+    )
 
 
 def create_application(root: Path) -> CodeCairnApplication:

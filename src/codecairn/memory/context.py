@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 CONTEXT_TOKENIZER_ID = "codecairn/utf8-two-byte-upper-bound-v1"
-CONTEXT_RENDERER_ID = "exact-source-facts-first-v6"
+CONTEXT_DIRECT_MATCH_PRIOR = 2.0
+CONTEXT_RENDERER_ID = "exact-source-prioritized-facts-first-v7"
 TOKEN_BUDGET_CONTEXT_RENDERERS = frozenset(
     {
         "facts-first-round-robin-v4",
         "scored-facts-first-v5",
+        "exact-source-facts-first-v6",
         CONTEXT_RENDERER_ID,
     }
 )

@@ -140,12 +140,49 @@ def test_fastembed_reranker_length_sorts_model_input_and_restores_score_order(
     ]
 
 
+def test_fastembed_reranker_warmup_loads_and_executes_one_local_document(monkeypatch) -> None:
+    calls: list[tuple[str, list[str], int]] = []
+
+    class RecordingCrossEncoder:
+        def rerank(
+            self,
+            query: str,
+            documents: Iterable[str],
+            *,
+            batch_size: int,
+        ) -> Iterable[float]:
+            calls.append((query, list(documents), batch_size))
+            return (0.0,)
+
+    monkeypatch.setattr(
+        reranking_module,
+        "_load_fastembed_reranker",
+        lambda model_id, source_id, revision, cache_dir: RecordingCrossEncoder(),
+    )
+    reranker = FastEmbedRerankingAdapter(
+        model_id="test/reranker",
+        source_id="test/reranker-source",
+        revision="b" * 40,
+        batch_size=8,
+    )
+
+    reranker.warmup()
+
+    assert calls == [
+        (
+            "CodeCairn local reranker warmup",
+            ["Local CrossEncoder warmup document."],
+            8,
+        )
+    ]
+
+
 def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> None:
     providers = create_retrieval_providers(environment={"DASHSCOPE_API_KEY": "secret-key"})
 
     assert providers.public_config == {
         "method": "hybrid-rrf-cross-encoder",
-        "inference_threads": 1,
+        "inference_threads": 2,
         "tokenizer_parallelism": False,
         "tokenizer_threads": 1,
         "embedding": {
@@ -575,7 +612,7 @@ def test_fastembed_loaders_use_resolved_snapshot_paths_and_eager_inner_loading(
                 "model_name": "test/embedding",
                 "cache_dir": "/models",
                 "specific_model_path": "/snapshots/" + "a" * 40,
-                "threads": 1,
+                "threads": 2,
                 "lazy_load": False,
             },
         ),
@@ -585,7 +622,7 @@ def test_fastembed_loaders_use_resolved_snapshot_paths_and_eager_inner_loading(
                 "model_name": "test/reranker",
                 "cache_dir": "/models",
                 "specific_model_path": "/snapshots/" + "b" * 40,
-                "threads": 1,
+                "threads": 2,
                 "lazy_load": False,
             },
         ),

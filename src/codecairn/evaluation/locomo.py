@@ -55,6 +55,7 @@ from codecairn.memory.context import (
 from codecairn.memory.embedding import EmbeddingProvider
 from codecairn.memory.episode import AttributedEpisode, AttributedTurn
 from codecairn.memory.models import EvidenceReference, RecallResult
+from codecairn.memory.reranking import RERANKER_WARMUP_CONTRACT
 from codecairn.memory.retrieval import retrieval_config_sha256
 from codecairn.memory.trace import stable_id
 from codecairn.service.cascade import MiniCascade
@@ -3598,6 +3599,7 @@ _FACT_SELECTOR_PROTOCOL_FIELDS = (
     "fact_rerank_max_selected_per_parent",
     "fact_rerank_max_document_chars",
 )
+_CONTEXT_SELECTOR_PROTOCOL_FIELDS = ("context_direct_match_prior",)
 _FROZEN_PLANNER_PROTOCOL_FIELDS = (
     "router",
     "hard_route_cutoff",
@@ -3627,6 +3629,7 @@ _FROZEN_PLANNER_PROTOCOL_FIELDS = (
     "temporal_sibling_facts_per_memory",
     *_FACT_SELECTOR_PROTOCOL_FIELDS,
     "context_renderer",
+    *_CONTEXT_SELECTOR_PROTOCOL_FIELDS,
     "context_max_chars",
     "context_max_tokens",
     "context_tokenizer",
@@ -3658,7 +3661,7 @@ def _validate_corpus_protocol(
     if protocol is None:
         raise ValueError("LoCoMo corpus question set has no frozen protocol")
     optional_legacy_fields = (
-        set(_FACT_SELECTOR_PROTOCOL_FIELDS)
+        set((*_FACT_SELECTOR_PROTOCOL_FIELDS, *_CONTEXT_SELECTOR_PROTOCOL_FIELDS))
         if protocol.get("context_renderer") != CONTEXT_RENDERER_ID
         else set()
     )
@@ -3722,7 +3725,9 @@ def _validate_run_protocol(
         return
     if protocol.get("context_renderer") == CONTEXT_RENDERER_ID:
         missing_fact_selector_fields = [
-            field for field in _FACT_SELECTOR_PROTOCOL_FIELDS if field not in protocol
+            field
+            for field in (*_FACT_SELECTOR_PROTOCOL_FIELDS, *_CONTEXT_SELECTOR_PROTOCOL_FIELDS)
+            if field not in protocol
         ]
         if missing_fact_selector_fields:
             raise ValueError(
@@ -3780,6 +3785,7 @@ def _validate_run_protocol(
         "worker_rss_poll_interval_seconds": worker.get("rss_poll_interval_seconds"),
         "worker_progress_signal": worker.get("progress_signal"),
         "worker_publish_policy": worker.get("publish_policy"),
+        "worker_reranker_warmup": worker.get("reranker_warmup"),
         "embedding_adapter": embedding.get("adapter"),
         "embedding_model": embedding.get("model"),
         "embedding_dimension": embedding.get("dimension"),
@@ -5421,6 +5427,9 @@ def _report_worker_resources(
         return None
     contract = _required_dict(raw_contract, field="question worker contract")
     max_rss_bytes = _required_int(contract, "max_rss_bytes")
+    reranker_warmup_contract = contract.get("reranker_warmup")
+    if reranker_warmup_contract not in {None, RERANKER_WARMUP_CONTRACT}:
+        raise ValueError("LoCoMo worker uses an unsupported reranker warmup contract")
     selection = _required_dict(manifest.get("selection"), field="run selection")
     raw_inventory = _required_dict(
         selection.get("question_ids_by_conversation"), field="worker question inventory"
@@ -5451,6 +5460,7 @@ def _report_worker_resources(
             manifest_sha256=manifest_sha256,
             inventory=raw_inventory,
             max_rss_bytes=max_rss_bytes,
+            reranker_warmup_contract=reranker_warmup_contract,
         )
     receipts = [receipt for _path, receipt in receipt_entries]
     accepted = [receipt for receipt in receipts if receipt.get("accepted") is True]
@@ -5536,6 +5546,7 @@ def _validate_report_worker_receipt(
     manifest_sha256: str,
     inventory: dict[str, object],
     max_rss_bytes: int,
+    reranker_warmup_contract: object,
 ) -> None:
     conversation_id = _required_str(receipt, "conversation_id")
     attempt = _required_int(receipt, "attempt")
@@ -5545,6 +5556,7 @@ def _validate_report_worker_receipt(
     observed = _required_int(receipt, "observed_max_rss_bytes")
     maximum = _required_int(receipt, "max_rss_bytes")
     reported = receipt.get("reported_max_rss_bytes")
+    reranker_warmup_ms = receipt.get("reranker_warmup_ms")
     accepted = receipt.get("accepted")
     expected_question_ids = inventory.get(conversation_id)
     expected_path = f"{conversation_id}.attempt-{attempt}.json"
@@ -5567,6 +5579,12 @@ def _validate_report_worker_receipt(
         or receipt.get("rss_limit_bytes") != max_rss_bytes
         or receipt.get("run_manifest_sha256") != manifest_sha256
         or receipt.get("expected_question_ids") != expected_question_ids
+        or (
+            accepted is True
+            and reranker_warmup_contract is not None
+            and not _valid_nonnegative_number(reranker_warmup_ms)
+        )
+        or (reranker_warmup_ms is not None and not _valid_nonnegative_number(reranker_warmup_ms))
     ):
         raise ValueError("LoCoMo worker resource receipt does not match the run contract")
     spec_path = _locomo_artifact_child(
@@ -5606,6 +5624,7 @@ def _validate_report_worker_receipt(
             raw_resource.get("conversation_id") != conversation_id
             or raw_resource.get("parent_pid") != parent_pid
             or raw_resource.get("pid") != worker_pid
+            or raw_resource.get("reranker_warmup_ms") != reranker_warmup_ms
         ):
             raise ValueError("LoCoMo raw worker receipt changes its process identity")
     elif worker_started is False and (
@@ -6828,6 +6847,15 @@ def _required_int(record: dict[str, object], field: str) -> int:
     if not isinstance(value, int):
         raise ValueError(f"{field} must be an integer")
     return value
+
+
+def _valid_nonnegative_number(value: object) -> bool:
+    return (
+        isinstance(value, int | float)
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+        and float(value) >= 0
+    )
 
 
 def _optional_str(value: object) -> str | None:

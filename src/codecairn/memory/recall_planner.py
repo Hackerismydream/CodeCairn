@@ -4,7 +4,11 @@ import re
 from dataclasses import dataclass
 from typing import Literal
 
-from codecairn.memory.context import CONTEXT_RENDERER_ID, CONTEXT_TOKENIZER_ID
+from codecairn.memory.context import (
+    CONTEXT_DIRECT_MATCH_PRIOR,
+    CONTEXT_RENDERER_ID,
+    CONTEXT_TOKENIZER_ID,
+)
 from codecairn.memory.evidence_selector import (
     FACT_SELECTOR_ID,
     MAX_FACT_RERANK_CANDIDATES,
@@ -317,7 +321,7 @@ class RecallPlannerConfig:
             "expansion_max_time_facts": self.expansion_plan.max_time_facts,
             "expansion_max_provenance_facts": self.expansion_plan.max_provenance_facts,
             "temporal_lane": "explicit-month-prefix-v1",
-            "enrichment_order": "matched-neighbor-then-dialogue-aware-fact-rerank-v5",
+            "enrichment_order": "matched-neighbor-then-capacity-aware-dialogue-rerank-v7",
             "matched_facts_per_memory": self.matched_facts_per_memory,
             "diverse_matched_facts_per_memory": self.diverse_matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
@@ -328,6 +332,7 @@ class RecallPlannerConfig:
             "fact_rerank_max_selected_per_parent": (self.fact_rerank_max_selected_per_parent),
             "fact_rerank_max_document_chars": self.fact_rerank_max_document_chars,
             "context_renderer": CONTEXT_RENDERER_ID,
+            "context_direct_match_prior": CONTEXT_DIRECT_MATCH_PRIOR,
             "context_max_chars": self.context_max_chars,
             "context_max_tokens": self.context_max_tokens,
             "context_tokenizer": CONTEXT_TOKENIZER_ID,

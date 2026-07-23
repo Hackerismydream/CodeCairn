@@ -18,6 +18,7 @@ DEFAULT_RERANKER_SOURCE = "Xenova/ms-marco-MiniLM-L-6-v2"
 DEFAULT_RERANKER_LICENSE = "Apache-2.0"
 DEFAULT_RERANKER_REVISION = "a09144355adeed5f58c8ed011d209bf8ee5a1fec"
 DEFAULT_RERANKER_BATCH_SIZE = 8
+RERANKER_WARMUP_CONTRACT = "one-local-document-before-question-timing-v1"
 
 
 class RerankingProvider(Protocol):
@@ -33,6 +34,8 @@ class RerankingProvider(Protocol):
     @property
     def revision(self) -> str: ...
 
+    def warmup(self) -> None: ...
+
     def rerank(
         self,
         query: str,
@@ -47,6 +50,9 @@ class FusionScoreRerankingAdapter:
     source_id = "builtin/rrf-score-v1"
     revision = "test-v1"
     batch_size = None
+
+    def warmup(self) -> None:
+        return
 
     def rerank(
         self,
@@ -105,6 +111,18 @@ class FastEmbedRerankingAdapter:
     @property
     def batch_size(self) -> int:
         return self._batch_size
+
+    def warmup(self) -> None:
+        self.rerank(
+            "CodeCairn local reranker warmup",
+            (
+                RerankDocument(
+                    memory_id="codecairn-reranker-warmup",
+                    text="Local CrossEncoder warmup document.",
+                    fusion_score=0.0,
+                ),
+            ),
+        )
 
     def rerank(
         self,
