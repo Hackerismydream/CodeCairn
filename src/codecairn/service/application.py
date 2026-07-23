@@ -37,6 +37,7 @@ class LoCoMoCorpusBuildRequest:
     repository_commit: str
     resume: bool = False
     expected_dataset_sha256: str | None = None
+    question_set_path: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -44,6 +45,7 @@ class LoCoMoQueryVectorBuildRequest:
     input_path: Path
     output_root: Path
     vector_set_id: str
+    resume: bool = False
     question_set_path: Path | None = None
     expected_dataset_sha256: str | None = None
 
@@ -77,6 +79,25 @@ class LoCoMoAblationRequest:
     output_path: Path
 
 
+@dataclass(frozen=True, slots=True)
+class LoCoMoPromotionRequest:
+    question_set_path: Path
+    selection_report_path: Path
+    episode_only_run: Path
+    hierarchy_no_neighbors_run: Path
+    hierarchy_run: Path
+    run_dir: Path
+    output_path: Path
+
+
+@dataclass(frozen=True, slots=True)
+class LoCoMoEvidenceCoverageRequest:
+    run_dir: Path
+    dataset_path: Path
+    output_path: Path | None = None
+    oracle_max_tokens: int = 4_000
+
+
 class ApplicationOperations(Protocol):
     def doctor(self) -> dict[str, object]: ...
 
@@ -89,6 +110,15 @@ class ApplicationOperations(Protocol):
     def verify_evidence_bundle(self, bundle_dir: Path) -> dict[str, object]: ...
 
     def build_locomo_ablation_report(self, request: LoCoMoAblationRequest) -> dict[str, object]: ...
+
+    def build_locomo_promotion_report(
+        self, request: LoCoMoPromotionRequest
+    ) -> dict[str, object]: ...
+
+    def report_locomo_evidence_coverage(
+        self,
+        request: LoCoMoEvidenceCoverageRequest,
+    ) -> dict[str, object]: ...
 
     def build_locomo_corpus(self, request: LoCoMoCorpusBuildRequest) -> dict[str, object]: ...
 
@@ -140,6 +170,18 @@ class CodeCairnApplication:
 
     def build_locomo_ablation_report(self, request: LoCoMoAblationRequest) -> dict[str, object]:
         return self._operations.build_locomo_ablation_report(request)
+
+    def build_locomo_promotion_report(
+        self,
+        request: LoCoMoPromotionRequest,
+    ) -> dict[str, object]:
+        return self._operations.build_locomo_promotion_report(request)
+
+    def report_locomo_evidence_coverage(
+        self,
+        request: LoCoMoEvidenceCoverageRequest,
+    ) -> dict[str, object]:
+        return self._operations.report_locomo_evidence_coverage(request)
 
     def build_locomo_corpus(self, request: LoCoMoCorpusBuildRequest) -> dict[str, object]:
         return self._operations.build_locomo_corpus(request)

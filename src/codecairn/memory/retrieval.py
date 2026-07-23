@@ -57,6 +57,7 @@ class RetrievalProviders:
             }
         embedding: dict[str, object]
         if self.profile == "dashscope":
+            input_price = getattr(self.embedder, "input_price_cny_per_million", None)
             embedding = {
                 "adapter": "dashscope-openai-compatible",
                 "adapter_version": DASHSCOPE_ADAPTER_VERSION,
@@ -65,6 +66,10 @@ class RetrievalProviders:
                 "revision": self.embedder.revision,
                 "dimension": self.embedder.dimension,
                 "license": self.embedding_license,
+                "pricing": {
+                    "currency": "CNY",
+                    "input_per_million": input_price,
+                },
             }
         else:
             embedding = {

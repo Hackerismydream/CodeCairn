@@ -15,12 +15,14 @@ from filelock import FileLock
 
 from codecairn.entrypoints.cli import build_app
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
+from codecairn.evaluation.attempt_journal import validate_model_attempt_journal
 from codecairn.evaluation.worker_process import WorkerProcessLimits, run_monitored_worker
 from codecairn.importers.session import SessionImporter
 from codecairn.memory.embedding import (
     DASHSCOPE_TEXT_V4_DIMENSIONS,
     DEFAULT_EMBEDDING_BATCH_SIZE,
     DEFAULT_EMBEDDING_DIMENSION,
+    DEFAULT_EMBEDDING_INPUT_PRICE_CNY_PER_MILLION,
     DEFAULT_EMBEDDING_LICENSE,
     DEFAULT_EMBEDDING_MAX_ATTEMPTS,
     DEFAULT_EMBEDDING_MODEL,
@@ -37,7 +39,7 @@ from codecairn.memory.embedding import (
     FastEmbedEmbeddingAdapter,
     HashingEmbedder,
 )
-from codecairn.memory.episode import EpisodeSemanticizer
+from codecairn.memory.episode import EpisodeSemanticizer, LosslessEpisodeSemanticizer
 from codecairn.memory.evidence import EvidenceGate
 from codecairn.memory.model_artifact import validate_hf_artifact
 from codecairn.memory.projection import fingerprint, project_recall_documents
@@ -52,6 +54,11 @@ from codecairn.memory.reranking import (
     FusionScoreRerankingAdapter,
 )
 from codecairn.memory.retrieval import RetrievalProviders
+from codecairn.memory.semantic import (
+    ClauseProjectionAdapter,
+    GroundedClauseSemanticizer,
+    LosslessClauseProjectionAdapter,
+)
 from codecairn.service.application import (
     ApplicationOperations,
     CodeCairnApplication,
@@ -60,6 +67,8 @@ from codecairn.service.application import (
     EvidenceBundleBuildRequest,
     LoCoMoAblationRequest,
     LoCoMoCorpusBuildRequest,
+    LoCoMoEvidenceCoverageRequest,
+    LoCoMoPromotionRequest,
     LoCoMoQueryVectorBuildRequest,
 )
 from codecairn.service.cascade import MemoryIndex, MiniCascade
@@ -67,6 +76,7 @@ from codecairn.service.recall import RecallEngine
 from codecairn.service.runtime import MemoryRuntime
 from codecairn.storage.lance import LanceMemoryIndex
 from codecairn.storage.markdown import MarkdownMemoryStore
+from codecairn.storage.semantic_cache import JsonProjectionCache
 from codecairn.storage.sqlite import SQLiteState
 
 if TYPE_CHECKING:
@@ -202,6 +212,16 @@ def create_retrieval_providers(
                     key="CODECAIRN_EMBEDDING_RETRY_BACKOFF_SECONDS",
                     default=DEFAULT_EMBEDDING_RETRY_BACKOFF_SECONDS,
                 ),
+                input_price_cny_per_million=(
+                    _float_environment(
+                        environment=resolved_environment,
+                        key="CODECAIRN_EMBEDDING_INPUT_PRICE_CNY_PER_MILLION",
+                        default=DEFAULT_EMBEDDING_INPUT_PRICE_CNY_PER_MILLION,
+                    )
+                    if embedding_model == DEFAULT_EMBEDDING_MODEL
+                    or "CODECAIRN_EMBEDDING_INPUT_PRICE_CNY_PER_MILLION" in resolved_environment
+                    else None
+                ),
             ),
             reranker=FastEmbedRerankingAdapter(
                 model_id=reranker_model,
@@ -312,9 +332,26 @@ def create_runtime(
     *,
     retrieval: RetrievalProviders | None = None,
     episode_semanticizer: EpisodeSemanticizer | None = None,
+    clause_adapter: ClauseProjectionAdapter | None = None,
 ) -> MemoryRuntime:
     """Build the local Markdown plus SQLite runtime behind service ports."""
     resolved = root.resolve()
+    if episode_semanticizer is not None and clause_adapter is not None:
+        raise ValueError("Configure only one semantic projection strategy")
+    semanticizer = episode_semanticizer
+    if semanticizer is None:
+        if clause_adapter is None:
+            semanticizer = LosslessEpisodeSemanticizer()
+        else:
+            semanticizer = GroundedClauseSemanticizer(
+                adapter=clause_adapter,
+                cache=JsonProjectionCache(resolved / ".projection-cache"),
+                max_clause_chars=(
+                    64 * 1024 * 1024
+                    if isinstance(clause_adapter, LosslessClauseProjectionAdapter)
+                    else 4_096
+                ),
+            )
     providers = retrieval or create_retrieval_providers()
     state = SQLiteState(resolved / "state.sqlite3")
     index = LanceMemoryIndex(resolved / "index.lancedb", embedder=providers.embedder)
@@ -323,7 +360,7 @@ def create_runtime(
         memory_store=MarkdownMemoryStore(resolved),
         state=state,
         evidence_gate=EvidenceGate(),
-        episode_semanticizer=episode_semanticizer,
+        episode_semanticizer=semanticizer,
         recall_engine=RecallEngine(
             index=index,
             state=state,
@@ -333,6 +370,81 @@ def create_runtime(
             retrieval_config_sha256=providers.config_sha256,
         ),
     )
+
+
+def create_clause_projection_adapter(
+    *,
+    environment: Mapping[str, str] | None = None,
+) -> ClauseProjectionAdapter:
+    """Resolve one ingestion-time semantic projection profile without calling it."""
+
+    resolved_environment = os.environ if environment is None else environment
+    profile = resolved_environment.get("CODECAIRN_SEMANTICIZER_PROFILE", "lossless")
+    if profile == "lossless":
+        return LosslessClauseProjectionAdapter()
+    if profile != "structured":
+        raise ValueError(f"Unknown semantic projection profile: {profile}")
+    from codecairn.evaluation.providers import create_locomo_text_model
+    from codecairn.evaluation.semantic import StructuredModelClauseProjectionAdapter
+
+    revision = resolved_environment.get(
+        "CODECAIRN_SEMANTIC_REVISION",
+        "grounded-clause-json-v2",
+    )
+    if not revision.strip():
+        raise ValueError("CODECAIRN_SEMANTIC_REVISION must not be empty")
+    return StructuredModelClauseProjectionAdapter(
+        model=create_locomo_text_model(
+            role="semantic",
+            environment=resolved_environment,
+        ),
+        revision=revision,
+        max_facts_per_request=_integer_environment(
+            environment=resolved_environment,
+            key="CODECAIRN_SEMANTIC_MAX_FACTS_PER_REQUEST",
+            default=48,
+        ),
+        max_request_chars=_integer_environment(
+            environment=resolved_environment,
+            key="CODECAIRN_SEMANTIC_MAX_REQUEST_CHARS",
+            default=48_000,
+        ),
+        max_response_chars=_integer_environment(
+            environment=resolved_environment,
+            key="CODECAIRN_SEMANTIC_MAX_RESPONSE_CHARS",
+            default=96_000,
+        ),
+    )
+
+
+def _semantic_projection_public_config(
+    adapter: ClauseProjectionAdapter,
+) -> dict[str, object]:
+    configured = getattr(adapter, "public_config", None)
+    if isinstance(configured, dict):
+        return dict(configured)
+    return {
+        "adapter": adapter.identity.adapter_id,
+        "revision": adapter.identity.revision,
+        "model": adapter.identity.model_id,
+    }
+
+
+def _semantic_projection_usage(adapter: ClauseProjectionAdapter) -> dict[str, object]:
+    usage = getattr(adapter, "usage", None)
+    if usage is None:
+        return {
+            "call_count": 0,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cost_usd": 0.0,
+            "cost_cny": 0.0,
+        }
+    return asdict(usage)
+
+
+def _embedding_usage(adapter: DashScopeEmbeddingAdapter) -> dict[str, object]:
+    return asdict(adapter.usage)
 
 
 def create_cascade(
@@ -603,6 +715,45 @@ class _LocalOperations(ApplicationOperations):
             )
         )
 
+    def build_locomo_promotion_report(
+        self,
+        request: LoCoMoPromotionRequest,
+    ) -> dict[str, object]:
+        from codecairn.evaluation.locomo_promotion import (
+            LoCoMoPromotionConfig,
+            build_locomo_promotion_report,
+        )
+
+        return build_locomo_promotion_report(
+            LoCoMoPromotionConfig(
+                question_set_path=request.question_set_path,
+                selection_report_path=request.selection_report_path,
+                episode_only_run=request.episode_only_run,
+                hierarchy_no_neighbors_run=request.hierarchy_no_neighbors_run,
+                hierarchy_run=request.hierarchy_run,
+                run_dir=request.run_dir,
+                output_path=request.output_path,
+            )
+        )
+
+    def report_locomo_evidence_coverage(
+        self,
+        request: LoCoMoEvidenceCoverageRequest,
+    ) -> dict[str, object]:
+        from codecairn.evaluation.locomo_evidence import (
+            LoCoMoEvidenceCoverageConfig,
+            report_locomo_evidence_coverage,
+        )
+
+        return report_locomo_evidence_coverage(
+            LoCoMoEvidenceCoverageConfig(
+                run_dir=request.run_dir,
+                dataset_path=request.dataset_path,
+                output_path=request.output_path,
+                oracle_max_tokens=request.oracle_max_tokens,
+            )
+        )
+
     def build_locomo_corpus(self, request: LoCoMoCorpusBuildRequest) -> dict[str, object]:
         from codecairn.evaluation.locomo import (
             LOCOMO_DATASET_SHA256,
@@ -611,11 +762,19 @@ class _LocalOperations(ApplicationOperations):
             build_locomo_corpus,
         )
 
+        projection_adapter = create_clause_projection_adapter()
+        projection_config = _semantic_projection_public_config(projection_adapter)
+
         def memory_factory(root: Path) -> CodeCairnConversationMemory:
             return CodeCairnConversationMemory(
-                runtime=create_runtime(root, retrieval=self._retrieval),
+                runtime=create_runtime(
+                    root,
+                    retrieval=self._retrieval,
+                    clause_adapter=projection_adapter,
+                ),
                 cascade=create_cascade(root, retrieval=self._retrieval),
                 repo_key=f"locomo/{root.name}",
+                semantic_projection=projection_config,
             )
 
         artifact = build_locomo_corpus(
@@ -625,7 +784,19 @@ class _LocalOperations(ApplicationOperations):
                 corpus_id=request.corpus_id,
                 repository_commit=request.repository_commit,
                 retrieval_config=self._retrieval.public_config,
+                semantic_projection=projection_config,
+                semantic_projection_usage=lambda: _semantic_projection_usage(projection_adapter),
+                embedding_usage=(
+                    (
+                        lambda: _embedding_usage(
+                            cast(DashScopeEmbeddingAdapter, self._retrieval.embedder)
+                        )
+                    )
+                    if isinstance(self._retrieval.embedder, DashScopeEmbeddingAdapter)
+                    else None
+                ),
                 resume=request.resume,
+                question_set_path=request.question_set_path,
                 expected_dataset_sha256=(
                     LOCOMO_DATASET_SHA256
                     if request.expected_dataset_sha256 is None
@@ -655,6 +826,7 @@ class _LocalOperations(ApplicationOperations):
                 dataset_path=request.input_path,
                 output_root=request.output_root,
                 vector_set_id=request.vector_set_id,
+                resume=request.resume,
                 question_set_path=request.question_set_path,
                 expected_dataset_sha256=(
                     LOCOMO_DATASET_SHA256
@@ -720,7 +892,7 @@ class _LocalOperations(ApplicationOperations):
 
         worker_limits = WorkerProcessLimits(
             max_rss_bytes=_positive_environment_int(
-                "CODECAIRN_EVAL_MAX_RSS_BYTES", 1024 * 1024 * 1024
+                "CODECAIRN_EVAL_MAX_RSS_BYTES", 2 * 1024 * 1024 * 1024
             ),
             stall_timeout_seconds=_positive_environment_float(
                 "CODECAIRN_EVAL_WORKER_STALL_SECONDS", 600.0
@@ -742,12 +914,19 @@ class _LocalOperations(ApplicationOperations):
             "progress_signal": "heartbeat-evidence-and-durable-question-checkpoint-deadline-v2",
             "publish_policy": "conversation-directory-atomic-rename-v1",
         }
+        lossless_clause_adapter = LosslessClauseProjectionAdapter()
+        lossless_semantic_projection = _semantic_projection_public_config(lossless_clause_adapter)
 
         def memory_factory(root: Path) -> CodeCairnConversationMemory:
             return CodeCairnConversationMemory(
-                runtime=create_runtime(root, retrieval=retrieval),
+                runtime=create_runtime(
+                    root,
+                    retrieval=retrieval,
+                    clause_adapter=lossless_clause_adapter,
+                ),
                 cascade=create_cascade(root, retrieval=retrieval),
                 repo_key=f"locomo/{root.name}",
+                semantic_projection=lossless_semantic_projection,
             )
 
         def question_worker(work: LoCoMoConversationWork) -> None:
@@ -1093,6 +1272,9 @@ def _build_locomo_worker_spec(
         "corpus_content_sha256": _bootstrap_string(
             corpus_manifest, "content_sha256", field="run corpus"
         ),
+        "corpus_repository_commit": _bootstrap_string(
+            corpus_manifest, "repository_commit", field="run corpus"
+        ),
         "corpus_tree_sha256": _bootstrap_string(corpus_manifest, "tree_sha256", field="run corpus"),
         "query_vectors_path": str(query_vectors_path.resolve()),
         "query_vectors_content_sha256": _bootstrap_string(
@@ -1362,8 +1544,11 @@ def _validate_worker_question_inventory(
 
 def _worker_question_checkpoint_sha256(question_dir: Path) -> str:
     digest = hashlib.sha256()
-    for path in sorted(question_dir.glob("*.json")):
-        digest.update(path.name.encode())
+    tree = sorted(question_dir.rglob("*"))
+    if any(path.is_symlink() or not path.resolve().is_relative_to(question_dir) for path in tree):
+        raise ValueError("LoCoMo worker question artifact escapes its directory")
+    for path in (item for item in tree if item.is_file()):
+        digest.update(path.relative_to(question_dir).as_posix().encode())
         digest.update(b"\0")
         digest.update(bytes.fromhex(file_sha256(path)))
     return digest.hexdigest()
@@ -1774,6 +1959,7 @@ def _reuse_locomo_worker_checkpoints(
 ) -> list[dict[str, object]]:
     expected_ids = set(work.question_ids)
     reused_ids: set[str] = set()
+    reused_journal_ids: set[str] = set()
     sources: list[dict[str, object]] = []
     for attempt_dir in _locomo_worker_attempt_dirs(worker_root):
         attempt = int(attempt_dir.name.removeprefix("attempt-"))
@@ -1788,20 +1974,37 @@ def _reuse_locomo_worker_checkpoints(
             "questions",
             work.conversation.sample_id,
         )
+        has_journal_evidence = (
+            _preflight_locomo_worker_attempt_journals(
+                source_question_dir,
+                question_ids=work.question_ids,
+            )
+            if source_question_dir.is_dir()
+            else False
+        )
         if (
             not resource_path.is_file()
             or not spec_path.is_file()
             or not source_question_dir.is_dir()
         ):
+            if has_journal_evidence:
+                raise ValueError(
+                    "LoCoMo worker resume cannot bind model attempt journals to a worker receipt"
+                )
             continue
         try:
             receipt = _bootstrap_mapping(read_json(resource_path), field="worker resource receipt")
             spec = _bootstrap_mapping(read_json(spec_path), field="worker spec")
-        except (OSError, ValueError):
+        except (OSError, ValueError) as error:
+            if has_journal_evidence:
+                raise ValueError(
+                    "LoCoMo worker resume cannot bind model attempt journals to immutable "
+                    "worker evidence"
+                ) from error
             continue
         source_max_rss = receipt.get("max_rss_bytes")
         raw_checkpoint_files = receipt.get("completed_question_checkpoints")
-        if (
+        reusable = not (
             receipt.get("accepted") is not False
             or receipt.get("conversation_id") != work.conversation.sample_id
             or receipt.get("attempt") != attempt
@@ -1823,12 +2026,29 @@ def _reuse_locomo_worker_checkpoints(
                 answer_model_config=answer_model_config,
                 judge_model_config=judge_model_config,
             )
-        ):
+        )
+        if not reusable:
+            if has_journal_evidence:
+                raise ValueError(
+                    "LoCoMo worker resume cannot bind model attempt journals to immutable "
+                    "worker evidence"
+                )
             continue
         checkpoint_files = cast(dict[str, object], raw_checkpoint_files)
+        copied_journals = _copy_locomo_worker_attempt_journals(
+            source_question_dir,
+            target_question_dir,
+            question_ids=work.question_ids,
+            excluded_question_ids=reused_ids | reused_journal_ids,
+        )
+        reused_journal_ids.update(copied_journals)
         copied: list[str] = []
         for path in sorted(source_question_dir.glob("*.json")):
-            if path.stem not in expected_ids or path.stem in reused_ids:
+            if (
+                path.stem not in expected_ids
+                or path.stem in reused_ids
+                or (path.stem in reused_journal_ids and path.stem not in copied_journals)
+            ):
                 continue
             if checkpoint_files.get(path.stem) != file_sha256(path):
                 continue
@@ -1845,20 +2065,91 @@ def _reuse_locomo_worker_checkpoints(
             shutil.copy2(path, target_question_dir / path.name)
             reused_ids.add(path.stem)
             copied.append(path.stem)
-        if copied:
+        if copied or copied_journals:
             sources.append(
                 {
                     "attempt": attempt,
                     "question_ids": copied,
+                    "attempt_journal_question_ids": copied_journals,
                     "question_checkpoint_sha256": _worker_question_checkpoint_sha256(
                         source_question_dir
                     ),
                     "resource_receipt_sha256": file_sha256(resource_path),
                 }
             )
-        if reused_ids == expected_ids:
+        if reused_ids | reused_journal_ids == expected_ids:
             break
     return sources
+
+
+def _copy_locomo_worker_attempt_journals(
+    source_question_dir: Path,
+    target_question_dir: Path,
+    *,
+    question_ids: tuple[str, ...],
+    excluded_question_ids: set[str],
+) -> list[str]:
+    copied: list[str] = []
+    source_journal_root = source_question_dir / ".attempt-journal"
+    for question_id in question_ids:
+        if question_id in excluded_question_ids:
+            continue
+        source_journal = source_journal_root / question_id
+        if not source_journal.is_dir():
+            continue
+        try:
+            snapshot = validate_model_attempt_journal(
+                source_journal,
+                question_id=question_id,
+            )
+        except (OSError, ValueError) as error:
+            raise ValueError(
+                f"LoCoMo worker resume found an invalid model attempt journal: {question_id}"
+            ) from error
+        entries = snapshot.get("entries")
+        if not isinstance(entries, list) or not entries:
+            continue
+        target_journal = target_question_dir / ".attempt-journal" / question_id
+        target_journal.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(source_journal, target_journal)
+        validate_model_attempt_journal(target_journal, question_id=question_id)
+        copied.append(question_id)
+    return copied
+
+
+def _preflight_locomo_worker_attempt_journals(
+    source_question_dir: Path,
+    *,
+    question_ids: tuple[str, ...],
+) -> bool:
+    journal_root = source_question_dir / ".attempt-journal"
+    if not journal_root.exists():
+        return False
+    if journal_root.is_symlink() or not journal_root.is_dir():
+        raise ValueError("LoCoMo worker model attempt journal root is unsafe")
+    expected = set(question_ids)
+    children = sorted(journal_root.iterdir())
+    if any(
+        child.is_symlink()
+        or not child.is_dir()
+        or child.name not in expected
+        or not child.resolve().is_relative_to(journal_root.resolve())
+        for child in children
+    ):
+        raise ValueError("LoCoMo worker model attempt journal inventory is invalid")
+    has_evidence = False
+    for child in children:
+        try:
+            snapshot = validate_model_attempt_journal(child, question_id=child.name)
+        except (OSError, ValueError) as error:
+            raise ValueError(
+                f"LoCoMo worker resume found an invalid model attempt journal: {child.name}"
+            ) from error
+        entries = snapshot.get("entries")
+        if not isinstance(entries, list):
+            raise ValueError("LoCoMo worker model attempt journal entries are invalid")
+        has_evidence = has_evidence or bool(entries)
+    return has_evidence
 
 
 def _recover_locomo_worker_receipt(

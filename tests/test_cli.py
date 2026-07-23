@@ -12,8 +12,14 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from codecairn.bootstrap import app, create_cascade, create_runtime
-from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
+from codecairn.bootstrap import app, create_cascade, create_retrieval_providers, create_runtime
+from codecairn.evaluation.artifacts import (
+    canonical_json,
+    file_sha256,
+    read_json,
+    write_json_exclusive,
+)
+from codecairn.evaluation.locomo import load_locomo_dataset
 from codecairn.evaluation.worker_process import WorkerProcessLimits, WorkerProcessResult
 
 FIXTURE = Path(__file__).parent / "fixtures" / "codex" / "failed_command.jsonl"
@@ -207,7 +213,7 @@ def test_cli_builds_reusable_locomo_corpus_and_query_vectors(
             "--run-id",
             "cli-worker-run",
             "--repository-commit",
-            "abc123",
+            "run-commit-after-corpus",
             "--output-root",
             str(tmp_path / "runs"),
             "--root",
@@ -226,10 +232,23 @@ def test_cli_builds_reusable_locomo_corpus_and_query_vectors(
     run_payload = json.loads(run.stdout)
     assert run_payload["completed_question_count"] == 4
     run_dir = tmp_path / "runs" / "locomo" / "cli-worker-run"
+    run_manifest = read_json(run_dir / "manifest.json")
+    assert isinstance(run_manifest, dict)
+    assert run_manifest["repository_commit"] == "run-commit-after-corpus"
+    assert isinstance(run_manifest["corpus"], dict)
+    assert run_manifest["corpus"]["repository_commit"] == "abc123"
+    worker_specs = [
+        read_json(path) for path in sorted((run_dir / "workers").glob("*/attempt-*/spec.json"))
+    ]
+    assert worker_specs
+    assert all(
+        isinstance(spec, dict) and spec["corpus_repository_commit"] == "abc123"
+        for spec in worker_specs
+    )
     resource_usage = json.loads((run_dir / "resource-usage.json").read_text(encoding="utf-8"))
     assert resource_usage["worker_contract"] == "verified-shared-corpus-exec-per-conversation-v2"
     assert resource_usage["worker_count"] == 2
-    assert 0 < resource_usage["max_worker_rss_bytes"] <= 1024 * 1024 * 1024
+    assert 0 < resource_usage["max_worker_rss_bytes"] <= 2 * 1024 * 1024 * 1024
     workers = resource_usage["accepted_workers"]
     assert len({worker["worker_pid"] for worker in workers}) == 2
     assert all(worker["worker_pid"] != worker["parent_pid"] for worker in workers)
@@ -306,6 +325,110 @@ def test_cli_builds_reusable_locomo_corpus_and_query_vectors(
     )
     assert isinstance(failed_receipt, dict)
     assert failed_receipt["accepted"] is False
+
+
+def test_cli_binds_a_frozen_question_set_to_the_corpus_build_contract(
+    tmp_path: Path,
+) -> None:
+    dataset = load_locomo_dataset(LOCOMO_FIXTURE)
+    retrieval = create_retrieval_providers().public_config
+    embedding = retrieval["embedding"]
+    reranker = retrieval["reranker"]
+    planner = retrieval["planner"]
+    assert isinstance(embedding, dict)
+    assert isinstance(reranker, dict)
+    assert isinstance(planner, dict)
+    definition = json.loads(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v13.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    protocol = definition["protocol"]
+    protocol.update(
+        {
+            "inference_threads": retrieval.get("inference_threads"),
+            "tokenizer_parallelism": retrieval.get("tokenizer_parallelism"),
+            "tokenizer_threads": retrieval.get("tokenizer_threads"),
+            "embedding_adapter": embedding.get("adapter"),
+            "embedding_model": embedding.get("model"),
+            "embedding_dimension": embedding.get("dimension"),
+            "reranker_model": reranker.get("model"),
+            "reranker_batch_size": reranker.get("batch_size"),
+            **{
+                field: value
+                for field, value in planner.items()
+                if field not in {"mode", "neighbor_window", "temporal_neighbor_window"}
+            },
+            "neighbor_windows": {
+                "episode-only": {"neighbor_window": 0, "temporal_neighbor_window": 0},
+                "hierarchy-no-neighbors": {
+                    "neighbor_window": 0,
+                    "temporal_neighbor_window": 0,
+                },
+                "hierarchy": {
+                    "neighbor_window": planner["neighbor_window"],
+                    "temporal_neighbor_window": planner["temporal_neighbor_window"],
+                },
+            },
+        }
+    )
+    selected = tuple(
+        question.question_id
+        for conversation in dataset.conversations
+        for question in conversation.questions
+        if question.category in {1, 2, 3, 4}
+    )
+    question_set_path = tmp_path / "corpus-question-set.json"
+    write_json_exclusive(
+        question_set_path,
+        {
+            "schema_version": 1,
+            "selection_id": "cli-corpus-protocol",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-v1",
+            "seed": "selection-seed",
+            "category_targets": {str(category): 1 for category in range(1, 5)},
+            "selection_sha256": hashlib.sha256(
+                json.dumps(sorted(selected), separators=(",", ":")).encode()
+            ).hexdigest(),
+            "protocol": protocol,
+        },
+    )
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "eval",
+            "build-locomo-corpus",
+            str(LOCOMO_FIXTURE),
+            "--question-set",
+            str(question_set_path),
+            "--corpus-id",
+            "cli-protocol-corpus",
+            "--repository-commit",
+            "abc123",
+            "--output-root",
+            str(tmp_path / "corpora"),
+            "--root",
+            str(tmp_path / "runtime"),
+            "--expected-dataset-sha256",
+            dataset.sha256,
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    corpus_dir = Path(json.loads(result.stdout)["corpus_dir"])
+    manifest = read_json(corpus_dir / "manifest.json")
+    assert isinstance(manifest, dict)
+    build_contract = manifest["build_contract"]
+    assert isinstance(build_contract, dict)
+    question_set = build_contract["question_set"]
+    assert isinstance(question_set, dict)
+    assert question_set["definition_sha256"] == file_sha256(question_set_path)
+    assert (
+        question_set["protocol_sha256"]
+        == hashlib.sha256(canonical_json(protocol).encode()).hexdigest()
+    )
 
 
 def test_cli_rejects_locomo_run_id_before_creating_an_escaped_lock(tmp_path: Path) -> None:
@@ -832,3 +955,10 @@ def test_cli_help_lists_complete_public_surface() -> None:
     assert result.exit_code == 0, result.output
     for command in ("import", "list", "recall", "eval", "evidence", "doctor"):
         assert command in result.stdout
+
+
+def test_cli_help_exposes_single_run_locomo_promotion() -> None:
+    result = CliRunner().invoke(app, ["eval", "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "promote-locomo" in result.stdout

@@ -9,6 +9,9 @@ from codecairn.memory.models import RecallRoute
 RecallPlannerMode = Literal["episode-only", "hierarchy-no-neighbors", "hierarchy"]
 TemporalOperation = Literal["none", "point", "duration", "order", "latest"]
 SetOperation = Literal["none", "union", "intersection"]
+RelationRequirementKind = Literal["temporal_order", "procedure_order"]
+ProvenanceStage = Literal["failure", "change", "verification"]
+QueryVariantKind = Literal["original", "entity", "temporal"]
 
 _FACT_CUES = re.compile(
     r"\b(when|where|who|which|what|how many|how much|before|after|first|last|"
@@ -22,6 +25,15 @@ _EPISODE_CUES = re.compile(
 )
 _PROCEDURE_CUES = re.compile(
     r"\b(how\s+did|steps?|procedure|fix(?:ed|es|ing)?|verif(?:y|ied|ies|ying))\b",
+    re.IGNORECASE,
+)
+_FAILURE_CUES = re.compile(r"\b(error|fail(?:ed|ure)?|timeout)\b", re.IGNORECASE)
+_CHANGE_CUES = re.compile(
+    r"\b(change(?:d)?|fix(?:ed|es|ing)?|patch)\b",
+    re.IGNORECASE,
+)
+_VERIFICATION_CUES = re.compile(
+    r"\b(pass(?:ed)?|verif(?:y|ied|ies|ying))\b",
     re.IGNORECASE,
 )
 _NAMED_ANCHOR = re.compile(r"\b[A-Z][A-Za-z0-9_-]{1,63}\b")
@@ -67,6 +79,48 @@ _ANCHOR_STOPWORDS = {
 
 
 @dataclass(frozen=True, slots=True)
+class EntityCoverageRequirement:
+    entity_key: str
+
+
+@dataclass(frozen=True, slots=True)
+class TemporalCoverageRequirement:
+    operation: TemporalOperation
+    prefixes: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SetCoverageRequirement:
+    operation: SetOperation
+    members: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class RelationCoverageRequirement:
+    relation: RelationRequirementKind
+
+
+@dataclass(frozen=True, slots=True)
+class ProvenanceCoverageRequirement:
+    stages: tuple[ProvenanceStage, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class QueryVariant:
+    kind: QueryVariantKind
+    text: str
+
+
+CoverageRequirement = (
+    EntityCoverageRequirement
+    | TemporalCoverageRequirement
+    | SetCoverageRequirement
+    | RelationCoverageRequirement
+    | ProvenanceCoverageRequirement
+)
+
+
+@dataclass(frozen=True, slots=True)
 class QuerySketch:
     """Small deterministic query contract used for coverage, never hard routing."""
 
@@ -76,6 +130,45 @@ class QuerySketch:
     wants_procedure: bool
     coverage_slots: tuple[str, ...]
     temporal_prefixes: tuple[str, ...]
+    coverage_requirements: tuple[CoverageRequirement, ...] = ()
+    query_variants: tuple[QueryVariant, ...] = ()
+    sketcher_id: str = "codecairn/deterministic-query-sketch-v2"
+    query_time_llm_calls: Literal[0] = 0
+
+
+@dataclass(frozen=True, slots=True)
+class ExpansionPlan:
+    """One bounded expansion request for entity, time, and provenance facts."""
+
+    max_hops: int = 1
+    max_total_facts: int = 24
+    max_entity_facts: int = 12
+    max_time_facts: int = 8
+    max_provenance_facts: int = 8
+
+    def __post_init__(self) -> None:
+        hard_ceilings = {
+            "max_hops": 1,
+            "max_total_facts": 24,
+            "max_entity_facts": 12,
+            "max_time_facts": 8,
+            "max_provenance_facts": 8,
+        }
+        for field_name, hard_ceiling in hard_ceilings.items():
+            value = getattr(self, field_name)
+            if type(value) is not int or value < 0 or value > hard_ceiling:
+                raise ValueError(f"{field_name} exceeds its expansion hard ceiling")
+        if self.max_hops != 1:
+            raise ValueError("max_hops must equal the one-hop expansion hard ceiling")
+        if (
+            max(
+                self.max_entity_facts,
+                self.max_time_facts,
+                self.max_provenance_facts,
+            )
+            > self.max_total_facts
+        ):
+            raise ValueError("An expansion lane cannot exceed the global expansion limit")
 
 
 @dataclass(frozen=True, slots=True)
@@ -99,10 +192,12 @@ class RecallPlannerConfig:
     sibling_facts_per_memory: int = 2
     temporal_sibling_facts_per_memory: int = 5
     context_max_chars: int = 23_900
+    context_max_tokens: int = 4_000
     context_summary_chars: int = 60
     context_snippet_chars: int = 200
     context_snippets_per_memory: int = 5
     context_temporal_snippets_per_memory: int = 8
+    expansion_plan: ExpansionPlan = ExpansionPlan()
 
     def __post_init__(self) -> None:
         if self.primary_candidate_multiplier < 1:
@@ -142,6 +237,8 @@ class RecallPlannerConfig:
             )
         if self.context_max_chars < 1_000:
             raise ValueError("context_max_chars must be at least 1000")
+        if self.context_max_tokens < 256:
+            raise ValueError("context_max_tokens must be at least 256")
         if self.context_summary_chars < 1:
             raise ValueError("context_summary_chars must be positive")
         if self.context_snippet_chars < 1:
@@ -169,6 +266,8 @@ class RecallPlannerConfig:
             "mode": self.mode,
             "router": "deterministic-cues-v1",
             "hard_route_cutoff": False,
+            "query_sketcher": "codecairn/deterministic-query-sketch-v2",
+            "query_time_llm_calls": 0,
             "primary_candidate_multiplier": self.primary_candidate_multiplier,
             "secondary_candidate_multiplier": self.secondary_candidate_multiplier,
             "minimum_primary_candidates": self.minimum_primary_candidates,
@@ -183,14 +282,22 @@ class RecallPlannerConfig:
                 max(self.neighbor_window, 2) if self.neighbor_window > 0 else 0
             ),
             "neighbor_snippet_budget": self.neighbor_snippet_budget,
+            "expansion_contract": "typed-bounded-one-hop-v2",
+            "expansion_max_hops": self.expansion_plan.max_hops,
+            "expansion_max_total_facts": self.expansion_plan.max_total_facts,
+            "expansion_max_entity_facts": self.expansion_plan.max_entity_facts,
+            "expansion_max_time_facts": self.expansion_plan.max_time_facts,
+            "expansion_max_provenance_facts": self.expansion_plan.max_provenance_facts,
             "temporal_lane": "explicit-month-prefix-v1",
             "enrichment_order": "matched-diverse-channel-temporal-window-v3",
             "matched_facts_per_memory": self.matched_facts_per_memory,
             "diverse_matched_facts_per_memory": self.diverse_matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,
             "temporal_sibling_facts_per_memory": self.temporal_sibling_facts_per_memory,
-            "context_renderer": "facts-first-round-robin-v1",
+            "context_renderer": "facts-first-round-robin-v4",
             "context_max_chars": self.context_max_chars,
+            "context_max_tokens": self.context_max_tokens,
+            "context_tokenizer": "codecairn/utf8-two-byte-upper-bound-v1",
             "context_summary_chars": self.context_summary_chars,
             "context_snippet_chars": self.context_snippet_chars,
             "context_snippets_per_memory": self.context_snippets_per_memory,
@@ -212,6 +319,7 @@ class RecallPlan:
     expand_neighbors: bool
     neighbor_window: int
     neighbor_snippet_budget: int
+    expansion_plan: ExpansionPlan = ExpansionPlan()
 
 
 class RecallPlanner:
@@ -284,6 +392,7 @@ class RecallPlanner:
             ),
             neighbor_window=temporal_neighbor_window,
             neighbor_snippet_budget=self.config.neighbor_snippet_budget,
+            expansion_plan=self.config.expansion_plan,
         )
 
 
@@ -321,14 +430,86 @@ def _query_sketch(query: str) -> QuerySketch:
         set_op = "union"
     else:
         set_op = "none"
+    wants_procedure = _PROCEDURE_CUES.search(query) is not None
     return QuerySketch(
         anchors=anchors,
         temporal_op=temporal_op,
         set_op=set_op,
-        wants_procedure=_PROCEDURE_CUES.search(query) is not None,
+        wants_procedure=wants_procedure,
         coverage_slots=anchors,
         temporal_prefixes=temporal_prefixes,
+        coverage_requirements=_coverage_requirements(
+            query,
+            anchors=anchors,
+            temporal_op=temporal_op,
+            temporal_prefixes=temporal_prefixes,
+            set_op=set_op,
+            wants_procedure=wants_procedure,
+        ),
+        query_variants=_query_variants(
+            query,
+            anchors=anchors,
+            temporal_prefixes=temporal_prefixes,
+        ),
     )
+
+
+def _coverage_requirements(
+    query: str,
+    *,
+    anchors: tuple[str, ...],
+    temporal_op: TemporalOperation,
+    temporal_prefixes: tuple[str, ...],
+    set_op: SetOperation,
+    wants_procedure: bool,
+) -> tuple[CoverageRequirement, ...]:
+    requirements: list[CoverageRequirement] = [
+        EntityCoverageRequirement(entity_key=anchor) for anchor in anchors
+    ]
+    if temporal_op != "none":
+        requirements.append(
+            TemporalCoverageRequirement(
+                operation=temporal_op,
+                prefixes=temporal_prefixes,
+            )
+        )
+    if set_op != "none" and len(anchors) >= 2:
+        requirements.append(SetCoverageRequirement(operation=set_op, members=anchors))
+    if temporal_op == "order":
+        requirements.append(RelationCoverageRequirement(relation="temporal_order"))
+    if wants_procedure:
+        requirements.append(RelationCoverageRequirement(relation="procedure_order"))
+    stages: list[ProvenanceStage] = []
+    provenance_cues: tuple[tuple[ProvenanceStage, re.Pattern[str]], ...] = (
+        ("failure", _FAILURE_CUES),
+        ("change", _CHANGE_CUES),
+        ("verification", _VERIFICATION_CUES),
+    )
+    for stage, cue in provenance_cues:
+        if cue.search(query) is not None:
+            stages.append(stage)
+    if stages:
+        requirements.append(ProvenanceCoverageRequirement(stages=tuple(stages)))
+    return tuple(requirements)
+
+
+def _query_variants(
+    query: str,
+    *,
+    anchors: tuple[str, ...],
+    temporal_prefixes: tuple[str, ...],
+) -> tuple[QueryVariant, ...]:
+    variants = [QueryVariant(kind="original", text=" ".join(query.split()))]
+    if anchors:
+        variants.append(QueryVariant(kind="entity", text=" ".join(anchors)))
+    if temporal_prefixes:
+        variants.append(
+            QueryVariant(
+                kind="temporal",
+                text=" ".join((*temporal_prefixes, *anchors)),
+            )
+        )
+    return tuple(variants)
 
 
 def _route(query: str) -> RecallRoute:

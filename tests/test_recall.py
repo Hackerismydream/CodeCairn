@@ -18,7 +18,11 @@ from codecairn.memory.models import (
     RerankDocument,
     RerankScore,
 )
-from codecairn.memory.recall_planner import RecallPlannerConfig
+from codecairn.memory.recall_planner import (
+    RecallPlannerConfig,
+    RelationCoverageRequirement,
+    TemporalCoverageRequirement,
+)
 from codecairn.service.recall import RecallEngine
 from codecairn.service.recall import _compile_context as compile_context
 from codecairn.service.recall import _core_preserving_select as core_preserving_select
@@ -150,6 +154,7 @@ class MemoryState:
         self._memories = {(item.repo_key, item.memory_id): item for item in memories}
         self.requested: list[tuple[str, str]] = []
         self.episode_requests: list[tuple[str, str]] = []
+        self.episode_limits: list[int] = []
 
     def get_memory(self, *, repo_key: str, memory_id: str) -> CodingMemory | None:
         self.requested.append((repo_key, memory_id))
@@ -160,13 +165,15 @@ class MemoryState:
         *,
         repo_key: str,
         episode_id: str,
+        limit: int,
     ) -> tuple[CodingMemory, ...]:
         self.episode_requests.append((repo_key, episode_id))
+        self.episode_limits.append(limit)
         return tuple(
             memory
             for (memory_repo_key, _memory_id), memory in self._memories.items()
             if memory_repo_key == repo_key and memory.episode_id == episode_id
-        )
+        )[:limit]
 
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
         return tuple(
@@ -381,6 +388,50 @@ def test_episode_only_selects_query_matched_source_fact_beyond_episode_prefix() 
     assert result.sidecar.context_trace.omitted_memory_ids == ()
 
 
+def test_episode_only_does_not_add_a_parent_through_fact_postings() -> None:
+    class EmptyIndex(CandidateIndex):
+        def vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return ()
+
+        def lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return ()
+
+    memory = _memory_with_fact(
+        "memory-posting-only",
+        fact_id="fact-alice",
+        fact_text="Alice fixed the failed build and verified it.",
+        event_index=1,
+    )
+
+    result = RecallEngine(
+        index=EmptyIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        planner_config=RecallPlannerConfig.for_mode("episode-only"),
+        clock_ns=lambda: 0,
+    ).recall(
+        "How did Alice fix the failed build and verify it?",
+        repo_key=memory.repo_key,
+        limit=1,
+    )
+
+    assert result.sidecar.ranked == ()
+    assert result.sidecar.entity_posting_candidate_count == 0
+    assert result.sidecar.provenance_expansion_count == 0
+
+
 def test_query_matched_episode_facts_are_cached_across_recall_stages(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -550,6 +601,65 @@ def test_entity_postings_render_far_apart_anchors_from_one_parent() -> None:
     ]
 
 
+def test_typed_entity_query_variant_gets_its_own_bounded_lexical_lane() -> None:
+    class EntityVariantIndex:
+        def __init__(self) -> None:
+            self.lexical_queries: list[tuple[str, str, int]] = []
+
+        def document_vector_candidates(
+            self,
+            *,
+            repo_key: str,
+            vector: tuple[float, ...],
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            return ()
+
+        def document_lexical_candidates(
+            self,
+            *,
+            repo_key: str,
+            query: str,
+            document_kind: str,
+            limit: int,
+        ) -> tuple[IndexCandidate, ...]:
+            self.lexical_queries.append((query, document_kind, limit))
+            if query != "alice bob":
+                return ()
+            return (
+                IndexCandidate(
+                    repo_key=repo_key,
+                    memory_id="memory-shared",
+                    score=2.0,
+                    document_id=(
+                        "fact-shared" if document_kind == "atomic_fact" else "memory-shared"
+                    ),
+                    document_kind=document_kind,
+                    fact_id="fact-shared" if document_kind == "atomic_fact" else "",
+                ),
+            )
+
+    index = EntityVariantIndex()
+    memory = _memory_with_fact(
+        "memory-shared",
+        fact_id="fact-shared",
+        fact_text="Alice and Bob completed the shared project.",
+        event_index=1,
+    )
+
+    result = RecallEngine(
+        index=index,
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    ).recall("What did Alice and Bob do?", repo_key="acme/widgets", limit=1)
+
+    assert result.sidecar.ranked[0].memory_id == "memory-shared"
+    assert ("alice bob", "episode", 3) in index.lexical_queries
+    assert ("alice bob", "atomic_fact", 3) in index.lexical_queries
+
+
 def test_expanded_rerank_pool_preserves_a_stable_core_lane() -> None:
     class ExpandedIndex(CandidateIndex):
         def document_vector_candidates(
@@ -661,6 +771,77 @@ def test_temporal_exploration_lane_reserves_an_explicit_month_candidate() -> Non
     )
 
     assert "memory-20" in {item.memory_id for item in selected}
+
+
+def test_temporal_coverage_accumulates_across_distinct_evidence_parents() -> None:
+    def candidate(
+        memory_id: str,
+        *,
+        score: float,
+        fact_id: str,
+        text: str,
+    ) -> RankedRecall:
+        return RankedRecall(
+            rank=1,
+            memory_id=memory_id,
+            memory_type="conversation_episode",
+            title=memory_id,
+            summary="Conversation episode",
+            source_uri=f"codecairn://memory/{memory_id}",
+            content_sha256="a" * 64,
+            candidate_sources=("lexical",),
+            vector_score=None,
+            vector_rank=None,
+            lexical_score=score,
+            lexical_rank=1,
+            final_score=score,
+            evidence=(),
+            snippets=(
+                RecallSnippet(
+                    relation="matched",
+                    source_memory_id=memory_id,
+                    source_uri=f"codecairn://memory/{memory_id}",
+                    fact_id=fact_id,
+                    text=text,
+                    source_title=memory_id,
+                    source_summary="Conversation episode",
+                    raw_event_index=1,
+                ),
+            ),
+        )
+
+    ranked = [
+        candidate("decoy", score=10.0, fact_id="fact-decoy", text="Unrelated evidence."),
+        candidate(
+            "time-a",
+            score=9.0,
+            fact_id="fact-a",
+            text="2023-01-01T10:00:00+00:00 — Alice started the project.",
+        ),
+        candidate(
+            "time-b",
+            score=8.0,
+            fact_id="fact-b",
+            text="2023-02-01T10:00:00+00:00 — Alice finished the project.",
+        ),
+    ]
+
+    selected, covered, missing = core_preserving_select(
+        ranked,
+        core_memory_ids={item.memory_id for item in ranked},
+        coverage_slots=(),
+        coverage_requirements=(
+            TemporalCoverageRequirement(operation="order", prefixes=()),
+            RelationCoverageRequirement(relation="temporal_order"),
+        ),
+        temporal_prefixes=(),
+        limit=2,
+        exploration_limit=0,
+    )
+
+    assert [item.memory_id for item in selected] == ["time-a", "time-b"]
+    assert covered == ("temporal:order:any", "relation:temporal_order")
+    assert missing == ()
 
 
 def test_priority_memory_receives_neighbor_budget_before_higher_ranked_item() -> None:
@@ -892,7 +1073,7 @@ def test_temporal_priority_uses_a_bounded_local_fact_window() -> None:
     ]
 
 
-def test_context_budget_preserves_every_rank_and_prioritizes_temporal_siblings() -> None:
+def test_context_budget_preserves_complete_facts_and_prioritizes_temporal_siblings() -> None:
     ranked = tuple(
         RankedRecall(
             rank=rank,
@@ -915,7 +1096,7 @@ def test_context_budget_preserves_every_rank_and_prioritizes_temporal_siblings()
                     source_memory_id=f"memory-{rank}",
                     source_uri=f"codecairn://memory/memory-{rank}",
                     fact_id=f"fact-{rank}-{index}",
-                    text=f"evidence-{rank}-{index}-" + "X" * 1_000,
+                    text=f"evidence-{rank}-{index}-" + "X" * 1_000 + f"-TAIL-{rank}-{index}",
                     source_title=f"Memory {rank}",
                     source_summary="summary",
                     raw_event_index=index,
@@ -926,7 +1107,7 @@ def test_context_budget_preserves_every_rank_and_prioritizes_temporal_siblings()
         for rank in range(1, 21)
     )
 
-    rendered = render_context(
+    compiled = compile_context(
         "When did the event happen?",
         repo_key="acme/widgets",
         ranked=ranked,
@@ -934,9 +1115,18 @@ def test_context_budget_preserves_every_rank_and_prioritizes_temporal_siblings()
         config=RecallPlannerConfig(),
     )
 
-    assert len(rendered) <= 23_900
-    assert "## 20. Memory 20" in rendered
-    assert rendered.count("Evidence excerpts:") == 20
+    trace = compiled.trace
+    assert trace is not None
+    assert trace.token_count <= trace.token_limit == 4_000
+    assert 0 < len(trace.rendered_memory_ids) < len(ranked)
+    assert set(trace.rendered_memory_ids).isdisjoint(trace.omitted_memory_ids)
+    assert set(trace.rendered_memory_ids) | set(trace.omitted_memory_ids) == {
+        item.memory_id for item in ranked
+    }
+    for fact_id in trace.rendered_fact_ids:
+        _prefix, rank, index = fact_id.split("-")
+        assert f"[{fact_id}]" in compiled.markdown
+        assert f"-TAIL-{rank}-{index}" in compiled.markdown
 
     temporal_rendered = render_context(
         "When did the event happen?",
@@ -946,7 +1136,9 @@ def test_context_budget_preserves_every_rank_and_prioritizes_temporal_siblings()
         config=RecallPlannerConfig(),
     )
     assert temporal_rendered.index("evidence-1-0") < temporal_rendered.index("evidence-1-2")
-    assert temporal_rendered.index("evidence-1-2") < temporal_rendered.index("evidence-1-1")
+    assert temporal_rendered.index("evidence-1-0") < temporal_rendered.index("evidence-1-1")
+    if "evidence-1-2" in temporal_rendered:
+        assert temporal_rendered.index("evidence-1-1") < temporal_rendered.index("evidence-1-2")
 
 
 def test_context_budget_keeps_compact_evidence_from_every_large_parent() -> None:
@@ -1402,7 +1594,7 @@ def test_hierarchical_recall_pairs_a_matched_turn_with_its_following_fact() -> N
         ("fact-before", "sibling"),
     ]
     assert "John likes electronic and rock music." in result.markdown
-    assert result.markdown.count("A long session summary.") == 1
+    assert "A long session summary." not in result.markdown
 
 
 def test_hierarchical_recall_expands_only_adjacent_memories_in_the_same_episode() -> None:
@@ -1545,9 +1737,10 @@ def test_neighbor_context_obeys_one_global_snippet_budget() -> None:
     second_neighbor = _memory_with_fact(
         "memory-c", fact_id="fact-c", fact_text="Second neighbor.", event_index=3
     )
+    state = MemoryState((selected, first_neighbor, second_neighbor))
     engine = RecallEngine(
         index=CandidateIndex(),
-        state=MemoryState((selected, first_neighbor, second_neighbor)),
+        state=state,
         embedder=FixedEmbedder(),
         planner_config=RecallPlannerConfig(neighbor_window=2, neighbor_snippet_budget=1),
         clock_ns=lambda: 0,
@@ -1556,10 +1749,67 @@ def test_neighbor_context_obeys_one_global_snippet_budget() -> None:
     result = engine.recall("repository convention", repo_key="acme/widgets", limit=1)
 
     assert result.sidecar.neighbor_expansion_count == 1
+    assert state.episode_limits == [2]
     assert [(item.source_memory_id, item.text) for item in result.sidecar.ranked[0].snippets] == [
         ("memory-a", "Selected fact."),
         ("memory-b", "First neighbor."),
     ]
+
+
+def test_typed_temporal_requirement_marks_single_undated_fact_partial() -> None:
+    memory = _memory_with_fact(
+        "memory-alice",
+        fact_id="fact-alice",
+        fact_text="Alice completed the task.",
+        event_index=1,
+    )
+    result = RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    ).recall("What did Alice do before the next task?", repo_key="acme/widgets", limit=1)
+
+    assert "relation:temporal_order" in result.sidecar.missing_requirements
+    assert result.sidecar.completion == "partial"
+
+
+def test_entity_posting_expansion_is_a_fact_budget_not_a_parent_budget() -> None:
+    base = _memory("memory-many-entities", summary="Many entity facts.")
+    facts = tuple(
+        EvidenceFact(
+            fact_id=f"fact-{index}",
+            repo_key=base.repo_key,
+            episode_id=base.episode_id,
+            kind="user_quote",
+            text=f"Alpha{index} completed item {index}.",
+            role="user",
+            evidence=(replace(base.evidence[0], raw_event_index=index),),
+        )
+        for index in range(15)
+    )
+    memory = replace(base, facts=facts)
+    query = "What did " + " ".join(f"Alpha{index}" for index in range(15)) + " do?"
+
+    result = RecallEngine(
+        index=CandidateIndex(),
+        state=MemoryState((memory,)),
+        embedder=FixedEmbedder(),
+        clock_ns=lambda: 0,
+    ).recall(query, repo_key=base.repo_key, limit=1)
+
+    expansion_components = (
+        result.sidecar.episode_entity_lexical_candidate_count
+        + result.sidecar.atomic_fact_entity_lexical_candidate_count
+        + result.sidecar.episode_temporal_lexical_candidate_count
+        + result.sidecar.atomic_fact_temporal_lexical_candidate_count
+        + result.sidecar.entity_posting_candidate_count
+        + result.sidecar.provenance_expansion_count
+        + result.sidecar.neighbor_expansion_count
+    )
+    assert result.sidecar.entity_posting_candidate_count <= 12
+    assert result.sidecar.expansion_fact_count == expansion_components
+    assert result.sidecar.expansion_fact_count <= result.sidecar.expansion_fact_limit == 24
 
 
 def test_lancedb_reembeds_existing_documents_when_the_model_identity_changes(

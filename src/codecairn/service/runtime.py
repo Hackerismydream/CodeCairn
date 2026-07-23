@@ -9,6 +9,7 @@ from codecairn.memory.episode import (
     AttributedEpisode,
     EpisodeSemanticizer,
     LosslessEpisodeSemanticizer,
+    attributed_episode_attempt_id,
     compile_source_facts,
     episode_summary,
 )
@@ -26,11 +27,11 @@ from codecairn.memory.models import (
     PendingRecoveryAudit,
     RecallResult,
 )
+from codecairn.memory.semantic import semantic_episode_is_grounded
 from codecairn.memory.trace import (
     extend_raw_prefix_sha256,
     extract_failed_commands,
     segment_tasks,
-    stable_id,
 )
 from codecairn.service.recall import RecallEngine
 
@@ -46,6 +47,8 @@ class TraceImporter(Protocol):
 
 
 class MemoryStore(Protocol):
+    def prepare(self, memory: CodingMemory) -> CodingMemory: ...
+
     def write(self, memory: CodingMemory) -> CodingMemory: ...
 
     def plan_repair(self, memory: CodingMemory) -> MemoryRepairPlan | None: ...
@@ -93,6 +96,13 @@ class ImportState(Protocol):
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]: ...
 
     def commit_gate_decision(
+        self,
+        decision: GateDecision,
+        *,
+        proposal: MemoryProposal,
+    ) -> None: ...
+
+    def preflight_gate_decision(
         self,
         decision: GateDecision,
         *,
@@ -193,9 +203,14 @@ class MemoryRuntime:
         *,
         facts: tuple[EvidenceFact, ...],
     ) -> GateDecision:
+        if proposal.memory_type == "conversation_episode":
+            raise ValueError("Conversation Episodes must be written through write_episode")
         decision = self._evidence_gate.evaluate(proposal, facts=facts)
         if decision.memory is not None:
-            persisted = self._markdown.write(decision.memory)
+            prepared = self._markdown.prepare(decision.memory)
+            decision = replace(decision, memory=prepared)
+            self._state.preflight_gate_decision(decision, proposal=proposal)
+            persisted = self._markdown.write(prepared)
             decision = replace(decision, memory=persisted)
         self._state.commit_gate_decision(decision, proposal=proposal)
         return decision
@@ -204,17 +219,8 @@ class MemoryRuntime:
         """Persist one attributed episode through the ordinary evidence gate."""
 
         episode_id, facts = compile_source_facts(episode)
-        semantic_episode = self._episode_semanticizer.compile(
-            facts,
-            episode_id=episode_id,
-        )
         proposal = MemoryProposal(
-            proposal_id=stable_id(
-                "attributed-episode-proposal",
-                episode.repo_key,
-                episode.source_episode_id,
-                *(fact.fact_id for fact in facts),
-            ),
+            proposal_id=attributed_episode_attempt_id(episode, facts),
             repo_key=episode.repo_key,
             memory_type="conversation_episode",
             title=episode.title,
@@ -222,14 +228,45 @@ class MemoryRuntime:
             fact_ids=tuple(fact.fact_id for fact in facts),
             confidence=1.0,
         )
-        decision = self._evidence_gate.evaluate(
-            proposal,
-            facts=facts,
-            semantic_episode=semantic_episode,
+        decision = self._evidence_gate.evaluate(proposal, facts=facts)
+        if decision.memory is None:
+            self._state.commit_gate_decision(decision, proposal=proposal)
+            return decision
+        source_memory = decision.memory
+        semantic_episode = self._episode_semanticizer.compile(
+            facts,
+            episode_id=episode_id,
         )
-        if decision.memory is not None:
-            persisted = self._markdown.write(decision.memory)
-            decision = replace(decision, memory=persisted)
+        proposal = replace(
+            proposal,
+            proposal_id=attributed_episode_attempt_id(
+                episode,
+                facts,
+                semantic_episode=semantic_episode,
+            ),
+        )
+        decision = replace(decision, proposal_id=proposal.proposal_id)
+        if not semantic_episode_is_grounded(semantic_episode, facts=facts):
+            decision = replace(
+                decision,
+                accepted=False,
+                reason="semantic_episode_invalid",
+                memory=None,
+            )
+            self._state.commit_gate_decision(decision, proposal=proposal)
+            return decision
+        candidate = replace(
+            source_memory,
+            semantic_episode=semantic_episode,
+            adjacency_group_id=episode.adjacency_group_id,
+            adjacency_index=episode.adjacency_index,
+        )
+        decision = replace(decision, memory=candidate)
+        candidate = self._markdown.prepare(candidate)
+        decision = replace(decision, memory=candidate)
+        self._state.preflight_gate_decision(decision, proposal=proposal)
+        persisted = self._markdown.write(candidate)
+        decision = replace(decision, memory=persisted)
         self._state.commit_gate_decision(decision, proposal=proposal)
         return decision
 

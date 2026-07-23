@@ -55,26 +55,32 @@ class MarkdownMemoryStore:
     def __init__(self, root: Path) -> None:
         self._root = root.resolve()
 
+    def prepare(self, memory: CodingMemory) -> CodingMemory:
+        """Return the canonical path and full-content digest without writing."""
+
+        prepared, _content = self._prepare(memory)
+        return prepared
+
     def write(self, memory: CodingMemory) -> CodingMemory:
-        path = self._path_for(memory)
-        content = _render(memory)
-        content_bytes = _validated_markdown_bytes(content)
-        content_sha256 = hashlib.sha256(content_bytes).hexdigest()
+        contract_supplied = memory.markdown_path is not None or memory.content_sha256 is not None
+        prepared, content = self._prepare(memory)
+        path = Path(_required_markdown_path(prepared))
+        content_sha256 = _required_content_sha256(prepared)
         path.parent.mkdir(parents=True, exist_ok=True)
         existing_sha256 = _file_sha256(path)
         if existing_sha256 is None:
             _atomic_create(path, content)
             existing_sha256 = _file_sha256(path)
         if existing_sha256 != content_sha256:
+            if contract_supplied:
+                raise ValueError(
+                    f"Prepared Markdown contract conflicts with existing truth: {memory.memory_id}"
+                )
             existing = self.read(path)
             if not _same_immutable_memory(existing, memory):
                 raise ValueError(f"Conflicting immutable memory: {memory.memory_id}")
             return existing
-        return replace(
-            memory,
-            markdown_path=str(path),
-            content_sha256=content_sha256,
-        )
+        return prepared
 
     def plan_repair(self, memory: CodingMemory) -> MemoryRepairPlan | None:
         path = self._committed_path(memory)
@@ -226,6 +232,28 @@ class MarkdownMemoryStore:
             raise ValueError("Markdown target escapes the runtime root")
         return path
 
+    def _prepare(self, memory: CodingMemory) -> tuple[CodingMemory, str]:
+        path = self._path_for(memory)
+        content = _render(memory)
+        content_bytes = _validated_markdown_bytes(content)
+        content_sha256 = hashlib.sha256(content_bytes).hexdigest()
+        supplied_path = memory.markdown_path
+        supplied_sha256 = memory.content_sha256
+        if (supplied_path is None) != (supplied_sha256 is None):
+            raise ValueError(f"Markdown preparation contract is incomplete: {memory.memory_id}")
+        if supplied_path is not None and (
+            Path(supplied_path) != path or supplied_sha256 != content_sha256
+        ):
+            raise ValueError(f"Markdown preparation contract conflicts: {memory.memory_id}")
+        return (
+            replace(
+                memory,
+                markdown_path=str(path),
+                content_sha256=content_sha256,
+            ),
+            content,
+        )
+
     def _committed_path(self, memory: CodingMemory) -> Path:
         if memory.markdown_path is None:
             raise ValueError("Committed memory is missing its Markdown path")
@@ -254,6 +282,8 @@ def _memory_from_content(resolved: Path, content: str) -> CodingMemory:
         fact_ids=_optional_string_tuple(attributes, "fact_ids"),
         facts=_parse_facts(attributes.get("facts", [])),
         semantic_episode=_parse_semantic_episode(attributes.get("semantic_episode")),
+        adjacency_group_id=_optional_str(attributes, "adjacency_group_id"),
+        adjacency_index=_optional_int(attributes, "adjacency_index"),
         markdown_path=str(resolved),
         content_sha256=hashlib.sha256(content.encode()).hexdigest(),
     )
@@ -282,6 +312,12 @@ def _render(memory: CodingMemory) -> str:
         if memory.semantic_episode is not None
         else ""
     )
+    adjacency = (
+        f"adjacency_group_id: {json.dumps(memory.adjacency_group_id)}\n"
+        f"adjacency_index: {json.dumps(memory.adjacency_index)}\n"
+        if memory.adjacency_group_id is not None
+        else ""
+    )
     semantic_body = (
         "\n## Retrieval Annotation\n\n"
         "This derived text is a search aid; the cited Evidence Facts remain authoritative.\n\n"
@@ -303,6 +339,7 @@ def _render(memory: CodingMemory) -> str:
         f"{fact_ids}"
         f"{facts}"
         f"{semantic_episode}"
+        f"{adjacency}"
         "---\n\n"
         f"# {heading}\n\n"
         f"{description}\n\n"
@@ -585,6 +622,8 @@ def _core_semantic_identity(memory: CodingMemory) -> tuple[object, ...]:
         memory.exit_code,
         memory.fact_ids,
         _semantic_episode_identity(memory.semantic_episode),
+        memory.adjacency_group_id,
+        memory.adjacency_index,
         evidence,
     )
 
@@ -644,6 +683,14 @@ def _semantic_episode_identity(semantic_episode: SemanticEpisode | None) -> obje
 
 
 def _validate_facts(memory: CodingMemory) -> None:
+    if (memory.adjacency_group_id is None) != (memory.adjacency_index is None):
+        raise ValueError("Memory adjacency group and index must be configured together")
+    if memory.adjacency_group_id is not None and (
+        not memory.adjacency_group_id.strip()
+        or type(memory.adjacency_index) is not int
+        or memory.adjacency_index < 0
+    ):
+        raise ValueError("Memory adjacency metadata is invalid")
     fact_ids = tuple(fact.fact_id for fact in memory.facts)
     if len(fact_ids) != len(set(fact_ids)):
         raise ValueError("Memory facts must have unique fact IDs")
@@ -680,7 +727,6 @@ def _validate_facts(memory: CodingMemory) -> None:
         or not semantic_episode.narrative.strip()
         or not semantic_episode.semanticizer_id.strip()
         or not semantic_episode.revision.strip()
-        or not semantic_episode.atomic_facts
         or len(semantic_fact_ids) != len(set(semantic_fact_ids))
         or any(
             not atomic.source_fact_ids
@@ -696,12 +742,6 @@ def _validate_facts(memory: CodingMemory) -> None:
             )
             for atomic in semantic_episode.atomic_facts
         )
-        or set(
-            source_fact_id
-            for atomic in semantic_episode.atomic_facts
-            for source_fact_id in atomic.source_fact_ids
-        )
-        != source_fact_ids
     ):
         raise ValueError("Memory semantic episode must be grounded in its Evidence Facts")
 
@@ -751,6 +791,12 @@ def _validated_markdown_bytes(content: str) -> bytes:
     if len(encoded) > _MAX_MARKDOWN_BYTES:
         raise ValueError(f"Memory Markdown exceeds the {_MAX_MARKDOWN_BYTES}-byte limit")
     return encoded
+
+
+def _required_markdown_path(memory: CodingMemory) -> str:
+    if memory.markdown_path is None:
+        raise ValueError("Prepared memory is missing its Markdown path")
+    return memory.markdown_path
 
 
 def _required_content_sha256(memory: CodingMemory) -> str:

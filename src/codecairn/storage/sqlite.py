@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sqlite3
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Literal, cast
 
@@ -28,6 +31,16 @@ from codecairn.memory.models import (
     TruthScan,
 )
 from codecairn.memory.trace import EMPTY_RAW_PREFIX_SHA256, stable_id
+
+_GATE_MANAGED_MEMORY_TYPES = frozenset(
+    {
+        "conversation_episode",
+        "debug_episode",
+        "repository_convention",
+        "verified_fix",
+        "user_preference",
+    }
+)
 
 
 class SQLiteState:
@@ -104,12 +117,15 @@ class SQLiteState:
             recoveries = connection.execute(
                 "SELECT COUNT(*) AS count FROM recovery_audit WHERE status = 'started'"
             ).fetchone()
+            gate_reservations = connection.execute(
+                "SELECT COUNT(*) AS count FROM gate_write_reservation"
+            ).fetchone()
         return OperationalCounts(
             import_count=int(imports["count"]),
             observed_event_count=int(imports["events"]),
             memory_count=int(memories["count"]),
             gate_audit_count=int(audits["count"]),
-            pending_recovery_count=int(recoveries["count"]),
+            pending_recovery_count=(int(recoveries["count"]) + int(gate_reservations["count"])),
         )
 
     def commit_gate_decision(
@@ -118,18 +134,45 @@ class SQLiteState:
         *,
         proposal: MemoryProposal,
     ) -> None:
-        if proposal.proposal_id != decision.proposal_id or proposal.repo_key != decision.repo_key:
-            raise ValueError("Gate decision does not match its audited proposal")
+        expected = _expected_gate_audit_row(decision, proposal=proposal)
         memory = decision.memory
-        if decision.accepted != (memory is not None):
-            raise ValueError("Accepted gate decisions must carry exactly one memory")
-        if memory is not None and memory.repo_key != decision.repo_key:
-            raise ValueError("Gate decision memory crosses repository namespace")
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
+            reservation = _gate_write_reservation_row(
+                connection,
+                repo_key=decision.repo_key,
+                proposal_id=decision.proposal_id,
+            )
+            _assert_gate_audit_compatible(
+                _gate_audit_row(connection, decision=decision),
+                expected=expected,
+                proposal_id=decision.proposal_id,
+                required=False,
+            )
+            if memory is None:
+                if reservation is not None:
+                    raise ValueError(
+                        f"Gate write reservation conflicts with proposal: {decision.proposal_id}"
+                    )
+            else:
+                reservation_expected = _expected_gate_reservation(
+                    decision,
+                    proposal=proposal,
+                )
+                if reservation is None:
+                    if _gate_audit_row(connection, decision=decision) is None:
+                        raise ValueError(
+                            f"Accepted gate decision has no durable reservation: "
+                            f"{decision.proposal_id}"
+                        )
+                else:
+                    _assert_gate_reservation_compatible(
+                        reservation,
+                        expected=reservation_expected,
+                        proposal_id=decision.proposal_id,
+                    )
             if memory is not None and _insert_memory(connection, memory):
                 _enqueue_index_revision(connection, memory, operation="upsert")
-            memory_id = memory.memory_id if memory is not None else None
             connection.execute(
                 """
                 INSERT INTO gate_audit (
@@ -140,48 +183,103 @@ class SQLiteState:
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(repo_key, proposal_id) DO NOTHING
                 """,
+                (decision.proposal_id, decision.repo_key, *expected),
+            )
+            _assert_gate_audit_compatible(
+                _gate_audit_row(connection, decision=decision),
+                expected=expected,
+                proposal_id=decision.proposal_id,
+                required=True,
+            )
+            if reservation is not None:
+                deleted = connection.execute(
+                    """
+                    DELETE FROM gate_write_reservation
+                    WHERE repo_key = ? AND proposal_id = ?
+                    """,
+                    (decision.repo_key, decision.proposal_id),
+                )
+                if deleted.rowcount != 1:
+                    raise ValueError(f"Gate write reservation disappeared: {decision.proposal_id}")
+
+    def preflight_gate_decision(
+        self,
+        decision: GateDecision,
+        *,
+        proposal: MemoryProposal,
+    ) -> None:
+        """Durably reserve an accepted decision before mutating Markdown truth."""
+
+        expected = _expected_gate_audit_row(decision, proposal=proposal)
+        memory = decision.memory
+        if memory is None:
+            raise ValueError("Only accepted gate decisions can reserve a Markdown write")
+        reservation_expected = _expected_gate_reservation(
+            decision,
+            proposal=proposal,
+        )
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            audit = _gate_audit_row(connection, decision=decision)
+            _assert_gate_audit_compatible(
+                audit,
+                expected=expected,
+                proposal_id=decision.proposal_id,
+                required=False,
+            )
+            if audit is not None:
+                return
+            by_memory = _gate_memory_reservation_row(
+                connection,
+                repo_key=decision.repo_key,
+                memory_id=memory.memory_id,
+            )
+            if by_memory is not None and by_memory["proposal_id"] != decision.proposal_id:
+                if not _gate_reservation_matches_memory_contract(by_memory, memory=memory):
+                    raise ValueError(
+                        f"Gate memory reservation conflicts with proposal: {decision.proposal_id}"
+                    )
+                deleted = connection.execute(
+                    """
+                    DELETE FROM gate_write_reservation
+                    WHERE repo_key = ? AND proposal_id = ? AND memory_id = ?
+                    """,
+                    (
+                        decision.repo_key,
+                        by_memory["proposal_id"],
+                        memory.memory_id,
+                    ),
+                )
+                if deleted.rowcount != 1:
+                    raise ValueError(
+                        f"Gate write reservation disappeared: {by_memory['proposal_id']}"
+                    )
+            connection.execute(
+                """
+                INSERT INTO gate_write_reservation (
+                    proposal_id, repo_key, memory_type, accepted, reason,
+                    proposal_title, proposal_summary, proposed_quote,
+                    proposed_quote_role, proposal_confidence,
+                    proposed_fact_ids_json, resolved_fact_ids_json, memory_id,
+                    memory_payload_sha256, markdown_path, content_sha256
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(repo_key, proposal_id) DO NOTHING
+                """,
                 (
                     decision.proposal_id,
                     decision.repo_key,
-                    decision.memory_type,
-                    int(decision.accepted),
-                    decision.reason,
-                    proposal.title,
-                    proposal.summary,
-                    proposal.quote,
-                    proposal.quote_role,
-                    proposal.confidence,
-                    json.dumps(decision.proposed_fact_ids),
-                    json.dumps(decision.resolved_fact_ids),
-                    memory_id,
+                    *reservation_expected,
                 ),
             )
-            row = connection.execute(
-                """
-                SELECT memory_type, accepted, reason, proposal_title,
-                       proposal_summary, proposed_quote, proposed_quote_role,
-                       proposal_confidence, proposed_fact_ids_json,
-                       resolved_fact_ids_json, memory_id
-                FROM gate_audit
-                WHERE repo_key = ? AND proposal_id = ?
-                """,
-                (decision.repo_key, decision.proposal_id),
-            ).fetchone()
-            expected = (
-                decision.memory_type,
-                int(decision.accepted),
-                decision.reason,
-                proposal.title,
-                proposal.summary,
-                proposal.quote,
-                proposal.quote_role,
-                proposal.confidence,
-                json.dumps(decision.proposed_fact_ids),
-                json.dumps(decision.resolved_fact_ids),
-                memory_id,
+            _assert_gate_reservation_compatible(
+                _gate_write_reservation_row(
+                    connection,
+                    repo_key=decision.repo_key,
+                    proposal_id=decision.proposal_id,
+                ),
+                expected=reservation_expected,
+                proposal_id=decision.proposal_id,
             )
-            if row is None or tuple(row) != expected:
-                raise ValueError(f"Gate audit conflicts with proposal: {decision.proposal_id}")
 
     def list_gate_audits(self, *, repo_key: str) -> tuple[GateAudit, ...]:
         with self._connect() as connection:
@@ -382,6 +480,7 @@ class SQLiteState:
             rows = connection.execute(
                 """
                 SELECT memory_id, memory_type, title, summary, episode_id,
+                       adjacency_group_id, adjacency_index,
                        command, exit_code, evidence_json, fact_ids_json, facts_json,
                        semantic_episode_json,
                        markdown_path, content_sha256
@@ -398,6 +497,7 @@ class SQLiteState:
             row = connection.execute(
                 """
                 SELECT memory_id, memory_type, title, summary, episode_id,
+                       adjacency_group_id, adjacency_index,
                        command, exit_code, evidence_json, fact_ids_json, facts_json,
                        semantic_episode_json,
                        markdown_path, content_sha256
@@ -413,19 +513,72 @@ class SQLiteState:
         *,
         repo_key: str,
         episode_id: str,
+        limit: int,
     ) -> tuple[CodingMemory, ...]:
+        if limit < 1:
+            raise ValueError("Episode memory limit must be positive")
         with self._connect() as connection:
             rows = connection.execute(
                 """
                 SELECT memory_id, memory_type, title, summary, episode_id,
+                       adjacency_group_id, adjacency_index,
                        command, exit_code, evidence_json, fact_ids_json, facts_json,
                        semantic_episode_json,
                        markdown_path, content_sha256
                 FROM memories
                 WHERE repo_key = ? AND episode_id = ?
                 ORDER BY memory_id
+                LIMIT ?
                 """,
-                (repo_key, episode_id),
+                (repo_key, episode_id, limit),
+            ).fetchall()
+        return tuple(_memory_from_row(repo_key, row) for row in rows)
+
+    def list_adjacent_memories(
+        self,
+        *,
+        repo_key: str,
+        memory_id: str,
+        adjacency_group_id: str,
+        adjacency_index: int,
+        window: int,
+        limit: int,
+    ) -> tuple[CodingMemory, ...]:
+        if not adjacency_group_id.strip():
+            raise ValueError("Adjacency group must not be empty")
+        if adjacency_index < 0:
+            raise ValueError("Adjacency index must not be negative")
+        if window < 0:
+            raise ValueError("Adjacency window must not be negative")
+        if limit < 1:
+            raise ValueError("Adjacent memory limit must be positive")
+        if window == 0:
+            return ()
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT memory_id, memory_type, title, summary, episode_id,
+                       adjacency_group_id, adjacency_index,
+                       command, exit_code, evidence_json, fact_ids_json, facts_json,
+                       semantic_episode_json,
+                       markdown_path, content_sha256
+                FROM memories
+                WHERE repo_key = ?
+                  AND adjacency_group_id = ?
+                  AND adjacency_index BETWEEN ? AND ?
+                  AND memory_id != ?
+                ORDER BY ABS(adjacency_index - ?) ASC, adjacency_index ASC, memory_id ASC
+                LIMIT ?
+                """,
+                (
+                    repo_key,
+                    adjacency_group_id,
+                    max(0, adjacency_index - window),
+                    adjacency_index + window,
+                    memory_id,
+                    adjacency_index,
+                    limit,
+                ),
             ).fetchall()
         return tuple(_memory_from_row(repo_key, row) for row in rows)
 
@@ -453,7 +606,9 @@ class SQLiteState:
                     GROUP BY memory_id
                 )
                 SELECT memories.memory_id, memories.memory_type, memories.title,
-                       memories.summary, memories.episode_id, memories.command,
+                       memories.summary, memories.episode_id,
+                       memories.adjacency_group_id, memories.adjacency_index,
+                       memories.command,
                        memories.exit_code, memories.evidence_json,
                        memories.fact_ids_json, memories.facts_json,
                        memories.semantic_episode_json,
@@ -474,6 +629,7 @@ class SQLiteState:
             rows = connection.execute(
                 """
                 SELECT repo_key, memory_id, memory_type, title, summary, episode_id,
+                       adjacency_group_id, adjacency_index,
                        command, exit_code, evidence_json, fact_ids_json, facts_json,
                        semantic_episode_json,
                        markdown_path, content_sha256
@@ -511,6 +667,7 @@ class SQLiteState:
                 ],
             )
             for key, memory in discovered.items():
+                reservation = _authorize_gate_truth_memory(connection, memory)
                 prior = existing.get(key)
                 if prior is None:
                     _insert_truth_memory(connection, memory)
@@ -520,6 +677,12 @@ class SQLiteState:
                     _update_truth_memory(connection, memory)
                     _enqueue_index_revision(connection, memory, operation="upsert")
                     modified += 1
+                if reservation is not None:
+                    _finalize_gate_truth_reservation(
+                        connection,
+                        memory=memory,
+                        reservation=reservation,
+                    )
             for key, prior in existing.items():
                 if key in discovered:
                     continue
@@ -750,6 +913,8 @@ class SQLiteState:
                     title TEXT NOT NULL,
                     summary TEXT NOT NULL,
                     episode_id TEXT NOT NULL,
+                    adjacency_group_id TEXT,
+                    adjacency_index INTEGER,
                     command TEXT,
                     exit_code INTEGER,
                     evidence_json TEXT NOT NULL,
@@ -801,6 +966,26 @@ class SQLiteState:
                     resolved_fact_ids_json TEXT NOT NULL,
                     memory_id TEXT,
                     UNIQUE (repo_key, proposal_id)
+                );
+                CREATE TABLE IF NOT EXISTS gate_write_reservation (
+                    proposal_id TEXT NOT NULL,
+                    repo_key TEXT NOT NULL,
+                    memory_type TEXT NOT NULL,
+                    accepted INTEGER NOT NULL CHECK (accepted = 1),
+                    reason TEXT NOT NULL CHECK (reason = 'accepted'),
+                    proposal_title TEXT NOT NULL,
+                    proposal_summary TEXT NOT NULL,
+                    proposed_quote TEXT,
+                    proposed_quote_role TEXT,
+                    proposal_confidence REAL,
+                    proposed_fact_ids_json TEXT NOT NULL,
+                    resolved_fact_ids_json TEXT NOT NULL,
+                    memory_id TEXT NOT NULL,
+                    memory_payload_sha256 TEXT NOT NULL,
+                    markdown_path TEXT NOT NULL,
+                    content_sha256 TEXT NOT NULL,
+                    PRIMARY KEY (repo_key, proposal_id),
+                    UNIQUE (repo_key, memory_id)
                 );
                 CREATE TABLE IF NOT EXISTS index_queue (
                     job_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -884,12 +1069,37 @@ class SQLiteState:
                 )
             if "semantic_episode_json" not in memory_columns:
                 connection.execute("ALTER TABLE memories ADD COLUMN semantic_episode_json TEXT")
+            if "adjacency_group_id" not in memory_columns:
+                connection.execute("ALTER TABLE memories ADD COLUMN adjacency_group_id TEXT")
+            if "adjacency_index" not in memory_columns:
+                connection.execute("ALTER TABLE memories ADD COLUMN adjacency_index INTEGER")
+            connection.execute(
+                """
+                CREATE INDEX IF NOT EXISTS memories_adjacency_lookup
+                ON memories(repo_key, adjacency_group_id, adjacency_index, memory_id)
+                WHERE adjacency_group_id IS NOT NULL
+                """
+            )
             gate_columns = {
                 row["name"]
                 for row in connection.execute("PRAGMA table_info(gate_audit)").fetchall()
             }
             if "proposal_confidence" not in gate_columns:
                 connection.execute("ALTER TABLE gate_audit ADD COLUMN proposal_confidence REAL")
+            reservation_columns = {
+                row["name"]
+                for row in connection.execute(
+                    "PRAGMA table_info(gate_write_reservation)"
+                ).fetchall()
+            }
+            if "markdown_path" not in reservation_columns:
+                connection.execute(
+                    "ALTER TABLE gate_write_reservation ADD COLUMN markdown_path TEXT"
+                )
+            if "content_sha256" not in reservation_columns:
+                connection.execute(
+                    "ALTER TABLE gate_write_reservation ADD COLUMN content_sha256 TEXT"
+                )
             connection.execute(
                 """
                 INSERT INTO index_queue (
@@ -922,6 +1132,7 @@ class SQLiteState:
                 rows = connection.execute(
                     """
                     SELECT repo_key, memory_id, memory_type, title, summary, episode_id,
+                           adjacency_group_id, adjacency_index,
                            command, exit_code, evidence_json, fact_ids_json, facts_json,
                            semantic_episode_json,
                            markdown_path, content_sha256
@@ -939,11 +1150,16 @@ class SQLiteState:
                     """
                 )
 
-    def _connect(self) -> sqlite3.Connection:
+    @contextmanager
+    def _connect(self) -> Iterator[sqlite3.Connection]:
         connection = sqlite3.connect(self._path)
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA busy_timeout = 5000")
-        return connection
+        try:
+            with connection:
+                yield connection
+        finally:
+            connection.close()
 
 
 def _evidence_dict(evidence: EvidenceReference) -> dict[str, object]:
@@ -991,6 +1207,289 @@ def _semantic_episode_dict(semantic_episode: SemanticEpisode) -> dict[str, objec
     }
 
 
+def _expected_gate_audit_row(
+    decision: GateDecision,
+    *,
+    proposal: MemoryProposal,
+) -> tuple[object, ...]:
+    if proposal.proposal_id != decision.proposal_id or proposal.repo_key != decision.repo_key:
+        raise ValueError("Gate decision does not match its audited proposal")
+    memory = decision.memory
+    if decision.accepted != (memory is not None):
+        raise ValueError("Accepted gate decisions must carry exactly one memory")
+    if memory is not None and memory.repo_key != decision.repo_key:
+        raise ValueError("Gate decision memory crosses repository namespace")
+    return (
+        decision.memory_type,
+        int(decision.accepted),
+        decision.reason,
+        proposal.title,
+        proposal.summary,
+        proposal.quote,
+        proposal.quote_role,
+        proposal.confidence,
+        json.dumps(decision.proposed_fact_ids),
+        json.dumps(decision.resolved_fact_ids),
+        memory.memory_id if memory is not None else None,
+    )
+
+
+def _expected_gate_reservation(
+    decision: GateDecision,
+    *,
+    proposal: MemoryProposal,
+) -> tuple[object, ...]:
+    expected = _expected_gate_audit_row(decision, proposal=proposal)
+    memory = decision.memory
+    if memory is None:
+        raise ValueError("Only accepted gate decisions can reserve a Markdown write")
+    markdown_path = _required_markdown_path(memory)
+    if memory.content_sha256 is None:
+        raise ValueError("Gate reservation requires a prepared Markdown digest")
+    return (
+        *expected,
+        _gate_memory_payload_sha256(memory),
+        markdown_path,
+        memory.content_sha256,
+    )
+
+
+def _gate_memory_payload_sha256(memory: CodingMemory) -> str:
+    payload = {
+        "schema": "codecairn/gate-memory-payload-v1",
+        "memory_id": memory.memory_id,
+        "repo_key": memory.repo_key,
+        "memory_type": memory.memory_type,
+        "title": memory.title,
+        "summary": memory.summary,
+        "episode_id": memory.episode_id,
+        "adjacency_group_id": memory.adjacency_group_id,
+        "adjacency_index": memory.adjacency_index,
+        "command": memory.command,
+        "exit_code": memory.exit_code,
+        "evidence": [_evidence_dict(item) for item in memory.evidence],
+        "fact_ids": list(memory.fact_ids),
+        "facts": [_fact_dict(fact) for fact in memory.facts],
+        "semantic_episode": (
+            None
+            if memory.semantic_episode is None
+            else _semantic_episode_dict(memory.semantic_episode)
+        ),
+    }
+    canonical = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+    return hashlib.sha256(canonical.encode()).hexdigest()
+
+
+def _gate_audit_row(
+    connection: sqlite3.Connection,
+    *,
+    decision: GateDecision,
+) -> sqlite3.Row | None:
+    return _gate_audit_row_by_identity(
+        connection,
+        repo_key=decision.repo_key,
+        proposal_id=decision.proposal_id,
+    )
+
+
+def _gate_audit_row_by_identity(
+    connection: sqlite3.Connection,
+    *,
+    repo_key: str,
+    proposal_id: str,
+) -> sqlite3.Row | None:
+    row = connection.execute(
+        """
+        SELECT memory_type, accepted, reason, proposal_title,
+               proposal_summary, proposed_quote, proposed_quote_role,
+               proposal_confidence, proposed_fact_ids_json,
+               resolved_fact_ids_json, memory_id
+        FROM gate_audit
+        WHERE repo_key = ? AND proposal_id = ?
+        """,
+        (repo_key, proposal_id),
+    ).fetchone()
+    return cast(sqlite3.Row | None, row)
+
+
+def _gate_write_reservation_row(
+    connection: sqlite3.Connection,
+    *,
+    repo_key: str,
+    proposal_id: str,
+) -> sqlite3.Row | None:
+    row = connection.execute(
+        """
+        SELECT proposal_id, repo_key, memory_type, accepted, reason,
+               proposal_title, proposal_summary, proposed_quote,
+               proposed_quote_role, proposal_confidence,
+               proposed_fact_ids_json, resolved_fact_ids_json, memory_id,
+               memory_payload_sha256, markdown_path, content_sha256
+        FROM gate_write_reservation
+        WHERE repo_key = ? AND proposal_id = ?
+        """,
+        (repo_key, proposal_id),
+    ).fetchone()
+    return cast(sqlite3.Row | None, row)
+
+
+def _gate_memory_reservation_row(
+    connection: sqlite3.Connection,
+    *,
+    repo_key: str,
+    memory_id: str,
+) -> sqlite3.Row | None:
+    row = connection.execute(
+        """
+        SELECT proposal_id, repo_key, memory_type, accepted, reason,
+               proposal_title, proposal_summary, proposed_quote,
+               proposed_quote_role, proposal_confidence,
+               proposed_fact_ids_json, resolved_fact_ids_json, memory_id,
+               memory_payload_sha256, markdown_path, content_sha256
+        FROM gate_write_reservation
+        WHERE repo_key = ? AND memory_id = ?
+        """,
+        (repo_key, memory_id),
+    ).fetchone()
+    return cast(sqlite3.Row | None, row)
+
+
+def _assert_gate_audit_compatible(
+    row: sqlite3.Row | None,
+    *,
+    expected: tuple[object, ...],
+    proposal_id: str,
+    required: bool,
+) -> None:
+    if (row is None and required) or (row is not None and tuple(row) != expected):
+        raise ValueError(f"Gate audit conflicts with proposal: {proposal_id}")
+
+
+def _assert_gate_reservation_compatible(
+    row: sqlite3.Row | None,
+    *,
+    expected: tuple[object, ...],
+    proposal_id: str,
+) -> None:
+    if row is None or tuple(row)[2:] != expected:
+        raise ValueError(f"Gate write reservation conflicts with proposal: {proposal_id}")
+
+
+def _gate_reservation_matches_memory_contract(
+    reservation: sqlite3.Row,
+    *,
+    memory: CodingMemory,
+) -> bool:
+    return (
+        reservation["memory_payload_sha256"] == _gate_memory_payload_sha256(memory)
+        and reservation["markdown_path"] == memory.markdown_path
+        and reservation["content_sha256"] == memory.content_sha256
+        and memory.markdown_path is not None
+        and memory.content_sha256 is not None
+    )
+
+
+def _authorize_gate_truth_memory(
+    connection: sqlite3.Connection,
+    memory: CodingMemory,
+) -> sqlite3.Row | None:
+    if memory.memory_type not in _GATE_MANAGED_MEMORY_TYPES:
+        return None
+    accepted = connection.execute(
+        """
+        SELECT 1
+        FROM gate_audit
+        WHERE repo_key = ? AND memory_id = ? AND accepted = 1
+        LIMIT 1
+        """,
+        (memory.repo_key, memory.memory_id),
+    ).fetchone()
+    if accepted is not None:
+        return None
+    reservation = _gate_memory_reservation_row(
+        connection,
+        repo_key=memory.repo_key,
+        memory_id=memory.memory_id,
+    )
+    if reservation is None:
+        raise ValueError(
+            f"Gate-managed Markdown has no accepted gate audit or reservation: {memory.memory_id}"
+        )
+    if reservation["memory_type"] != memory.memory_type or not (
+        _gate_reservation_matches_memory_contract(reservation, memory=memory)
+    ):
+        raise ValueError(
+            f"Gate write reservation does not match Markdown truth: {memory.memory_id}"
+        )
+    return reservation
+
+
+def _finalize_gate_truth_reservation(
+    connection: sqlite3.Connection,
+    *,
+    memory: CodingMemory,
+    reservation: sqlite3.Row,
+) -> None:
+    expected = (
+        reservation["memory_type"],
+        reservation["accepted"],
+        reservation["reason"],
+        reservation["proposal_title"],
+        reservation["proposal_summary"],
+        reservation["proposed_quote"],
+        reservation["proposed_quote_role"],
+        reservation["proposal_confidence"],
+        reservation["proposed_fact_ids_json"],
+        reservation["resolved_fact_ids_json"],
+        reservation["memory_id"],
+    )
+    connection.execute(
+        """
+        INSERT INTO gate_audit (
+            proposal_id, repo_key, memory_type, accepted, reason,
+            proposal_title, proposal_summary, proposed_quote,
+            proposed_quote_role, proposal_confidence,
+            proposed_fact_ids_json, resolved_fact_ids_json, memory_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(repo_key, proposal_id) DO NOTHING
+        """,
+        (
+            reservation["proposal_id"],
+            reservation["repo_key"],
+            *expected,
+        ),
+    )
+    _assert_gate_audit_compatible(
+        _gate_audit_row_by_identity(
+            connection,
+            repo_key=reservation["repo_key"],
+            proposal_id=reservation["proposal_id"],
+        ),
+        expected=expected,
+        proposal_id=reservation["proposal_id"],
+        required=True,
+    )
+    deleted = connection.execute(
+        """
+        DELETE FROM gate_write_reservation
+        WHERE repo_key = ? AND proposal_id = ? AND memory_id = ?
+        """,
+        (
+            reservation["repo_key"],
+            reservation["proposal_id"],
+            memory.memory_id,
+        ),
+    )
+    if deleted.rowcount != 1:
+        raise ValueError(f"Gate write reservation disappeared: {reservation['proposal_id']}")
+
+
 def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
     if memory.markdown_path is None or memory.content_sha256 is None:
         raise ValueError("Cannot commit a memory before Markdown persistence")
@@ -998,9 +1497,10 @@ def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
         """
         INSERT INTO memories (
             repo_key, memory_id, memory_type, title, summary,
-            episode_id, command, exit_code, evidence_json, fact_ids_json, facts_json,
+            episode_id, adjacency_group_id, adjacency_index,
+            command, exit_code, evidence_json, fact_ids_json, facts_json,
             semantic_episode_json, markdown_path, content_sha256
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(repo_key, memory_id) DO NOTHING
         """,
         (
@@ -1010,6 +1510,8 @@ def _insert_memory(connection: sqlite3.Connection, memory: CodingMemory) -> int:
             memory.title,
             memory.summary,
             memory.episode_id,
+            memory.adjacency_group_id,
+            memory.adjacency_index,
             memory.command,
             memory.exit_code,
             json.dumps([_evidence_dict(item) for item in memory.evidence]),
@@ -1052,6 +1554,7 @@ def _update_truth_memory(connection: sqlite3.Connection, memory: CodingMemory) -
         """
         UPDATE memories
         SET memory_type = ?, title = ?, summary = ?, episode_id = ?,
+            adjacency_group_id = ?, adjacency_index = ?,
             command = ?, exit_code = ?, evidence_json = ?, fact_ids_json = ?, facts_json = ?,
             semantic_episode_json = ?,
             markdown_path = ?, content_sha256 = ?
@@ -1062,6 +1565,8 @@ def _update_truth_memory(connection: sqlite3.Connection, memory: CodingMemory) -
             memory.title,
             memory.summary,
             memory.episode_id,
+            memory.adjacency_group_id,
+            memory.adjacency_index,
             memory.command,
             memory.exit_code,
             json.dumps([_evidence_dict(item) for item in memory.evidence]),
@@ -1220,6 +1725,8 @@ def _memory_from_row(repo_key: str, row: sqlite3.Row) -> CodingMemory:
         title=row["title"],
         summary=row["summary"],
         episode_id=row["episode_id"],
+        adjacency_group_id=row["adjacency_group_id"],
+        adjacency_index=row["adjacency_index"],
         command=row["command"],
         exit_code=row["exit_code"],
         evidence=evidence,

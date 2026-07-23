@@ -13,7 +13,6 @@ from codecairn.memory.models import (
     GateDecision,
     GateDecisionReason,
     MemoryProposal,
-    SemanticEpisode,
     TaskEpisode,
 )
 from codecairn.memory.trace import stable_id
@@ -30,7 +29,6 @@ class EvidenceGate:
         proposal: MemoryProposal,
         *,
         facts: tuple[EvidenceFact, ...],
-        semantic_episode: SemanticEpisode | None = None,
     ) -> GateDecision:
         facts_by_id = {fact.fact_id: fact for fact in facts}
         if len(facts_by_id) != len(facts):
@@ -66,14 +64,7 @@ class EvidenceGate:
             reason = "unsupported_memory_type"
         if reason is not None:
             return _reject(proposal, reason=reason, resolved=resolved_facts)
-        if semantic_episode is not None and not _valid_semantic_episode(
-            semantic_episode,
-            facts=resolved_facts,
-        ):
-            return _reject(proposal, reason="semantic_episode_invalid", resolved=resolved_facts)
-        if proposal.memory_type == "conversation_episode" and semantic_episode is None:
-            return _reject(proposal, reason="semantic_episode_invalid", resolved=resolved_facts)
-        return _accept(proposal, resolved_facts, semantic_episode=semantic_episode)
+        return _accept(proposal, resolved_facts)
 
 
 def collect_evidence_facts(
@@ -525,54 +516,9 @@ def _conversation_episode_rejection(
     return None
 
 
-def _valid_semantic_episode(
-    semantic_episode: SemanticEpisode,
-    *,
-    facts: tuple[EvidenceFact, ...],
-) -> bool:
-    source_fact_ids = tuple(fact.fact_id for fact in facts)
-    source_fact_set = set(source_fact_ids)
-    if (
-        len({fact.episode_id for fact in facts}) != 1
-        or semantic_episode.episode_id != facts[0].episode_id
-        or not semantic_episode.narrative.strip()
-        or not semantic_episode.semanticizer_id.strip()
-        or not semantic_episode.revision.strip()
-        or semantic_episode.source_fact_ids != source_fact_ids
-        or len(source_fact_ids) != len(source_fact_set)
-        or not semantic_episode.atomic_facts
-    ):
-        return False
-    covered: set[str] = set()
-    semantic_ids: set[str] = set()
-    for atomic_fact in semantic_episode.atomic_facts:
-        references = atomic_fact.source_fact_ids
-        if (
-            not atomic_fact.fact_id
-            or atomic_fact.fact_id in semantic_ids
-            or not atomic_fact.text.strip()
-            or not references
-            or len(references) != len(set(references))
-            or not set(references) <= source_fact_set
-            or atomic_fact.fact_id
-            != stable_id(
-                "semantic-atomic-fact",
-                semantic_episode.episode_id,
-                *references,
-                atomic_fact.text,
-            )
-        ):
-            return False
-        semantic_ids.add(atomic_fact.fact_id)
-        covered.update(references)
-    return covered == source_fact_set
-
-
 def _accept(
     proposal: MemoryProposal,
     facts: tuple[EvidenceFact, ...],
-    *,
-    semantic_episode: SemanticEpisode | None = None,
 ) -> GateDecision:
     evidence = _unique_evidence(facts)
     episode_ids = tuple(dict.fromkeys(fact.episode_id for fact in facts))
@@ -601,7 +547,6 @@ def _accept(
         evidence=evidence,
         fact_ids=fact_ids,
         facts=facts,
-        semantic_episode=semantic_episode,
     )
     return GateDecision(
         proposal_id=proposal.proposal_id,

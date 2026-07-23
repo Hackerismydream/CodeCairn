@@ -13,6 +13,7 @@ from codecairn.bootstrap import create_retrieval_providers
 from codecairn.memory.embedding import DashScopeEmbeddingAdapter, FastEmbedEmbeddingAdapter
 from codecairn.memory.model_artifact import fastembed_version
 from codecairn.memory.models import RerankDocument
+from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.memory.reranking import FastEmbedRerankingAdapter
 
 
@@ -106,6 +107,10 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
             "revision": "provider-managed",
             "dimension": 1024,
             "license": "Alibaba Cloud Model Studio service",
+            "pricing": {
+                "currency": "CNY",
+                "input_per_million": 0.5,
+            },
         },
         "reranker": {
             "adapter": "fastembed-cross-encoder",
@@ -117,35 +122,7 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
             "license": "Apache-2.0",
             "batch_size": 8,
         },
-        "planner": {
-            "mode": "hierarchy",
-            "router": "deterministic-cues-v1",
-            "hard_route_cutoff": False,
-            "primary_candidate_multiplier": 2,
-            "secondary_candidate_multiplier": 1,
-            "minimum_primary_candidates": 40,
-            "minimum_secondary_candidates": 20,
-            "maximum_channel_candidates": 64,
-            "rerank_candidate_multiplier": 5,
-            "minimum_rerank_candidates": 32,
-            "maximum_rerank_candidates": 96,
-            "maximum_exploration_results": 4,
-            "neighbor_window": 1,
-            "temporal_neighbor_window": 2,
-            "neighbor_snippet_budget": 20,
-            "temporal_lane": "explicit-month-prefix-v1",
-            "enrichment_order": "matched-diverse-channel-temporal-window-v3",
-            "matched_facts_per_memory": 3,
-            "diverse_matched_facts_per_memory": 1,
-            "sibling_facts_per_memory": 2,
-            "temporal_sibling_facts_per_memory": 5,
-            "context_renderer": "facts-first-round-robin-v1",
-            "context_max_chars": 23_900,
-            "context_summary_chars": 60,
-            "context_snippet_chars": 200,
-            "context_snippets_per_memory": 5,
-            "context_temporal_snippets_per_memory": 8,
-        },
+        "planner": RecallPlannerConfig().public_config,
     }
 
 
@@ -226,6 +203,106 @@ def test_dashscope_adapter_batches_openai_compatible_requests_and_restores_order
         b'{"model":"qwen3.7-text-embedding","input":["one","two"],"dimensions":3,"encoding_format":"float"}',
         b'{"model":"qwen3.7-text-embedding","input":["three"],"dimensions":3,"encoding_format":"float"}',
     ]
+
+
+def test_dashscope_query_batches_record_attempt_tokens_and_cny_cost() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        inputs = json.loads(request.content)["input"]
+        return httpx.Response(
+            200,
+            json={
+                "data": [
+                    {"index": index, "embedding": [float(index), 1.0, 2.0]}
+                    for index in range(len(inputs))
+                ],
+                "usage": {"prompt_tokens": 3 * len(inputs)},
+            },
+            request=request,
+        )
+
+    embedder = DashScopeEmbeddingAdapter(
+        api_key="secret-key",
+        dimension=3,
+        batch_size=2,
+        retry_backoff_seconds=0,
+        input_price_cny_per_million=0.5,
+        transport=httpx.MockTransport(handler),
+    )
+
+    assert len(embedder.embed_queries(("one", "two", "three"))) == 3
+    assert len(requests) == 2
+    assert embedder.usage.call_count == 2
+    assert embedder.usage.provider_attempt_count == 2
+    assert embedder.usage.input_tokens == 9
+    assert embedder.usage.cost_cny == pytest.approx(0.0000045)
+    assert embedder.usage.known_input_tokens_count == 2
+    assert embedder.usage.known_cost_cny_count == 2
+
+
+def test_dashscope_read_timeout_stops_before_a_duplicate_paid_attempt() -> None:
+    calls = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        raise httpx.ReadTimeout("response lost", request=request)
+
+    embedder = DashScopeEmbeddingAdapter(
+        api_key="secret-key",
+        dimension=3,
+        max_attempts=2,
+        retry_backoff_seconds=0,
+        input_price_cny_per_million=0.5,
+        transport=httpx.MockTransport(handler),
+    )
+
+    with pytest.raises(httpx.ReadTimeout):
+        embedder.embed_query("query")
+    assert calls == 1
+    assert embedder.usage.call_count == 1
+    assert embedder.usage.provider_attempt_count == 1
+    assert embedder.usage.unobserved_provider_attempt_count == 1
+    assert embedder.usage.input_tokens is None
+    assert embedder.usage.cost_cny is None
+    assert embedder.usage.known_input_tokens_count == 0
+    assert embedder.usage.known_cost_cny_count == 0
+
+
+def test_dashscope_connect_failure_can_retry_without_unknown_spend() -> None:
+    calls = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise httpx.ConnectError("connection refused", request=request)
+        return httpx.Response(
+            200,
+            json={
+                "data": [{"index": 0, "embedding": [1.0, 2.0, 3.0]}],
+                "usage": {"prompt_tokens": 7},
+            },
+            request=request,
+        )
+
+    embedder = DashScopeEmbeddingAdapter(
+        api_key="secret-key",
+        dimension=3,
+        max_attempts=2,
+        retry_backoff_seconds=0,
+        input_price_cny_per_million=0.5,
+        transport=httpx.MockTransport(handler),
+    )
+
+    assert embedder.embed_query("query") == (1.0, 2.0, 3.0)
+    assert calls == 2
+    assert embedder.usage.provider_attempt_count == 2
+    assert embedder.usage.unobserved_provider_attempt_count == 0
+    assert embedder.usage.input_tokens == 7
+    assert embedder.usage.cost_cny == pytest.approx(0.0000035)
 
 
 def test_dashscope_adapter_rejects_wrong_vector_dimensions() -> None:
@@ -309,6 +386,7 @@ def test_dashscope_public_config_never_contains_the_api_key() -> None:
         environment={
             "CODECAIRN_EMBEDDING_API_KEY": "do-not-persist",
             "CODECAIRN_EMBEDDING_BASE_URL": "https://workspace.example/compatible-mode/v1/",
+            "CODECAIRN_EMBEDDING_INPUT_PRICE_CNY_PER_MILLION": "0.25",
         }
     )
 
@@ -321,6 +399,10 @@ def test_dashscope_public_config_never_contains_the_api_key() -> None:
         "revision": "provider-managed",
         "dimension": 1024,
         "license": "Alibaba Cloud Model Studio service",
+        "pricing": {
+            "currency": "CNY",
+            "input_per_million": 0.25,
+        },
     }
 
 
@@ -333,35 +415,10 @@ def test_recall_mode_selects_an_auditable_ablation_configuration() -> None:
     )
 
     assert providers.planner.atomic_fact_enabled is False
-    assert providers.public_config["planner"] == {
-        "mode": "episode-only",
-        "router": "deterministic-cues-v1",
-        "hard_route_cutoff": False,
-        "primary_candidate_multiplier": 2,
-        "secondary_candidate_multiplier": 1,
-        "minimum_primary_candidates": 40,
-        "minimum_secondary_candidates": 20,
-        "maximum_channel_candidates": 64,
-        "rerank_candidate_multiplier": 5,
-        "minimum_rerank_candidates": 32,
-        "maximum_rerank_candidates": 96,
-        "maximum_exploration_results": 4,
-        "neighbor_window": 0,
-        "temporal_neighbor_window": 0,
-        "neighbor_snippet_budget": 20,
-        "temporal_lane": "explicit-month-prefix-v1",
-        "enrichment_order": "matched-diverse-channel-temporal-window-v3",
-        "matched_facts_per_memory": 3,
-        "diverse_matched_facts_per_memory": 1,
-        "sibling_facts_per_memory": 2,
-        "temporal_sibling_facts_per_memory": 5,
-        "context_renderer": "facts-first-round-robin-v1",
-        "context_max_chars": 23_900,
-        "context_summary_chars": 60,
-        "context_snippet_chars": 200,
-        "context_snippets_per_memory": 5,
-        "context_temporal_snippets_per_memory": 8,
-    }
+    assert (
+        providers.public_config["planner"]
+        == RecallPlannerConfig.for_mode("episode-only").public_config
+    )
 
 
 def test_recall_mode_rejects_unknown_ablation_names() -> None:

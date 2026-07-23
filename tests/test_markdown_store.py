@@ -1,3 +1,4 @@
+import hashlib
 from dataclasses import replace
 from pathlib import Path
 
@@ -7,6 +8,65 @@ import codecairn.storage.markdown as markdown_module
 from codecairn.memory.episode import LosslessEpisodeSemanticizer
 from codecairn.memory.models import CodingMemory, EvidenceFact, EvidenceReference
 from codecairn.storage.markdown import MarkdownMemoryStore
+
+
+def _user_preference_memory() -> CodingMemory:
+    return CodingMemory(
+        memory_id="memory_user_preference",
+        repo_key="acme/widgets",
+        memory_type="user_preference",
+        title="Use Chinese for collaboration",
+        summary="Use Chinese in pull requests and review comments.",
+        episode_id="episode_test",
+        command=None,
+        exit_code=None,
+        evidence=(
+            EvidenceReference(
+                provider="codex",
+                session_id="session_test",
+                source_path="/observed/session.jsonl",
+                raw_event_sha256="a" * 64,
+                raw_event_index=1,
+                raw_event_type="response_item",
+            ),
+        ),
+    )
+
+
+def test_prepare_returns_the_canonical_markdown_contract_without_writing(
+    tmp_path: Path,
+) -> None:
+    store = MarkdownMemoryStore(tmp_path)
+    memory = _user_preference_memory()
+
+    prepared = store.prepare(memory)
+
+    assert prepared.markdown_path is not None
+    assert prepared.content_sha256 is not None
+    assert prepared.markdown_path.endswith("/memories/user_preference/memory_user_preference.md")
+    assert (tmp_path / "repos").exists() is False
+
+    persisted = store.write(prepared)
+    source = Path(persisted.markdown_path).read_bytes()
+    assert persisted == prepared
+    assert hashlib.sha256(source).hexdigest() == prepared.content_sha256
+
+
+def test_write_rejects_a_changed_prepared_markdown_contract(tmp_path: Path) -> None:
+    store = MarkdownMemoryStore(tmp_path)
+    prepared = store.prepare(_user_preference_memory())
+
+    with pytest.raises(ValueError, match="preparation contract conflicts"):
+        store.write(
+            replace(
+                prepared,
+                markdown_path=str(tmp_path / "outside-the-canonical-layout.md"),
+            )
+        )
+    with pytest.raises(ValueError, match="preparation contract conflicts"):
+        store.write(replace(prepared, content_sha256="f" * 64))
+
+    assert tuple(tmp_path.rglob("*.md")) == ()
 
 
 def test_memory_type_controls_safe_body_rendering(tmp_path: Path) -> None:

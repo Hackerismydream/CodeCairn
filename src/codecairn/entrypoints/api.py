@@ -371,6 +371,8 @@ def _memory_response(memory: CodingMemory) -> dict[str, Any]:
         "title": memory.title,
         "summary": memory.summary,
         "episode_id": memory.episode_id,
+        "adjacency_group_id": memory.adjacency_group_id,
+        "adjacency_index": memory.adjacency_index,
         "command": memory.command,
         "exit_code": memory.exit_code,
         "evidence": [

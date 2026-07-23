@@ -1,12 +1,19 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import math
+import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
 
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
 from codecairn.evaluation.locomo import _FROZEN_PLANNER_PROTOCOL_FIELDS, report_locomo
+
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+_CANONICAL_VARIANTS = ("episode-only", "hierarchy-no-neighbors", "hierarchy")
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,8 +55,10 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
     }
     reports: dict[str, dict[str, object]] = {}
     manifests: dict[str, dict[str, object]] = {}
+    manifest_receipts: dict[str, dict[str, object]] = {}
     for variant, run_path in run_paths.items():
-        manifest = _dict(read_json(run_path / "manifest.json"), field=f"{variant} manifest")
+        manifest_path = run_path / "manifest.json"
+        manifest = _dict(read_json(manifest_path), field=f"{variant} manifest")
         _validate_run_manifest(
             manifest,
             variant=variant,
@@ -63,14 +72,214 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
             selection_sha256=expected_selection_sha256,
         )
         manifests[variant] = manifest
+        manifest_receipts[variant] = {
+            "run_id": _str(manifest, "run_id"),
+            "manifest_sha256": file_sha256(manifest_path),
+        }
         reports[variant] = report_locomo(run_path)
     _validate_constant_protocol(manifests)
-    _validate_definition_protocol(
+    validate_locomo_manifest_protocol(
         manifests["hierarchy"],
         protocol=protocol,
     )
 
     gates = _dict(definition.get("gates"), field="gates")
+    outcome = _derive_ablation_outcome(reports, gates=gates)
+    selected_variant = _str(outcome, "selected_variant")
+    run_contracts = {
+        variant: _selected_run_contract(manifest) for variant, manifest in manifests.items()
+    }
+    report = {
+        "schema_version": 1,
+        "suite": "locomo-ablation",
+        "selection_id": _str(definition, "selection_id"),
+        "question_set_sha256": definition_sha256,
+        "selection_sha256": expected_selection_sha256,
+        "question_set_protocol_sha256": _canonical_sha256(protocol),
+        "question_set_gates": dict(gates),
+        "question_set_gates_sha256": _canonical_sha256(gates),
+        "repository_commit": _str(manifests["hierarchy"], "repository_commit"),
+        "variants": reports,
+        "run_manifests": manifest_receipts,
+        "run_contracts": run_contracts,
+        **outcome,
+        "selected_variant": selected_variant,
+        "selected_run_id": _str(manifests[selected_variant], "run_id"),
+        "selected_run_contract": run_contracts[selected_variant],
+    }
+    write_json_exclusive(config.output_path, report)
+    return report
+
+
+def validate_locomo_ablation_report(
+    report: dict[str, object],
+    *,
+    selection_id: str,
+    question_set_sha256: str,
+    selection_sha256: str,
+    protocol_sha256: str,
+    gates_sha256: str,
+) -> tuple[str, dict[str, object]]:
+    """Recompute a 40-question selection artifact before promotion."""
+    if report.get("schema_version") != 1 or report.get("suite") != "locomo-ablation":
+        raise ValueError("LoCoMo selection report schema or suite is invalid")
+    expected_identity = {
+        "selection_id": selection_id,
+        "question_set_sha256": question_set_sha256,
+        "selection_sha256": selection_sha256,
+        "question_set_protocol_sha256": protocol_sha256,
+        "question_set_gates_sha256": gates_sha256,
+    }
+    for field, expected in expected_identity.items():
+        if report.get(field) != expected:
+            raise ValueError(f"LoCoMo selection report changes its frozen field: {field}")
+
+    gates = _dict(report.get("question_set_gates"), field="selection report gates")
+    if _canonical_sha256(gates) != gates_sha256:
+        raise ValueError("LoCoMo selection report gates do not match their frozen digest")
+    variants = _dict(report.get("variants"), field="selection report variants")
+    manifests = _dict(report.get("run_manifests"), field="selection report manifests")
+    contracts = _dict(report.get("run_contracts"), field="selection report run contracts")
+    expected_variants = set(_CANONICAL_VARIANTS)
+    for field, values in (
+        ("variants", variants),
+        ("run manifests", manifests),
+        ("run contracts", contracts),
+    ):
+        if set(values) != expected_variants:
+            raise ValueError(
+                f"LoCoMo selection report {field} must contain three canonical variants"
+            )
+
+    repository_commit = _str(report, "repository_commit")
+    reference_contract: dict[str, object] | None = None
+    for variant in _CANONICAL_VARIANTS:
+        variant_report = _dict(variants[variant], field=f"{variant} selection run report")
+        if (
+            variant_report.get("suite") != "locomo"
+            or variant_report.get("mode") != "full"
+            or variant_report.get("scored") is not True
+        ):
+            raise ValueError(f"{variant} selection run report is not one scored full LoCoMo run")
+        manifest_receipt = _dict(manifests[variant], field=f"{variant} manifest receipt")
+        if set(manifest_receipt) != {"run_id", "manifest_sha256"}:
+            raise ValueError(f"{variant} manifest receipt has unsupported fields")
+        run_id = _str(manifest_receipt, "run_id")
+        _sha256(manifest_receipt, "manifest_sha256")
+        if variant_report.get("run_id") != run_id:
+            raise ValueError(f"{variant} report does not match its manifest receipt")
+        contract = _validate_run_contract(
+            _dict(contracts[variant], field=f"{variant} run contract"),
+            variant=variant,
+            repository_commit=repository_commit,
+        )
+        if reference_contract is None:
+            reference_contract = contract
+        else:
+            for field in (
+                "repository_commit",
+                "corpus",
+                "query_vectors",
+                "answer_model",
+                "judge_model",
+            ):
+                if contract[field] != reference_contract[field]:
+                    raise ValueError(f"{variant} changes the selected protocol contract: {field}")
+
+    expected_outcome = _derive_ablation_outcome(
+        {
+            variant: _dict(variants[variant], field=f"{variant} report")
+            for variant in _CANONICAL_VARIANTS
+        },
+        gates=gates,
+    )
+    for field, expected_value in expected_outcome.items():
+        if report.get(field) != expected_value:
+            raise ValueError(f"LoCoMo selection report derived field is invalid: {field}")
+    selected_variant = _str(expected_outcome, "selected_variant")
+    selected_manifest = _dict(manifests[selected_variant], field="selected manifest receipt")
+    if report.get("selected_run_id") != selected_manifest.get("run_id"):
+        raise ValueError("LoCoMo selection report selected run does not match its manifest")
+    selected_contract = _dict(contracts[selected_variant], field="selected run contract")
+    if report.get("selected_run_contract") != selected_contract:
+        raise ValueError("LoCoMo selection report selected contract is not the chosen run contract")
+    if report.get("gate_passed") is not True:
+        raise ValueError("LoCoMo promotion requires a successful 40-question selection report")
+    return selected_variant, dict(selected_contract)
+
+
+def validate_locomo_ablation_sources(
+    report: dict[str, object],
+    *,
+    run_paths: dict[str, Path],
+    selection_id: str,
+    question_set_sha256: str,
+    selection_sha256: str,
+    protocol_sha256: str,
+    gates_sha256: str,
+    protocol: dict[str, object],
+    reporter: Callable[[Path], dict[str, object]] = report_locomo,
+) -> tuple[str, dict[str, object]]:
+    """Bind a selection report to the three immutable run directories it summarizes."""
+    selected_variant, selected_contract = validate_locomo_ablation_report(
+        report,
+        selection_id=selection_id,
+        question_set_sha256=question_set_sha256,
+        selection_sha256=selection_sha256,
+        protocol_sha256=protocol_sha256,
+        gates_sha256=gates_sha256,
+    )
+    if set(run_paths) != set(_CANONICAL_VARIANTS):
+        raise ValueError("LoCoMo promotion requires three canonical 40-question run directories")
+    if _canonical_sha256(protocol) != protocol_sha256:
+        raise ValueError("LoCoMo promotion source protocol does not match its frozen digest")
+    windows = _dict(protocol.get("neighbor_windows"), field="source neighbor windows")
+    reported_manifests = _dict(report.get("run_manifests"), field="selection report manifests")
+    reported_contracts = _dict(report.get("run_contracts"), field="selection report contracts")
+    reported_variants = _dict(report.get("variants"), field="selection report variants")
+    actual_manifests: dict[str, dict[str, object]] = {}
+    for variant in _CANONICAL_VARIANTS:
+        run_path = run_paths[variant]
+        manifest_path = run_path / "manifest.json"
+        manifest = _dict(read_json(manifest_path), field=f"{variant} source manifest")
+        expected_windows = _dict(windows.get(variant), field=f"{variant} source windows")
+        _validate_run_manifest(
+            manifest,
+            variant=variant,
+            expected_mode=variant,
+            expected_neighbor_windows=expected_windows,
+            definition_sha256=question_set_sha256,
+            selection_sha256=selection_sha256,
+        )
+        receipt = _dict(reported_manifests[variant], field=f"{variant} manifest receipt")
+        if receipt.get("run_id") != manifest.get("run_id") or receipt.get(
+            "manifest_sha256"
+        ) != file_sha256(manifest_path):
+            raise ValueError(f"{variant} manifest receipt does not match the source run")
+        actual_report = reporter(run_path)
+        if actual_report != reported_variants[variant]:
+            raise ValueError(f"{variant} report does not match the source run checkpoints")
+        actual_contract = _selected_run_contract(manifest)
+        if actual_contract != reported_contracts[variant]:
+            raise ValueError(f"{variant} contract does not match the source run manifest")
+        actual_manifests[variant] = manifest
+    _validate_constant_protocol(actual_manifests)
+    validate_locomo_manifest_protocol(actual_manifests["hierarchy"], protocol=protocol)
+    selected_manifest = actual_manifests[selected_variant]
+    if report.get("selected_run_id") != selected_manifest.get("run_id"):
+        raise ValueError("LoCoMo selection report does not select its bound source run")
+    if selected_contract != _selected_run_contract(selected_manifest):
+        raise ValueError("LoCoMo selection report contract differs from its bound source run")
+    return selected_variant, selected_contract
+
+
+def _derive_ablation_outcome(
+    reports: dict[str, dict[str, object]],
+    *,
+    gates: dict[str, object],
+) -> dict[str, object]:
+    if set(reports) != set(_CANONICAL_VARIANTS):
+        raise ValueError("LoCoMo ablation requires three canonical run reports")
     required_questions = _int(gates, "required_scored_questions_per_variant")
     maximum_failures = _int(gates, "maximum_infrastructure_failures")
     minimum_core_delta = _number(
@@ -117,9 +326,10 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
     )
 
     checks: list[dict[str, object]] = []
-    for variant, report in reports.items():
-        scored = _int(report, "scored_question_count")
-        failures = _int(report, "infrastructure_failed_count")
+    for variant in _CANONICAL_VARIANTS:
+        variant_report = reports[variant]
+        scored = _int(variant_report, "scored_question_count")
+        failures = _int(variant_report, "infrastructure_failed_count")
         checks.extend(
             (
                 _check(
@@ -177,14 +387,7 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
             passed=selected_p95 <= maximum_selected_p95,
         )
     )
-    report = {
-        "schema_version": 1,
-        "suite": "locomo-ablation",
-        "selection_id": _str(definition, "selection_id"),
-        "question_set_sha256": definition_sha256,
-        "selection_sha256": expected_selection_sha256,
-        "repository_commit": _str(manifests["hierarchy"], "repository_commit"),
-        "variants": reports,
+    return {
         "accuracy_delta_points": {
             "hierarchy_no_neighbors_vs_episode_only": core_delta,
             "hierarchy_vs_hierarchy_no_neighbors": neighbor_delta,
@@ -197,8 +400,31 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
         "selected_variant": selected_variant,
         "gate_passed": all(cast(bool, check["passed"]) for check in checks),
     }
-    write_json_exclusive(config.output_path, report)
-    return report
+
+
+def _validate_run_contract(
+    contract: dict[str, object],
+    *,
+    variant: str,
+    repository_commit: str,
+) -> dict[str, object]:
+    expected_fields = {
+        "repository_commit",
+        "recall_mode",
+        "corpus",
+        "query_vectors",
+        "answer_model",
+        "judge_model",
+    }
+    if set(contract) != expected_fields:
+        raise ValueError(f"{variant} run contract has unsupported fields")
+    if contract.get("repository_commit") != repository_commit:
+        raise ValueError(f"{variant} run contract changes the repository commit")
+    if contract.get("recall_mode") != variant:
+        raise ValueError(f"{variant} run contract changes the recall mode")
+    for field in ("corpus", "query_vectors", "answer_model", "judge_model"):
+        _dict(contract.get(field), field=f"{variant} {field}")
+    return dict(contract)
 
 
 def _validate_run_manifest(
@@ -275,7 +501,7 @@ def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None
                 raise ValueError(f"{variant} changes the frozen planner field: {field}")
 
 
-def _validate_definition_protocol(
+def validate_locomo_manifest_protocol(
     manifest: dict[str, object],
     *,
     protocol: dict[str, object],
@@ -294,6 +520,9 @@ def _validate_definition_protocol(
         "judge_model": judge.get("model"),
         "judge_contract": manifest.get("judge_contract"),
         "judge_votes": manifest.get("judge_votes"),
+        "judge_response_max_attempts": manifest.get("judge_response_max_attempts"),
+        "judge_response_max_chars": manifest.get("judge_response_max_chars"),
+        "seed": manifest.get("seed"),
         "top_k": retrieval.get("top_k"),
         "inference_threads": retrieval.get("inference_threads"),
         "tokenizer_parallelism": retrieval.get("tokenizer_parallelism"),
@@ -318,6 +547,16 @@ def _validate_definition_protocol(
         **{field: planner.get(field) for field in _FROZEN_PLANNER_PROTOCOL_FIELDS},
     }
     for field, value in observed.items():
+        if (
+            field
+            in {
+                "judge_response_max_attempts",
+                "judge_response_max_chars",
+                "seed",
+            }
+            and field not in protocol
+        ):
+            continue
         if value != protocol.get(field):
             raise ValueError(f"LoCoMo run changes the diagnostic protocol field: {field}")
 
@@ -341,6 +580,45 @@ def _retrieval_p95(report: dict[str, object]) -> float:
     diagnostics = _dict(report.get("retrieval_diagnostics"), field="retrieval diagnostics")
     latency = _dict(diagnostics.get("latency_ms"), field="retrieval latency")
     return _number(latency, "p95")
+
+
+def _selected_run_contract(manifest: dict[str, object]) -> dict[str, object]:
+    retrieval = _dict(manifest.get("retrieval"), field="selected retrieval")
+    planner = _dict(retrieval.get("planner"), field="selected planner")
+    return {
+        "repository_commit": _str(manifest, "repository_commit"),
+        "recall_mode": _str(planner, "mode"),
+        "corpus": _artifact_identity(
+            manifest.get("corpus"),
+            field="selected corpus",
+            identity_fields=(
+                "artifact_id",
+                "repository_commit",
+                "content_sha256",
+                "build_contract_sha256",
+                "tree_sha256",
+            ),
+        ),
+        "query_vectors": _artifact_identity(
+            manifest.get("query_vectors"),
+            field="selected query vectors",
+            identity_fields=("artifact_id", "content_sha256", "selection_sha256"),
+        ),
+        "answer_model": dict(_dict(manifest.get("answer_model"), field="selected answer model")),
+        "judge_model": dict(_dict(manifest.get("judge_model"), field="selected judge model")),
+    }
+
+
+def _artifact_identity(
+    value: object,
+    *,
+    field: str,
+    identity_fields: tuple[str, ...],
+) -> dict[str, object] | None:
+    if value is None:
+        return None
+    artifact = _dict(value, field=field)
+    return {identity_field: _str(artifact, identity_field) for identity_field in identity_fields}
 
 
 def _check(
@@ -383,6 +661,19 @@ def _int(value: dict[str, object], field: str) -> int:
     if type(raw) is not int:
         raise ValueError(f"{field} must be an integer")
     return raw
+
+
+def _sha256(value: dict[str, object], field: str) -> str:
+    raw = _str(value, field)
+    if _SHA256.fullmatch(raw) is None:
+        raise ValueError(f"{field} must be a lowercase SHA-256 digest")
+    return raw
+
+
+def _canonical_sha256(value: object) -> str:
+    return hashlib.sha256(
+        json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode()
+    ).hexdigest()
 
 
 def _number(value: dict[str, object], field: str) -> float:

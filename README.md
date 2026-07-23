@@ -147,14 +147,25 @@ and every query sidecar.
 
 Resource-sensitive LoCoMo evidence runs reuse one verified corpus and one frozen
 query-vector artifact, then isolate each conversation in a fresh worker process.
-Build those artifacts as documented in `benchmarks/locomo/README.md`, then run:
+The v13 protocol first runs retrieval without answer or judge calls and reports
+gold-evidence coverage. Paid scoring starts only after that provider-free gate.
+A three-variant 40-question comparison selects one recall mode; only that mode
+runs the 200-question diagnostic, whose absolute promotion gate is verified by
+`codecairn eval promote-locomo`. Build the artifacts as documented in
+`benchmarks/locomo/README.md`, then run:
 
 ```bash
 codecairn eval run locomo benchmarks/locomo/data/locomo10.json \
-  --run-id <run-id> --repository-commit <commit> --mode full \
-  --question-set benchmarks/locomo/diagnostic-200-v12.json \
+  --run-id <retrieval-run-id> --repository-commit <commit> --mode retrieval \
+  --output-root benchmark_results \
+  --question-set benchmarks/locomo/diagnostic-200-v13.json \
   --corpus <content-addressed-corpus> --query-vectors <frozen-query-vectors> \
-  --model deepseek-v4-flash --judge-model deepseek-v4-flash --max-workers 10
+  --max-workers 10
+
+codecairn eval report-locomo-evidence \
+  benchmark_results/locomo/<retrieval-run-id> \
+  --dataset benchmarks/locomo/data/locomo10.json \
+  --output benchmark_results/locomo/<retrieval-run-id>/evidence-coverage.json
 ```
 
 The six versioned routes cover import, memory list, recall, evaluation run,

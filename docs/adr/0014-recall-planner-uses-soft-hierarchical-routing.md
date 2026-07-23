@@ -34,7 +34,8 @@ attributed.
 
 The public retrieval configuration freezes three ablation modes:
 
-- `episode-only`: parent lexical/vector recall only;
+- `episode-only`: parent lexical/vector recall only; fact postings and
+  provenance expansion cannot introduce or enrich a parent;
 - `hierarchy-no-neighbors`: parent plus AtomicFact recall;
 - `hierarchy`: parent plus AtomicFact recall and bounded neighbors.
 

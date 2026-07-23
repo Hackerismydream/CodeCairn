@@ -55,12 +55,15 @@ RecallDocumentKind = Literal["episode", "atomic_fact"]
 RecallRoute = Literal["episode_first", "fact_first"]
 RecallDocumentSource = Literal[
     "episode_lexical",
+    "episode_entity_lexical",
     "episode_temporal_lexical",
     "episode_vector",
     "atomic_fact_lexical",
+    "atomic_fact_entity_lexical",
     "atomic_fact_temporal_lexical",
     "atomic_fact_vector",
     "entity_posting",
+    "provenance_posting",
 ]
 RecallSnippetRelation = Literal["matched", "sibling", "neighbor"]
 RecallStageName = Literal["candidate_recall", "fusion", "rerank", "selection", "context"]
@@ -174,6 +177,8 @@ class CodingMemory:
     content_sha256: str | None = None
     facts: tuple[EvidenceFact, ...] = ()
     semantic_episode: SemanticEpisode | None = None
+    adjacency_group_id: str | None = None
+    adjacency_index: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -427,6 +432,7 @@ class RankedRecall:
     snippets: tuple[RecallSnippet, ...] = ()
     episode_text: str = ""
     episode_fact_ids: tuple[str, ...] = ()
+    episode_snippets: tuple[RecallSnippet, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -445,6 +451,10 @@ class RecallContextTrace:
     rendered_fact_ids: tuple[str, ...]
     omitted_memory_ids: tuple[str, ...]
     omitted_snippet_count: int
+    token_count: int = 0
+    token_limit: int = 4_000
+    tokenizer_id: str = "codecairn/utf8-two-byte-upper-bound-v1"
+    omitted_fact_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -470,13 +480,21 @@ class RecallSidecar:
     atomic_fact_lexical_candidate_count: int = 0
     episode_temporal_lexical_candidate_count: int = 0
     atomic_fact_temporal_lexical_candidate_count: int = 0
+    episode_entity_lexical_candidate_count: int = 0
+    atomic_fact_entity_lexical_candidate_count: int = 0
     neighbor_expansion_count: int = 0
     entity_posting_candidate_count: int = 0
     rerank_bundle_count: int = 0
     query_anchors: tuple[str, ...] = ()
     query_temporal_prefixes: tuple[str, ...] = ()
+    query_sketcher_id: str = "codecairn/deterministic-query-sketch-v1"
     covered_slots: tuple[str, ...] = ()
     missing_slots: tuple[str, ...] = ()
+    covered_requirements: tuple[str, ...] = ()
+    missing_requirements: tuple[str, ...] = ()
+    expansion_fact_count: int = 0
+    expansion_fact_limit: int = 0
+    provenance_expansion_count: int = 0
     completion: Literal["complete", "partial"] = "complete"
     degraded_stages: tuple[str, ...] = ()
     query_vector_sha256: str | None = None

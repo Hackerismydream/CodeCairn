@@ -5,6 +5,7 @@ import math
 import re
 import time
 from collections.abc import Iterable
+from dataclasses import dataclass
 from itertools import pairwise
 from threading import Lock
 from typing import Protocol, cast
@@ -29,6 +30,7 @@ DEFAULT_EMBEDDING_BATCH_SIZE = 10
 DEFAULT_EMBEDDING_TIMEOUT_SECONDS = 30.0
 DEFAULT_EMBEDDING_MAX_ATTEMPTS = 3
 DEFAULT_EMBEDDING_RETRY_BACKOFF_SECONDS = 1.0
+DEFAULT_EMBEDDING_INPUT_PRICE_CNY_PER_MILLION = 0.5
 DASHSCOPE_ADAPTER_VERSION = "1"
 DASHSCOPE_TEXT_V4_DIMENSIONS = frozenset({64, 128, 256, 512, 768, 1024, 1536, 2048})
 
@@ -38,6 +40,17 @@ DEFAULT_FASTEMBED_EMBEDDING_LICENSE = "MIT"
 DEFAULT_FASTEMBED_EMBEDDING_DIMENSION = 384
 DEFAULT_FASTEMBED_EMBEDDING_REVISION = "52398278842ec682c6f32300af41344b1c0b0bb2"
 _TOKEN_PATTERN = re.compile(r"[a-z0-9_./-]+|[^\W\s]", re.IGNORECASE)
+
+
+@dataclass(frozen=True, slots=True)
+class EmbeddingUsage:
+    call_count: int
+    provider_attempt_count: int
+    unobserved_provider_attempt_count: int
+    input_tokens: int | None
+    cost_cny: float | None
+    known_input_tokens_count: int
+    known_cost_cny_count: int
 
 
 class EmbeddingProvider(Protocol):
@@ -56,7 +69,12 @@ class EmbeddingProvider(Protocol):
     @property
     def index_identity(self) -> str: ...
 
+    @property
+    def query_batch_size(self) -> int: ...
+
     def embed_query(self, text: str) -> tuple[float, ...]: ...
+
+    def embed_queries(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]: ...
 
     def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]: ...
 
@@ -75,6 +93,7 @@ class HashingEmbedder:
     revision = "test-v1"
     dimension = VECTOR_DIMENSION
     index_identity = f"hashing-test:{source_id}@{revision}:{dimension}"
+    query_batch_size = 256
 
     def embed(self, text: str) -> tuple[float, ...]:
         vector = [0.0] * VECTOR_DIMENSION
@@ -91,6 +110,9 @@ class HashingEmbedder:
 
     def embed_query(self, text: str) -> tuple[float, ...]:
         return self.embed(text)
+
+    def embed_queries(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+        return tuple(self.embed(text) for text in texts)
 
     def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
         return tuple(self.embed(text) for text in texts)
@@ -111,6 +133,7 @@ class DashScopeEmbeddingAdapter:
         timeout_seconds: float = DEFAULT_EMBEDDING_TIMEOUT_SECONDS,
         max_attempts: int = DEFAULT_EMBEDDING_MAX_ATTEMPTS,
         retry_backoff_seconds: float = DEFAULT_EMBEDDING_RETRY_BACKOFF_SECONDS,
+        input_price_cny_per_million: float | None = None,
         transport: httpx.BaseTransport | None = None,
     ) -> None:
         if not model_id.strip():
@@ -138,6 +161,10 @@ class DashScopeEmbeddingAdapter:
             raise ValueError("Embedding max attempts must be positive")
         if retry_backoff_seconds < 0:
             raise ValueError("Embedding retry backoff must not be negative")
+        if input_price_cny_per_million is not None and (
+            not math.isfinite(input_price_cny_per_million) or input_price_cny_per_million < 0
+        ):
+            raise ValueError("Embedding input price must be finite and non-negative")
         self._model_id = model_id
         self._source_id = base_url.rstrip("/")
         self._revision = revision
@@ -145,6 +172,15 @@ class DashScopeEmbeddingAdapter:
         self._batch_size = batch_size
         self._max_attempts = max_attempts
         self._retry_backoff_seconds = retry_backoff_seconds
+        self._input_price_cny_per_million = input_price_cny_per_million
+        self._usage_lock = Lock()
+        self._call_count = 0
+        self._provider_attempt_count = 0
+        self._unobserved_provider_attempt_count = 0
+        self._input_tokens = 0
+        self._cost_cny = 0.0
+        self._known_input_tokens_count = 0
+        self._known_cost_cny_count = 0
         self._configured = bool(api_key.strip())
         headers = {"Authorization": f"Bearer {api_key}"} if self._configured else {}
         self._client = httpx.Client(
@@ -177,10 +213,49 @@ class DashScopeEmbeddingAdapter:
             f"{self._source_id}:{self._model_id}@{self._revision}:{self._dimension}"
         )
 
+    @property
+    def query_batch_size(self) -> int:
+        return self._batch_size
+
+    @property
+    def input_price_cny_per_million(self) -> float | None:
+        return self._input_price_cny_per_million
+
+    @property
+    def usage(self) -> EmbeddingUsage:
+        with self._usage_lock:
+            return EmbeddingUsage(
+                call_count=self._call_count,
+                provider_attempt_count=self._provider_attempt_count,
+                unobserved_provider_attempt_count=self._unobserved_provider_attempt_count,
+                input_tokens=(
+                    self._input_tokens
+                    if self._known_input_tokens_count == self._call_count
+                    and self._unobserved_provider_attempt_count == 0
+                    else None
+                ),
+                cost_cny=(
+                    self._cost_cny
+                    if self._known_cost_cny_count == self._call_count
+                    and self._unobserved_provider_attempt_count == 0
+                    else None
+                ),
+                known_input_tokens_count=self._known_input_tokens_count,
+                known_cost_cny_count=self._known_cost_cny_count,
+            )
+
     def embed_query(self, text: str) -> tuple[float, ...]:
         if not text.strip():
             raise ValueError("Embedding query must not be empty")
         return self._embed_batch((text,))[0]
+
+    def embed_queries(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+        if any(not text.strip() for text in texts):
+            raise ValueError("Embedding queries must not contain empty text")
+        vectors: list[tuple[float, ...]] = []
+        for start in range(0, len(texts), self._batch_size):
+            vectors.extend(self._embed_batch(texts[start : start + self._batch_size]))
+        return tuple(vectors)
 
     def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
         if any(not text.strip() for text in texts):
@@ -191,6 +266,8 @@ class DashScopeEmbeddingAdapter:
         return tuple(vectors)
 
     def _embed_batch(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+        with self._usage_lock:
+            self._call_count += 1
         response = self._post(
             {
                 "model": self._model_id,
@@ -206,6 +283,7 @@ class DashScopeEmbeddingAdapter:
         if not isinstance(raw_body, dict):
             raise ValueError("Embedding response must be a JSON object")
         body = cast(dict[str, object], raw_body)
+        self._record_response_usage(body)
         data = body.get("data")
         if not isinstance(data, list) or len(data) != len(texts):
             raise ValueError("Embedding response returned an unexpected vector count")
@@ -235,6 +313,8 @@ class DashScopeEmbeddingAdapter:
                 "DashScope embedding requires CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"
             )
         for attempt in range(1, self._max_attempts + 1):
+            with self._usage_lock:
+                self._provider_attempt_count += 1
             try:
                 response = self._client.post("embeddings", json=payload)
                 response.raise_for_status()
@@ -243,11 +323,31 @@ class DashScopeEmbeddingAdapter:
                 status_code = error.response.status_code
                 if (status_code != 429 and status_code < 500) or attempt == self._max_attempts:
                     raise
-            except httpx.TransportError:
+            except httpx.TransportError as error:
+                if _transport_failure_has_unknown_spend(error):
+                    # A read/write/protocol failure can happen after DashScope accepted the
+                    # request. Stop immediately: retrying the logical batch could pay twice.
+                    with self._usage_lock:
+                        self._unobserved_provider_attempt_count += 1
+                    raise
                 if attempt == self._max_attempts:
                     raise
             time.sleep(self._retry_backoff_seconds * (2 ** (attempt - 1)))
         raise RuntimeError("Embedding retry loop exhausted without a response")
+
+    def _record_response_usage(self, body: dict[str, object]) -> None:
+        raw_usage = body.get("usage")
+        if not isinstance(raw_usage, dict):
+            return
+        raw_tokens = raw_usage.get("prompt_tokens", raw_usage.get("total_tokens"))
+        if not isinstance(raw_tokens, int) or isinstance(raw_tokens, bool) or raw_tokens < 0:
+            return
+        with self._usage_lock:
+            self._input_tokens += raw_tokens
+            self._known_input_tokens_count += 1
+            if self._input_price_cny_per_million is not None:
+                self._cost_cny += raw_tokens * self._input_price_cny_per_million / 1_000_000
+                self._known_cost_cny_count += 1
 
     def _vector(self, value: object) -> tuple[float, ...]:
         items = cast(Iterable[object], value)
@@ -265,6 +365,15 @@ class DashScopeEmbeddingAdapter:
         if any(not math.isfinite(item) for item in vector):
             raise ValueError("Embedding must contain only finite values")
         return vector
+
+
+def _transport_failure_has_unknown_spend(error: httpx.TransportError) -> bool:
+    """Return whether a transport failure may have happened after request acceptance."""
+
+    return not isinstance(
+        error,
+        (httpx.ConnectError, httpx.ConnectTimeout, httpx.PoolTimeout),
+    )
 
 
 class FastEmbedEmbeddingAdapter:
@@ -314,6 +423,10 @@ class FastEmbedEmbeddingAdapter:
             f"fastembed@{fastembed_version()}:{self._source_id}@{self._revision}:{self._dimension}"
         )
 
+    @property
+    def query_batch_size(self) -> int:
+        return 64
+
     def embed_query(self, text: str) -> tuple[float, ...]:
         if not text.strip():
             raise ValueError("Embedding query must not be empty")
@@ -321,6 +434,9 @@ class FastEmbedEmbeddingAdapter:
         if len(values) != 1:
             raise ValueError("Embedding model did not return exactly one query vector")
         return self._vector(values[0])
+
+    def embed_queries(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+        return tuple(self.embed_query(text) for text in texts)
 
     def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
         if any(not text.strip() for text in texts):

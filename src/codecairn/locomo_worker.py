@@ -120,13 +120,29 @@ def _execute(raw: dict[str, object]) -> None:
 
     corpus_dir = Path(_string(raw, "corpus_dir")).resolve()
     corpus_manifest = _mapping(read_json(corpus_dir / "manifest.json"), "corpus manifest")
+    corpus_build_contract = _mapping(
+        corpus_manifest.get("build_contract"),
+        "corpus build contract",
+    )
+    corpus_semantic_projection = _mapping(
+        corpus_build_contract.get("semantic_projection"),
+        "corpus semantic projection",
+    )
+    expected_corpus_repository_commit = _string(raw, "corpus_repository_commit")
+    if (
+        corpus_manifest.get("repository_commit") != expected_corpus_repository_commit
+        or corpus_build_contract.get("repository_commit") != expected_corpus_repository_commit
+    ):
+        raise ValueError("LoCoMo worker corpus repository commit does not match")
     expected_corpus_content_sha256 = _string(raw, "corpus_content_sha256")
     if corpus_manifest.get("content_sha256") != expected_corpus_content_sha256:
         raise ValueError("LoCoMo worker corpus manifest does not match")
     run_corpus = _mapping(run_manifest.get("corpus"), "run corpus")
-    if run_corpus.get("content_sha256") != expected_corpus_content_sha256 or run_corpus.get(
-        "tree_sha256"
-    ) != _string(raw, "corpus_tree_sha256"):
+    if (
+        run_corpus.get("repository_commit") != expected_corpus_repository_commit
+        or run_corpus.get("content_sha256") != expected_corpus_content_sha256
+        or run_corpus.get("tree_sha256") != _string(raw, "corpus_tree_sha256")
+    ):
         raise ValueError("LoCoMo worker corpus binding does not match")
     expected_retrieval = _mapping(raw.get("retrieval_config"), "retrieval config")
     validate_locomo_corpus_preflight(
@@ -198,6 +214,7 @@ def _execute(raw: dict[str, object]) -> None:
             runtime=create_runtime(root, retrieval=retrieval),
             cascade=create_cascade(root, retrieval=retrieval),
             repo_key=f"locomo/{root.name}",
+            semantic_projection=corpus_semantic_projection,
         )
 
     memory = cast(
@@ -317,10 +334,16 @@ def _write_worker_receipt(
     checkpoint_hashes = [(path, file_sha256(path)) for path in sorted(question_dir.glob("*.json"))]
     checkpoints = {path.stem: sha256 for path, sha256 in checkpoint_hashes}
     digest = hashlib.sha256()
-    for path, sha256 in checkpoint_hashes:
-        digest.update(path.name.encode())
+    question_tree = sorted(question_dir.rglob("*"))
+    if any(
+        path.is_symlink() or not path.resolve().is_relative_to(question_dir)
+        for path in question_tree
+    ):
+        raise ValueError("LoCoMo worker question artifact escapes its directory")
+    for path in (item for item in question_tree if item.is_file()):
+        digest.update(path.relative_to(question_dir).as_posix().encode())
         digest.update(b"\0")
-        digest.update(bytes.fromhex(sha256))
+        digest.update(bytes.fromhex(file_sha256(path)))
     write_json_exclusive(
         resource_path,
         {

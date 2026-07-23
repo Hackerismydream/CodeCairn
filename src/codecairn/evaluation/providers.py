@@ -1,13 +1,20 @@
 from __future__ import annotations
 
 import time
-from collections.abc import Mapping
+from collections.abc import Callable, Iterator, Mapping
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import asdict, dataclass
+from ipaddress import ip_address
 from typing import Literal, cast
 
 import httpx
 
 from codecairn.evaluation.model import ModelResponse
+
+ProviderAttemptObserver = Callable[
+    [int, Literal["started", "completed", "failed"], str | None], None
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,14 +77,17 @@ class OpenAICompatibleTextModel:
         if not api_key:
             raise ValueError("api_key must not be empty")
         parsed_url = httpx.URL(base_url)
+        host = parsed_url.host
         if (
             parsed_url.scheme not in {"http", "https"}
-            or not parsed_url.host
+            or not host
             or parsed_url.userinfo
             or parsed_url.query
             or parsed_url.fragment
         ):
             raise ValueError("base_url must be an HTTP origin/path without credentials or query")
+        if parsed_url.scheme == "http" and not _is_loopback_host(host):
+            raise ValueError("base_url must use HTTPS unless its host is loopback")
         if not model.strip():
             raise ValueError("model must not be empty")
         if max_attempts < 1:
@@ -91,6 +101,7 @@ class OpenAICompatibleTextModel:
         if (pricing_source_url is None) != (pricing_observed_at is None):
             raise ValueError("pricing source URL and observation date must be set together")
         self._base_url = base_url.rstrip("/")
+        self._trust_env = parsed_url.scheme == "https"
         self._api_key = api_key
         self._model = model
         self._timeout_seconds = timeout_seconds
@@ -103,6 +114,14 @@ class OpenAICompatibleTextModel:
         self._pricing = pricing
         self._pricing_source_url = pricing_source_url
         self._pricing_observed_at = pricing_observed_at
+        self._last_provider_attempt_count: ContextVar[int] = ContextVar(
+            "last_provider_attempt_count",
+            default=0,
+        )
+        self._provider_attempt_observer: ContextVar[ProviderAttemptObserver | None] = ContextVar(
+            "provider_attempt_observer",
+            default=None,
+        )
 
     @property
     def model_id(self) -> str:
@@ -135,6 +154,25 @@ class OpenAICompatibleTextModel:
             }
         return config
 
+    @property
+    def last_provider_attempt_count(self) -> int:
+        """Return HTTP attempts made by the latest call in this execution context."""
+
+        return self._last_provider_attempt_count.get()
+
+    @contextmanager
+    def observe_provider_attempts(
+        self,
+        observer: ProviderAttemptObserver,
+    ) -> Iterator[None]:
+        """Expose each transport attempt to the enclosing durable run journal."""
+
+        token = self._provider_attempt_observer.set(observer)
+        try:
+            yield
+        finally:
+            self._provider_attempt_observer.reset(token)
+
     def generate(
         self,
         *,
@@ -143,6 +181,7 @@ class OpenAICompatibleTextModel:
         seed: int,
         response_format: str = "text",
     ) -> ModelResponse:
+        self._last_provider_attempt_count.set(0)
         payload: dict[str, object] = {
             "model": self._model,
             "messages": [
@@ -163,7 +202,13 @@ class OpenAICompatibleTextModel:
         if response_format == "json":
             payload["response_format"] = {"type": "json_object"}
         response = self._post(payload)
-        body = cast(dict[str, object], response.json())
+        raw_body: object = response.json()
+        if not isinstance(raw_body, dict):
+            raise ValueError("Model response body must be an object")
+        body = cast(dict[str, object], raw_body)
+        reported_model = body.get("model")
+        if not isinstance(reported_model, str) or not reported_model.strip():
+            raise ValueError("Model response has no provider-reported model identity")
         choices = body.get("choices")
         if not isinstance(choices, list) or not choices:
             raise ValueError("Model response has no choices")
@@ -183,13 +228,27 @@ class OpenAICompatibleTextModel:
         uncached_input_tokens: int | None = None
         reasoning_tokens: int | None = None
         if isinstance(usage, dict):
-            input_tokens = _optional_int(usage.get("prompt_tokens"))
-            output_tokens = _optional_int(usage.get("completion_tokens"))
-            cached_input_tokens = _optional_int(usage.get("prompt_cache_hit_tokens"))
-            uncached_input_tokens = _optional_int(usage.get("prompt_cache_miss_tokens"))
+            input_tokens = _usage_int(usage, "prompt_tokens")
+            output_tokens = _usage_int(usage, "completion_tokens")
+            cached_input_tokens = _usage_int(usage, "prompt_cache_hit_tokens")
+            uncached_input_tokens = _usage_int(usage, "prompt_cache_miss_tokens")
             completion_details = usage.get("completion_tokens_details")
             if isinstance(completion_details, dict):
-                reasoning_tokens = _optional_int(completion_details.get("reasoning_tokens"))
+                reasoning_tokens = _usage_int(completion_details, "reasoning_tokens")
+        if self._pricing is not None:
+            priced_usage = (
+                input_tokens,
+                output_tokens,
+                cached_input_tokens,
+                uncached_input_tokens,
+            )
+            if any(value is None for value in priced_usage):
+                raise ValueError("Priced model response usage is incomplete")
+            assert input_tokens is not None
+            assert cached_input_tokens is not None
+            assert uncached_input_tokens is not None
+            if cached_input_tokens + uncached_input_tokens != input_tokens:
+                raise ValueError("Priced model response cache usage does not match input tokens")
         cost_usd, cost_cny = self._calculate_cost(
             cached_input_tokens=cached_input_tokens,
             uncached_input_tokens=uncached_input_tokens,
@@ -197,7 +256,7 @@ class OpenAICompatibleTextModel:
         )
         return ModelResponse(
             text=cast(str, message["content"]),
-            model=self._model,
+            model=reported_model,
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             cached_input_tokens=cached_input_tokens,
@@ -232,31 +291,52 @@ class OpenAICompatibleTextModel:
 
     def _post(self, payload: dict[str, object]) -> httpx.Response:
         for attempt in range(1, self._max_attempts + 1):
+            self._last_provider_attempt_count.set(attempt)
+            self._observe_provider_attempt(attempt, "started", None)
             try:
                 response = httpx.post(
                     f"{self._base_url}/chat/completions",
                     headers={"Authorization": f"Bearer {self._api_key}"},
                     json=payload,
                     timeout=self._timeout_seconds,
+                    trust_env=self._trust_env,
                 )
                 response.raise_for_status()
+                self._observe_provider_attempt(attempt, "completed", None)
                 return response
             except httpx.HTTPStatusError as error:
+                self._observe_provider_attempt(attempt, "failed", type(error).__name__)
                 status_code = error.response.status_code
                 if status_code != 429 and status_code < 500:
                     raise
                 if attempt == self._max_attempts:
                     raise
-            except httpx.TransportError:
+            except httpx.TransportError as error:
+                if _transport_failure_has_unknown_spend(error):
+                    # A read/write/protocol failure can happen after the provider accepted the
+                    # request. Leave the durable provider attempt start without an outcome so
+                    # the enclosing model journal fails closed instead of billing a retry.
+                    raise
+                self._observe_provider_attempt(attempt, "failed", type(error).__name__)
                 if attempt == self._max_attempts:
                     raise
             time.sleep(self._retry_backoff_seconds * (2 ** (attempt - 1)))
         raise RuntimeError("Model retry loop exhausted without a response")
 
+    def _observe_provider_attempt(
+        self,
+        attempt: int,
+        status: Literal["started", "completed", "failed"],
+        error_type: str | None,
+    ) -> None:
+        observer = self._provider_attempt_observer.get()
+        if observer is not None:
+            observer(attempt, status, error_type)
+
 
 def create_locomo_text_model(
     *,
-    role: Literal["answer", "judge"],
+    role: Literal["answer", "judge", "semantic"],
     environment: Mapping[str, str],
     model_override: str | None = None,
 ) -> OpenAICompatibleTextModel:
@@ -275,7 +355,11 @@ def create_locomo_text_model(
         or ("deepseek" if deepseek_key else "openai-compatible")
     )
     default_base_url = "https://api.deepseek.com" if profile == "deepseek" else ""
-    default_model = "deepseek-v4-pro" if profile == "deepseek" else ""
+    default_model = (
+        ("deepseek-v4-flash" if role == "semantic" else "deepseek-v4-pro")
+        if profile == "deepseek"
+        else ""
+    )
     base_url = (
         environment.get(f"{prefix}BASE_URL", "")
         or environment.get("CODECAIRN_OPENAI_BASE_URL", "")
@@ -300,7 +384,10 @@ def create_locomo_text_model(
     pricing = _DEEPSEEK_PRICING.get(model)
     if pricing is None:
         raise ValueError(f"Unsupported DeepSeek model for recorded pricing: {model}")
-    thinking = environment.get(f"{prefix}THINKING", "enabled")
+    thinking = environment.get(
+        f"{prefix}THINKING",
+        "disabled" if role == "semantic" else "enabled",
+    )
     if thinking not in {"enabled", "disabled"}:
         raise ValueError("DeepSeek thinking must be enabled or disabled")
     effort: Literal["high", "max"] | None = None
@@ -325,10 +412,37 @@ def create_locomo_text_model(
         reasoning_effort=effort,
         max_tokens=max_tokens,
         pricing=pricing,
-        pricing_source_url="https://api-docs.deepseek.com/quick_start/pricing/",
-        pricing_observed_at="2026-07-19",
+        pricing_source_url="https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+        pricing_observed_at="2026-07-23",
     )
 
 
-def _optional_int(value: object) -> int | None:
-    return value if isinstance(value, int) else None
+def _usage_int(usage: Mapping[str, object], field: str) -> int | None:
+    value = usage.get(field)
+    if value is None:
+        return None
+    if type(value) is not int or value < 0:
+        raise ValueError(f"Model response usage field {field} is invalid")
+    return value
+
+
+def _is_loopback_host(host: str) -> bool:
+    if host.casefold() == "localhost":
+        return True
+    try:
+        return ip_address(host).is_loopback
+    except ValueError:
+        return False
+
+
+def _transport_failure_has_unknown_spend(error: httpx.TransportError) -> bool:
+    """Return whether a transport error may occur after request transmission."""
+
+    return not isinstance(
+        error,
+        (
+            httpx.ConnectError,
+            httpx.ConnectTimeout,
+            httpx.PoolTimeout,
+        ),
+    )

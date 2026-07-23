@@ -16,6 +16,8 @@ from codecairn.service.application import (
     EvidenceBundleBuildRequest,
     LoCoMoAblationRequest,
     LoCoMoCorpusBuildRequest,
+    LoCoMoEvidenceCoverageRequest,
+    LoCoMoPromotionRequest,
     LoCoMoQueryVectorBuildRequest,
 )
 
@@ -157,6 +159,10 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         output_root: Annotated[Path, typer.Option("--output-root")],
         root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
         resume: Annotated[bool, typer.Option("--resume")] = False,
+        question_set: Annotated[
+            Path | None,
+            typer.Option("--question-set", exists=True, dir_okay=False, readable=True),
+        ] = None,
         expected_dataset_sha256: Annotated[
             str | None, typer.Option("--expected-dataset-sha256")
         ] = None,
@@ -170,6 +176,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 repository_commit=repository_commit,
                 resume=resume,
                 expected_dataset_sha256=expected_dataset_sha256,
+                question_set_path=question_set,
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))
@@ -179,6 +186,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         input_path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
         vector_set_id: Annotated[str, typer.Option("--vector-set-id")],
         output_root: Annotated[Path, typer.Option("--output-root")],
+        resume: Annotated[bool, typer.Option("--resume")] = False,
         question_set: Annotated[
             Path | None,
             typer.Option("--question-set", exists=True, dir_okay=False, readable=True),
@@ -194,6 +202,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 input_path=input_path,
                 output_root=output_root,
                 vector_set_id=vector_set_id,
+                resume=resume,
                 question_set_path=question_set,
                 expected_dataset_sha256=expected_dataset_sha256,
             )
@@ -245,6 +254,82 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 hierarchy_no_neighbors_run=hierarchy_no_neighbors_run,
                 hierarchy_run=hierarchy_run,
                 output_path=output,
+            )
+        )
+        typer.echo(json.dumps(result, sort_keys=True))
+
+    @evaluation_app.command("promote-locomo")
+    def promote_locomo_command(
+        question_set: Annotated[
+            Path,
+            typer.Argument(exists=True, dir_okay=False, readable=True),
+        ],
+        selection_report: Annotated[
+            Path,
+            typer.Option("--selection-report", exists=True, dir_okay=False, readable=True),
+        ],
+        episode_only_run: Annotated[
+            Path,
+            typer.Option("--episode-only-run", exists=True, file_okay=False, readable=True),
+        ],
+        hierarchy_no_neighbors_run: Annotated[
+            Path,
+            typer.Option(
+                "--hierarchy-no-neighbors-run",
+                exists=True,
+                file_okay=False,
+                readable=True,
+            ),
+        ],
+        hierarchy_run: Annotated[
+            Path,
+            typer.Option("--hierarchy-run", exists=True, file_okay=False, readable=True),
+        ],
+        run: Annotated[
+            Path,
+            typer.Option("--run", exists=True, file_okay=False, readable=True),
+        ],
+        output: Annotated[Path, typer.Option("--output")],
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+    ) -> None:
+        """Verify one selected 200-question LoCoMo run against its promotion gate."""
+        result = application_factory(root).build_locomo_promotion_report(
+            LoCoMoPromotionRequest(
+                question_set_path=question_set,
+                selection_report_path=selection_report,
+                episode_only_run=episode_only_run,
+                hierarchy_no_neighbors_run=hierarchy_no_neighbors_run,
+                hierarchy_run=hierarchy_run,
+                run_dir=run,
+                output_path=output,
+            )
+        )
+        typer.echo(json.dumps(result, sort_keys=True))
+
+    @evaluation_app.command("report-locomo-evidence")
+    def report_locomo_evidence_command(
+        run_dir: Annotated[
+            Path,
+            typer.Argument(exists=True, file_okay=False, readable=True),
+        ],
+        dataset: Annotated[
+            Path,
+            typer.Option("--dataset", exists=True, dir_okay=False, readable=True),
+        ],
+        output: Annotated[Path | None, typer.Option("--output")] = None,
+        oracle_max_tokens: Annotated[
+            int,
+            typer.Option("--oracle-max-tokens", min=1),
+        ] = 4_000,
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+    ) -> None:
+        """Report provider-free ranked/context evidence coverage and oracle fit."""
+        result = application_factory(root).report_locomo_evidence_coverage(
+            LoCoMoEvidenceCoverageRequest(
+                run_dir=run_dir,
+                dataset_path=dataset,
+                output_path=output,
+                oracle_max_tokens=oracle_max_tokens,
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))
