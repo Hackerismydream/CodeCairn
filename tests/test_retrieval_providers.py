@@ -91,6 +91,55 @@ def test_fastembed_adapters_load_lazily_and_preserve_model_scores(monkeypatch) -
     ]
 
 
+def test_fastembed_reranker_length_sorts_model_input_and_restores_score_order(
+    monkeypatch,
+) -> None:
+    model_inputs: list[list[str]] = []
+
+    class RecordingCrossEncoder:
+        def rerank(
+            self,
+            query: str,
+            documents: Iterable[str],
+            *,
+            batch_size: int,
+        ) -> Iterable[float]:
+            assert query == "query text"
+            assert batch_size == 3
+            model_inputs.append(list(documents))
+            return (10.0, 20.0, 30.0, 40.0)
+
+    monkeypatch.setattr(
+        reranking_module,
+        "_load_fastembed_reranker",
+        lambda model_id, source_id, revision, cache_dir: RecordingCrossEncoder(),
+    )
+    reranker = FastEmbedRerankingAdapter(
+        model_id="test/reranker",
+        source_id="test/reranker-source",
+        revision="b" * 40,
+        batch_size=3,
+    )
+
+    scores = reranker.rerank(
+        "query text",
+        (
+            RerankDocument("memory-z", "long document", 0.04),
+            RerankDocument("memory-b", "tiny", 0.03),
+            RerankDocument("memory-a", "same", 0.02),
+            RerankDocument("memory-c", "medium", 0.01),
+        ),
+    )
+
+    assert model_inputs == [["same", "tiny", "medium", "long document"]]
+    assert [(item.memory_id, item.score) for item in scores] == [
+        ("memory-z", 40.0),
+        ("memory-b", 20.0),
+        ("memory-a", 10.0),
+        ("memory-c", 30.0),
+    ]
+
+
 def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> None:
     providers = create_retrieval_providers(environment={"DASHSCOPE_API_KEY": "secret-key"})
 

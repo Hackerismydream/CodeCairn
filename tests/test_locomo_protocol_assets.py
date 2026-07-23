@@ -13,12 +13,28 @@ from codecairn.evaluation.locomo import (
 )
 
 
+def test_v14_protocol_assets_remain_immutable_historical_evidence() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    diagnostic_40_path = benchmark_root / "diagnostic-40-v14.json"
+    diagnostic_200_path = benchmark_root / "diagnostic-200-v14.json"
+    diagnostic_40 = json.loads(diagnostic_40_path.read_text())
+
+    assert hashlib.sha256(diagnostic_40_path.read_bytes()).hexdigest() == (
+        "8d6a83ff0a4c2be777edd9d945e11dd4357435e7240e44337a76ea21b0706efb"
+    )
+    assert hashlib.sha256(diagnostic_200_path.read_bytes()).hexdigest() == (
+        "12d9b83bcc0f480c9d88eac452b62e2b44c8ad8d79bb9971ea82347f61095b31"
+    )
+    assert diagnostic_40["protocol"]["fact_selector"] == ("bounded-authoritative-cross-encoder-v1")
+    assert diagnostic_40["protocol"]["context_renderer"] == "scored-facts-first-v5"
+
+
 def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     tmp_path: Path,
 ) -> None:
     benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
-    diagnostic_40 = json.loads((benchmark_root / "diagnostic-40-v14.json").read_text())
-    diagnostic_200 = json.loads((benchmark_root / "diagnostic-200-v14.json").read_text())
+    diagnostic_40 = json.loads((benchmark_root / "diagnostic-40-v15.json").read_text())
+    diagnostic_200 = json.loads((benchmark_root / "diagnostic-200-v15.json").read_text())
 
     assert diagnostic_40["category_targets"] == {str(category): 10 for category in range(1, 5)}
     assert diagnostic_200["category_targets"] == {str(category): 50 for category in range(1, 5)}
@@ -36,12 +52,15 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     assert diagnostic_40["protocol"]["judge_response_max_attempts"] == 3
     assert diagnostic_40["protocol"]["judge_response_max_chars"] == 32_768
     assert diagnostic_40["protocol"]["seed"] == 17
-    assert diagnostic_40["protocol"]["fact_selector"] == ("bounded-authoritative-cross-encoder-v1")
+    assert diagnostic_40["protocol"]["enrichment_order"] == (
+        "matched-neighbor-then-dialogue-aware-fact-rerank-v5"
+    )
+    assert diagnostic_40["protocol"]["fact_selector"] == ("bounded-dialogue-aware-cross-encoder-v2")
     assert diagnostic_40["protocol"]["fact_rerank_max_candidates"] == 256
-    assert diagnostic_40["protocol"]["fact_rerank_max_candidates_per_parent"] == 16
-    assert diagnostic_40["protocol"]["fact_rerank_max_selected_per_parent"] == 8
+    assert diagnostic_40["protocol"]["fact_rerank_max_candidates_per_parent"] == 24
+    assert diagnostic_40["protocol"]["fact_rerank_max_selected_per_parent"] == 12
     assert diagnostic_40["protocol"]["fact_rerank_max_document_chars"] == 2_048
-    assert diagnostic_40["protocol"]["context_renderer"] == "scored-facts-first-v5"
+    assert diagnostic_40["protocol"]["context_renderer"] == "exact-source-facts-first-v6"
     assert diagnostic_40["algorithm"] == diagnostic_200["algorithm"]
     assert diagnostic_40["seed"] == diagnostic_200["seed"]
 
@@ -105,7 +124,7 @@ def test_40_question_ablation_and_200_question_promotion_share_runtime_protocol(
     assert promotion["source_selection"] == {
         "selection_id": diagnostic_40["selection_id"],
         "question_set_sha256": hashlib.sha256(
-            (benchmark_root / "diagnostic-40-v14.json").read_bytes()
+            (benchmark_root / "diagnostic-40-v15.json").read_bytes()
         ).hexdigest(),
         "selection_sha256": diagnostic_40["selection_sha256"],
         "protocol_sha256": _canonical_sha256(diagnostic_40["protocol"]),

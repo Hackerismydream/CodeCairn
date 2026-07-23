@@ -1917,7 +1917,7 @@ def _compile_context(
             )
         )
 
-    remaining_tokens = config.context_max_tokens - _line_token_cost(header)
+    remaining_bytes = config.context_max_tokens * 2 - _line_byte_cost(header)
     selected_snippet_indexes: list[list[int]] = [[] for _item in ranked]
     attempted_snippet_indexes: list[set[int]] = [set() for _item in ranked]
     rendered_indexes: list[int] = []
@@ -1963,13 +1963,13 @@ def _compile_context(
                 if first_parent_fact
                 else [snippet_lines[item_index][snippet_index]]
             )
-            cost = _line_token_cost(allocation)
-            if cost > remaining_tokens:
+            cost = _line_byte_cost(allocation)
+            if cost > remaining_bytes:
                 continue
             if first_parent_fact:
                 rendered_indexes.append(item_index)
             selected_snippet_indexes[item_index].append(snippet_index)
-            remaining_tokens -= cost
+            remaining_bytes -= cost
             rendered_fact_keys.add(fact_key)
         rendered_indexes.sort()
         dropped.extend(
@@ -1985,12 +1985,12 @@ def _compile_context(
             for snippet_index in range(len(excerpts)):
                 attempted_snippet_indexes[item_index].add(snippet_index)
                 first_evidence = [*bases[item_index], excerpts[snippet_index]]
-                cost = _line_token_cost(first_evidence)
-                if cost > remaining_tokens:
+                cost = _line_byte_cost(first_evidence)
+                if cost > remaining_bytes:
                     continue
                 rendered_indexes.append(item_index)
                 selected_snippet_indexes[item_index].append(snippet_index)
-                remaining_tokens -= cost
+                remaining_bytes -= cost
                 break
             if not selected_snippet_indexes[item_index]:
                 dropped.append(item.memory_id)
@@ -2018,11 +2018,11 @@ def _compile_context(
                         if snippet_index in attempted_indexes or snippet.relation != relation:
                             continue
                         attempted_indexes.add(snippet_index)
-                        cost = _line_token_cost([excerpts[snippet_index]])
-                        if cost > remaining_tokens:
+                        cost = _line_byte_cost([excerpts[snippet_index]])
+                        if cost > remaining_bytes:
                             continue
                         selected_indexes.append(snippet_index)
-                        remaining_tokens -= cost
+                        remaining_bytes -= cost
                         selected_in_round = True
                         break
                 if not selected_in_round:
@@ -2051,10 +2051,10 @@ def _compile_context(
                     "",
                     "Complete parent episode: all authoritative source facts are rendered above.",
                 ]
-                completion_cost = _line_token_cost(completion_block)
-                if completion_cost <= remaining_tokens:
+                completion_cost = _line_byte_cost(completion_block)
+                if completion_cost <= remaining_bytes:
                     hydration_lines[item_index] = completion_block
-                    remaining_tokens -= completion_cost
+                    remaining_bytes -= completion_cost
                 hydrated_indexes.add(item_index)
                 hydration_snippets[item_index] = ()
                 continue
@@ -2064,14 +2064,14 @@ def _compile_context(
                 "",
                 *(_hydrated_fact_line(snippet) for snippet in parent_snippets),
             ]
-            cost = _line_token_cost(block)
-            if cost > remaining_tokens:
+            cost = _line_byte_cost(block)
+            if cost > remaining_bytes:
                 continue
             hydrated_indexes.add(item_index)
             hydration_lines[item_index] = block
             hydration_snippets[item_index] = parent_snippets
             already_rendered_fact_ids.update(snippet.fact_id for snippet in parent_snippets)
-            remaining_tokens -= cost
+            remaining_bytes -= cost
 
     lines = list(header)
     evidence_parts: list[str] = []
@@ -2100,7 +2100,7 @@ def _compile_context(
     if dropped:
         notice = f"{len(dropped)} selected parent episodes omitted by the context budget."
         notice_block = ["", notice]
-        if _line_token_cost(notice_block) <= remaining_tokens:
+        if _line_byte_cost(notice_block) <= remaining_bytes:
             lines.extend(notice_block)
     markdown = "\n".join(lines) + "\n"
     if len(markdown) > config.context_max_chars:
@@ -2147,6 +2147,10 @@ def _line_token_cost(lines: list[str]) -> int:
     return count_context_tokens("\n".join(lines) + "\n")
 
 
+def _line_byte_cost(lines: list[str]) -> int:
+    return len(("\n".join(lines) + "\n").encode("utf-8"))
+
+
 def _context_header(query: str, *, repo_key: str, token_limit: int) -> list[str]:
     query_limit = min(400, max(16, len(query)))
     repo_limit = min(200, max(16, len(repo_key)))
@@ -2174,8 +2178,10 @@ def _context_header(query: str, *, repo_key: str, token_limit: int) -> list[str]
 def _compact_evidence_base(item: RankedRecall) -> list[str]:
     return [
         "",
-        f"## {item.rank}. {_single_line(item.title, limit=120)}",
-        f"- Parent: [{item.memory_id}]({item.source_uri})",
+        (
+            f"## {item.rank}. {_single_line(item.title, limit=120)} "
+            f"[{item.memory_id}]({item.source_uri})"
+        ),
         "Evidence excerpts:",
     ]
 
@@ -2219,6 +2225,13 @@ def _hydrated_fact_line(snippet: RecallSnippet) -> str:
 
 
 def _context_fact_text(snippet: RecallSnippet) -> str:
+    """Render only the complete authoritative source fact.
+
+    Semantic projections remain useful reranking features, but source linkage is
+    not an entailment proof. A fact ID enters the context trace only beside its
+    exact attributed evidence, including any source timestamp.
+    """
+
     return " ".join(snippet.text.replace("\x00", "").split())
 
 

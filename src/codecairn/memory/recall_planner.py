@@ -206,6 +206,8 @@ class RecallPlannerConfig:
     context_max_chars: int = 23_900
     context_max_tokens: int = 4_000
     context_summary_chars: int = 60
+    # Retained in the frozen protocol for backward compatibility. Exact source
+    # facts are atomic evidence and are never truncated to this legacy hint.
     context_snippet_chars: int = 200
     context_snippets_per_memory: int = 5
     context_temporal_snippets_per_memory: int = 8
@@ -315,7 +317,7 @@ class RecallPlannerConfig:
             "expansion_max_time_facts": self.expansion_plan.max_time_facts,
             "expansion_max_provenance_facts": self.expansion_plan.max_provenance_facts,
             "temporal_lane": "explicit-month-prefix-v1",
-            "enrichment_order": "matched-neighbor-then-bounded-fact-rerank-v4",
+            "enrichment_order": "matched-neighbor-then-dialogue-aware-fact-rerank-v5",
             "matched_facts_per_memory": self.matched_facts_per_memory,
             "diverse_matched_facts_per_memory": self.diverse_matched_facts_per_memory,
             "sibling_facts_per_memory": self.sibling_facts_per_memory,

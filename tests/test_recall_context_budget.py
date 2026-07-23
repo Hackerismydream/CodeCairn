@@ -343,6 +343,65 @@ def test_context_admission_prefers_the_query_entity_answer_over_a_restatement() 
     assert "fact-0000000000000001" not in compiled.trace.rendered_fact_ids
 
 
+def test_context_never_lets_a_semantic_projection_replace_exact_source_evidence() -> None:
+    exact = _snippet(
+        fact_id="fact-source",
+        text="2023-07-15T13:51:00+00:00 — Melanie: A much longer exact source turn.",
+        raw_event_index=1,
+    )
+    projected = replace(
+        exact,
+        semantic_text="Melanie gave a concise grounded answer.",
+        semantic_fact_ids=("semantic-fact",),
+        relevance_score=1.0,
+        selection_source="bounded-dialogue-aware-cross-encoder-v2",
+    )
+
+    compiled = compile_context(
+        "What did Melanie answer?",
+        repo_key="locomo/conv-test",
+        ranked=(replace(_ranked_parent(snippet_text="unused"), snippets=(projected,)),),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(),
+    )
+
+    assert "2023-07-15T13:51:00+00:00 — Melanie:" in compiled.markdown
+    assert "A much longer exact source turn." in compiled.markdown
+    assert "Melanie gave a concise grounded answer." not in compiled.markdown
+    assert projected.text.endswith("A much longer exact source turn.")
+    assert compiled.trace is not None
+    assert compiled.trace.rendered_fact_ids == ("fact-source",)
+
+
+def test_context_keeps_temporal_source_data_when_projection_is_unreliable() -> None:
+    exact = _snippet(
+        fact_id="fact-source",
+        text="2023-07-15T13:51:00+00:00 — Melanie: The appointment is next Tuesday.",
+        raw_event_index=1,
+    )
+    projected = replace(
+        exact,
+        semantic_text="Melanie discussed an appointment.",
+        semantic_fact_ids=("semantic-fact",),
+        relevance_score=1.0,
+        selection_source="bounded-dialogue-aware-cross-encoder-v2",
+    )
+
+    compiled = compile_context(
+        "What did Melanie answer?",
+        repo_key="locomo/conv-test",
+        ranked=(replace(_ranked_parent(snippet_text="unused"), snippets=(projected,)),),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(),
+    )
+
+    assert "2023-07-15T13:51:00+00:00" in compiled.markdown
+    assert "The appointment is next Tuesday." in compiled.markdown
+    assert "Melanie discussed an appointment." not in compiled.markdown
+    assert compiled.trace is not None
+    assert compiled.trace.rendered_fact_ids == ("fact-source",)
+
+
 def test_context_keeps_a_parent_when_a_later_fact_fits_after_an_oversized_first_fact() -> None:
     ranked = (
         replace(

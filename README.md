@@ -147,18 +147,22 @@ and every query sidecar.
 
 Resource-sensitive LoCoMo evidence runs reuse one verified corpus and one frozen
 query-vector artifact, then isolate each conversation in a fresh worker process.
-The v14 protocol first runs retrieval without answer or judge calls and reports
+The v15 protocol first runs retrieval without answer or judge calls and reports
 gold-evidence coverage. Paid scoring starts only after that provider-free gate.
 A three-variant 40-question comparison selects one recall mode; only that mode
 runs the 200-question diagnostic, whose absolute promotion gate is verified by
 `codecairn eval promote-locomo`. Build the artifacts as documented in
-`benchmarks/locomo/README.md`, then run:
+`benchmarks/locomo/README.md`, then run. The v14 retrieval-only diagnostic
+remains immutable historical evidence and failed its context-coverage and
+latency gates; v15 does not claim an improvement until a new immutable run
+passes verification. [ADR 0022](docs/adr/0022-v15-rebalances-fact-selection-and-context-budgeting.md)
+records that boundary.
 
 ```bash
 codecairn eval run locomo benchmarks/locomo/data/locomo10.json \
   --run-id <retrieval-run-id> --repository-commit <commit> --mode retrieval \
   --output-root benchmark_results \
-  --question-set benchmarks/locomo/diagnostic-200-v14.json \
+  --question-set benchmarks/locomo/diagnostic-200-v15.json \
   --corpus <content-addressed-corpus> --query-vectors <frozen-query-vectors> \
   --max-workers 10
 

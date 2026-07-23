@@ -388,6 +388,8 @@ class RecallSnippet:
     raw_event_index: int | None
     relevance_score: float | None = None
     selection_source: str | None = None
+    semantic_text: str | None = None
+    semantic_fact_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

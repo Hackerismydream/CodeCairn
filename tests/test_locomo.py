@@ -102,7 +102,7 @@ def _write_corpus_protocol_question_set(
         if question.category in {1, 2, 3, 4}
     )
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v14.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v15.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3815,9 +3815,9 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         )
 
 
-def test_official_v14_command_contract_passes_preflight() -> None:
+def test_official_v15_command_contract_passes_preflight() -> None:
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v14.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v15.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3866,7 +3866,7 @@ def test_official_v14_command_contract_passes_preflight() -> None:
     config = LoCoMoRunConfig(
         dataset_path=FIXTURE,
         output_root=Path("unused"),
-        run_id="official-v14",
+        run_id="official-v15",
         repository_commit="abc123",
         max_workers=10,
         retrieval_config=retrieval_config,

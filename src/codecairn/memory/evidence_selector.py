@@ -16,10 +16,10 @@ from codecairn.memory.models import (
 from codecairn.memory.reranking import RerankingProvider
 
 MAX_FACT_RERANK_CANDIDATES = 256
-MAX_FACT_RERANK_CANDIDATES_PER_PARENT = 16
-MAX_SELECTED_FACTS_PER_PARENT = 8
+MAX_FACT_RERANK_CANDIDATES_PER_PARENT = 24
+MAX_SELECTED_FACTS_PER_PARENT = 12
 MAX_FACT_RERANK_DOCUMENT_CHARS = 2_048
-FACT_SELECTOR_ID = "bounded-authoritative-cross-encoder-v1"
+FACT_SELECTOR_ID = "bounded-dialogue-aware-cross-encoder-v2"
 
 _TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]*")
 _STOPWORDS = frozenset(
@@ -100,12 +100,17 @@ class EvidenceSelector:
     ) -> tuple[RankedRecall, ...]:
         if not ranked:
             return ()
-        per_parent_limit = min(
-            self._max_candidates_per_parent,
-            max(1, self._max_candidates // len(ranked)),
+        parent_limits = _weighted_parent_limits(
+            len(ranked),
+            max_candidates=self._max_candidates,
+            max_candidates_per_parent=self._max_candidates_per_parent,
         )
         candidates: list[_FactCandidate] = []
-        for parent_index, item in enumerate(ranked):
+        for parent_index, (item, parent_limit) in enumerate(
+            zip(ranked, parent_limits, strict=True)
+        ):
+            if parent_limit == 0:
+                continue
             memory = memories.get(item.memory_id)
             if memory is None:
                 continue
@@ -114,7 +119,7 @@ class EvidenceSelector:
                 parent_index=parent_index,
                 item=item,
                 memory=memory,
-                limit=per_parent_limit,
+                limit=parent_limit,
                 max_document_chars=self._max_document_chars,
             )
             candidates.extend(parent_candidates)
@@ -171,7 +176,11 @@ class EvidenceSelector:
         for parent_index, item in enumerate(ranked):
             selected_snippets = tuple(selected_by_parent.get(parent_index, ()))
             neighbors = tuple(
-                snippet
+                replace(
+                    snippet,
+                    relevance_score=round(item.final_score - 2.0, 12),
+                    selection_source=FACT_SELECTOR_ID,
+                )
                 for snippet in item.snippets
                 if snippet.source_memory_id != item.memory_id or snippet.relation == "neighbor"
             )
@@ -199,32 +208,49 @@ def _parent_candidates(
     }
     query_terms = _terms(query)
     facts = tuple(sorted(memory.facts, key=_fact_key))
-    semantic_text = _semantic_text_by_source(memory)
+    fact_positions = {fact.fact_id: position for position, fact in enumerate(facts)}
+    matched_positions = tuple(
+        fact_positions[fact_id]
+        for fact_id, relation in existing_relations.items()
+        if relation == "matched" and fact_id in fact_positions
+    )
+    semantic_text, context_semantic_text, semantic_fact_ids = _semantic_projection_by_source(memory)
+
+    def priority(
+        fact: EvidenceFact,
+    ) -> tuple[int, int, int, int, int, int, int, int, str]:
+        relation = existing_relations.get(fact.fact_id)
+        position = fact_positions[fact.fact_id]
+        distance = min(
+            (abs(position - matched_position) for matched_position in matched_positions),
+            default=len(facts),
+        )
+        projected = semantic_text.get(fact.fact_id, "")
+        exact_text = render_attributed_fact(fact)
+        semantic_overlap = len(query_terms & _terms(projected))
+        exact_overlap = len(query_terms & _terms(exact_text))
+        return (
+            -int(relation == "matched"),
+            -int(relation == "sibling"),
+            -int(distance <= 2),
+            min(distance, 3),
+            -semantic_overlap,
+            -exact_overlap,
+            -int(bool(projected)),
+            *_fact_key(fact),
+        )
+
     ranked_facts = sorted(
         facts,
-        key=lambda fact: (
-            -int(existing_relations.get(fact.fact_id) == "matched"),
-            -len(
-                query_terms
-                & _terms(
-                    "\n".join(
-                        part
-                        for part in (
-                            render_attributed_fact(fact),
-                            semantic_text.get(fact.fact_id, ""),
-                        )
-                        if part
-                    )
-                )
-            ),
-            _fact_key(fact),
-        ),
+        key=priority,
     )
     selected = ranked_facts[:limit]
     candidates: list[_FactCandidate] = []
     for ordinal, fact in enumerate(selected):
         exact_text = render_attributed_fact(fact)
         projection_text = semantic_text.get(fact.fact_id, "")
+        position = fact_positions[fact.fact_id]
+        previous_text = render_attributed_fact(facts[position - 1]) if position > 0 else ""
         candidates.append(
             _FactCandidate(
                 candidate_id=f"fact-candidate-{parent_index:02d}-{ordinal:02d}",
@@ -239,10 +265,20 @@ def _parent_candidates(
                     source_title=item.title,
                     source_summary=item.summary,
                     raw_event_index=_fact_key(fact)[0],
+                    semantic_text=context_semantic_text.get(fact.fact_id) or None,
+                    semantic_fact_ids=semantic_fact_ids.get(fact.fact_id, ()),
                 ),
                 rerank_text=_bounded_rerank_text(
-                    projection_text,
-                    exact_text,
+                    "\n".join(
+                        part
+                        for part in (
+                            f"Semantic projection:\n{projection_text}" if projection_text else "",
+                            f"Previous turn:\n{previous_text}" if previous_text else "",
+                            f"Target turn:\n{exact_text}",
+                        )
+                        if part
+                    ),
+                    "",
                     max_chars=max_document_chars,
                 ),
                 parent_score=item.final_score,
@@ -251,14 +287,68 @@ def _parent_candidates(
     return tuple(candidates)
 
 
-def _semantic_text_by_source(memory: CodingMemory) -> dict[str, str]:
+def _semantic_projection_by_source(
+    memory: CodingMemory,
+) -> tuple[
+    dict[str, str],
+    dict[str, str],
+    dict[str, tuple[str, ...]],
+]:
     values: dict[str, list[str]] = {}
+    single_source_values: dict[str, list[str]] = {}
+    fact_ids: dict[str, list[str]] = {}
     if memory.semantic_episode is None:
-        return {}
+        return {}, {}, {}
     for atomic_fact in memory.semantic_episode.atomic_facts:
         for source_fact_id in atomic_fact.source_fact_ids:
             values.setdefault(source_fact_id, []).append(atomic_fact.text)
-    return {fact_id: "\n".join(dict.fromkeys(texts)) for fact_id, texts in values.items()}
+            if atomic_fact.source_fact_ids == (source_fact_id,):
+                single_source_values.setdefault(source_fact_id, []).append(atomic_fact.text)
+                fact_ids.setdefault(source_fact_id, []).append(atomic_fact.fact_id)
+    return (
+        {fact_id: "\n".join(dict.fromkeys(texts)) for fact_id, texts in values.items()},
+        {
+            fact_id: "\n".join(dict.fromkeys(texts))
+            for fact_id, texts in single_source_values.items()
+        },
+        {fact_id: tuple(dict.fromkeys(ids)) for fact_id, ids in fact_ids.items()},
+    )
+
+
+def _weighted_parent_limits(
+    parent_count: int,
+    *,
+    max_candidates: int,
+    max_candidates_per_parent: int,
+) -> tuple[int, ...]:
+    """Allocate bounded fact work toward the parents most likely to enter context."""
+
+    if parent_count < 1:
+        return ()
+    weights = tuple(3 if index < 4 else 2 if index < 8 else 1 for index in range(parent_count))
+    weight_total = sum(weights)
+    ideals = tuple(max_candidates * weight / weight_total for weight in weights)
+    limits = [min(max_candidates_per_parent, int(ideal)) for ideal in ideals]
+    if max_candidates >= parent_count:
+        limits = [max(1, limit) for limit in limits]
+    while sum(limits) > max_candidates:
+        index = max(
+            (item for item in range(parent_count) if limits[item] > 0),
+            key=lambda item: (limits[item] - ideals[item], item),
+        )
+        limits[index] -= 1
+    while sum(limits) < max_candidates:
+        eligible = [
+            index for index in range(parent_count) if limits[index] < max_candidates_per_parent
+        ]
+        if not eligible:
+            break
+        index = max(
+            eligible,
+            key=lambda item: (ideals[item] - limits[item], -item),
+        )
+        limits[index] += 1
+    return tuple(limits)
 
 
 def _bounded_rerank_text(projection_text: str, exact_text: str, *, max_chars: int) -> str:

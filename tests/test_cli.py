@@ -339,7 +339,7 @@ def test_cli_binds_a_frozen_question_set_to_the_corpus_build_contract(
     assert isinstance(reranker, dict)
     assert isinstance(planner, dict)
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v14.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v15.json").read_text(
             encoding="utf-8"
         )
     )

@@ -115,11 +115,17 @@ class FastEmbedRerankingAdapter:
             raise ValueError("Reranker query must not be empty")
         if not documents:
             return ()
+        ordered_documents = tuple(
+            sorted(
+                enumerate(documents),
+                key=lambda item: (len(item[1].text), item[1].memory_id),
+            )
+        )
         scores = tuple(
             float(score)
             for score in self._model_instance().rerank(
                 query,
-                (document.text for document in documents),
+                (document.text for _, document in ordered_documents),
                 batch_size=self._batch_size,
             )
         )
@@ -127,9 +133,16 @@ class FastEmbedRerankingAdapter:
             raise ValueError("Reranker returned an unexpected score count")
         if any(not math.isfinite(score) for score in scores):
             raise ValueError("Reranker returned a non-finite score")
+        score_by_input_index = {
+            input_index: score
+            for (input_index, _), score in zip(ordered_documents, scores, strict=True)
+        }
         return tuple(
-            RerankScore(memory_id=document.memory_id, score=score)
-            for document, score in zip(documents, scores, strict=True)
+            RerankScore(
+                memory_id=document.memory_id,
+                score=score_by_input_index[input_index],
+            )
+            for input_index, document in enumerate(documents)
         )
 
     def _model_instance(self) -> _FastEmbedReranker:

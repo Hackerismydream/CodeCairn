@@ -343,7 +343,7 @@ def _promotion_fixture(
     run_dir = tmp_path / "diagnostic-200-run"
     run_dir.mkdir()
     protocol = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v14.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v15.json").read_text(
             encoding="utf-8"
         )
     )["protocol"]
@@ -520,7 +520,7 @@ def _promotion_fixture(
             "variants": variant_reports,
             "run_manifests": {
                 variant: {
-                    "run_id": f"locomo-diagnostic-40-v14-{variant}",
+                    "run_id": f"locomo-diagnostic-40-v15-{variant}",
                     "manifest_sha256": str(index) * 64,
                 }
                 for index, variant in enumerate(
@@ -539,7 +539,7 @@ def _promotion_fixture(
             "temporal_neighbor_checks": temporal_checks,
             "temporal_neighbor_promoted": True,
             "selected_variant": "hierarchy",
-            "selected_run_id": "locomo-diagnostic-40-v14-hierarchy",
+            "selected_run_id": "locomo-diagnostic-40-v15-hierarchy",
             "selected_run_contract": selected_contract,
             "gate_passed": True,
         },
@@ -549,7 +549,7 @@ def _promotion_fixture(
         {
             "schema_version": 1,
             "suite": "locomo",
-            "run_id": "locomo-diagnostic-200-v14-hierarchy",
+            "run_id": "locomo-diagnostic-200-v15-hierarchy",
             "mode": "full",
             "scored": True,
             "repository_commit": "abc123",
@@ -605,7 +605,7 @@ def _promotion_fixture(
         source_run_dir = tmp_path / f"diagnostic-40-{variant}"
         source_run_dir.mkdir()
         source_manifest = json.loads(json.dumps(base_manifest))
-        source_manifest["run_id"] = f"locomo-diagnostic-40-v14-{variant}"
+        source_manifest["run_id"] = f"locomo-diagnostic-40-v15-{variant}"
         source_manifest["retrieval"] = _retrieval_manifest(protocol, mode=variant)
         source_question_set = source_manifest["selection"]["question_set"]
         source_question_set["definition_sha256"] = source_question_set_sha256
@@ -623,7 +623,7 @@ def _promotion_fixture(
     run_report: dict[str, object] = {
         "schema_version": 1,
         "suite": "locomo",
-        "run_id": "locomo-diagnostic-200-v14-hierarchy",
+        "run_id": "locomo-diagnostic-200-v15-hierarchy",
         "mode": "full",
         "scored": True,
         "scored_question_count": 200,
@@ -661,7 +661,7 @@ def _selection_variant_report(
 ) -> dict[str, object]:
     return {
         "suite": "locomo",
-        "run_id": f"locomo-diagnostic-40-v14-{variant}",
+        "run_id": f"locomo-diagnostic-40-v15-{variant}",
         "mode": "full",
         "scored": True,
         "scored_question_count": 40,
