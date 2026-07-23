@@ -9,8 +9,19 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
 
-from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
-from codecairn.evaluation.locomo import _FROZEN_PLANNER_PROTOCOL_FIELDS, report_locomo
+from codecairn.evaluation.artifacts import (
+    canonical_sha256,
+    file_sha256,
+    read_json,
+    write_json_exclusive,
+)
+from codecairn.evaluation.locomo import (
+    _FROZEN_PLANNER_PROTOCOL_FIELDS,
+    LOCOMO_PAID_SCORING_GATE_CONTRACT,
+    report_locomo,
+    validate_locomo_scored_manifest_preflight,
+    validate_locomo_scored_manifest_protocol,
+)
 
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _CANONICAL_VARIANTS = ("episode-only", "hierarchy-no-neighbors", "hierarchy")
@@ -47,6 +58,11 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
         "hierarchy": "hierarchy",
     }:
         raise ValueError("LoCoMo ablation requires the three canonical recall variants")
+    expected_question_count = sum(
+        _positive_category_targets(
+            _dict(definition.get("category_targets"), field="question-set category targets")
+        ).values()
+    )
 
     run_paths = {
         "episode-only": config.episode_only_run,
@@ -70,7 +86,11 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
             ),
             definition_sha256=definition_sha256,
             selection_sha256=expected_selection_sha256,
+            expected_question_count=expected_question_count,
+            protocol_sha256=canonical_sha256(protocol),
         )
+        validate_locomo_manifest_protocol(manifest, protocol=protocol)
+        validate_locomo_scored_manifest_preflight(manifest, protocol=protocol)
         manifests[variant] = manifest
         manifest_receipts[variant] = {
             "run_id": _str(manifest, "run_id"),
@@ -78,10 +98,6 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
         }
         reports[variant] = report_locomo(run_path)
     _validate_constant_protocol(manifests)
-    validate_locomo_manifest_protocol(
-        manifests["hierarchy"],
-        protocol=protocol,
-    )
 
     gates = _dict(definition.get("gates"), field="gates")
     outcome = _derive_ablation_outcome(reports, gates=gates)
@@ -95,9 +111,9 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
         "selection_id": _str(definition, "selection_id"),
         "question_set_sha256": definition_sha256,
         "selection_sha256": expected_selection_sha256,
-        "question_set_protocol_sha256": _canonical_sha256(protocol),
+        "question_set_protocol_sha256": _protocol_sha256(protocol),
         "question_set_gates": dict(gates),
-        "question_set_gates_sha256": _canonical_sha256(gates),
+        "question_set_gates_sha256": _frozen_compact_sha256(gates),
         "repository_commit": _str(manifests["hierarchy"], "repository_commit"),
         "variants": reports,
         "run_manifests": manifest_receipts,
@@ -135,7 +151,7 @@ def validate_locomo_ablation_report(
             raise ValueError(f"LoCoMo selection report changes its frozen field: {field}")
 
     gates = _dict(report.get("question_set_gates"), field="selection report gates")
-    if _canonical_sha256(gates) != gates_sha256:
+    if _frozen_compact_sha256(gates) != gates_sha256:
         raise ValueError("LoCoMo selection report gates do not match their frozen digest")
     variants = _dict(report.get("variants"), field="selection report variants")
     manifests = _dict(report.get("run_manifests"), field="selection report manifests")
@@ -231,12 +247,16 @@ def validate_locomo_ablation_sources(
     )
     if set(run_paths) != set(_CANONICAL_VARIANTS):
         raise ValueError("LoCoMo promotion requires three canonical 40-question run directories")
-    if _canonical_sha256(protocol) != protocol_sha256:
+    if _protocol_sha256(protocol) != protocol_sha256:
         raise ValueError("LoCoMo promotion source protocol does not match its frozen digest")
     windows = _dict(protocol.get("neighbor_windows"), field="source neighbor windows")
     reported_manifests = _dict(report.get("run_manifests"), field="selection report manifests")
     reported_contracts = _dict(report.get("run_contracts"), field="selection report contracts")
     reported_variants = _dict(report.get("variants"), field="selection report variants")
+    required_questions = _int(
+        _dict(report.get("question_set_gates"), field="selection report gates"),
+        "required_scored_questions_per_variant",
+    )
     actual_manifests: dict[str, dict[str, object]] = {}
     for variant in _CANONICAL_VARIANTS:
         run_path = run_paths[variant]
@@ -250,6 +270,8 @@ def validate_locomo_ablation_sources(
             expected_neighbor_windows=expected_windows,
             definition_sha256=question_set_sha256,
             selection_sha256=selection_sha256,
+            expected_question_count=required_questions,
+            protocol_sha256=canonical_sha256(protocol),
         )
         receipt = _dict(reported_manifests[variant], field=f"{variant} manifest receipt")
         if receipt.get("run_id") != manifest.get("run_id") or receipt.get(
@@ -262,9 +284,10 @@ def validate_locomo_ablation_sources(
         actual_contract = _selected_run_contract(manifest)
         if actual_contract != reported_contracts[variant]:
             raise ValueError(f"{variant} contract does not match the source run manifest")
+        validate_locomo_manifest_protocol(manifest, protocol=protocol)
+        validate_locomo_scored_manifest_preflight(manifest, protocol=protocol)
         actual_manifests[variant] = manifest
     _validate_constant_protocol(actual_manifests)
-    validate_locomo_manifest_protocol(actual_manifests["hierarchy"], protocol=protocol)
     selected_manifest = actual_manifests[selected_variant]
     if report.get("selected_run_id") != selected_manifest.get("run_id"):
         raise ValueError("LoCoMo selection report does not select its bound source run")
@@ -435,6 +458,8 @@ def _validate_run_manifest(
     expected_neighbor_windows: dict[str, object] | None,
     definition_sha256: str,
     selection_sha256: str,
+    expected_question_count: int,
+    protocol_sha256: str,
 ) -> None:
     if manifest.get("mode") != "full" or manifest.get("scored") is not True:
         raise ValueError(f"{variant} must be a scored full LoCoMo run")
@@ -445,6 +470,13 @@ def _validate_run_manifest(
         or question_set.get("selection_sha256") != selection_sha256
     ):
         raise ValueError(f"{variant} does not use the frozen diagnostic question set")
+    _validate_run_question_inventory(
+        selection,
+        question_set=question_set,
+        variant=variant,
+        expected_question_count=expected_question_count,
+        protocol_sha256=protocol_sha256,
+    )
     retrieval = _dict(manifest.get("retrieval"), field=f"{variant} retrieval")
     planner = _dict(retrieval.get("planner"), field=f"{variant} planner")
     if planner.get("mode") != expected_mode:
@@ -455,14 +487,126 @@ def _validate_run_manifest(
                 raise ValueError(f"{variant} changes the frozen planner field: {field}")
 
 
+def _validate_run_question_inventory(
+    selection: dict[str, object],
+    *,
+    question_set: dict[str, object],
+    variant: str,
+    expected_question_count: int,
+    protocol_sha256: str,
+) -> None:
+    expected_fields = {
+        "selection_id",
+        "definition_sha256",
+        "dataset_sha256",
+        "algorithm",
+        "seed",
+        "category_targets",
+        "question_count",
+        "question_ids",
+        "selection_sha256",
+        "protocol_sha256",
+    }
+    if set(question_set) != expected_fields:
+        raise ValueError(f"{variant} question-set manifest schema is incomplete")
+    for field in ("selection_id", "dataset_sha256", "algorithm", "seed"):
+        _str(question_set, field)
+    if (
+        question_set.get("question_count") != expected_question_count
+        or question_set.get("protocol_sha256") != protocol_sha256
+    ):
+        raise ValueError(f"{variant} question inventory changes the frozen diagnostic protocol")
+    raw_question_ids = question_set.get("question_ids")
+    if (
+        not isinstance(raw_question_ids, list)
+        or not all(isinstance(question_id, str) and question_id for question_id in raw_question_ids)
+        or len(raw_question_ids) != expected_question_count
+        or len(set(raw_question_ids)) != expected_question_count
+    ):
+        raise ValueError(f"{variant} question inventory is incomplete or duplicated")
+    question_ids = cast(list[str], raw_question_ids)
+    observed_selection_sha256 = hashlib.sha256(
+        json.dumps(
+            sorted(question_ids),
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    if observed_selection_sha256 != question_set.get("selection_sha256"):
+        raise ValueError(f"{variant} question inventory changes the frozen selection")
+
+    question_counts = _positive_category_targets(
+        _dict(selection.get("question_counts"), field=f"{variant} question counts")
+    )
+    category_targets = _positive_category_targets(
+        _dict(question_set.get("category_targets"), field=f"{variant} category targets")
+    )
+    if (
+        question_counts != category_targets
+        or sum(question_counts.values()) != expected_question_count
+    ):
+        raise ValueError(f"{variant} question counts change the frozen selection")
+    expected_categories = {int(category) for category in question_counts}
+    raw_categories = selection.get("categories")
+    if (
+        not isinstance(raw_categories, list)
+        or any(type(category) is not int for category in raw_categories)
+        or len(raw_categories) != len(set(raw_categories))
+        or not expected_categories.issubset(set(cast(list[int], raw_categories)))
+    ):
+        raise ValueError(f"{variant} question categories change the frozen selection")
+
+    raw_conversation_ids = selection.get("conversation_ids")
+    raw_by_conversation = selection.get("question_ids_by_conversation")
+    if (
+        not isinstance(raw_conversation_ids, list)
+        or not all(isinstance(value, str) and value for value in raw_conversation_ids)
+        or len(raw_conversation_ids) != len(set(raw_conversation_ids))
+        or not isinstance(raw_by_conversation, dict)
+        or set(raw_by_conversation) != set(raw_conversation_ids)
+    ):
+        raise ValueError(f"{variant} conversation inventory is invalid")
+    flattened: list[str] = []
+    for conversation_id in raw_conversation_ids:
+        raw_ids = raw_by_conversation[conversation_id]
+        if not isinstance(raw_ids, list) or not all(
+            isinstance(question_id, str) and question_id for question_id in raw_ids
+        ):
+            raise ValueError(f"{variant} conversation question inventory is invalid")
+        flattened.extend(cast(list[str], raw_ids))
+    if (
+        len(flattened) != expected_question_count
+        or len(set(flattened)) != expected_question_count
+        or set(flattened) != set(question_ids)
+    ):
+        raise ValueError(f"{variant} conversation inventory changes the frozen selection")
+
+
+def _positive_category_targets(value: dict[str, object]) -> dict[str, int]:
+    targets: dict[str, int] = {}
+    for category, raw_count in value.items():
+        if not category.isdigit() or type(raw_count) is not int or raw_count < 1:
+            raise ValueError("LoCoMo category targets must be positive integer counts")
+        targets[category] = raw_count
+    if not targets:
+        raise ValueError("LoCoMo category targets must not be empty")
+    return targets
+
+
 def _validate_constant_protocol(manifests: dict[str, dict[str, object]]) -> None:
     reference = manifests["hierarchy"]
     fields = (
         "repository_commit",
         "dataset",
         "selection",
+        "paid_scoring_gate",
+        "paid_scoring_preflight",
         "answer_model",
         "answer_evidence_contract",
+        "answer_retry_contract",
+        "model_attempt_journal_contract",
+        "checkpoint_policy",
+        "answer_response_max_attempts",
         "judge_model",
         "judge_contract",
         "judge_votes",
@@ -506,59 +650,7 @@ def validate_locomo_manifest_protocol(
     *,
     protocol: dict[str, object],
 ) -> None:
-    answer = _dict(manifest.get("answer_model"), field="answer model")
-    judge = _dict(manifest.get("judge_model"), field="judge model")
-    retrieval = _dict(manifest.get("retrieval"), field="retrieval")
-    embedding = _dict(retrieval.get("embedding"), field="embedding")
-    reranker = _dict(retrieval.get("reranker"), field="reranker")
-    planner = _dict(retrieval.get("planner"), field="planner")
-    raw_worker = manifest.get("question_worker")
-    worker = {} if raw_worker is None else _dict(raw_worker, field="question worker")
-    observed = {
-        "answer_model": answer.get("model"),
-        "answer_evidence_contract": manifest.get("answer_evidence_contract"),
-        "judge_model": judge.get("model"),
-        "judge_contract": manifest.get("judge_contract"),
-        "judge_votes": manifest.get("judge_votes"),
-        "judge_response_max_attempts": manifest.get("judge_response_max_attempts"),
-        "judge_response_max_chars": manifest.get("judge_response_max_chars"),
-        "seed": manifest.get("seed"),
-        "top_k": retrieval.get("top_k"),
-        "inference_threads": retrieval.get("inference_threads"),
-        "tokenizer_parallelism": retrieval.get("tokenizer_parallelism"),
-        "tokenizer_threads": retrieval.get("tokenizer_threads"),
-        "max_workers": manifest.get("max_workers"),
-        "ingest_max_workers": manifest.get("ingest_max_workers"),
-        "retrieval_max_workers": manifest.get("retrieval_max_workers"),
-        "retrieval_thread_count": manifest.get("retrieval_thread_count"),
-        "execution_phase_contract": manifest.get("execution_phase_contract"),
-        "worker_contract": worker.get("name"),
-        "worker_max_rss_bytes": worker.get("max_rss_bytes"),
-        "worker_stall_timeout_seconds": worker.get("stall_timeout_seconds"),
-        "worker_poll_interval_seconds": worker.get("poll_interval_seconds"),
-        "worker_rss_poll_interval_seconds": worker.get("rss_poll_interval_seconds"),
-        "worker_progress_signal": worker.get("progress_signal"),
-        "worker_publish_policy": worker.get("publish_policy"),
-        "embedding_adapter": embedding.get("adapter"),
-        "embedding_model": embedding.get("model"),
-        "embedding_dimension": embedding.get("dimension"),
-        "reranker_model": reranker.get("model"),
-        "reranker_batch_size": reranker.get("batch_size"),
-        **{field: planner.get(field) for field in _FROZEN_PLANNER_PROTOCOL_FIELDS},
-    }
-    for field, value in observed.items():
-        if (
-            field
-            in {
-                "judge_response_max_attempts",
-                "judge_response_max_chars",
-                "seed",
-            }
-            and field not in protocol
-        ):
-            continue
-        if value != protocol.get(field):
-            raise ValueError(f"LoCoMo run changes the diagnostic protocol field: {field}")
+    validate_locomo_scored_manifest_protocol(manifest, protocol=protocol)
 
 
 def _accuracy(report: dict[str, object]) -> float:
@@ -670,7 +762,13 @@ def _sha256(value: dict[str, object], field: str) -> str:
     return raw
 
 
-def _canonical_sha256(value: object) -> str:
+def _protocol_sha256(protocol: dict[str, object]) -> str:
+    if protocol.get("paid_scoring_gate") == LOCOMO_PAID_SCORING_GATE_CONTRACT:
+        return canonical_sha256(protocol)
+    return _frozen_compact_sha256(protocol)
+
+
+def _frozen_compact_sha256(value: object) -> str:
     return hashlib.sha256(
         json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode()
     ).hexdigest()

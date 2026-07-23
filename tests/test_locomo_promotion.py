@@ -9,7 +9,7 @@ import pytest
 from typer.testing import CliRunner
 
 from codecairn.bootstrap import app
-from codecairn.evaluation.artifacts import file_sha256, write_json_exclusive
+from codecairn.evaluation.artifacts import canonical_sha256, file_sha256, write_json_exclusive
 from codecairn.evaluation.locomo import (
     _FROZEN_PLANNER_PROTOCOL_FIELDS,
     LoCoMoCorpusConfig,
@@ -112,7 +112,78 @@ def test_single_run_promotion_binds_selection_contract_and_all_absolute_gates(
     assert checks["single_hop_regression_points"]["observed"] == pytest.approx(1.0)
     assert checks["max_process_rss_bytes"]["comparison"] == "less_than"
     assert report["selection_report_sha256"] == file_sha256(config.selection_report_path)
+    manifest = json.loads((config.run_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert (
+        report["paid_scoring_preflight_sha256"]
+        == (manifest["paid_scoring_preflight"]["receipt_sha256"])
+    )
     assert json.loads(config.output_path.read_text(encoding="utf-8")) == report
+
+
+def test_v18_promotion_rejects_a_run_without_paid_scoring_receipt(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, run_report = _promotion_fixture(tmp_path)
+    manifest_path = config.run_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["paid_scoring_preflight"] = None
+    _replace_json(manifest_path, manifest)
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_promotion.report_locomo",
+        _fixture_reporter(config, run_report, forbid_200=True),
+    )
+
+    with pytest.raises(ValueError, match="paid-scoring preflight"):
+        build_locomo_promotion_report(config)
+
+
+def test_v18_promotion_rejects_a_receipt_for_other_retrieval_sources(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, run_report = _promotion_fixture(tmp_path)
+    manifest_path = config.run_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    receipt = manifest["paid_scoring_preflight"]
+    receipt["sources"][1]["selection_sha256"] = "e" * 64
+    receipt.pop("receipt_sha256")
+    receipt["receipt_sha256"] = canonical_sha256(receipt)
+    _replace_json(manifest_path, manifest)
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_promotion.report_locomo",
+        _fixture_reporter(config, run_report, forbid_200=True),
+    )
+
+    with pytest.raises(ValueError, match="frozen retrieval source"):
+        build_locomo_promotion_report(config)
+
+
+def test_legacy_promotion_replays_compact_source_digest_with_canonical_run_manifest(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, run_report = _promotion_fixture(tmp_path, legacy_protocol=True)
+    definition = json.loads(config.question_set_path.read_text(encoding="utf-8"))
+    selection_report = json.loads(config.selection_report_path.read_text(encoding="utf-8"))
+    run_manifest = json.loads((config.run_dir / "manifest.json").read_text(encoding="utf-8"))
+    protocol = definition["protocol"]
+    compact_digest = _canonical_sha256(protocol)
+    run_digest = canonical_sha256(protocol)
+
+    assert "paid_scoring_gate" not in protocol
+    assert compact_digest != run_digest
+    assert definition["promotion"]["source_selection"]["protocol_sha256"] == compact_digest
+    assert selection_report["question_set_protocol_sha256"] == compact_digest
+    assert run_manifest["selection"]["question_set"]["protocol_sha256"] == run_digest
+
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_promotion.report_locomo",
+        _fixture_reporter(config, run_report),
+    )
+    report = build_locomo_promotion_report(config)
+    assert report["gate_passed"] is True
+    assert "paid_scoring_preflight_sha256" not in report
 
 
 def test_single_run_promotion_freezes_every_failed_absolute_gate(
@@ -237,6 +308,112 @@ def test_promotion_rejects_selection_report_not_bound_to_actual_40_run(
         build_locomo_promotion_report(config)
 
 
+def test_promotion_rejects_protocol_drift_in_non_hierarchy_source(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, run_report = _promotion_fixture(tmp_path)
+    manifest_path = config.episode_only_run / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["answer_retry_contract"] = "drifted-answer-retry"
+    _replace_json(manifest_path, manifest)
+    _rebind_source_manifest_receipt(
+        config.selection_report_path,
+        variant="episode-only",
+        manifest_path=manifest_path,
+    )
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_promotion.report_locomo",
+        _fixture_reporter(config, run_report, forbid_200=True),
+    )
+
+    with pytest.raises(ValueError, match="answer_retry_contract"):
+        build_locomo_promotion_report(config)
+
+
+def test_promotion_rejects_source_without_paid_scoring_preflight(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, run_report = _promotion_fixture(tmp_path)
+    manifest_path = config.episode_only_run / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["paid_scoring_preflight"] = None
+    _replace_json(manifest_path, manifest)
+    _rebind_source_manifest_receipt(
+        config.selection_report_path,
+        variant="episode-only",
+        manifest_path=manifest_path,
+    )
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_promotion.report_locomo",
+        _fixture_reporter(config, run_report, forbid_200=True),
+    )
+
+    with pytest.raises(ValueError, match="paid-scoring preflight"):
+        build_locomo_promotion_report(config)
+
+
+def test_promotion_rejects_forged_source_question_inventory(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, run_report = _promotion_fixture(tmp_path)
+    manifest_path = config.episode_only_run / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    question_set = manifest["selection"]["question_set"]
+    question_set["question_count"] = 1
+    question_set["question_ids"] = ["forged-question"]
+    question_set["protocol_sha256"] = "f" * 64
+    manifest["selection"]["question_counts"] = {"1": 1}
+    manifest["selection"]["categories"] = [1]
+    manifest["selection"]["question_ids_by_conversation"] = {"conversation-1": ["forged-question"]}
+    _replace_json(manifest_path, manifest)
+    _rebind_source_manifest_receipt(
+        config.selection_report_path,
+        variant="episode-only",
+        manifest_path=manifest_path,
+    )
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_promotion.report_locomo",
+        _fixture_reporter(config, run_report, forbid_200=True),
+    )
+
+    with pytest.raises(ValueError, match="question inventory"):
+        build_locomo_promotion_report(config)
+
+
+def test_promotion_rejects_source_receipt_for_another_gate_target(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, run_report = _promotion_fixture(tmp_path)
+    for variant, run_dir in (
+        ("episode-only", config.episode_only_run),
+        ("hierarchy-no-neighbors", config.hierarchy_no_neighbors_run),
+        ("hierarchy", config.hierarchy_run),
+    ):
+        manifest_path = run_dir / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        receipt = manifest["paid_scoring_preflight"]
+        receipt["target_selection_sha256"] = "e" * 64
+        receipt.pop("receipt_sha256")
+        receipt["receipt_sha256"] = canonical_sha256(receipt)
+        _replace_json(manifest_path, manifest)
+        _rebind_source_manifest_receipt(
+            config.selection_report_path,
+            variant=variant,
+            manifest_path=manifest_path,
+        )
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_promotion.report_locomo",
+        _fixture_reporter(config, run_report, forbid_200=True),
+    )
+
+    with pytest.raises(ValueError, match="targets another run"):
+        build_locomo_promotion_report(config)
+
+
 def test_promotion_rejects_selection_metrics_not_reproduced_by_40_run(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -274,6 +451,54 @@ def test_promotion_rejects_complete_200_protocol_drift_before_reporting(
     )
 
     with pytest.raises(ValueError, match="max_workers"):
+        build_locomo_promotion_report(config)
+
+
+@pytest.mark.parametrize(
+    ("field", "drifted_value"),
+    (
+        ("answer_retry_contract", "drifted-answer-retry"),
+        ("model_attempt_journal_contract", "drifted-model-journal"),
+        ("checkpoint_policy", "drifted-checkpoint-policy"),
+        ("answer_response_max_attempts", 99),
+        ("paid_scoring_gate", "drifted-paid-scoring-gate"),
+    ),
+)
+def test_promotion_rejects_generation_or_gate_protocol_drift_before_reporting(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    field: str,
+    drifted_value: object,
+) -> None:
+    config, run_report = _promotion_fixture(tmp_path)
+    manifest_path = config.run_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest[field] = drifted_value
+    _replace_json(manifest_path, manifest)
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_promotion.report_locomo",
+        _fixture_reporter(config, run_report, forbid_200=True),
+    )
+
+    with pytest.raises(ValueError, match=field):
+        build_locomo_promotion_report(config)
+
+
+def test_promotion_rejects_worker_warmup_protocol_drift_before_reporting(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, run_report = _promotion_fixture(tmp_path)
+    manifest_path = config.run_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["question_worker"]["reranker_warmup"] = "drifted-reranker-warmup"
+    _replace_json(manifest_path, manifest)
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_promotion.report_locomo",
+        _fixture_reporter(config, run_report, forbid_200=True),
+    )
+
+    with pytest.raises(ValueError, match="worker_reranker_warmup"):
         build_locomo_promotion_report(config)
 
 
@@ -337,18 +562,29 @@ def test_cli_builds_the_single_run_promotion_report(
 
 def _promotion_fixture(
     tmp_path: Path,
+    *,
+    legacy_protocol: bool = False,
 ) -> tuple[LoCoMoPromotionConfig, dict[str, object]]:
     question_set_path = tmp_path / "diagnostic-200.json"
     selection_report_path = tmp_path / "diagnostic-40-report.json"
     run_dir = tmp_path / "diagnostic-200-run"
     run_dir.mkdir()
+    protocol_asset = "diagnostic-200-v17.json" if legacy_protocol else "diagnostic-200-v18.json"
     protocol = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v17.json").read_text(
-            encoding="utf-8"
+        (Path(__file__).parents[1] / "benchmarks/locomo" / protocol_asset).read_text(
+            encoding="utf-8",
         )
     )["protocol"]
+    source_protocol_sha256 = (
+        _canonical_sha256(protocol) if legacy_protocol else canonical_sha256(protocol)
+    )
     source_question_set_sha256 = "1" * 64
-    source_selection_sha256 = "6" * 64
+    source_question_ids = [f"question-{index:03d}" for index in range(40)]
+    source_selection_sha256 = hashlib.sha256(
+        json.dumps(sorted(source_question_ids), separators=(",", ":")).encode()
+    ).hexdigest()
+    holdout_question_set_sha256 = "2" * 64
+    holdout_selection_sha256 = "7" * 64
     source_gates = {
         "required_scored_questions_per_variant": 40,
         "maximum_infrastructure_failures": 0,
@@ -463,6 +699,42 @@ def _promotion_fixture(
             "passed": True,
         },
     ]
+    promotion_definition: dict[str, object] = {
+        "schema_version": 1,
+        "source_selection": {
+            "selection_id": "locomo-diagnostic-40-v1",
+            "question_set_sha256": source_question_set_sha256,
+            "selection_sha256": source_selection_sha256,
+            "protocol_sha256": source_protocol_sha256,
+            "gates_sha256": _canonical_sha256(source_gates),
+        },
+        "required_scored_questions": 200,
+        "frozen_baseline": {
+            "run_id": "locomo-v5-diagnostic200-hierarchy-d5fb39c",
+            "repository_commit": "d5fb39c31355b66b46a5600d1f4a7116d723dece",
+            "summary_sha256": "5" * 64,
+            "selection_sha256": selection_sha256,
+            "scored_question_count": 200,
+            "infrastructure_failed_count": 0,
+            "single_hop_accuracy": 0.92,
+        },
+        "gates": {
+            "minimum_overall_accuracy": 0.78,
+            "minimum_multi_hop_accuracy": 0.70,
+            "minimum_open_domain_accuracy": 0.68,
+            "maximum_single_hop_regression_points": 2.0,
+            "maximum_infrastructure_failures": 0,
+            "maximum_retrieval_p95_ms": 2500.0,
+            "maximum_process_rss_bytes_exclusive": 2 * 1024 * 1024 * 1024,
+        },
+    }
+    if not legacy_protocol:
+        promotion_definition["holdout_selection"] = {
+            "selection_id": "locomo-diagnostic-160-holdout-v1",
+            "question_set_sha256": holdout_question_set_sha256,
+            "selection_sha256": holdout_selection_sha256,
+            "protocol_sha256": source_protocol_sha256,
+        }
     write_json_exclusive(
         question_set_path,
         {
@@ -474,35 +746,7 @@ def _promotion_fixture(
             "category_targets": {str(category): 50 for category in range(1, 5)},
             "selection_sha256": selection_sha256,
             "protocol": protocol,
-            "promotion": {
-                "schema_version": 1,
-                "source_selection": {
-                    "selection_id": "locomo-diagnostic-40-v1",
-                    "question_set_sha256": source_question_set_sha256,
-                    "selection_sha256": source_selection_sha256,
-                    "protocol_sha256": _canonical_sha256(protocol),
-                    "gates_sha256": _canonical_sha256(source_gates),
-                },
-                "required_scored_questions": 200,
-                "frozen_baseline": {
-                    "run_id": "locomo-v5-diagnostic200-hierarchy-d5fb39c",
-                    "repository_commit": "d5fb39c31355b66b46a5600d1f4a7116d723dece",
-                    "summary_sha256": "5" * 64,
-                    "selection_sha256": selection_sha256,
-                    "scored_question_count": 200,
-                    "infrastructure_failed_count": 0,
-                    "single_hop_accuracy": 0.92,
-                },
-                "gates": {
-                    "minimum_overall_accuracy": 0.78,
-                    "minimum_multi_hop_accuracy": 0.70,
-                    "minimum_open_domain_accuracy": 0.68,
-                    "maximum_single_hop_regression_points": 2.0,
-                    "maximum_infrastructure_failures": 0,
-                    "maximum_retrieval_p95_ms": 2500.0,
-                    "maximum_process_rss_bytes_exclusive": 2 * 1024 * 1024 * 1024,
-                },
-            },
+            "promotion": promotion_definition,
         },
     )
     write_json_exclusive(
@@ -513,7 +757,7 @@ def _promotion_fixture(
             "selection_id": "locomo-diagnostic-40-v1",
             "question_set_sha256": source_question_set_sha256,
             "selection_sha256": source_selection_sha256,
-            "question_set_protocol_sha256": _canonical_sha256(protocol),
+            "question_set_protocol_sha256": source_protocol_sha256,
             "question_set_gates": source_gates,
             "question_set_gates_sha256": _canonical_sha256(source_gates),
             "repository_commit": "abc123",
@@ -544,6 +788,44 @@ def _promotion_fixture(
             "gate_passed": True,
         },
     )
+    paid_scoring_preflight: dict[str, object] | None = None
+    if not legacy_protocol:
+        paid_scoring_preflight = {
+            "schema_version": 1,
+            "contract": protocol["paid_scoring_gate"],
+            "repository_commit": "abc123",
+            "dataset_sha256": "0" * 64,
+            "target_question_set_sha256": file_sha256(question_set_path),
+            "target_selection_sha256": selection_sha256,
+            "target_question_count": 200,
+            "scored_question_set_sha256": file_sha256(question_set_path),
+            "scored_selection_sha256": selection_sha256,
+            "scored_question_count": 200,
+            "protocol_sha256": canonical_sha256(protocol),
+            "corpus_content_sha256": corpus["content_sha256"],
+            "query_vectors_content_sha256": query_vectors["content_sha256"],
+            "minimum_context_all_coverage": 0.85,
+            "maximum_context_tokens": 4_000,
+            "maximum_retrieval_p95_ms": 2_500.0,
+            "maximum_process_rss_bytes_exclusive": 2 * 1024 * 1024 * 1024,
+            "sources": [
+                _paid_scoring_source(
+                    run_id="locomo-retrieval-canary",
+                    selection_id="locomo-diagnostic-40-v1",
+                    question_set_sha256=source_question_set_sha256,
+                    selection_sha256=source_selection_sha256,
+                    question_count=40,
+                ),
+                _paid_scoring_source(
+                    run_id="locomo-retrieval-holdout",
+                    selection_id="locomo-diagnostic-160-holdout-v1",
+                    question_set_sha256=holdout_question_set_sha256,
+                    selection_sha256=holdout_selection_sha256,
+                    question_count=160,
+                ),
+            ],
+        }
+        paid_scoring_preflight["receipt_sha256"] = canonical_sha256(paid_scoring_preflight)
     write_json_exclusive(
         run_dir / "manifest.json",
         {
@@ -553,6 +835,8 @@ def _promotion_fixture(
             "mode": "full",
             "scored": True,
             "repository_commit": "abc123",
+            "paid_scoring_gate": protocol.get("paid_scoring_gate"),
+            "paid_scoring_preflight": paid_scoring_preflight,
             "selection": {
                 "conversation_ids": ["conversation-1"],
                 "categories": [1, 2, 3, 4],
@@ -568,7 +852,7 @@ def _promotion_fixture(
                     "question_count": 200,
                     "question_ids": question_ids,
                     "selection_sha256": selection_sha256,
-                    "protocol_sha256": _canonical_sha256(protocol),
+                    "protocol_sha256": canonical_sha256(protocol),
                 },
             },
             "retrieval": _retrieval_manifest(protocol, mode="hierarchy"),
@@ -583,6 +867,8 @@ def _promotion_fixture(
             "answer_model": answer_model,
             "answer_evidence_contract": protocol["answer_evidence_contract"],
             "answer_retry_contract": protocol["answer_retry_contract"],
+            "model_attempt_journal_contract": protocol["model_attempt_journal_contract"],
+            "checkpoint_policy": protocol["checkpoint_policy"],
             "answer_response_max_attempts": protocol["answer_response_max_attempts"],
             "judge_model": judge_model,
             "judge_contract": protocol["judge_contract"],
@@ -610,6 +896,24 @@ def _promotion_fixture(
         source_question_set = source_manifest["selection"]["question_set"]
         source_question_set["definition_sha256"] = source_question_set_sha256
         source_question_set["selection_sha256"] = source_selection_sha256
+        source_question_set["question_count"] = 40
+        source_question_set["question_ids"] = source_question_ids
+        source_question_set["category_targets"] = {str(category): 10 for category in range(1, 5)}
+        source_manifest["selection"]["question_counts"] = {
+            str(category): 10 for category in range(1, 5)
+        }
+        source_manifest["selection"]["question_ids_by_conversation"] = {
+            "conversation-1": source_question_ids
+        }
+        source_manifest["query_vectors"]["run_question_count"] = 40
+        source_manifest["query_vectors"]["run_selection_sha256"] = source_selection_sha256
+        if not legacy_protocol:
+            source_receipt = source_manifest["paid_scoring_preflight"]
+            source_receipt["scored_question_set_sha256"] = source_question_set_sha256
+            source_receipt["scored_selection_sha256"] = source_selection_sha256
+            source_receipt["scored_question_count"] = 40
+            source_receipt.pop("receipt_sha256")
+            source_receipt["receipt_sha256"] = canonical_sha256(source_receipt)
         source_manifest_path = source_run_dir / "manifest.json"
         write_json_exclusive(source_manifest_path, source_manifest)
         source_run_dirs[variant] = source_run_dir
@@ -708,6 +1012,32 @@ def _worker_manifest(protocol: dict[str, object]) -> dict[str, object]:
         "rss_poll_interval_seconds": protocol["worker_rss_poll_interval_seconds"],
         "progress_signal": protocol["worker_progress_signal"],
         "publish_policy": protocol["worker_publish_policy"],
+        "reranker_warmup": protocol["worker_reranker_warmup"],
+    }
+
+
+def _paid_scoring_source(
+    *,
+    run_id: str,
+    selection_id: str,
+    question_set_sha256: str,
+    selection_sha256: str,
+    question_count: int,
+) -> dict[str, object]:
+    return {
+        "run_id": run_id,
+        "selection_id": selection_id,
+        "question_set_sha256": question_set_sha256,
+        "selection_sha256": selection_sha256,
+        "question_count": question_count,
+        "context_all_coverage": 0.9,
+        "maximum_context_tokens": 4_000,
+        "retrieval_p95_ms": 2_000.0,
+        "max_process_rss_bytes": 1_000_000_000,
+        "manifest_sha256": "8" * 64,
+        "summary_sha256": "9" * 64,
+        "evidence_report_sha256": "a" * 64,
+        "resource_usage_sha256": "b" * 64,
     }
 
 
@@ -746,3 +1076,14 @@ def _fixture_reporter(
 def _replace_json(path: Path, value: object) -> None:
     path.unlink()
     write_json_exclusive(path, value)
+
+
+def _rebind_source_manifest_receipt(
+    selection_report_path: Path,
+    *,
+    variant: str,
+    manifest_path: Path,
+) -> None:
+    selection_report = json.loads(selection_report_path.read_text(encoding="utf-8"))
+    selection_report["run_manifests"][variant]["manifest_sha256"] = file_sha256(manifest_path)
+    _replace_json(selection_report_path, selection_report)

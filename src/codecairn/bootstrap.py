@@ -606,8 +606,19 @@ class _LocalOperations(ApplicationOperations):
 
     def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]:
         output_root = request.output_root.resolve() / request.suite
-        if request.question_set_path is not None and request.suite != "locomo":
-            raise ValueError("Question sets are supported only by LoCoMo evaluation")
+        if request.suite != "locomo":
+            locomo_only_inputs = (
+                request.question_set_path,
+                request.corpus_path,
+                request.query_vectors_path,
+                request.retrieval_gate_question_set_path,
+                request.retrieval_canary_run_path,
+                request.retrieval_holdout_run_path,
+            )
+            if request.execution_phase != "all" or any(
+                value is not None for value in locomo_only_inputs
+            ):
+                raise ValueError("LoCoMo-only evaluation inputs require the LoCoMo suite")
         if request.suite == "retrieval":
             from codecairn.evaluation.retrieval import (
                 RetrievalRunConfig,
@@ -851,6 +862,7 @@ class _LocalOperations(ApplicationOperations):
     ) -> dict[str, object]:
         from codecairn.evaluation.locomo import (
             LOCOMO_DATASET_SHA256,
+            LOCOMO_PAID_SCORING_GATE_CONTRACT,
             CodeCairnConversationMemory,
             FrozenQueryEmbeddingAdapter,
             LoCoMoConversationWork,
@@ -858,7 +870,87 @@ class _LocalOperations(ApplicationOperations):
             run_locomo,
             validate_locomo_run_id,
         )
+        from codecairn.evaluation.locomo_retrieval_gate import (
+            LoCoMoRetrievalGateConfig,
+            verify_locomo_retrieval_gate,
+        )
         from codecairn.evaluation.providers import create_locomo_text_model
+
+        paid_scoring_preflight: dict[str, object] | None = None
+        gate_inputs = (
+            request.retrieval_gate_question_set_path,
+            request.retrieval_canary_run_path,
+            request.retrieval_holdout_run_path,
+        )
+        supplied_gate_input = any(value is not None for value in gate_inputs)
+        if request.mode == "retrieval":
+            if supplied_gate_input:
+                raise ValueError("LoCoMo retrieval mode does not accept paid-scoring gates")
+        elif request.question_set_path is None:
+            if supplied_gate_input:
+                raise ValueError("LoCoMo paid-scoring gates require a frozen question set")
+        else:
+            definition = _bootstrap_mapping(
+                read_json(request.question_set_path),
+                field="LoCoMo question set",
+            )
+            raw_protocol = definition.get("protocol")
+            if raw_protocol is None:
+                if supplied_gate_input:
+                    raise ValueError(
+                        "LoCoMo question-set protocol does not support paid-scoring gates"
+                    )
+            else:
+                protocol = _bootstrap_mapping(
+                    raw_protocol,
+                    field="LoCoMo question-set protocol",
+                )
+                gate_contract = protocol.get("paid_scoring_gate")
+                if gate_contract == LOCOMO_PAID_SCORING_GATE_CONTRACT:
+                    required_paths = {
+                        "retrieval gate question set": request.retrieval_gate_question_set_path,
+                        "retrieval canary run": request.retrieval_canary_run_path,
+                        "retrieval holdout run": request.retrieval_holdout_run_path,
+                        "corpus": request.corpus_path,
+                        "query vectors": request.query_vectors_path,
+                    }
+                    missing = [name for name, value in required_paths.items() if value is None]
+                    if missing:
+                        raise ValueError(
+                            "LoCoMo paid-scoring gate is missing: " + ", ".join(missing)
+                        )
+                    paid_scoring_preflight = verify_locomo_retrieval_gate(
+                        LoCoMoRetrievalGateConfig(
+                            target_question_set_path=cast(
+                                Path,
+                                request.retrieval_gate_question_set_path,
+                            ),
+                            scored_question_set_path=request.question_set_path,
+                            dataset_path=request.input_path,
+                            canary_run_dir=cast(Path, request.retrieval_canary_run_path),
+                            holdout_run_dir=cast(Path, request.retrieval_holdout_run_path),
+                            repository_commit=request.repository_commit,
+                            corpus_path=cast(Path, request.corpus_path),
+                            query_vectors_path=cast(Path, request.query_vectors_path),
+                        )
+                    )
+                    if paid_scoring_preflight.get("scored_question_set_sha256") != file_sha256(
+                        request.question_set_path
+                    ):
+                        raise ValueError(
+                            "LoCoMo paid-scoring gate does not target the scored question set"
+                        )
+                else:
+                    if supplied_gate_input:
+                        raise ValueError(
+                            "LoCoMo question-set protocol does not support paid-scoring gates"
+                        )
+                    if protocol.get("query_sketcher") == (
+                        "codecairn/deterministic-query-sketch-v4"
+                    ):
+                        raise ValueError(
+                            "LoCoMo v18 paid scoring requires a retrieval gate contract"
+                        )
 
         answer_model = (
             None
@@ -963,6 +1055,7 @@ class _LocalOperations(ApplicationOperations):
                     execution_phase=request.execution_phase,
                     corpus_path=request.corpus_path,
                     query_vectors_path=request.query_vectors_path,
+                    paid_scoring_preflight=paid_scoring_preflight,
                     expected_dataset_sha256=(
                         LOCOMO_DATASET_SHA256
                         if request.expected_dataset_sha256 is None
@@ -1266,6 +1359,7 @@ def _build_locomo_worker_spec(
     if query_vectors_path is None:
         raise ValueError("LoCoMo exec worker requires frozen query vectors")
     worker_run_dir = attempt_dir / "run"
+    paid_scoring_preflight = work.config.paid_scoring_preflight
     return {
         "schema_version": 2,
         "dataset_path": str(work.config.dataset_path.resolve()),
@@ -1273,6 +1367,15 @@ def _build_locomo_worker_spec(
         "repository_commit": work.config.repository_commit,
         "run_manifest_path": str(run_manifest_path),
         "run_manifest_sha256": file_sha256(run_manifest_path),
+        "paid_scoring_preflight_sha256": (
+            None
+            if paid_scoring_preflight is None
+            else _bootstrap_string(
+                paid_scoring_preflight,
+                "receipt_sha256",
+                field="paid-scoring preflight",
+            )
+        ),
         "corpus_dir": str(work.corpus_dir.resolve()),
         "worker_corpus_dir": str((worker_run_dir / "corpus").resolve()),
         "worker_run_dir": str(worker_run_dir.resolve()),

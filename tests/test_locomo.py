@@ -112,7 +112,7 @@ def _write_corpus_protocol_question_set(
         if question.category in {1, 2, 3, 4}
     )
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v17.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v18.json").read_text(
             encoding="utf-8"
         )
     )
@@ -1425,7 +1425,7 @@ def test_shared_corpus_is_built_once_and_reused_by_independent_runs(tmp_path: Pa
     assert CountingMemory.ingest_calls == 2
     assert CountingMemory.snapshot_calls == 2
     assert corpus.manifest["build_contract"]["projection_contract"] == (
-        "locomo-grounded-clause-projection-v7"
+        "locomo-grounded-clause-projection-v8"
     )
     assert corpus.manifest["build_contract"]["repository_commit"] == "abc123"
     assert corpus.manifest["build_contract"]["semantic_projection"] == {
@@ -2735,7 +2735,7 @@ def test_worker_rejects_an_obsolete_corpus_projection_contract(tmp_path: Path) -
     )
     manifest_path = corpus.corpus_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    manifest["build_contract"]["projection_contract"] = "locomo-session-episode-with-turn-facts-v4"
+    manifest["build_contract"]["projection_contract"] = "locomo-grounded-clause-projection-v7"
     manifest["build_contract_sha256"] = hashlib.sha256(
         canonical_json(manifest["build_contract"]).encode()
     ).hexdigest()
@@ -3846,9 +3846,9 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         )
 
 
-def test_official_v17_command_contract_passes_preflight() -> None:
+def test_official_v18_command_contract_passes_preflight(tmp_path: Path) -> None:
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v17.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v18.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3895,15 +3895,86 @@ def test_official_v17_command_contract_passes_preflight() -> None:
         def model_id(self) -> str:
             return "deepseek-v4-flash"
 
+    corpus_path = tmp_path / "content-addressed-corpus"
+    query_vectors_path = tmp_path / "content-addressed-query-vectors"
+    corpus_path.mkdir()
+    query_vectors_path.mkdir()
+    write_json_exclusive(corpus_path / "manifest.json", {"content_sha256": "c" * 64})
+    write_json_exclusive(
+        query_vectors_path / "manifest.json",
+        {"content_sha256": "f" * 64},
+    )
+    receipt: dict[str, object] = {
+        "schema_version": 1,
+        "contract": "dual-retrieval-context-coverage-v1",
+        "repository_commit": "abc123",
+        "dataset_sha256": "b" * 64,
+        "target_question_set_sha256": "d" * 64,
+        "target_selection_sha256": "e" * 64,
+        "target_question_count": 2,
+        "scored_question_set_sha256": "a" * 64,
+        "scored_selection_sha256": "c" * 64,
+        "scored_question_count": 1,
+        "protocol_sha256": hashlib.sha256(canonical_json(protocol).encode()).hexdigest(),
+        "corpus_content_sha256": "c" * 64,
+        "query_vectors_content_sha256": "f" * 64,
+        "minimum_context_all_coverage": 0.85,
+        "maximum_context_tokens": 4_000,
+        "maximum_retrieval_p95_ms": 2_500.0,
+        "maximum_process_rss_bytes_exclusive": 2 * 1024 * 1024 * 1024,
+        "sources": [
+            {
+                "run_id": "canary",
+                "selection_id": "canary",
+                "question_set_sha256": "1" * 64,
+                "selection_sha256": "2" * 64,
+                "question_count": 1,
+                "context_all_coverage": 0.9,
+                "maximum_context_tokens": 4_000,
+                "retrieval_p95_ms": 2_000.0,
+                "max_process_rss_bytes": 1_000_000_000,
+                "manifest_sha256": "3" * 64,
+                "summary_sha256": "4" * 64,
+                "evidence_report_sha256": "5" * 64,
+                "resource_usage_sha256": "6" * 64,
+            },
+            {
+                "run_id": "holdout",
+                "selection_id": "holdout",
+                "question_set_sha256": "7" * 64,
+                "selection_sha256": "8" * 64,
+                "question_count": 1,
+                "context_all_coverage": 0.9,
+                "maximum_context_tokens": 4_000,
+                "retrieval_p95_ms": 2_000.0,
+                "max_process_rss_bytes": 1_000_000_000,
+                "manifest_sha256": "9" * 64,
+                "summary_sha256": "a" * 64,
+                "evidence_report_sha256": "b" * 64,
+                "resource_usage_sha256": "c" * 64,
+            },
+        ],
+    }
+    receipt["receipt_sha256"] = hashlib.sha256(canonical_json(receipt).encode()).hexdigest()
     config = LoCoMoRunConfig(
         dataset_path=FIXTURE,
         output_root=Path("unused"),
-        run_id="official-v17",
+        run_id="official-v18",
         repository_commit="abc123",
         max_workers=10,
         retrieval_config=retrieval_config,
-        corpus_path=Path("content-addressed-corpus"),
+        corpus_path=corpus_path,
+        query_vectors_path=query_vectors_path,
+        paid_scoring_preflight=receipt,
     )
+    with pytest.raises(ValueError, match="paid-scoring preflight"):
+        validate_run_protocol(
+            question_set,
+            config=replace(config, paid_scoring_preflight=None),
+            answer_model=FrozenProtocolModel(),
+            judge_model=FrozenProtocolModel(),
+            question_worker_contract=worker_contract,
+        )
     validate_run_protocol(
         question_set,
         config=config,
@@ -3911,6 +3982,23 @@ def test_official_v17_command_contract_passes_preflight() -> None:
         judge_model=FrozenProtocolModel(),
         question_worker_contract=worker_contract,
     )
+    wrong_target_receipt = dict(receipt)
+    wrong_target_receipt["scored_selection_sha256"] = "d" * 64
+    wrong_target_receipt.pop("receipt_sha256")
+    wrong_target_receipt["receipt_sha256"] = hashlib.sha256(
+        canonical_json(wrong_target_receipt).encode()
+    ).hexdigest()
+    with pytest.raises(ValueError, match="paid-scoring preflight"):
+        validate_run_protocol(
+            question_set,
+            config=replace(
+                config,
+                paid_scoring_preflight=wrong_target_receipt,
+            ),
+            answer_model=FrozenProtocolModel(),
+            judge_model=FrozenProtocolModel(),
+            question_worker_contract=worker_contract,
+        )
     missing_selector_protocol = dict(protocol)
     missing_selector_protocol.pop("fact_selector")
     with pytest.raises(ValueError, match="fact_selector"):

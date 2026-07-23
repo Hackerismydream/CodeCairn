@@ -313,3 +313,19 @@ def test_http_rejects_remote_bind_and_evaluation_symlink_escape(tmp_path: Path) 
 
     assert response.status_code == 403
     assert response.json()["error"]["code"] == "artifact_path_forbidden"
+
+    gate_question_set = allowed / "gate-question-set.json"
+    gate_question_set.write_text("{}", encoding="utf-8")
+    response = client.post(
+        "/api/v1/evaluations",
+        json={
+            "suite": "recovery",
+            "input_path": str(allowed_source),
+            "run_id": "ignored-gate-question-set",
+            "repository_commit": "abc123",
+            "retrieval_gate_question_set_path": str(gate_question_set),
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_locomo_artifact"

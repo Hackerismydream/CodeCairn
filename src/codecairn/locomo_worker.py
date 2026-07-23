@@ -14,6 +14,7 @@ from typing import cast
 from codecairn.bootstrap import create_cascade, create_retrieval_providers, create_runtime
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
 from codecairn.evaluation.locomo import (
+    LOCOMO_PAID_SCORING_GATE_CONTRACT,
     CodeCairnConversationMemory,
     FrozenQueryEmbeddingAdapter,
     LoCoMoRunConfig,
@@ -22,6 +23,9 @@ from codecairn.evaluation.locomo import (
     run_locomo_conversation_questions,
     validate_locomo_corpus_conversation,
     validate_locomo_corpus_preflight,
+)
+from codecairn.evaluation.locomo_retrieval_gate import (
+    validate_locomo_paid_scoring_receipt,
 )
 from codecairn.evaluation.providers import create_locomo_text_model
 
@@ -112,6 +116,8 @@ def _execute(raw: dict[str, object]) -> None:
     run_manifest = _mapping(read_json(run_manifest_path), "run manifest")
     if run_manifest.get("repository_commit") != _string(raw, "repository_commit"):
         raise ValueError("LoCoMo worker repository commit does not match")
+    mode = _run_mode(raw)
+    _validate_worker_paid_scoring_preflight(raw, run_manifest, mode=mode)
     question_ids = _string_list(raw, "question_ids")
     selection = _mapping(run_manifest.get("selection"), "run selection")
     inventory = _mapping(selection.get("question_ids_by_conversation"), "run question inventory")
@@ -179,7 +185,6 @@ def _execute(raw: dict[str, object]) -> None:
         3,
     )
 
-    mode = _run_mode(raw)
     expected_answer_model = _optional_mapping(raw.get("answer_model"), "answer model")
     answer_model = (
         None
@@ -276,6 +281,46 @@ def _run_mode(raw: dict[str, object]) -> RunMode:
     if value not in {"full", "smoke", "retrieval"}:
         raise ValueError("LoCoMo worker mode is invalid")
     return cast(RunMode, value)
+
+
+def _validate_worker_paid_scoring_preflight(
+    raw: dict[str, object],
+    run_manifest: dict[str, object],
+    *,
+    mode: RunMode,
+) -> None:
+    gate_contract = run_manifest.get("paid_scoring_gate")
+    expected_receipt_sha256 = raw.get("paid_scoring_preflight_sha256")
+    receipt = run_manifest.get("paid_scoring_preflight")
+    if mode == "retrieval":
+        if expected_receipt_sha256 is not None or receipt is not None:
+            raise ValueError("LoCoMo retrieval mode must not carry a paid-scoring preflight")
+        return
+    if gate_contract is None:
+        if expected_receipt_sha256 is not None or receipt is not None:
+            raise ValueError("LoCoMo legacy worker must not carry a paid-scoring preflight")
+        return
+    if gate_contract != LOCOMO_PAID_SCORING_GATE_CONTRACT:
+        raise ValueError("LoCoMo worker paid-scoring gate is not supported")
+    if not isinstance(expected_receipt_sha256, str) or not expected_receipt_sha256:
+        raise ValueError("LoCoMo worker paid-scoring preflight binding does not match")
+    selection = _mapping(run_manifest.get("selection"), "run selection")
+    question_set = _mapping(selection.get("question_set"), "run question set")
+    corpus = _mapping(run_manifest.get("corpus"), "run corpus")
+    query_vectors = _mapping(run_manifest.get("query_vectors"), "run query vectors")
+    validated = validate_locomo_paid_scoring_receipt(
+        receipt,
+        repository_commit=_string(run_manifest, "repository_commit"),
+        dataset_sha256=_string(question_set, "dataset_sha256"),
+        scored_question_set_sha256=_string(question_set, "definition_sha256"),
+        scored_selection_sha256=_string(question_set, "selection_sha256"),
+        scored_question_count=_integer(question_set, "question_count"),
+        protocol_sha256=_string(question_set, "protocol_sha256"),
+        corpus_content_sha256=_string(corpus, "content_sha256"),
+        query_vectors_content_sha256=_string(query_vectors, "content_sha256"),
+    )
+    if validated.get("receipt_sha256") != expected_receipt_sha256:
+        raise ValueError("LoCoMo worker paid-scoring preflight binding does not match")
 
 
 def _wait_for_worker_identity(path: Path, *, parent_pid: int) -> object:

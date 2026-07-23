@@ -15,6 +15,7 @@ from codecairn.memory.models import (
 from codecairn.memory.trace import stable_id
 
 _MAX_EPISODE_PROJECTION_CHARS = 16_000
+_MAX_PREVIOUS_TURN_PROJECTION_CHARS = 1_024
 
 
 def project_recall_documents(
@@ -31,6 +32,7 @@ def project_recall_documents(
         memory.repo_key,
         memory.memory_id,
     )
+    children = _recall_children(memory, parent_document_id=episode_document_id)
     episode = _document(
         document_id=episode_document_id,
         memory=memory,
@@ -41,31 +43,46 @@ def project_recall_documents(
         title=memory.title,
         summary=memory.summary,
         content=_episode_projection_content(memory, markdown=markdown),
-        child_count=(
-            len(memory.semantic_episode.atomic_facts)
-            if memory.semantic_episode is not None
-            else len(memory.facts)
-        ),
+        child_count=len(children),
     )
-    if memory.semantic_episode is not None:
-        children = tuple(
-            _semantic_atomic_fact_document(
-                memory,
-                fact=fact,
-                parent_document_id=episode_document_id,
-            )
-            for fact in memory.semantic_episode.atomic_facts
-        )
-    else:
-        children = tuple(
+    return (episode, *children)
+
+
+def _recall_children(
+    memory: CodingMemory,
+    *,
+    parent_document_id: str,
+) -> tuple[RecallDocument, ...]:
+    facts = tuple(sorted(memory.facts, key=_fact_order))
+    if memory.semantic_episode is None:
+        return tuple(
             _atomic_fact_document(
                 memory,
                 fact=fact,
-                parent_document_id=episode_document_id,
+                previous_fact=facts[index - 1] if index > 0 else None,
+                parent_document_id=parent_document_id,
             )
-            for fact in memory.facts
+            for index, fact in enumerate(facts)
         )
-    return (episode, *children)
+
+    semantic_children = tuple(
+        _semantic_atomic_fact_document(
+            memory,
+            fact=fact,
+            parent_document_id=parent_document_id,
+        )
+        for fact in memory.semantic_episode.atomic_facts
+    )
+    source_children = tuple(
+        _atomic_fact_document(
+            memory,
+            fact=fact,
+            previous_fact=facts[index - 1] if index > 0 else None,
+            parent_document_id=parent_document_id,
+        )
+        for index, fact in enumerate(facts)
+    )
+    return (*semantic_children, *source_children)
 
 
 def _episode_projection_content(memory: CodingMemory, *, markdown: str) -> str:
@@ -150,9 +167,24 @@ def _atomic_fact_document(
     memory: CodingMemory,
     *,
     fact: EvidenceFact,
+    previous_fact: EvidenceFact | None,
     parent_document_id: str,
 ) -> RecallDocument:
     status = f"\nStatus: {fact.status}" if fact.status is not None else ""
+    exact_text = render_attributed_fact(fact)
+    content = f"{fact.kind}\n{exact_text}{status}"
+    if _is_question_answer_pair(previous_fact, fact):
+        assert previous_fact is not None
+        previous_text = _bounded_retrieval_context(
+            render_attributed_fact(previous_fact),
+            max_chars=_MAX_PREVIOUS_TURN_PROJECTION_CHARS,
+        )
+        content = (
+            f"{fact.kind}\n"
+            "Dialogue context (retrieval only):\n"
+            f"Previous turn:\n{previous_text}\n"
+            f"Target evidence:\n{exact_text}{status}"
+        )
     return _document(
         document_id=stable_id(
             "recall-atomic-fact",
@@ -166,8 +198,8 @@ def _atomic_fact_document(
         source_episode_id=fact.episode_id,
         fact_id=fact.fact_id,
         title=fact.kind.replace("_", " ").title(),
-        summary=render_attributed_fact(fact),
-        content=f"{fact.kind}\n{render_attributed_fact(fact)}{status}",
+        summary=exact_text,
+        content=content,
         child_count=0,
     )
 
@@ -194,6 +226,38 @@ def _semantic_atomic_fact_document(
         summary=fact.text,
         content=fact.text,
         child_count=0,
+    )
+
+
+def _is_question_answer_pair(
+    previous_fact: EvidenceFact | None,
+    fact: EvidenceFact,
+) -> bool:
+    return (
+        previous_fact is not None
+        and previous_fact.kind == "conversation_turn"
+        and fact.kind == "conversation_turn"
+        and previous_fact.episode_id == fact.episode_id
+        and previous_fact.actor is not None
+        and fact.actor is not None
+        and previous_fact.actor != fact.actor
+        and any(mark in previous_fact.text for mark in ("?", "\uff1f"))
+    )
+
+
+def _bounded_retrieval_context(text: str, *, max_chars: int) -> str:
+    if len(text) <= max_chars:
+        return text
+    separator = "\n…\n"
+    prefix_chars = (max_chars - len(separator)) // 2
+    suffix_chars = max_chars - len(separator) - prefix_chars
+    return text[:prefix_chars] + separator + text[-suffix_chars:]
+
+
+def _fact_order(fact: EvidenceFact) -> tuple[int, str]:
+    return (
+        min((reference.raw_event_index for reference in fact.evidence), default=-1),
+        fact.fact_id,
     )
 
 

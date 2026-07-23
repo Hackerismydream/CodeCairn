@@ -42,10 +42,12 @@ Coding Memory. It is not a second durable Task Episode or another source of
 truth.
 
 **Atomic Fact Document**: A rebuildable child search document projected from a
-grounded Semantic Atomic Fact inside Markdown truth. It may cite one or more
-authoritative Evidence Facts, and its parent is the Recall Episode for that
-Coding Memory. Legacy memories without a semantic projection retain the
-one-Evidence-Fact fallback.
+grounded Semantic Atomic Fact inside Markdown truth or from an authoritative
+Evidence Fact. Every source fact keeps its own raw child even when a semantic
+child cites it, because citation does not prove complete semantic coverage. A
+child may cite one or more authoritative Evidence Facts, and its parent is the
+Recall Episode for that Coding Memory. These lossless source-fact documents
+remain disposable index data; Markdown is still the evidence authority.
 
 **Index Queue**: SQLite-backed outbox of Markdown revisions waiting to be
 indexed. Claims use atomic leases and a successful unchanged content hash is a

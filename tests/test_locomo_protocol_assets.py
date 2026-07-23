@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from codecairn.evaluation.artifacts import write_json_exclusive
+from codecairn.evaluation.artifacts import canonical_sha256, write_json_exclusive
 from codecairn.evaluation.locomo import (
     LoCoMoConversation,
     LoCoMoDataset,
@@ -422,6 +422,66 @@ def test_v17_changes_only_the_quantity_slot_policy_contract() -> None:
     assert {
         key: value for key, value in v17["200"]["promotion"].items() if key != "source_selection"
     } == {key: value for key, value in v16["200"]["promotion"].items() if key != "source_selection"}
+
+
+def test_v18_freezes_lossless_child_recall_and_calendar_query_contracts() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    paths = {
+        "40": benchmark_root / "diagnostic-40-v18.json",
+        "160": benchmark_root / "diagnostic-160-holdout-v18.json",
+        "200": benchmark_root / "diagnostic-200-v18.json",
+    }
+    expected_hashes = {
+        "40": "52c44fb577c641c7ca9d74a684dd8559bc21d1042051a60dd4d8f8bf7b608d00",
+        "160": "123234add282435631101a2a106bf719ac0709f51d1f0f377086d61c48cee8a3",
+        "200": "cb83752f66bc1b570267f2533e980a0a7df36cdc758f68fcb4c704cbaf0f5a8a",
+    }
+    v18 = {name: json.loads(path.read_text()) for name, path in paths.items()}
+    v17 = {
+        "40": json.loads((benchmark_root / "diagnostic-40-v17.json").read_text()),
+        "160": json.loads((benchmark_root / "diagnostic-160-holdout-v17.json").read_text()),
+        "200": json.loads((benchmark_root / "diagnostic-200-v17.json").read_text()),
+    }
+
+    for name, path in paths.items():
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_hashes[name]
+        expected_protocol = dict(v17[name]["protocol"])
+        expected_protocol.update(
+            {
+                "query_sketcher": "codecairn/deterministic-query-sketch-v4",
+                "temporal_lane": "explicit-calendar-prefix-v2",
+                "fact_selector": "bounded-dialogue-aware-cross-encoder-v5",
+                "paid_scoring_gate": "dual-retrieval-context-coverage-v1",
+            }
+        )
+        assert v18[name]["protocol"] == expected_protocol
+    assert v18["40"]["protocol"] == v18["160"]["protocol"] == v18["200"]["protocol"]
+    assert {key: value for key, value in v18["40"].items() if key != "protocol"} == {
+        key: value for key, value in v17["40"].items() if key != "protocol"
+    }
+    assert {key: value for key, value in v18["160"].items() if key != "protocol"} == {
+        key: value for key, value in v17["160"].items() if key != "protocol"
+    }
+    assert {
+        key: value for key, value in v18["200"].items() if key not in {"protocol", "promotion"}
+    } == {key: value for key, value in v17["200"].items() if key not in {"protocol", "promotion"}}
+
+    source = v18["200"]["promotion"]["source_selection"]
+    assert source["question_set_sha256"] == expected_hashes["40"]
+    assert source["protocol_sha256"] == canonical_sha256(v18["40"]["protocol"])
+    assert source["gates_sha256"] == _canonical_sha256(v18["40"]["gates"])
+    holdout = v18["200"]["promotion"]["holdout_selection"]
+    assert holdout == {
+        "selection_id": v18["160"]["selection_id"],
+        "question_set_sha256": expected_hashes["160"],
+        "selection_sha256": v18["160"]["selection_sha256"],
+        "protocol_sha256": canonical_sha256(v18["160"]["protocol"]),
+    }
+    assert {
+        key: value
+        for key, value in v18["200"]["promotion"].items()
+        if key not in {"source_selection", "holdout_selection"}
+    } == {key: value for key, value in v17["200"]["promotion"].items() if key != "source_selection"}
 
 
 def _select_question_ids(

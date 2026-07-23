@@ -26,6 +26,9 @@ class EvaluationRunRequest:
     execution_phase: Literal["all", "ingest", "questions"] = "all"
     corpus_path: Path | None = None
     query_vectors_path: Path | None = None
+    retrieval_gate_question_set_path: Path | None = None
+    retrieval_canary_run_path: Path | None = None
+    retrieval_holdout_run_path: Path | None = None
     expected_dataset_sha256: str | None = None
 
 

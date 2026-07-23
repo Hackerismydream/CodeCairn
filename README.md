@@ -148,29 +148,101 @@ and every query sidecar.
 
 Resource-sensitive LoCoMo evidence runs reuse one verified corpus and one frozen
 query-vector artifact, then isolate each conversation in a fresh worker process.
-The v17 protocol first runs retrieval without answer or judge calls and reports
-gold-evidence coverage. Paid scoring starts only after that provider-free gate.
-The frozen 40-question preflight must pass before the non-overlapping
-160-question holdout runs; both use the same protocol and provider-free
-artifacts. Build and verify them as documented in
-`benchmarks/locomo/README.md`. The formal v16 preflight remains immutable
-negative evidence, and v17 does not claim an improvement until both new runs
-pass their gates. [ADR 0024](docs/adr/0024-v17-preserves-same-ordinal-anaphoric-evidence-bundles.md)
-records that boundary.
+The current v18 protocol first builds a lossless v8 child projection and freezes
+the 200 diagnostic query vectors. It then runs retrieval without answer or judge
+calls: a frozen 40-question canary must pass before the non-overlapping
+160-question holdout is accepted. Both reuse the same corpus and query-vector
+artifacts. The formal v14 through v17 artifacts remain immutable historical
+evidence; in particular, the v17 holdout remains a negative result rather than
+an improvement claim. [ADR 0024](docs/adr/0024-v17-preserves-same-ordinal-anaphoric-evidence-bundles.md)
+records the v17 boundary, and
+[ADR 0025](docs/adr/0025-v18-projects-lossless-source-fact-recall-children.md)
+defines the v18 repair and acceptance gates.
 
 ```bash
-codecairn eval run locomo benchmarks/locomo/data/locomo10.json \
-  --run-id <retrieval-run-id> --repository-commit <commit> --mode retrieval \
+COMMIT="$(git rev-parse --verify HEAD)"
+
+codecairn eval build-locomo-corpus benchmarks/locomo/data/locomo10.json \
+  --question-set benchmarks/locomo/diagnostic-200-v18.json \
+  --corpus-id locomo-grounded-clause-v8 \
+  --repository-commit "$COMMIT" \
+  --output-root benchmark_results/locomo/corpora
+
+codecairn eval build-locomo-query-vectors benchmarks/locomo/data/locomo10.json \
+  --question-set benchmarks/locomo/diagnostic-200-v18.json \
+  --vector-set-id locomo-diagnostic-200-v18 \
+  --output-root benchmark_results/locomo/query-vectors
+
+# Substitute the content-addressed directories printed by the build commands.
+CORPUS="benchmark_results/locomo/corpora/corpus-<content-sha-prefix>"
+QUERIES="benchmark_results/locomo/query-vectors/queries-<content-sha-prefix>"
+CANARY_RUN="benchmark_results/locomo/locomo-diagnostic-40-v18-hierarchy-retrieval"
+HOLDOUT_RUN="benchmark_results/locomo/locomo-diagnostic-160-holdout-v18-hierarchy-retrieval"
+
+CODECAIRN_RECALL_MODE=hierarchy codecairn eval run locomo \
+  benchmarks/locomo/data/locomo10.json \
+  --question-set benchmarks/locomo/diagnostic-40-v18.json \
+  --run-id locomo-diagnostic-40-v18-hierarchy-retrieval \
+  --repository-commit "$COMMIT" \
   --output-root benchmark_results \
-  --question-set benchmarks/locomo/diagnostic-40-v17.json \
-  --corpus <content-addressed-corpus> --query-vectors <frozen-query-vectors> \
+  --root benchmark_results/runtime-v18-hierarchy-retrieval-40 \
+  --corpus "$CORPUS" \
+  --query-vectors "$QUERIES" \
+  --mode retrieval \
   --max-workers 10
 
 codecairn eval report-locomo-evidence \
-  benchmark_results/locomo/<retrieval-run-id> \
+  "$CANARY_RUN" \
   --dataset benchmarks/locomo/data/locomo10.json \
-  --output benchmark_results/locomo/<retrieval-run-id>/evidence-coverage.json
+  --output "$CANARY_RUN/evidence-coverage.json"
+
+CODECAIRN_RECALL_MODE=hierarchy codecairn eval run locomo \
+  benchmarks/locomo/data/locomo10.json \
+  --question-set benchmarks/locomo/diagnostic-160-holdout-v18.json \
+  --run-id locomo-diagnostic-160-holdout-v18-hierarchy-retrieval \
+  --repository-commit "$COMMIT" \
+  --output-root benchmark_results \
+  --root benchmark_results/runtime-v18-hierarchy-retrieval-160-holdout \
+  --corpus "$CORPUS" \
+  --query-vectors "$QUERIES" \
+  --mode retrieval \
+  --max-workers 10
+
+codecairn eval report-locomo-evidence \
+  "$HOLDOUT_RUN" \
+  --dataset benchmarks/locomo/data/locomo10.json \
+  --output "$HOLDOUT_RUN/evidence-coverage.json"
+
+# Run only after both provider-free retrieval gates pass.
+CODECAIRN_RECALL_MODE=hierarchy codecairn eval run locomo \
+  benchmarks/locomo/data/locomo10.json \
+  --question-set benchmarks/locomo/diagnostic-200-v18.json \
+  --run-id locomo-diagnostic-200-v18-hierarchy \
+  --repository-commit "$COMMIT" \
+  --output-root benchmark_results \
+  --root benchmark_results/runtime-v18-hierarchy \
+  --corpus "$CORPUS" \
+  --query-vectors "$QUERIES" \
+  --retrieval-gate-question-set benchmarks/locomo/diagnostic-200-v18.json \
+  --retrieval-canary-run "$CANARY_RUN" \
+  --retrieval-holdout-run "$HOLDOUT_RUN" \
+  --mode full \
+  --model deepseek-v4-flash \
+  --judge-model deepseek-v4-flash \
+  --max-workers 10
 ```
+
+For a v18 paid run, the verifier reopens both retrieval runs, recomputes their
+reports and evidence coverage, and validates their disjoint question inventory,
+exact frozen definition hashes, commit, actual retrieval configuration,
+protocol, corpus, query vectors, context limit, latency, and RSS before
+constructing either model provider. The exact-schema receipt also binds the
+scored question set, whether it is the 40-question paid slice or the full
+200-question diagnostic. Workers revalidate it before provider construction,
+and promotion verifies the same receipt against both frozen retrieval sources.
+Missing, drifted, or failed gate evidence therefore stops the command before an
+answer or judge request can be made. The exact thresholds and the longer
+operational workflow are documented in `benchmarks/locomo/README.md`.
 
 The six versioned routes cover import, memory list, recall, evaluation run,
 evaluation report, and health. Every error response has the same shape and an

@@ -15,11 +15,19 @@ from typer.testing import CliRunner
 from codecairn.bootstrap import app, create_cascade, create_retrieval_providers, create_runtime
 from codecairn.evaluation.artifacts import (
     canonical_json,
+    canonical_sha256,
     file_sha256,
     read_json,
     write_json_exclusive,
 )
-from codecairn.evaluation.locomo import load_locomo_dataset
+from codecairn.evaluation.locomo import (
+    LOCOMO_PAID_SCORING_GATE_CONTRACT,
+    load_locomo_dataset,
+)
+from codecairn.evaluation.locomo_retrieval_gate import (
+    LoCoMoRetrievalGateConfig,
+    verify_locomo_retrieval_gate,
+)
 from codecairn.evaluation.worker_process import WorkerProcessLimits, WorkerProcessResult
 
 FIXTURE = Path(__file__).parent / "fixtures" / "codex" / "failed_command.jsonl"
@@ -173,6 +181,199 @@ def test_cli_exposes_doctor_and_evaluation_run_report(tmp_path: Path) -> None:
     )
     assert reported.exit_code == 0, reported.output
     assert json.loads(reported.stdout) == json.loads(executed.stdout)
+
+
+def test_cli_rejects_v18_paid_scoring_before_constructing_model_providers(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    provider_roles: list[str] = []
+
+    def record_provider(*, role: str, **_kwargs: object) -> object:
+        provider_roles.append(role)
+        raise AssertionError("paid provider must not be constructed before the retrieval gate")
+
+    monkeypatch.setattr(
+        "codecairn.evaluation.providers.create_locomo_text_model",
+        record_provider,
+    )
+    question_set = Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v18.json"
+    output_root = tmp_path / "artifacts"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "eval",
+            "run",
+            "locomo",
+            str(LOCOMO_FIXTURE),
+            "--run-id",
+            "v18-missing-gate",
+            "--repository-commit",
+            "abc123",
+            "--output-root",
+            str(output_root),
+            "--root",
+            str(tmp_path / "runtime"),
+            "--question-set",
+            str(question_set),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, ValueError)
+    assert "paid-scoring gate is missing" in str(result.exception)
+    assert provider_roles == []
+    assert not (output_root / "locomo" / "v18-missing-gate").exists()
+
+
+def test_cli_rejects_a_gate_for_another_question_set_before_model_providers(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    provider_roles: list[str] = []
+
+    def record_provider(*, role: str, **_kwargs: object) -> object:
+        provider_roles.append(role)
+        raise AssertionError("mismatched retrieval evidence must stop before providers")
+
+    monkeypatch.setattr(
+        "codecairn.evaluation.providers.create_locomo_text_model",
+        record_provider,
+    )
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_retrieval_gate.verify_locomo_retrieval_gate",
+        lambda _config: {"scored_question_set_sha256": "0" * 64},
+    )
+    question_set = Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v18.json"
+    gate_dirs = [tmp_path / name for name in ("corpus", "queries", "canary", "holdout")]
+    for directory in gate_dirs:
+        directory.mkdir()
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "eval",
+            "run",
+            "locomo",
+            str(LOCOMO_FIXTURE),
+            "--run-id",
+            "v18-wrong-gate-target",
+            "--repository-commit",
+            "abc123",
+            "--output-root",
+            str(tmp_path / "artifacts"),
+            "--root",
+            str(tmp_path / "runtime"),
+            "--question-set",
+            str(question_set),
+            "--corpus",
+            str(gate_dirs[0]),
+            "--query-vectors",
+            str(gate_dirs[1]),
+            "--retrieval-gate-question-set",
+            str(question_set),
+            "--retrieval-canary-run",
+            str(gate_dirs[2]),
+            "--retrieval-holdout-run",
+            str(gate_dirs[3]),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, ValueError)
+    assert "does not target the scored question set" in str(result.exception)
+    assert provider_roles == []
+
+
+def test_cli_preserves_protocol_less_legacy_question_set_before_model_provider(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    provider_roles: list[str] = []
+
+    def record_provider(*, role: str, **_kwargs: object) -> object:
+        provider_roles.append(role)
+        raise RuntimeError("legacy provider construction reached")
+
+    monkeypatch.setattr(
+        "codecairn.evaluation.providers.create_locomo_text_model",
+        record_provider,
+    )
+    question_set = Path(__file__).parents[1] / "benchmarks/locomo/canary-20.json"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "eval",
+            "run",
+            "locomo",
+            str(LOCOMO_FIXTURE),
+            "--run-id",
+            "legacy-question-set",
+            "--repository-commit",
+            "abc123",
+            "--output-root",
+            str(tmp_path / "artifacts"),
+            "--root",
+            str(tmp_path / "runtime"),
+            "--mode",
+            "smoke",
+            "--question-set",
+            str(question_set),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, RuntimeError)
+    assert str(result.exception) == "legacy provider construction reached"
+    assert provider_roles == ["answer"]
+
+
+def test_cli_rejects_paid_gate_for_protocol_less_question_set_before_model_provider(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    provider_roles: list[str] = []
+
+    def record_provider(*, role: str, **_kwargs: object) -> object:
+        provider_roles.append(role)
+        raise AssertionError("legacy gate rejection must happen before model providers")
+
+    monkeypatch.setattr(
+        "codecairn.evaluation.providers.create_locomo_text_model",
+        record_provider,
+    )
+    question_set = Path(__file__).parents[1] / "benchmarks/locomo/canary-20.json"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "eval",
+            "run",
+            "locomo",
+            str(LOCOMO_FIXTURE),
+            "--run-id",
+            "legacy-question-set-with-gate",
+            "--repository-commit",
+            "abc123",
+            "--output-root",
+            str(tmp_path / "artifacts"),
+            "--root",
+            str(tmp_path / "runtime"),
+            "--mode",
+            "smoke",
+            "--question-set",
+            str(question_set),
+            "--retrieval-gate-question-set",
+            str(question_set),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, ValueError)
+    assert "does not support paid-scoring gates" in str(result.exception)
+    assert provider_roles == []
 
 
 def test_doctor_verifies_the_hierarchical_document_projection(tmp_path: Path) -> None:
@@ -331,6 +532,73 @@ def test_cli_builds_reusable_locomo_corpus_and_query_vectors(
     )
     assert isinstance(failed_receipt, dict)
     assert failed_receipt["accepted"] is False
+
+
+def test_production_retrieval_gate_replays_real_cli_artifacts(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("CODECAIRN_RETRIEVAL_PROFILE", "hashing-test")
+    runner, runtime_root, corpus_dir, query_vectors_dir, dataset_sha256 = (
+        _build_synthetic_locomo_inputs(tmp_path)
+    )
+    target_path, canary_path, holdout_path = _write_synthetic_locomo_gate_question_sets(tmp_path)
+    output_root = tmp_path / "runs"
+    source_run_dirs: list[Path] = []
+    for run_id, question_set_path in (
+        ("production-reporter-canary", canary_path),
+        ("production-reporter-holdout", holdout_path),
+    ):
+        result = runner.invoke(
+            app,
+            [
+                *_shared_locomo_retrieval_args(
+                    runtime_root=runtime_root,
+                    output_root=output_root,
+                    corpus_dir=corpus_dir,
+                    query_vectors_dir=query_vectors_dir,
+                    dataset_sha256=dataset_sha256,
+                    run_id=run_id,
+                ),
+                "--question-set",
+                str(question_set_path),
+            ],
+        )
+        assert result.exit_code == 0, result.output
+        run_dir = output_root / "locomo" / run_id
+        assert not (run_dir / "computed-evidence.json").exists()
+        source_run_dirs.append(run_dir)
+
+    receipt = verify_locomo_retrieval_gate(
+        LoCoMoRetrievalGateConfig(
+            target_question_set_path=target_path,
+            scored_question_set_path=target_path,
+            dataset_path=LOCOMO_FIXTURE,
+            canary_run_dir=source_run_dirs[0],
+            holdout_run_dir=source_run_dirs[1],
+            repository_commit="abc123",
+            corpus_path=corpus_dir,
+            query_vectors_path=query_vectors_dir,
+            expected_canary_questions=2,
+            expected_holdout_questions=2,
+        )
+    )
+
+    assert receipt["contract"] == LOCOMO_PAID_SCORING_GATE_CONTRACT
+    assert receipt["target_question_count"] == 4
+    assert receipt["scored_question_count"] == 4
+    sources = receipt["sources"]
+    assert isinstance(sources, list)
+    assert len(sources) == 2
+    source_reports = [source for source in sources if isinstance(source, dict)]
+    assert len(source_reports) == 2
+    assert [source["question_count"] for source in source_reports] == [2, 2]
+    assert [source["context_all_coverage"] for source in source_reports] == [1.0, 1.0]
+    assert all(
+        isinstance(source.get("evidence_report_sha256"), str)
+        and len(source["evidence_report_sha256"]) == 64
+        for source in source_reports
+    )
 
 
 def test_cli_binds_a_frozen_question_set_to_the_corpus_build_contract(
@@ -888,6 +1156,82 @@ def _shared_locomo_retrieval_args(
         "--expected-dataset-sha256",
         dataset_sha256,
     ]
+
+
+def _write_synthetic_locomo_gate_question_sets(
+    tmp_path: Path,
+) -> tuple[Path, Path, Path]:
+    dataset = load_locomo_dataset(LOCOMO_FIXTURE)
+    question_ids_by_category: dict[int, list[str]] = {}
+    for conversation in dataset.conversations:
+        for question in conversation.questions:
+            question_ids_by_category.setdefault(question.category, []).append(question.question_id)
+    assert {category: len(question_ids_by_category[category]) for category in range(1, 5)} == {
+        1: 1,
+        2: 1,
+        3: 1,
+        4: 1,
+    }
+    protocol = {
+        "paid_scoring_gate": LOCOMO_PAID_SCORING_GATE_CONTRACT,
+    }
+
+    def selection_sha256(categories: tuple[int, ...]) -> str:
+        question_ids = sorted(question_ids_by_category[category][0] for category in categories)
+        return hashlib.sha256(
+            json.dumps(
+                question_ids,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
+
+    def write_question_set(
+        selection_id: str,
+        categories: tuple[int, ...],
+        *,
+        promotion: dict[str, object] | None = None,
+    ) -> Path:
+        path = tmp_path / f"{selection_id}.json"
+        definition: dict[str, object] = {
+            "schema_version": 1,
+            "selection_id": selection_id,
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-v1",
+            "seed": "production-reporter-gate",
+            "category_targets": {str(category): 1 for category in categories},
+            "selection_sha256": selection_sha256(categories),
+            "protocol": protocol,
+        }
+        if promotion is not None:
+            definition["promotion"] = promotion
+        write_json_exclusive(path, definition)
+        return path
+
+    canary_categories = (1, 2)
+    holdout_categories = (3, 4)
+    canary_path = write_question_set("production-reporter-canary", canary_categories)
+    holdout_path = write_question_set("production-reporter-holdout", holdout_categories)
+    protocol_sha256 = canonical_sha256(protocol)
+    target_path = write_question_set(
+        "production-reporter-target",
+        (*canary_categories, *holdout_categories),
+        promotion={
+            "source_selection": {
+                "selection_id": "production-reporter-canary",
+                "question_set_sha256": file_sha256(canary_path),
+                "selection_sha256": selection_sha256(canary_categories),
+                "protocol_sha256": protocol_sha256,
+            },
+            "holdout_selection": {
+                "selection_id": "production-reporter-holdout",
+                "question_set_sha256": file_sha256(holdout_path),
+                "selection_sha256": selection_sha256(holdout_categories),
+                "protocol_sha256": protocol_sha256,
+            },
+        },
+    )
+    return target_path, canary_path, holdout_path
 
 
 def _completed_synthetic_locomo_run(

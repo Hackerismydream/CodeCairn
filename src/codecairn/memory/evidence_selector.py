@@ -19,7 +19,7 @@ MAX_FACT_RERANK_CANDIDATES = 256
 MAX_FACT_RERANK_CANDIDATES_PER_PARENT = 24
 MAX_SELECTED_FACTS_PER_PARENT = 12
 MAX_FACT_RERANK_DOCUMENT_CHARS = 2_048
-FACT_SELECTOR_ID = "bounded-dialogue-aware-cross-encoder-v4"
+FACT_SELECTOR_ID = "bounded-dialogue-aware-cross-encoder-v5"
 
 _TERM = re.compile(r"[A-Za-z][A-Za-z0-9_-]*")
 _STOPWORDS = frozenset(
@@ -254,7 +254,7 @@ def _parent_candidates(
             if (
                 previous_fact is not None
                 and previous_fact.actor != fact.actor
-                and _needs_previous_turn(fact)
+                and (_needs_previous_turn(fact) or _is_question(previous_fact))
             )
             else ""
         )
@@ -419,6 +419,10 @@ def _needs_previous_turn(fact: EvidenceFact) -> bool:
             "yes ",
         )
     )
+
+
+def _is_question(fact: EvidenceFact) -> bool:
+    return any(mark in fact.text for mark in ("?", "\uff1f"))
 
 
 def _bounded_rerank_text(projection_text: str, exact_text: str, *, max_chars: int) -> str:

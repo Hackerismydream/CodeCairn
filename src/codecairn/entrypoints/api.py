@@ -51,6 +51,9 @@ class EvaluationRequest(BaseModel):
     execution_phase: Literal["all", "ingest", "questions"] = "all"
     corpus_path: Path | None = None
     query_vectors_path: Path | None = None
+    retrieval_gate_question_set_path: Path | None = None
+    retrieval_canary_run_path: Path | None = None
+    retrieval_holdout_run_path: Path | None = None
 
 
 class _ApiError(Exception):
@@ -231,9 +234,28 @@ def create_app(
                     code="source_path_forbidden",
                     message="Evaluation question set is outside configured roots",
                 )
+        retrieval_gate_question_set_path: Path | None = None
+        if request.retrieval_gate_question_set_path is not None:
+            retrieval_gate_question_set_path = Path(
+                os.path.abspath(request.retrieval_gate_question_set_path)
+            ).resolve(strict=True)
+            if (
+                _allowed_source_root(
+                    retrieval_gate_question_set_path,
+                    allowed_roots=allowed_roots,
+                )
+                is None
+            ):
+                raise _ApiError(
+                    status_code=403,
+                    code="source_path_forbidden",
+                    message="Retrieval-gate question set is outside configured roots",
+                )
         artifact_inputs: dict[str, Path | None] = {
             "corpus": request.corpus_path,
             "query_vectors": request.query_vectors_path,
+            "retrieval_canary_run": request.retrieval_canary_run_path,
+            "retrieval_holdout_run": request.retrieval_holdout_run_path,
         }
         resolved_artifact_inputs: dict[str, Path | None] = {}
         for name, raw_path in artifact_inputs.items():
@@ -262,13 +284,18 @@ def create_app(
                 code="invalid_execution_phase",
                 message="Execution phases are supported only for LoCoMo",
             )
-        if request.suite != "locomo" and any(
-            path is not None for path in resolved_artifact_inputs.values()
+        if request.suite != "locomo" and (
+            question_set_path is not None
+            or retrieval_gate_question_set_path is not None
+            or any(path is not None for path in resolved_artifact_inputs.values())
         ):
             raise _ApiError(
                 status_code=422,
                 code="invalid_locomo_artifact",
-                message="Corpus and query-vector artifacts are supported only for LoCoMo",
+                message=(
+                    "Corpus, query-vector, and retrieval-gate artifacts are supported "
+                    "only for LoCoMo"
+                ),
             )
         suite_root = resolved_artifact_root / request.suite
         if suite_root.exists() and not suite_root.resolve(strict=True).is_relative_to(
@@ -298,6 +325,9 @@ def create_app(
                 execution_phase=execution_phase,
                 corpus_path=resolved_artifact_inputs["corpus"],
                 query_vectors_path=resolved_artifact_inputs["query_vectors"],
+                retrieval_gate_question_set_path=retrieval_gate_question_set_path,
+                retrieval_canary_run_path=resolved_artifact_inputs["retrieval_canary_run"],
+                retrieval_holdout_run_path=resolved_artifact_inputs["retrieval_holdout_run"],
             )
         )
 

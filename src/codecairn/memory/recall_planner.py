@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import date
 from typing import Literal
 
 from codecairn.memory.context import (
@@ -84,6 +85,18 @@ _NAMED_ANCHOR = re.compile(r"\b[A-Z][A-Za-z0-9_-]{1,63}\b")
 _MONTH_YEAR = re.compile(
     r"\b(January|February|March|April|May|June|July|August|September|October|"
     r"November|December)\s+(\d{4})\b",
+    re.IGNORECASE,
+)
+_DAY_MONTH_YEAR = re.compile(
+    r"\b(0?[1-9]|[12]\d|3[01])(?:st|nd|rd|th)?\s+"
+    r"(January|February|March|April|May|June|July|August|September|October|"
+    r"November|December),?\s+(\d{4})\b",
+    re.IGNORECASE,
+)
+_MONTH_DAY_YEAR = re.compile(
+    r"\b(January|February|March|April|May|June|July|August|September|October|"
+    r"November|December)\s+"
+    r"(0?[1-9]|[12]\d|3[01])(?:st|nd|rd|th)?,?\s+(\d{4})\b",
     re.IGNORECASE,
 )
 _MONTH_NUMBERS = {
@@ -219,7 +232,7 @@ CoverageRequirement = (
     | ProvenanceCoverageRequirement
 )
 
-QUERY_SKETCHER_ID = "codecairn/deterministic-query-sketch-v3"
+QUERY_SKETCHER_ID = "codecairn/deterministic-query-sketch-v4"
 
 
 @dataclass(frozen=True, slots=True)
@@ -436,7 +449,7 @@ class RecallPlannerConfig:
             "expansion_max_entity_facts": self.expansion_plan.max_entity_facts,
             "expansion_max_time_facts": self.expansion_plan.max_time_facts,
             "expansion_max_provenance_facts": self.expansion_plan.max_provenance_facts,
-            "temporal_lane": "explicit-month-prefix-v1",
+            "temporal_lane": "explicit-calendar-prefix-v2",
             "enrichment_order": "matched-neighbor-then-capacity-aware-dialogue-rerank-v7",
             "matched_facts_per_memory": self.matched_facts_per_memory,
             "diverse_matched_facts_per_memory": self.diverse_matched_facts_per_memory,
@@ -569,12 +582,7 @@ def _query_sketch(
         )
     )
     lowered = query.casefold()
-    temporal_prefixes = tuple(
-        dict.fromkeys(
-            f"{match.group(2)}-{_MONTH_NUMBERS[match.group(1).casefold()]:02d}"
-            for match in _MONTH_YEAR.finditer(query)
-        )
-    )
+    temporal_prefixes = _explicit_temporal_prefixes(query)
     if _TEMPORAL_ORDER_CUES.search(query) is not None:
         temporal_op: TemporalOperation = "order"
     elif any(cue in lowered for cue in ("latest", "most recent", "last")):
@@ -623,6 +631,30 @@ def _query_sketch(
             config=config,
         ),
     )
+
+
+def _explicit_temporal_prefixes(query: str) -> tuple[str, ...]:
+    prefixes: list[str] = []
+    full_date_spans: list[tuple[int, int]] = []
+    for pattern, month_group, day_group, year_group in (
+        (_DAY_MONTH_YEAR, 2, 1, 3),
+        (_MONTH_DAY_YEAR, 1, 2, 3),
+    ):
+        for match in pattern.finditer(query):
+            full_date_spans.append(match.span())
+            month = _MONTH_NUMBERS[match.group(month_group).casefold()]
+            day = int(match.group(day_group))
+            year = int(match.group(year_group))
+            try:
+                parsed = date(year, month, day)
+            except ValueError:
+                continue
+            prefixes.append(parsed.isoformat())
+    for match in _MONTH_YEAR.finditer(query):
+        if any(match.start() >= start and match.end() <= end for start, end in full_date_spans):
+            continue
+        prefixes.append(f"{match.group(2)}-{_MONTH_NUMBERS[match.group(1).casefold()]:02d}")
+    return tuple(dict.fromkeys(prefixes))
 
 
 def _context_evidence_slots(

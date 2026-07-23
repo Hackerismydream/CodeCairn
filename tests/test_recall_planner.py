@@ -110,6 +110,46 @@ def test_explicit_month_query_reserves_a_temporal_lane_and_wider_neighbors() -> 
     assert plan.neighbor_window == 2
 
 
+@pytest.mark.parametrize(
+    ("query", "expected_prefix", "expected_operation"),
+    (
+        ("What happened on 31 July, 2023?", "2023-07-31", "point"),
+        ("What happened on March 27, 2022?", "2022-03-27", "point"),
+        (
+            "What book did Tim just finish reading on 8th December, 2023?",
+            "2023-12-08",
+            "point",
+        ),
+        (
+            "What did Audrey do with her pups over the weekend before 4th October, 2023?",
+            "2023-10-04",
+            "order",
+        ),
+        (
+            "What news did Evan share with Sam on 9th December 2023?",
+            "2023-12-09",
+            "point",
+        ),
+    ),
+)
+def test_explicit_calendar_date_reserves_a_day_level_temporal_lane(
+    query: str,
+    expected_prefix: str,
+    expected_operation: str,
+) -> None:
+    plan = RecallPlanner().plan(query, limit=20)
+
+    assert plan.query_sketch.temporal_prefixes == (expected_prefix,)
+    assert plan.query_sketch.temporal_op == expected_operation
+    assert plan.neighbor_window == 2
+
+
+def test_invalid_complete_calendar_date_does_not_fall_back_to_a_month_prefix() -> None:
+    plan = RecallPlanner().plan("What happened on 31 February 2023?", limit=20)
+
+    assert plan.query_sketch.temporal_prefixes == ()
+
+
 def test_non_temporal_query_keeps_the_configured_neighbor_window() -> None:
     plan = RecallPlanner().plan("What hobby does Sam enjoy?", limit=20)
 

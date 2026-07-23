@@ -1192,7 +1192,17 @@ def test_context_budget_keeps_compact_evidence_from_every_large_parent() -> None
     assert "Anchor 2" in compiled.markdown
 
 
-def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
+@pytest.mark.parametrize(
+    ("query", "expected_prefix"),
+    (
+        ("Which activity did Sam consider in October 2023?", "2023-10"),
+        ("Which activity did Sam consider on 4th October, 2023?", "2023-10-04"),
+    ),
+)
+def test_explicit_calendar_prefix_adds_a_bounded_temporal_lexical_channel(
+    query: str,
+    expected_prefix: str,
+) -> None:
     class TemporalIndex(CandidateIndex):
         def __init__(self) -> None:
             self.lexical_queries: list[tuple[str, str, int]] = []
@@ -1216,7 +1226,7 @@ def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
             limit: int,
         ) -> tuple[IndexCandidate, ...]:
             self.lexical_queries.append((document_kind, query, limit))
-            if not query.startswith("2023-10"):
+            if not query.startswith(expected_prefix):
                 return ()
             return (
                 IndexCandidate(
@@ -1244,14 +1254,17 @@ def test_explicit_month_adds_a_bounded_temporal_lexical_channel() -> None:
         embedder=FixedEmbedder(),
         clock_ns=lambda: 0,
     ).recall(
-        "Which activity did Sam consider in October 2023?",
+        query,
         repo_key="acme/widgets",
         limit=5,
     )
 
-    assert any(query == "2023-10 sam" for _, query, _ in index.lexical_queries)
+    expected_query = f"{expected_prefix} sam"
+    assert any(query == expected_query for _, query, _ in index.lexical_queries)
     assert all(
-        limit <= 32 for _, query, limit in index.lexical_queries if query.startswith("2023-10")
+        limit <= 32
+        for _, query, limit in index.lexical_queries
+        if query.startswith(expected_prefix)
     )
     assert result.sidecar.episode_temporal_lexical_candidate_count == 1
     assert result.sidecar.atomic_fact_temporal_lexical_candidate_count == 1

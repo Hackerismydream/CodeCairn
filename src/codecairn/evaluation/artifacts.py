@@ -11,6 +11,10 @@ def canonical_json(value: object) -> str:
     return json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
 
 
+def canonical_sha256(value: object) -> str:
+    return hashlib.sha256(canonical_json(value).encode()).hexdigest()
+
+
 def write_json_exclusive(path: Path, value: object) -> None:
     write_bytes_exclusive(path, canonical_json(value).encode())
 

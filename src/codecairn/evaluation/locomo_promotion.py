@@ -8,8 +8,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
 
-from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
-from codecairn.evaluation.locomo import report_locomo
+from codecairn.evaluation.artifacts import (
+    canonical_sha256,
+    file_sha256,
+    read_json,
+    write_json_exclusive,
+)
+from codecairn.evaluation.locomo import (
+    LOCOMO_PAID_SCORING_GATE_CONTRACT,
+    report_locomo,
+    validate_locomo_scored_manifest_preflight,
+)
 from codecairn.evaluation.locomo_ablation import (
     validate_locomo_ablation_sources,
     validate_locomo_manifest_protocol,
@@ -65,6 +74,10 @@ def build_locomo_promotion_report(config: LoCoMoPromotionConfig) -> dict[str, ob
             "hierarchy-no-neighbors": config.hierarchy_no_neighbors_run,
             "hierarchy": config.hierarchy_run,
         },
+        target_definition=definition,
+        target_definition_sha256=definition_sha256,
+        target_selection_sha256=selection_sha256,
+        target_question_count=required_questions,
     )
 
     manifest_path = config.run_dir / "manifest.json"
@@ -183,6 +196,12 @@ def build_locomo_promotion_report(config: LoCoMoPromotionConfig) -> dict[str, ob
         "checks": checks,
         "gate_passed": all(cast(bool, check["passed"]) for check in checks),
     }
+    paid_scoring_preflight = manifest.get("paid_scoring_preflight")
+    if isinstance(paid_scoring_preflight, dict):
+        report["paid_scoring_preflight_sha256"] = _sha256(
+            cast(dict[str, object], paid_scoring_preflight),
+            "receipt_sha256",
+        )
     write_json_exclusive(config.output_path, report)
     return report
 
@@ -193,6 +212,10 @@ def _validate_selection_report(
     source_selection: dict[str, object],
     protocol: dict[str, object],
     run_paths: dict[str, Path],
+    target_definition: dict[str, object],
+    target_definition_sha256: str,
+    target_selection_sha256: str,
+    target_question_count: int,
 ) -> tuple[str, dict[str, object]]:
     selected_variant, selected_contract = validate_locomo_ablation_sources(
         report,
@@ -205,6 +228,19 @@ def _validate_selection_report(
         protocol=protocol,
         reporter=report_locomo,
     )
+    for run_path in run_paths.values():
+        source_manifest = _dict(
+            read_json(run_path / "manifest.json"),
+            field="40-question source manifest",
+        )
+        _validate_paid_scoring_gate(
+            source_manifest,
+            definition=target_definition,
+            definition_sha256=target_definition_sha256,
+            selection_sha256=target_selection_sha256,
+            required_questions=target_question_count,
+            protocol=protocol,
+        )
     if selected_variant not in _CANONICAL_VARIANTS:
         raise ValueError("LoCoMo promotion selection report has an unknown variant")
     return selected_variant, selected_contract
@@ -247,6 +283,14 @@ def _validate_run_manifest(
         raise ValueError("LoCoMo promotion run changes the selected recall mode")
     protocol = _dict(definition.get("protocol"), field="200-question protocol")
     validate_locomo_manifest_protocol(manifest, protocol=protocol)
+    _validate_paid_scoring_gate(
+        manifest,
+        definition=definition,
+        definition_sha256=definition_sha256,
+        selection_sha256=selection_sha256,
+        required_questions=required_questions,
+        protocol=protocol,
+    )
     windows = _dict(protocol.get("neighbor_windows"), field="200-question neighbor windows")
     expected_windows = _dict(
         windows.get(selected_variant),
@@ -268,6 +312,63 @@ def _validate_run_manifest(
     worker = _dict(manifest.get("question_worker"), field="200-question worker contract")
     if worker.get("max_rss_bytes") != maximum_rss_bytes_exclusive:
         raise ValueError("LoCoMo promotion worker changes the frozen RSS limit")
+
+
+def _validate_paid_scoring_gate(
+    manifest: dict[str, object],
+    *,
+    definition: dict[str, object],
+    definition_sha256: str,
+    selection_sha256: str,
+    required_questions: int,
+    protocol: dict[str, object],
+) -> None:
+    gate_contract = protocol.get("paid_scoring_gate")
+    validated = validate_locomo_scored_manifest_preflight(
+        manifest,
+        protocol=protocol,
+    )
+    if gate_contract is None:
+        return
+    if gate_contract != LOCOMO_PAID_SCORING_GATE_CONTRACT or validated is None:
+        raise ValueError("LoCoMo promotion run has no supported paid-scoring gate")
+    if (
+        validated.get("target_question_set_sha256") != definition_sha256
+        or validated.get("target_selection_sha256") != selection_sha256
+        or validated.get("target_question_count") != required_questions
+        or validated.get("dataset_sha256") != _sha256(definition, "dataset_sha256")
+    ):
+        raise ValueError("LoCoMo promotion paid-scoring receipt targets another run")
+
+    promotion = _dict(definition.get("promotion"), field="promotion contract")
+    frozen_sources = (
+        _dict(
+            promotion.get("source_selection"),
+            field="promotion source selection",
+        ),
+        _dict(
+            promotion.get("holdout_selection"),
+            field="promotion holdout selection",
+        ),
+    )
+    raw_sources = validated.get("sources")
+    assert isinstance(raw_sources, list)
+    sources = {
+        _str(_dict(source, field="paid-scoring retrieval source"), "selection_id"): _dict(
+            source,
+            field="paid-scoring retrieval source",
+        )
+        for source in raw_sources
+    }
+    expected_selection_ids = {_str(source, "selection_id") for source in frozen_sources}
+    if set(sources) != expected_selection_ids:
+        raise ValueError("LoCoMo promotion receipt changes the frozen retrieval sources")
+    for frozen in frozen_sources:
+        observed = sources[_str(frozen, "selection_id")]
+        if observed.get("question_set_sha256") != _sha256(
+            frozen, "question_set_sha256"
+        ) or observed.get("selection_sha256") != _sha256(frozen, "selection_sha256"):
+            raise ValueError("LoCoMo promotion receipt changes a frozen retrieval source")
 
 
 def _validate_run_question_set(
@@ -506,9 +607,7 @@ def _sha256(value: dict[str, object], field: str) -> str:
 
 
 def _canonical_sha256(value: object) -> str:
-    return hashlib.sha256(
-        json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode()
-    ).hexdigest()
+    return canonical_sha256(value)
 
 
 def _int(value: dict[str, object], field: str) -> int:

@@ -27,9 +27,9 @@ than silently treating missing category-5 `answer` fields as failures. Category
 mapping is recorded in every report. Smoke runs answer one question per selected
 conversation, perform no judge calls, and are always marked unscored.
 
-## Cost-controlled v17 protocol
+## Cost-controlled v18 protocol
 
-The v17 protocol separates one-time representation cost, provider-free
+The v18 protocol separates one-time representation cost, provider-free
 retrieval measurement, and answer/judge cost. `deepseek-v4-flash` performs
 structured semantic projection, answers, and three judge votes. Semantic
 projection and scoring may disable thinking independently; the manifest records
@@ -85,6 +85,9 @@ response. [ADR 0024](../../docs/adr/0024-v17-preserves-same-ordinal-anaphoric-ev
 records the formal v16 miss and the bounded v17 same-ordinal repair. V17 has no
 verified coverage, accuracy, latency, or cost improvement until new immutable
 artifacts pass verification.
+[ADR 0025](../../docs/adr/0025-v18-projects-lossless-source-fact-recall-children.md)
+records the failed v17 holdout, the lossless v8 child projection, and the v18
+machine-enforced retrieval gates.
 
 Credentials are exported outside shell history. Build one structured semantic
 corpus and reuse it for every recall variant:
@@ -147,8 +150,8 @@ require_frozen_checkout() {
 require_frozen_checkout || exit 1
 uv run codecairn eval build-locomo-corpus \
   benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-200-v17.json \
-  --corpus-id "locomo-grounded-clause-v7" \
+  --question-set benchmarks/locomo/diagnostic-200-v18.json \
+  --corpus-id "locomo-grounded-clause-v8" \
   --repository-commit "$COMMIT" \
   --output-root benchmark_results/locomo/corpora
 ```
@@ -161,14 +164,19 @@ protocol digests into the immutable corpus build contract.
 
 The corpus is published only after every conversation has a matching semantic
 projection receipt, truth/index fingerprints match, and the index queue is
-idle. `--resume` reuses only verified conversation checkpoints whose projection
+idle. The v8 projection emits every grounded semantic Atomic Fact and one
+deterministic raw child for every authoritative source fact. Raw and semantic
+children intentionally coexist because a semantic citation does not prove that
+the derived clause preserved every retrievable term in its source. A v7 corpus
+cannot be reused because it may omit authoritative facts from the child index.
+`--resume` reuses only verified conversation checkpoints whose projection
 contract matches exactly. It never combines different model, prompt, limit, or
 cache identities.
 
 ## Frozen 200-question diagnostic
 
 Before a new retrieval stack may spend a full 1,540-question run, execute the
-staged diagnostic frozen in `diagnostic-200-v17.json`. The selector takes 50
+staged diagnostic frozen in `diagnostic-200-v18.json`. The selector takes 50
 questions from each scored category with a dataset-pinned SHA-256 ordering; its
 expected selection digest prevents a seed, loader, or question-identity change
 from silently moving the diagnostic set. Question text is not redistributed.
@@ -186,19 +194,21 @@ ranking, it performs one bounded, dialogue-aware fact pass: at most 256 facts
 globally; every parent receives up to a 12-candidate breadth floor before spare
 work is assigned by direct-match count, fact capacity, and rank; no parent
 supplies more than 24 candidates or 12 selected facts; and no reranker document
-exceeds 2,048 characters. A short or anaphoric candidate may include
-the preceding other-speaker turn alongside an evidence-linked semantic
-projection and the candidate's exact turn. Semantic projection is ranking
-metadata only. Context admission applies a bounded `2.0` prior only to scored
-direct matches from their own parent; raw scores remain unchanged. The
-v17 query sketch may also reserve bounded admission slots for semantic child
-support, quantity transitions, vocative aliases, and prior-state evidence. The
-slot limits are 16, 12, 2, and 4 facts respectively; selected facts still pay
-their complete byte cost and obey the existing per-parent and 4,000-token
-limits. The v2 slot policy keeps the primary quantity-transition winner and,
-only for a topic-free non-anaphoric ordinal, may also protect the best anchored
-anaphoric question and its immediate same-parent answer. Every slot records its
-ordered fact attempts and admission outcomes.
+exceeds 2,048 characters. When the preceding other-speaker turn is a question,
+the selector includes that bounded retrieval-only context even for a long
+answer. The existing short or anaphoric rule still handles non-question context.
+Semantic projection is ranking metadata only. Context admission applies a
+bounded `2.0` prior only to scored direct matches from their own parent; raw
+scores remain unchanged. The v18 query sketch parses validated day-month-year
+and month-day-year dates into ISO day prefixes and may reserve bounded admission
+slots for semantic child support, quantity transitions, vocative aliases, and
+prior-state evidence. The slot limits are 16, 12, 2, and 4 facts respectively;
+selected facts still pay their complete byte cost and obey the existing
+per-parent and 4,000-token limits. The v2 slot policy keeps the primary
+quantity-transition winner and, only for a topic-free non-anaphoric ordinal,
+may also protect the best anchored anaphoric question and its immediate
+same-parent answer. Every slot records its ordered fact attempts and admission
+outcomes.
 The report verifier rebuilds the query sketch and deterministically replays
 those decisions from the frozen pre-hydration candidate IDs, ranked evidence,
 and planner budget instead of trusting the persisted trace. The facts-first
@@ -236,7 +246,7 @@ Run the same commit, answer model, judge model, vote count, and top-k under the
 declared recall modes. Each 200-question command must include:
 
 ```bash
---question-set benchmarks/locomo/diagnostic-200-v17.json
+--question-set benchmarks/locomo/diagnostic-200-v18.json
 ```
 
 Freeze the diagnostic query vectors once after publishing the corpus:
@@ -245,8 +255,8 @@ Freeze the diagnostic query vectors once after publishing the corpus:
 require_frozen_checkout || exit 1
 uv run codecairn eval build-locomo-query-vectors \
   benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-200-v17.json \
-  --vector-set-id "locomo-diagnostic-200-v17" \
+  --question-set benchmarks/locomo/diagnostic-200-v18.json \
+  --vector-set-id "locomo-diagnostic-200-v18" \
   --output-root benchmark_results/locomo/query-vectors
 ```
 
@@ -261,57 +271,54 @@ only connection failures known to precede provider acceptance may retry. The
 configured input price is part of the embedding identity; update it when the
 provider price changes.
 
-Use the content-addressed directories printed by those commands:
-
-A previously verified v7 corpus and frozen query-vector artifact may be reused
-for v17 only when the verifier accepts their exact dataset, selected question
-text, semantic projection, embedding model, revision, dimension, and index
-identity. The v17 run still binds its question-set digest, query sketcher,
-evidence-slot limits, renderer, retrieval configuration, and repository commit.
-The v3 sketch adds deterministic context slots but does not change the selected
-question text, so that change alone does not justify paid re-embedding.
+Use the content-addressed directories printed by those commands. V18 requires
+the v8 corpus and a query-vector artifact built against the v18 200-question
+definition. The verifier binds their exact dataset, selected question text,
+semantic projection, embedding model, revision, dimension, index identity,
+question-set digest, query sketcher, evidence-slot limits, renderer, retrieval
+configuration, and repository commit.
 
 ```bash
 CORPUS="benchmark_results/locomo/corpora/corpus-<content-sha-prefix>"
 QUERIES="benchmark_results/locomo/query-vectors/queries-<content-sha-prefix>"
+CANARY_RUN="benchmark_results/locomo/locomo-diagnostic-40-v18-hierarchy-retrieval"
+HOLDOUT_RUN="benchmark_results/locomo/locomo-diagnostic-160-holdout-v18-hierarchy-retrieval"
 
 require_frozen_checkout || exit 1
 CODECAIRN_RECALL_MODE=hierarchy uv run codecairn eval run locomo \
   benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-40-v17.json \
-  --run-id "locomo-diagnostic-40-v17-hierarchy-retrieval" \
+  --question-set benchmarks/locomo/diagnostic-40-v18.json \
+  --run-id "locomo-diagnostic-40-v18-hierarchy-retrieval" \
   --repository-commit "$COMMIT" \
   --output-root benchmark_results \
-  --root benchmark_results/runtime-v17-hierarchy-retrieval-40 \
+  --root benchmark_results/runtime-v18-hierarchy-retrieval-40 \
   --corpus "$CORPUS" \
   --query-vectors "$QUERIES" \
   --mode retrieval \
   --max-workers 10
 
 uv run codecairn eval report-locomo-evidence \
-  benchmark_results/locomo/locomo-diagnostic-40-v17-hierarchy-retrieval \
+  "$CANARY_RUN" \
   --dataset benchmarks/locomo/data/locomo10.json \
-  --output \
-  benchmark_results/locomo/locomo-diagnostic-40-v17-hierarchy-retrieval/evidence-coverage.json
+  --output "$CANARY_RUN/evidence-coverage.json"
 
 require_frozen_checkout || exit 1
 CODECAIRN_RECALL_MODE=hierarchy uv run codecairn eval run locomo \
   benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-160-holdout-v17.json \
-  --run-id "locomo-diagnostic-160-holdout-v17-hierarchy-retrieval" \
+  --question-set benchmarks/locomo/diagnostic-160-holdout-v18.json \
+  --run-id "locomo-diagnostic-160-holdout-v18-hierarchy-retrieval" \
   --repository-commit "$COMMIT" \
   --output-root benchmark_results \
-  --root benchmark_results/runtime-v17-hierarchy-retrieval-160-holdout \
+  --root benchmark_results/runtime-v18-hierarchy-retrieval-160-holdout \
   --corpus "$CORPUS" \
   --query-vectors "$QUERIES" \
   --mode retrieval \
   --max-workers 10
 
 uv run codecairn eval report-locomo-evidence \
-  benchmark_results/locomo/locomo-diagnostic-160-holdout-v17-hierarchy-retrieval \
+  "$HOLDOUT_RUN" \
   --dataset benchmarks/locomo/data/locomo10.json \
-  --output \
-  benchmark_results/locomo/locomo-diagnostic-160-holdout-v17-hierarchy-retrieval/evidence-coverage.json
+  --output "$HOLDOUT_RUN/evidence-coverage.json"
 ```
 
 Both runs perform no answer or judge calls. Proceed to paid scoring only
@@ -319,7 +326,7 @@ when complete gold evidence reaches context for at least 85% of resolvable
 questions, every context remains at or below 4,000 pinned tokens, retrieval P95
 is at most 2,500 ms, RSS remains below 2 GiB, and infrastructure failures are
 zero. If the frozen 40-question retrieval preflight passes, run the separate
-`diagnostic-160-holdout-v17.json` command above. Its
+`diagnostic-160-holdout-v18.json` command above. Its
 `stratified-sha256-window-v1` selector takes zero-based ranks 10 through 49
 from each category's same seeded ordering: 40 questions per category, zero
 overlap with the first 10, and the exact set difference between the 200- and
@@ -329,6 +336,29 @@ re-embedding. The aggregate 200-question report must not hide a holdout
 regression. A deterministic 40-question stratified slice is scored only after
 both provider-free retrieval checks pass and before the full 200-question
 scored diagnostic.
+
+Every v18 non-retrieval run must provide the same three gate inputs:
+
+```bash
+--retrieval-gate-question-set benchmarks/locomo/diagnostic-200-v18.json \
+--retrieval-canary-run "$CANARY_RUN" \
+--retrieval-holdout-run "$HOLDOUT_RUN"
+```
+
+The machine gate reopens both run directories, recomputes the LoCoMo and
+evidence-coverage reports, and verifies the exact frozen canary and holdout
+definition hashes, their disjoint inventories and exact 200-question union,
+commit, and the actual Embedding, Reranker, Planner, QuerySketch, FactSelector,
+ContextRenderer, token-budget, neighbor-window, and worker contracts against
+the frozen protocol. It also checks the corpus, query vectors, zero model usage,
+85% context coverage, 4,000-token ceiling, 2,500 ms retrieval P95, sub-2-GiB
+RSS, and zero infrastructure failures. Its exact-schema, self-hashed receipt
+separately binds the scored question set, which may be the frozen 40-question
+paid slice or the full 200-question diagnostic. This verification executes
+before either the answer or judge provider is constructed. Every isolated
+worker revalidates the same receipt, and final promotion binds its digest and
+the two frozen retrieval sources. Missing, stale, overlapping, drifted, or
+failed gate evidence therefore stops the command before a paid model request.
 
 Disable answer and judge thinking for the low-cost slice and diagnostic unless
 an explicitly separate reasoning ablation is being measured:
@@ -352,13 +382,16 @@ for MODE in episode-only hierarchy-no-neighbors hierarchy; do
   require_frozen_checkout || exit 1
   CODECAIRN_RECALL_MODE="$MODE" uv run codecairn eval run locomo \
     benchmarks/locomo/data/locomo10.json \
-    --question-set benchmarks/locomo/diagnostic-40-v17.json \
-    --run-id "locomo-diagnostic-40-v17-$MODE" \
+    --question-set benchmarks/locomo/diagnostic-40-v18.json \
+    --run-id "locomo-diagnostic-40-v18-$MODE" \
     --repository-commit "$COMMIT" \
     --output-root benchmark_results \
-    --root "benchmark_results/runtime-v17-$MODE-40" \
+    --root "benchmark_results/runtime-v18-$MODE-40" \
     --corpus "$CORPUS" \
     --query-vectors "$QUERIES" \
+    --retrieval-gate-question-set benchmarks/locomo/diagnostic-200-v18.json \
+    --retrieval-canary-run "$CANARY_RUN" \
+    --retrieval-holdout-run "$HOLDOUT_RUN" \
     --mode full \
     --model deepseek-v4-flash \
     --judge-model deepseek-v4-flash \
@@ -366,13 +399,13 @@ for MODE in episode-only hierarchy-no-neighbors hierarchy; do
 done
 
 uv run codecairn eval compare-locomo \
-  benchmarks/locomo/diagnostic-40-v17.json \
+  benchmarks/locomo/diagnostic-40-v18.json \
   --episode-only-run \
-    benchmark_results/locomo/locomo-diagnostic-40-v17-episode-only \
+    benchmark_results/locomo/locomo-diagnostic-40-v18-episode-only \
   --hierarchy-no-neighbors-run \
-    benchmark_results/locomo/locomo-diagnostic-40-v17-hierarchy-no-neighbors \
-  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-40-v17-hierarchy \
-  --output benchmark_results/locomo/locomo-diagnostic-40-v17-report.json
+    benchmark_results/locomo/locomo-diagnostic-40-v18-hierarchy-no-neighbors \
+  --hierarchy-run benchmark_results/locomo/locomo-diagnostic-40-v18-hierarchy \
+  --output benchmark_results/locomo/locomo-diagnostic-40-v18-report.json
 ```
 
 The 40-question protocol does not permit an older v5/v12 run or a run from a
@@ -387,11 +420,11 @@ launch the paid 200-question diagnostic.
 
 Only the variant selected by the successful 40-question comparison proceeds to
 200 paid questions. Substitute that exact recall mode and run ID below. The
-machine-readable promotion contract in `diagnostic-200-v17.json` requires at
+machine-readable promotion contract in `diagnostic-200-v18.json` requires at
 least 78% overall, 70% multi-hop, 68% open-domain, zero infrastructure failures,
 retrieval P95 at most 2,500 ms, and process RSS strictly below 2 GiB. Single-hop
 is compared with the frozen v5 artifact over the same 200-question selection:
-its verified 92% baseline permits at most a two-point regression, so the v17 run
+its verified 92% baseline permits at most a two-point regression, so the v18 run
 must reach at least 90%.
 
 ```bash
@@ -399,30 +432,33 @@ SELECTED_MODE="<selected_variant-from-the-40-question-report>"
 require_frozen_checkout || exit 1
 CODECAIRN_RECALL_MODE="$SELECTED_MODE" uv run codecairn eval run locomo \
   benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-200-v17.json \
-  --run-id "locomo-diagnostic-200-v17-$SELECTED_MODE" \
+  --question-set benchmarks/locomo/diagnostic-200-v18.json \
+  --run-id "locomo-diagnostic-200-v18-$SELECTED_MODE" \
   --repository-commit "$COMMIT" \
   --output-root benchmark_results \
-  --root "benchmark_results/runtime-v17-$SELECTED_MODE" \
+  --root "benchmark_results/runtime-v18-$SELECTED_MODE" \
   --corpus "$CORPUS" \
   --query-vectors "$QUERIES" \
+  --retrieval-gate-question-set benchmarks/locomo/diagnostic-200-v18.json \
+  --retrieval-canary-run "$CANARY_RUN" \
+  --retrieval-holdout-run "$HOLDOUT_RUN" \
   --mode full \
   --model deepseek-v4-flash \
   --judge-model deepseek-v4-flash \
   --max-workers 10
 
-PROMOTION_REPORT="benchmark_results/locomo/locomo-diagnostic-200-v17-$SELECTED_MODE-promotion.json"
+PROMOTION_REPORT="benchmark_results/locomo/locomo-diagnostic-200-v18-$SELECTED_MODE-promotion.json"
 uv run codecairn eval promote-locomo \
-  benchmarks/locomo/diagnostic-200-v17.json \
+  benchmarks/locomo/diagnostic-200-v18.json \
   --selection-report \
-    benchmark_results/locomo/locomo-diagnostic-40-v17-report.json \
+    benchmark_results/locomo/locomo-diagnostic-40-v18-report.json \
   --episode-only-run \
-    benchmark_results/locomo/locomo-diagnostic-40-v17-episode-only \
+    benchmark_results/locomo/locomo-diagnostic-40-v18-episode-only \
   --hierarchy-no-neighbors-run \
-    benchmark_results/locomo/locomo-diagnostic-40-v17-hierarchy-no-neighbors \
+    benchmark_results/locomo/locomo-diagnostic-40-v18-hierarchy-no-neighbors \
   --hierarchy-run \
-    benchmark_results/locomo/locomo-diagnostic-40-v17-hierarchy \
-  --run "benchmark_results/locomo/locomo-diagnostic-200-v17-$SELECTED_MODE" \
+    benchmark_results/locomo/locomo-diagnostic-40-v18-hierarchy \
+  --run "benchmark_results/locomo/locomo-diagnostic-200-v18-$SELECTED_MODE" \
   --output "$PROMOTION_REPORT"
 
 test "$(jq -r '.gate_passed' "$PROMOTION_REPORT")" = "true"

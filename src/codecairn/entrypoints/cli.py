@@ -104,6 +104,33 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
             Path | None,
             typer.Option("--query-vectors", exists=True, file_okay=False, readable=True),
         ] = None,
+        retrieval_canary_run: Annotated[
+            Path | None,
+            typer.Option(
+                "--retrieval-canary-run",
+                exists=True,
+                file_okay=False,
+                readable=True,
+            ),
+        ] = None,
+        retrieval_gate_question_set: Annotated[
+            Path | None,
+            typer.Option(
+                "--retrieval-gate-question-set",
+                exists=True,
+                dir_okay=False,
+                readable=True,
+            ),
+        ] = None,
+        retrieval_holdout_run: Annotated[
+            Path | None,
+            typer.Option(
+                "--retrieval-holdout-run",
+                exists=True,
+                file_okay=False,
+                readable=True,
+            ),
+        ] = None,
         expected_dataset_sha256: Annotated[
             str | None, typer.Option("--expected-dataset-sha256")
         ] = None,
@@ -123,9 +150,20 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 "execution-phase is supported only for LoCoMo",
                 param_hint="--execution-phase",
             )
-        if suite != "locomo" and (corpus is not None or query_vectors is not None):
+        if suite != "locomo" and any(
+            value is not None
+            for value in (
+                question_set,
+                corpus,
+                query_vectors,
+                retrieval_gate_question_set,
+                retrieval_canary_run,
+                retrieval_holdout_run,
+            )
+        ):
             raise typer.BadParameter(
-                "corpus and query-vectors are supported only for LoCoMo",
+                "question sets, corpus, query-vectors, and retrieval gates are supported "
+                "only for LoCoMo",
                 param_hint="--corpus",
             )
         if corpus is not None and execution_phase == "all":
@@ -146,6 +184,9 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 execution_phase=cast(Literal["all", "ingest", "questions"], execution_phase),
                 corpus_path=corpus,
                 query_vectors_path=query_vectors,
+                retrieval_gate_question_set_path=retrieval_gate_question_set,
+                retrieval_canary_run_path=retrieval_canary_run,
+                retrieval_holdout_run_path=retrieval_holdout_run,
                 expected_dataset_sha256=expected_dataset_sha256,
             )
         )

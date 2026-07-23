@@ -3,6 +3,7 @@ from __future__ import annotations
 import shutil
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from pathlib import Path
 from threading import Lock
 
@@ -12,8 +13,18 @@ import pytest
 
 from codecairn.bootstrap import create_cascade, create_runtime
 from codecairn.memory.embedding import VECTOR_DIMENSION, HashingEmbedder
-from codecairn.memory.models import CodingMemory, RebuildReport, RecallDocumentFingerprint
+from codecairn.memory.episode import AttributedEpisode, AttributedTurn
+from codecairn.memory.models import (
+    CodingMemory,
+    EvidenceFact,
+    EvidenceReference,
+    RebuildReport,
+    RecallDocumentFingerprint,
+    SemanticAtomicFact,
+    SemanticEpisode,
+)
 from codecairn.memory.projection import fingerprint, project_recall_documents
+from codecairn.memory.trace import stable_id
 from codecairn.service.cascade import MemoryIndex, MiniCascade
 from codecairn.storage.lance import LanceMemoryIndex
 from codecairn.storage.markdown import MarkdownMemoryStore
@@ -160,6 +171,231 @@ def test_incremental_index_projects_facts_from_markdown_truth(tmp_path: Path) ->
     documents = cascade.index_document_fingerprints()
     assert len(documents) == 4
     assert len([item for item in documents if item.document_kind == "atomic_fact"]) == 3
+
+
+def test_semantic_projection_keeps_all_source_facts_as_recall_children() -> None:
+    reference = EvidenceReference(
+        provider="locomo",
+        session_id="conv-test/session-1",
+        source_path="locomo://fixture/conv-test/session-1",
+        raw_event_sha256="a" * 64,
+        raw_event_index=1,
+        raw_event_type="locomo_turn",
+    )
+    question = EvidenceFact(
+        fact_id="fact-question",
+        repo_key="locomo/conv-test",
+        episode_id="episode-1",
+        kind="conversation_turn",
+        text="Did the accident change your career plans?",
+        role="participant",
+        actor="Melanie",
+        evidence=(reference,),
+    )
+    answer_reference = replace(reference, raw_event_index=2)
+    answer = EvidenceFact(
+        fact_id="fact-answer",
+        repo_key=question.repo_key,
+        episode_id=question.episode_id,
+        kind="conversation_turn",
+        text="It made me decide to become a physical therapist after graduation.",
+        role="participant",
+        actor="Caroline",
+        evidence=(answer_reference,),
+    )
+    semantic_text = "Melanie asked whether an accident changed Caroline's plans."
+    semantic = SemanticAtomicFact(
+        fact_id=stable_id(
+            "semantic-atomic-fact",
+            question.episode_id,
+            question.fact_id,
+            semantic_text,
+        ),
+        text=semantic_text,
+        source_fact_ids=(question.fact_id,),
+    )
+    memory = CodingMemory(
+        memory_id="memory-parent",
+        repo_key=question.repo_key,
+        memory_type="conversation_episode",
+        title="Conversation",
+        summary="Attributed conversation",
+        episode_id=question.episode_id,
+        command=None,
+        exit_code=None,
+        evidence=(reference, answer_reference),
+        facts=(question, answer),
+        content_sha256="b" * 64,
+        semantic_episode=SemanticEpisode(
+            episode_id=question.episode_id,
+            narrative=semantic.text,
+            atomic_facts=(semantic,),
+            source_fact_ids=(question.fact_id, answer.fact_id),
+            semanticizer_id="test/partial-semanticizer",
+            revision="test-v1",
+        ),
+    )
+
+    documents = project_recall_documents(memory, markdown="---\n---\n")
+    episode, *children = documents
+
+    assert episode.child_count == 3
+    assert {child.fact_id for child in children} == {
+        semantic.fact_id,
+        question.fact_id,
+        answer.fact_id,
+    }
+    assert len({child.document_id for child in children}) == 3
+    answer_document = next(child for child in children if child.fact_id == answer.fact_id)
+    assert "Previous turn:\nMelanie: Did the accident change your career plans?" in (
+        answer_document.content
+    )
+    assert (
+        "Target evidence:\nCaroline: It made me decide to become a physical therapist"
+        in answer_document.content
+    )
+
+
+def test_lossy_semantic_projection_keeps_authoritative_source_fact_retrievable(
+    tmp_path: Path,
+) -> None:
+    reference = EvidenceReference(
+        provider="locomo",
+        session_id="conv-test/session-1",
+        source_path="locomo://fixture/conv-test/session-1",
+        raw_event_sha256="a" * 64,
+        raw_event_index=1,
+        raw_event_type="locomo_turn",
+    )
+    source = EvidenceFact(
+        fact_id="fact-travel",
+        repo_key="locomo/conv-test",
+        episode_id="episode-1",
+        kind="conversation_turn",
+        text="I visited Paris, Rome, and Madrid in June.",
+        role="participant",
+        actor="Alice",
+        evidence=(reference,),
+    )
+    semantic_text = "Alice visited Paris."
+    semantic = SemanticAtomicFact(
+        fact_id=stable_id(
+            "semantic-atomic-fact",
+            source.episode_id,
+            source.fact_id,
+            semantic_text,
+        ),
+        text=semantic_text,
+        source_fact_ids=(source.fact_id,),
+    )
+    memory = CodingMemory(
+        memory_id="memory-travel",
+        repo_key=source.repo_key,
+        memory_type="conversation_episode",
+        title="Travel",
+        summary="Alice discussed a trip.",
+        episode_id=source.episode_id,
+        command=None,
+        exit_code=None,
+        evidence=(reference,),
+        facts=(source,),
+        content_sha256="b" * 64,
+        semantic_episode=SemanticEpisode(
+            episode_id=source.episode_id,
+            narrative=semantic.text,
+            atomic_facts=(semantic,),
+            source_fact_ids=(source.fact_id,),
+            semanticizer_id="test/lossy-semanticizer",
+            revision="test-v1",
+        ),
+    )
+    index = LanceMemoryIndex(tmp_path / "index.lancedb", embedder=HashingEmbedder())
+
+    index.upsert(memory, markdown="---\n---\n")
+    candidates = index.document_lexical_candidates(
+        repo_key=source.repo_key,
+        query="Madrid",
+        document_kind="atomic_fact",
+        limit=5,
+    )
+
+    assert [candidate.fact_id for candidate in candidates] == [source.fact_id]
+    assert candidates[0].content.endswith("Alice: I visited Paris, Rome, and Madrid in June.")
+
+
+def test_source_fact_projection_bounds_retrieval_only_question_context() -> None:
+    question_reference = EvidenceReference(
+        provider="locomo",
+        session_id="conv-test/session-1",
+        source_path="locomo://fixture/conv-test/session-1",
+        raw_event_sha256="a" * 64,
+        raw_event_index=1,
+        raw_event_type="locomo_turn",
+    )
+    answer_reference = replace(question_reference, raw_event_index=2)
+    question = EvidenceFact(
+        fact_id="fact-long-question",
+        repo_key="locomo/conv-test",
+        episode_id="episode-1",
+        kind="conversation_turn",
+        text="Did this detail matter " + ("very much " * 500) + "?",
+        role="participant",
+        actor="Melanie",
+        evidence=(question_reference,),
+    )
+    answer = EvidenceFact(
+        fact_id="fact-short-answer",
+        repo_key=question.repo_key,
+        episode_id=question.episode_id,
+        kind="conversation_turn",
+        text="It changed my career plans.",
+        role="participant",
+        actor="Caroline",
+        evidence=(answer_reference,),
+    )
+    semantic_text = "Melanie asked whether a detail mattered."
+    semantic = SemanticAtomicFact(
+        fact_id=stable_id(
+            "semantic-atomic-fact",
+            question.episode_id,
+            question.fact_id,
+            semantic_text,
+        ),
+        text=semantic_text,
+        source_fact_ids=(question.fact_id,),
+    )
+    memory = CodingMemory(
+        memory_id="memory-parent",
+        repo_key=question.repo_key,
+        memory_type="conversation_episode",
+        title="Conversation",
+        summary="Attributed conversation",
+        episode_id=question.episode_id,
+        command=None,
+        exit_code=None,
+        evidence=(question_reference, answer_reference),
+        facts=(question, answer),
+        content_sha256="b" * 64,
+        semantic_episode=SemanticEpisode(
+            episode_id=question.episode_id,
+            narrative=semantic.text,
+            atomic_facts=(semantic,),
+            source_fact_ids=(question.fact_id, answer.fact_id),
+            semanticizer_id="test/partial-semanticizer",
+            revision="test-v1",
+        ),
+    )
+
+    answer_document = next(
+        document
+        for document in project_recall_documents(memory, markdown="---\n---\n")
+        if document.fact_id == answer.fact_id
+    )
+
+    assert question.text not in answer_document.content
+    assert "\n…\n" in answer_document.content
+    assert "Target evidence:\nCaroline: It changed my career plans." in (answer_document.content)
+    assert len(answer_document.content) < 1_500
 
 
 def test_concurrent_workers_cannot_claim_the_same_revision(tmp_path: Path) -> None:
@@ -327,6 +563,113 @@ def test_deleted_lancedb_rebuilds_with_full_memory_id_and_hash_parity(tmp_path: 
     assert {item.fact_id for item in atomic_facts} == {
         fact.fact_id for fact in runtime.list_memories(repo_key="acme/widgets")[0].facts
     }
+
+
+def test_partial_semantic_projection_rebuilds_with_raw_child_parity(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    question_reference = EvidenceReference(
+        provider="locomo",
+        session_id="conv-test/session-1",
+        source_path="locomo://fixture/conv-test/session-1",
+        raw_event_sha256="a" * 64,
+        raw_event_index=1,
+        raw_event_type="locomo_turn",
+    )
+    answer_reference = replace(question_reference, raw_event_index=2)
+    episode = AttributedEpisode(
+        repo_key="locomo/conv-test",
+        source_episode_id="session-1",
+        title="Conversation",
+        turns=(
+            AttributedTurn(
+                turn_id="turn-question",
+                actor="Melanie",
+                role="participant",
+                text="Did the accident change your career plans?",
+                occurred_at="2023-07-31T10:00:00+00:00",
+                evidence=question_reference,
+            ),
+            AttributedTurn(
+                turn_id="turn-answer",
+                actor="Caroline",
+                role="participant",
+                text="It made me decide to become a physical therapist.",
+                occurred_at="2023-07-31T10:00:00+00:00",
+                evidence=answer_reference,
+            ),
+        ),
+    )
+
+    class PartialSemanticizer:
+        semanticizer_id = "test/partial-semanticizer"
+        revision = "test-v1"
+
+        def compile(
+            self,
+            facts: tuple[EvidenceFact, ...],
+            *,
+            episode_id: str,
+        ) -> SemanticEpisode:
+            question = facts[0]
+            semantic_text = "Melanie asked whether an accident changed Caroline's plans."
+            semantic = SemanticAtomicFact(
+                fact_id=stable_id(
+                    "semantic-atomic-fact",
+                    episode_id,
+                    question.fact_id,
+                    semantic_text,
+                ),
+                text=semantic_text,
+                source_fact_ids=(question.fact_id,),
+            )
+            return SemanticEpisode(
+                episode_id=episode_id,
+                narrative=semantic.text,
+                atomic_facts=(semantic,),
+                source_fact_ids=tuple(fact.fact_id for fact in facts),
+                semanticizer_id=self.semanticizer_id,
+                revision=self.revision,
+            )
+
+    runtime = create_runtime(
+        root,
+        episode_semanticizer=PartialSemanticizer(),
+    )
+    decision = runtime.write_episode(episode)
+    assert decision.accepted is True
+    assert decision.memory is not None
+    semantic_episode = decision.memory.semantic_episode
+    assert semantic_episode is not None
+    semantic = semantic_episode.atomic_facts[0]
+    answer = decision.memory.facts[1]
+    cascade = create_cascade(root)
+
+    assert cascade.run_until_idle(worker_id="partial-semantic") == 1
+    original = cascade.index_document_fingerprints()
+    assert {item.fact_id for item in original if item.document_kind == "atomic_fact"} == {
+        semantic.fact_id,
+        decision.memory.facts[0].fact_id,
+        answer.fact_id,
+    }
+    recalled = runtime.recall(
+        "Who decided to become a physical therapist?",
+        repo_key=episode.repo_key,
+        limit=1,
+    )
+    assert any(
+        match.document_kind == "atomic_fact" and match.fact_id == answer.fact_id
+        for match in recalled.sidecar.ranked[0].matched_documents
+    )
+    assert answer.fact_id in {snippet.fact_id for snippet in recalled.sidecar.ranked[0].snippets}
+
+    shutil.rmtree(root / "index.lancedb")
+    rebuilt = create_cascade(root)
+    report = rebuilt.rebuild()
+
+    assert report.truth_document_count == report.index_document_count == 4
+    assert report.document_parity is True
+    assert report.parity is True
+    assert rebuilt.index_document_fingerprints() == original
 
 
 def test_failed_document_parity_keeps_the_outbox_repairable(tmp_path: Path) -> None:

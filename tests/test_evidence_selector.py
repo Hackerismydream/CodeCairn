@@ -357,6 +357,91 @@ def test_evidence_selector_preserves_a_short_answer_and_reranks_it_with_previous
     }
 
 
+def test_evidence_selector_reranks_a_long_answer_with_its_question_context() -> None:
+    reference = EvidenceReference(
+        provider="locomo",
+        session_id="conv-test/session-1",
+        source_path="locomo://fixture/conv-test/session-1",
+        raw_event_sha256="a" * 64,
+        raw_event_index=1,
+        raw_event_type="locomo_turn",
+    )
+    question = EvidenceFact(
+        fact_id="fact-career-question",
+        repo_key="locomo/conv-test",
+        episode_id="episode-1",
+        kind="conversation_turn",
+        text="Did the accident change your career plans?",
+        role="participant",
+        actor="Melanie",
+        evidence=(reference,),
+    )
+    answer = EvidenceFact(
+        fact_id="fact-career-answer",
+        repo_key=question.repo_key,
+        episode_id=question.episode_id,
+        kind="conversation_turn",
+        text=(
+            "The experience completely changed my career plans, so I decided to study "
+            "physical therapy after graduation and work with injured athletes."
+        ),
+        role="participant",
+        actor="Caroline",
+        evidence=(replace(reference, raw_event_index=2),),
+    )
+    memory = CodingMemory(
+        memory_id="memory-parent",
+        repo_key=question.repo_key,
+        memory_type="conversation_episode",
+        title="Conversation",
+        summary="Attributed conversation",
+        episode_id=question.episode_id,
+        command=None,
+        exit_code=None,
+        evidence=question.evidence + answer.evidence,
+        facts=(question, answer),
+        content_sha256="b" * 64,
+        markdown_path="/runtime/memory-parent.md",
+    )
+    ranked = (
+        RankedRecall(
+            rank=1,
+            memory_id=memory.memory_id,
+            memory_type=memory.memory_type,
+            title=memory.title,
+            summary=memory.summary,
+            source_uri="codecairn://memory/memory-parent",
+            content_sha256=memory.content_sha256 or "",
+            candidate_sources=("lexical",),
+            vector_score=None,
+            vector_rank=None,
+            lexical_score=1.0,
+            lexical_rank=1,
+            final_score=1.0,
+            evidence=(),
+            snippets=(),
+            episode_fact_ids=(question.fact_id, answer.fact_id),
+        ),
+    )
+    reranker = CapturingReranker()
+
+    EvidenceSelector(reranker=reranker).select(
+        "How did the accident affect Caroline's career?",
+        ranked=ranked,
+        memories={memory.memory_id: memory},
+    )
+
+    answer_document = next(
+        document
+        for document in reranker.documents
+        if "Target turn:\nCaroline: The experience completely changed" in document.text
+    )
+    assert (
+        "Previous turn:\nMelanie: Did the accident change your career plans?"
+        in answer_document.text
+    )
+
+
 def test_evidence_selector_keeps_exact_text_beside_single_source_semantic_text() -> None:
     reference = EvidenceReference(
         provider="locomo",

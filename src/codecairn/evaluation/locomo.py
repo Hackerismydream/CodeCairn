@@ -29,7 +29,7 @@ from codecairn.evaluation.answer_retry import (
     validate_grounded_answer_retry_receipt,
 )
 from codecairn.evaluation.artifacts import (
-    canonical_json,
+    canonical_sha256,
     file_sha256,
     read_json,
     write_bytes_exclusive,
@@ -80,10 +80,11 @@ LOCOMO_DATASET_URL = (
 )
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
+LOCOMO_PAID_SCORING_GATE_CONTRACT = "dual-retrieval-context-coverage-v1"
 _ANSWER_EVIDENCE_CONTRACT = "grounded-cited-answer-v13"
 _JUDGE_CONTRACT = "locomo-generous-semantic-equivalence-v1"
 _CHECKPOINT_POLICY = "journal-replay-or-unknown-spend-fail-closed-v3"
-_LOCOMO_PROJECTION_CONTRACT = "locomo-grounded-clause-projection-v7"
+_LOCOMO_PROJECTION_CONTRACT = "locomo-grounded-clause-projection-v8"
 _LOSSLESS_SEMANTIC_PROJECTION_ADAPTER = "codecairn/lossless-clause"
 _ANSWER_CONTEXT_CHARS = 24_000
 _TEMPORAL_QUESTION_CUE = re.compile(
@@ -674,6 +675,7 @@ class LoCoMoRunConfig:
     execution_phase: ExecutionPhase = "all"
     corpus_path: Path | None = None
     query_vectors_path: Path | None = None
+    paid_scoring_preflight: dict[str, object] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -2496,7 +2498,7 @@ def _embedding_requires_frozen_question_set(embedding: dict[str, object]) -> boo
 
 
 def _canonical_sha256(value: object) -> str:
-    return hashlib.sha256(canonical_json(value).encode()).hexdigest()
+    return canonical_sha256(value)
 
 
 def _directory_snapshot(root: Path) -> tuple[tuple[str, str], ...]:
@@ -3767,71 +3769,164 @@ def _validate_corpus_protocol(
             raise ValueError(f"LoCoMo corpus changes the frozen question-set protocol: {field}")
 
 
-def _validate_run_protocol(
-    question_set: LoCoMoQuestionSet,
+def validate_locomo_retrieval_manifest_protocol(
+    manifest: dict[str, object],
     *,
-    config: LoCoMoRunConfig,
-    answer_model: TextModel | None,
-    judge_model: TextModel | None,
-    question_worker_contract: dict[str, object] | None,
+    protocol: dict[str, object],
 ) -> None:
-    protocol = question_set.protocol
-    if protocol is None:
-        return
-    if protocol.get("context_renderer") == CONTEXT_RENDERER_ID:
-        missing_fact_selector_fields = [
-            field
-            for field in (*_FACT_SELECTOR_PROTOCOL_FIELDS, *_CONTEXT_SELECTOR_PROTOCOL_FIELDS)
-            if field not in protocol
-        ]
-        if missing_fact_selector_fields:
-            raise ValueError(
-                "LoCoMo scored facts-first protocol omits frozen fields: "
-                + ", ".join(missing_fact_selector_fields)
-            )
-    retrieval = config.retrieval_config or {}
+    """Validate a retrieval-only run manifest without constructing model providers."""
+
+    if manifest.get("mode") != "retrieval":
+        raise ValueError("LoCoMo retrieval protocol validation requires retrieval mode")
+    retrieval = _optional_protocol_section(manifest.get("retrieval"))
+    worker = _optional_protocol_section(manifest.get("question_worker"))
+    observed, planner = _retrieval_protocol_observation(
+        retrieval,
+        worker=worker,
+        paid_scoring_gate=manifest.get("paid_scoring_gate"),
+        seed=manifest.get("seed"),
+        max_workers=manifest.get("max_workers"),
+        ingest_max_workers=manifest.get("ingest_max_workers"),
+        retrieval_max_workers=manifest.get("retrieval_max_workers"),
+        retrieval_thread_count=manifest.get("retrieval_thread_count"),
+        execution_phase_contract=manifest.get("execution_phase_contract"),
+    )
+    _validate_protocol_observation(
+        protocol,
+        observed=observed,
+        planner=planner,
+        include_generation=False,
+        subject="LoCoMo retrieval manifest",
+    )
+
+
+def validate_locomo_scored_manifest_protocol(
+    manifest: dict[str, object],
+    *,
+    protocol: dict[str, object],
+) -> None:
+    """Validate a scored run manifest against the complete frozen protocol."""
+
+    if manifest.get("mode") != "full":
+        raise ValueError("LoCoMo scored protocol validation requires full mode")
+    retrieval = _optional_protocol_section(manifest.get("retrieval"))
+    worker = _optional_protocol_section(manifest.get("question_worker"))
+    answer = _optional_protocol_section(manifest.get("answer_model"))
+    judge = _optional_protocol_section(manifest.get("judge_model"))
+    observed, planner = _retrieval_protocol_observation(
+        retrieval,
+        worker=worker,
+        paid_scoring_gate=manifest.get("paid_scoring_gate"),
+        seed=manifest.get("seed"),
+        max_workers=manifest.get("max_workers"),
+        ingest_max_workers=manifest.get("ingest_max_workers"),
+        retrieval_max_workers=manifest.get("retrieval_max_workers"),
+        retrieval_thread_count=manifest.get("retrieval_thread_count"),
+        execution_phase_contract=manifest.get("execution_phase_contract"),
+    )
+    observed.update(
+        {
+            "answer_model": answer.get("model"),
+            "answer_evidence_contract": manifest.get("answer_evidence_contract"),
+            "answer_retry_contract": manifest.get("answer_retry_contract"),
+            "model_attempt_journal_contract": manifest.get("model_attempt_journal_contract"),
+            "checkpoint_policy": manifest.get("checkpoint_policy"),
+            "answer_response_max_attempts": manifest.get("answer_response_max_attempts"),
+            "judge_model": judge.get("model"),
+            "judge_contract": manifest.get("judge_contract"),
+            "judge_votes": manifest.get("judge_votes"),
+            "judge_response_max_attempts": manifest.get("judge_response_max_attempts"),
+            "judge_response_max_chars": manifest.get("judge_response_max_chars"),
+        }
+    )
+    _validate_protocol_observation(
+        protocol,
+        observed=observed,
+        planner=planner,
+        include_generation=True,
+        subject="LoCoMo scored manifest",
+    )
+
+
+def validate_locomo_scored_manifest_preflight(
+    manifest: dict[str, object],
+    *,
+    protocol: dict[str, object],
+) -> dict[str, object] | None:
+    """Replay the paid-scoring receipt bound to one immutable scored manifest."""
+
+    if manifest.get("mode") != "full":
+        raise ValueError("LoCoMo paid-scoring preflight validation requires full mode")
+    gate_contract = protocol.get("paid_scoring_gate")
+    receipt = manifest.get("paid_scoring_preflight")
+    if gate_contract is None:
+        if manifest.get("paid_scoring_gate") is not None or receipt is not None:
+            raise ValueError("Legacy LoCoMo scored manifest must not carry a paid-scoring gate")
+        return None
+    if (
+        gate_contract != LOCOMO_PAID_SCORING_GATE_CONTRACT
+        or manifest.get("paid_scoring_gate") != gate_contract
+    ):
+        raise ValueError("LoCoMo scored manifest has no supported paid-scoring gate")
+
+    question_set = _required_dict(
+        _required_dict(
+            manifest.get("selection"),
+            field="LoCoMo scored manifest selection",
+        ).get("question_set"),
+        field="LoCoMo scored manifest question set",
+    )
+    corpus = _required_dict(
+        manifest.get("corpus"),
+        field="LoCoMo scored manifest corpus",
+    )
+    query_vectors = _required_dict(
+        manifest.get("query_vectors"),
+        field="LoCoMo scored manifest query vectors",
+    )
+    from codecairn.evaluation.locomo_retrieval_gate import (
+        validate_locomo_paid_scoring_receipt,
+    )
+
+    return validate_locomo_paid_scoring_receipt(
+        receipt,
+        repository_commit=_required_str(manifest, "repository_commit"),
+        dataset_sha256=_required_str(question_set, "dataset_sha256"),
+        scored_question_set_sha256=_required_str(question_set, "definition_sha256"),
+        scored_selection_sha256=_required_str(question_set, "selection_sha256"),
+        scored_question_count=_required_int(question_set, "question_count"),
+        protocol_sha256=canonical_sha256(protocol),
+        corpus_content_sha256=_required_str(corpus, "content_sha256"),
+        query_vectors_content_sha256=_required_str(query_vectors, "content_sha256"),
+    )
+
+
+def _retrieval_protocol_observation(
+    retrieval: dict[str, object],
+    *,
+    worker: dict[str, object],
+    paid_scoring_gate: object,
+    seed: object,
+    max_workers: object,
+    ingest_max_workers: object,
+    retrieval_max_workers: object,
+    retrieval_thread_count: object,
+    execution_phase_contract: object,
+) -> tuple[dict[str, object], dict[str, object]]:
     embedding = _optional_protocol_section(retrieval.get("embedding"))
     reranker = _optional_protocol_section(retrieval.get("reranker"))
     planner = _optional_protocol_section(retrieval.get("planner"))
-    worker = question_worker_contract or {}
-    answer = {} if answer_model is None else answer_model.public_config
-    judge = {} if judge_model is None else judge_model.public_config
-    execution_phase_contract = (
-        "process-isolated-ingest-then-questions-v1"
-        if config.corpus_path is None
-        else (
-            "verified-shared-corpus-v1" if question_worker_contract is None else worker.get("name")
-        )
-    )
     observed: dict[str, object] = {
-        "answer_model": answer.get("model"),
-        "answer_evidence_contract": _ANSWER_EVIDENCE_CONTRACT,
-        "answer_retry_contract": GROUNDED_ANSWER_RETRY_CONTRACT,
-        "model_attempt_journal_contract": (
-            MODEL_ATTEMPT_JOURNAL_CONTRACT if config.mode != "retrieval" else None
-        ),
-        "checkpoint_policy": _CHECKPOINT_POLICY,
-        "answer_response_max_attempts": (
-            config.answer_response_max_attempts if config.mode != "retrieval" else 0
-        ),
-        "judge_model": judge.get("model"),
-        "judge_contract": _JUDGE_CONTRACT if config.mode == "full" else None,
-        "judge_votes": config.judge_votes if config.mode == "full" else 0,
-        "judge_response_max_attempts": (
-            config.judge_response_max_attempts if config.mode == "full" else 0
-        ),
-        "judge_response_max_chars": (
-            config.judge_response_max_chars if config.mode == "full" else 0
-        ),
-        "seed": config.seed,
-        "top_k": config.top_k,
+        "paid_scoring_gate": paid_scoring_gate,
+        "seed": seed,
+        "top_k": retrieval.get("top_k"),
         "inference_threads": retrieval.get("inference_threads"),
         "tokenizer_parallelism": retrieval.get("tokenizer_parallelism"),
         "tokenizer_threads": retrieval.get("tokenizer_threads"),
-        "max_workers": config.max_workers,
-        "ingest_max_workers": 1,
-        "retrieval_max_workers": 1,
-        "retrieval_thread_count": 1,
+        "max_workers": max_workers,
+        "ingest_max_workers": ingest_max_workers,
+        "retrieval_max_workers": retrieval_max_workers,
+        "retrieval_thread_count": retrieval_thread_count,
         "execution_phase_contract": execution_phase_contract,
         "worker_contract": worker.get("name"),
         "worker_max_rss_bytes": worker.get("max_rss_bytes"),
@@ -3848,6 +3943,28 @@ def _validate_run_protocol(
         "reranker_batch_size": reranker.get("batch_size"),
         **{field: planner.get(field) for field in _FROZEN_PLANNER_PROTOCOL_FIELDS},
     }
+    return observed, planner
+
+
+def _validate_protocol_observation(
+    protocol: dict[str, object],
+    *,
+    observed: dict[str, object],
+    planner: dict[str, object],
+    include_generation: bool,
+    subject: str,
+) -> None:
+    if protocol.get("context_renderer") == CONTEXT_RENDERER_ID:
+        missing_fact_selector_fields = [
+            field
+            for field in (*_FACT_SELECTOR_PROTOCOL_FIELDS, *_CONTEXT_SELECTOR_PROTOCOL_FIELDS)
+            if field not in protocol
+        ]
+        if missing_fact_selector_fields:
+            raise ValueError(
+                "LoCoMo scored facts-first protocol omits frozen fields: "
+                + ", ".join(missing_fact_selector_fields)
+            )
     fields = set(protocol)
     raw_neighbor_windows = protocol.get("neighbor_windows")
     if raw_neighbor_windows is not None:
@@ -3857,17 +3974,17 @@ def _validate_run_protocol(
         )
         mode = planner.get("mode")
         if not isinstance(mode, str) or mode not in neighbor_windows:
-            raise ValueError("LoCoMo run has no frozen neighbor-window mode")
+            raise ValueError(f"{subject} has no frozen neighbor-window mode")
         expected_windows = _required_dict(
             neighbor_windows[mode],
             field="LoCoMo mode neighbor-window protocol",
         )
         for field in ("neighbor_window", "temporal_neighbor_window"):
             if planner.get(field) != expected_windows.get(field):
-                raise ValueError(f"LoCoMo run changes the frozen question-set protocol: {field}")
+                raise ValueError(f"{subject} changes the frozen question-set protocol: {field}")
     fields.discard("neighbor_windows")
     fields.difference_update(_PROTOCOL_METADATA_FIELDS)
-    if config.mode != "full":
+    if not include_generation:
         fields.difference_update(_PROTOCOL_GENERATION_FIELDS)
     unknown = fields - observed.keys()
     if unknown:
@@ -3877,7 +3994,124 @@ def _validate_run_protocol(
         )
     for field in sorted(fields):
         if observed[field] != protocol[field]:
-            raise ValueError(f"LoCoMo run changes the frozen question-set protocol: {field}")
+            raise ValueError(f"{subject} changes the frozen question-set protocol: {field}")
+
+
+def _validate_run_protocol(
+    question_set: LoCoMoQuestionSet,
+    *,
+    config: LoCoMoRunConfig,
+    answer_model: TextModel | None,
+    judge_model: TextModel | None,
+    question_worker_contract: dict[str, object] | None,
+) -> None:
+    protocol = question_set.protocol
+    if protocol is None:
+        return
+    retrieval = {
+        **(config.retrieval_config or {}),
+        "top_k": config.top_k,
+    }
+    worker = question_worker_contract or {}
+    answer = {} if answer_model is None else answer_model.public_config
+    judge = {} if judge_model is None else judge_model.public_config
+    execution_phase_contract = (
+        "process-isolated-ingest-then-questions-v1"
+        if config.corpus_path is None
+        else (
+            "verified-shared-corpus-v1" if question_worker_contract is None else worker.get("name")
+        )
+    )
+    observed, planner = _retrieval_protocol_observation(
+        retrieval,
+        worker=worker,
+        paid_scoring_gate=LOCOMO_PAID_SCORING_GATE_CONTRACT,
+        seed=config.seed,
+        max_workers=config.max_workers,
+        ingest_max_workers=1,
+        retrieval_max_workers=1,
+        retrieval_thread_count=1,
+        execution_phase_contract=execution_phase_contract,
+    )
+    observed.update(
+        {
+            "answer_model": answer.get("model"),
+            "answer_evidence_contract": _ANSWER_EVIDENCE_CONTRACT,
+            "answer_retry_contract": GROUNDED_ANSWER_RETRY_CONTRACT,
+            "model_attempt_journal_contract": (
+                MODEL_ATTEMPT_JOURNAL_CONTRACT if config.mode != "retrieval" else None
+            ),
+            "checkpoint_policy": _CHECKPOINT_POLICY,
+            "answer_response_max_attempts": (
+                config.answer_response_max_attempts if config.mode != "retrieval" else 0
+            ),
+            "judge_model": judge.get("model"),
+            "judge_contract": _JUDGE_CONTRACT if config.mode == "full" else None,
+            "judge_votes": config.judge_votes if config.mode == "full" else 0,
+            "judge_response_max_attempts": (
+                config.judge_response_max_attempts if config.mode == "full" else 0
+            ),
+            "judge_response_max_chars": (
+                config.judge_response_max_chars if config.mode == "full" else 0
+            ),
+        }
+    )
+    _validate_protocol_observation(
+        protocol,
+        observed=observed,
+        planner=planner,
+        include_generation=config.mode == "full",
+        subject="LoCoMo run",
+    )
+    _validate_paid_scoring_preflight(question_set, config=config)
+
+
+def _validate_paid_scoring_preflight(
+    question_set: LoCoMoQuestionSet,
+    *,
+    config: LoCoMoRunConfig,
+) -> None:
+    protocol = _required_dict(
+        question_set.protocol,
+        field="LoCoMo paid-scoring protocol",
+    )
+    gate_contract = protocol.get("paid_scoring_gate")
+    if config.mode == "retrieval":
+        if config.paid_scoring_preflight is not None:
+            raise ValueError("LoCoMo retrieval mode must not carry a paid-scoring receipt")
+        return
+    if gate_contract != LOCOMO_PAID_SCORING_GATE_CONTRACT:
+        if config.paid_scoring_preflight is not None:
+            raise ValueError("LoCoMo run supplied a receipt for an unsupported scoring gate")
+        return
+    if config.corpus_path is None or config.query_vectors_path is None:
+        raise ValueError("LoCoMo paid-scoring preflight requires frozen retrieval artifacts")
+    corpus_manifest = _required_dict(
+        read_json(config.corpus_path / "manifest.json"),
+        field="LoCoMo paid-scoring corpus manifest",
+    )
+    query_manifest = _required_dict(
+        read_json(config.query_vectors_path / "manifest.json"),
+        field="LoCoMo paid-scoring query-vector manifest",
+    )
+    from codecairn.evaluation.locomo_retrieval_gate import (
+        validate_locomo_paid_scoring_receipt,
+    )
+
+    validate_locomo_paid_scoring_receipt(
+        config.paid_scoring_preflight,
+        repository_commit=config.repository_commit,
+        dataset_sha256=question_set.dataset_sha256,
+        scored_question_set_sha256=question_set.definition_sha256,
+        scored_selection_sha256=question_set.selection_sha256,
+        scored_question_count=len(question_set.question_ids),
+        protocol_sha256=_canonical_sha256(protocol),
+        corpus_content_sha256=_required_str(corpus_manifest, "content_sha256"),
+        query_vectors_content_sha256=_required_str(
+            query_manifest,
+            "content_sha256",
+        ),
+    )
 
 
 def _validate_query_vector_protocol(
@@ -4045,6 +4279,11 @@ def run_locomo(
             },
             "question_set": None if question_set is None else question_set.public_manifest,
         },
+        "paid_scoring_gate": (
+            None
+            if question_set is None or question_set.protocol is None
+            else question_set.protocol.get("paid_scoring_gate")
+        ),
         "retrieval": {
             **(config.retrieval_config or {"method": "hybrid-rrf"}),
             "top_k": config.top_k,
@@ -4076,6 +4315,7 @@ def run_locomo(
                 "run_selection_sha256": _required_str(query_vectors, "run_selection_sha256"),
             }
         ),
+        "paid_scoring_preflight": config.paid_scoring_preflight,
         "answer_model": None if answer_model is None else answer_model.public_config,
         "answer_evidence_contract": _ANSWER_EVIDENCE_CONTRACT,
         "answer_retry_contract": GROUNDED_ANSWER_RETRY_CONTRACT,

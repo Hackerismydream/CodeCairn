@@ -117,7 +117,7 @@ def test_expansion_lane_cannot_exceed_the_global_plan_limit() -> None:
 def test_default_query_sketch_is_provider_free() -> None:
     sketch = RecallPlanner().plan("What hobby does Alice enjoy?", limit=5).query_sketch
 
-    assert sketch.sketcher_id == "codecairn/deterministic-query-sketch-v3"
+    assert sketch.sketcher_id == "codecairn/deterministic-query-sketch-v4"
     assert sketch.query_time_llm_calls == 0
     assert sketch.evidence_slots == ()
 
