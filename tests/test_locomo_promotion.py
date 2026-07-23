@@ -343,7 +343,7 @@ def _promotion_fixture(
     run_dir = tmp_path / "diagnostic-200-run"
     run_dir.mkdir()
     protocol = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v16.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v17.json").read_text(
             encoding="utf-8"
         )
     )["protocol"]

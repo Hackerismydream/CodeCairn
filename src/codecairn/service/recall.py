@@ -12,8 +12,11 @@ from urllib.parse import quote
 
 from codecairn.memory.context import (
     CONTEXT_DIRECT_MATCH_PRIOR,
+    CONTEXT_EVIDENCE_SLOT_POLICY_ID,
+    CONTEXT_EVIDENCE_SLOT_POLICY_IDS,
     CONTEXT_RENDERER_ID,
     CONTEXT_TOKENIZER_ID,
+    LEGACY_CONTEXT_EVIDENCE_SLOT_POLICY_ID,
     count_context_tokens,
 )
 from codecairn.memory.embedding import EmbeddingProvider
@@ -1899,7 +1902,10 @@ def _compile_context(
     config: RecallPlannerConfig,
     wants_procedure: bool = False,
     evidence_slots: tuple[ContextEvidenceSlot, ...] = (),
+    evidence_slot_policy: str = CONTEXT_EVIDENCE_SLOT_POLICY_ID,
 ) -> _CompiledContext:
+    if evidence_slot_policy not in CONTEXT_EVIDENCE_SLOT_POLICY_IDS:
+        raise ValueError(f"Unsupported context evidence-slot policy: {evidence_slot_policy}")
     empty_suffix = ["", "No evidence-backed memory matched this task."]
     header = _context_header(
         query,
@@ -2032,6 +2038,7 @@ def _compile_context(
                 ranked=ranked,
                 snippet_values=tuple(snippet_values),
                 candidates=candidate_values,
+                evidence_slot_policy=evidence_slot_policy,
             ):
                 attempts.append(
                     RecallContextSlotAttempt(
@@ -2245,6 +2252,7 @@ def replay_context_slot_traces(
     ranked: tuple[RankedRecall, ...],
     config: RecallPlannerConfig,
     limit: int,
+    evidence_slot_policy: str = CONTEXT_EVIDENCE_SLOT_POLICY_ID,
 ) -> tuple[RecallContextSlotTrace, ...]:
     """Replay the deterministic evidence-slot admission transcript.
 
@@ -2274,6 +2282,7 @@ def replay_context_slot_traces(
         config=config,
         wants_procedure=False,
         evidence_slots=plan.query_sketch.evidence_slots,
+        evidence_slot_policy=evidence_slot_policy,
     )
     if compiled.trace is None:
         raise AssertionError("Context slot replay produced no trace")
@@ -2299,7 +2308,10 @@ def _context_slot_candidates(
     ranked: tuple[RankedRecall, ...],
     snippet_values: tuple[tuple[RecallSnippet, ...], ...],
     candidates: tuple[tuple[int, int, RecallSnippet], ...],
+    evidence_slot_policy: str = CONTEXT_EVIDENCE_SLOT_POLICY_ID,
 ) -> tuple[tuple[int, int, RecallSnippet], ...]:
+    if evidence_slot_policy not in CONTEXT_EVIDENCE_SLOT_POLICY_IDS:
+        raise ValueError(f"Unsupported context evidence-slot policy: {evidence_slot_policy}")
     if slot.kind == "vocative_alias":
         selected = _vocative_alias_candidates(
             slot,
@@ -2307,12 +2319,20 @@ def _context_slot_candidates(
             candidates=candidates,
         )
     elif slot.kind == "quantity_transition":
-        selected = _quantity_transition_candidates(
-            slot,
-            ranked=ranked,
-            snippet_values=snippet_values,
-            candidates=candidates,
-        )
+        if evidence_slot_policy == LEGACY_CONTEXT_EVIDENCE_SLOT_POLICY_ID:
+            selected = _legacy_quantity_transition_candidates(
+                slot,
+                ranked=ranked,
+                snippet_values=snippet_values,
+                candidates=candidates,
+            )
+        else:
+            return _quantity_transition_candidates(
+                slot,
+                ranked=ranked,
+                snippet_values=snippet_values,
+                candidates=candidates,
+            )
     elif slot.kind == "prior_state":
         selected = _prior_state_candidates(
             slot,
@@ -2397,6 +2417,117 @@ def _quantity_transition_candidates(
     snippet_values: tuple[tuple[RecallSnippet, ...], ...],
     candidates: tuple[tuple[int, int, RecallSnippet], ...],
 ) -> tuple[tuple[int, int, RecallSnippet], ...]:
+    grouped = _quantity_transition_groups(
+        slot,
+        ranked=ranked,
+        candidates=candidates,
+    )
+    anchors = set(slot.anchors)
+    topic_terms = set(slot.topic_terms)
+    primary_units: list[tuple[tuple[int, int, RecallSnippet], ...]] = []
+    support_units: list[tuple[tuple[int, int, RecallSnippet], ...]] = []
+    for transition in sorted(grouped, key=_quantity_transition_bundle_order):
+        best = min(
+            grouped[transition],
+            key=lambda candidate: _quantity_candidate_priority(
+                candidate,
+                ranked=ranked,
+                anchors=anchors,
+                topic_terms=topic_terms,
+            ),
+        )
+        if _quantity_candidate_is_anaphoric(best[2]):
+            following = _following_context_candidate(
+                best,
+                snippet_values=snippet_values,
+            )
+            primary_units.append((best,) if following is None else (best, following))
+            continue
+        primary_units.append((best,))
+        overlap, _anchor_speaker, _anchored_anaphoric, _semantic_support = (
+            _quantity_candidate_signals(
+                best,
+                ranked=ranked,
+                anchors=anchors,
+                topic_terms=topic_terms,
+            )
+        )
+        if overlap or transition == "another":
+            continue
+        anaphoric_candidates = tuple(
+            candidate
+            for candidate in grouped[transition]
+            if _quantity_candidate_signals(
+                candidate,
+                ranked=ranked,
+                anchors=anchors,
+                topic_terms=topic_terms,
+            )[2]
+        )
+        if not anaphoric_candidates:
+            continue
+        anaphoric_best = min(
+            anaphoric_candidates,
+            key=lambda candidate: _quantity_candidate_priority(
+                candidate,
+                ranked=ranked,
+                anchors=anchors,
+                topic_terms=topic_terms,
+            ),
+        )
+        following = _following_context_candidate(
+            anaphoric_best,
+            snippet_values=snippet_values,
+        )
+        support_units.append(
+            (anaphoric_best,) if following is None else (anaphoric_best, following)
+        )
+    return _pack_quantity_candidate_units(
+        (*primary_units, *support_units),
+        max_facts=slot.max_facts,
+    )
+
+
+def _legacy_quantity_transition_candidates(
+    slot: ContextEvidenceSlot,
+    *,
+    ranked: tuple[RankedRecall, ...],
+    snippet_values: tuple[tuple[RecallSnippet, ...], ...],
+    candidates: tuple[tuple[int, int, RecallSnippet], ...],
+) -> tuple[tuple[int, int, RecallSnippet], ...]:
+    grouped = _quantity_transition_groups(
+        slot,
+        ranked=ranked,
+        candidates=candidates,
+    )
+    selected: list[tuple[int, int, RecallSnippet]] = []
+    for transition in sorted(grouped, key=_quantity_transition_order):
+        best = min(
+            grouped[transition],
+            key=lambda candidate: _quantity_candidate_priority(
+                candidate,
+                ranked=ranked,
+                anchors=set(slot.anchors),
+                topic_terms=set(slot.topic_terms),
+            ),
+        )
+        selected.append(best)
+        if _quantity_candidate_is_anaphoric(best[2]):
+            following = _following_context_candidate(
+                best,
+                snippet_values=snippet_values,
+            )
+            if following is not None:
+                selected.append(following)
+    return tuple(dict.fromkeys(selected))
+
+
+def _quantity_transition_groups(
+    slot: ContextEvidenceSlot,
+    *,
+    ranked: tuple[RankedRecall, ...],
+    candidates: tuple[tuple[int, int, RecallSnippet], ...],
+) -> dict[str, list[tuple[int, int, RecallSnippet]]]:
     anchors = set(slot.anchors)
     topic_terms = set(slot.topic_terms)
     grouped: dict[str, list[tuple[int, int, RecallSnippet]]] = {}
@@ -2426,29 +2557,25 @@ def _quantity_transition_candidates(
             continue
         for transition in transitions:
             grouped.setdefault(transition, []).append(candidate)
+    return grouped
 
+
+def _pack_quantity_candidate_units(
+    units: tuple[tuple[tuple[int, int, RecallSnippet], ...], ...],
+    *,
+    max_facts: int,
+) -> tuple[tuple[int, int, RecallSnippet], ...]:
     selected: list[tuple[int, int, RecallSnippet]] = []
-    for transition in sorted(grouped, key=_quantity_transition_order):
-        best = min(
-            grouped[transition],
-            key=lambda candidate: _quantity_candidate_priority(
-                candidate,
-                ranked=ranked,
-                anchors=anchors,
-                topic_terms=topic_terms,
-            ),
+    selected_set: set[tuple[int, int, RecallSnippet]] = set()
+    for unit in units:
+        unique = tuple(
+            dict.fromkeys(candidate for candidate in unit if candidate not in selected_set)
         )
-        selected.append(best)
-        if _CONTEXT_ANAPHORIC_QUANTITY.search(
-            "\n".join(value for value in (best[2].semantic_text, best[2].text) if value)
-        ):
-            following = _following_context_candidate(
-                best,
-                snippet_values=snippet_values,
-            )
-            if following is not None:
-                selected.append(following)
-    return tuple(dict.fromkeys(selected))
+        if len(selected) + len(unique) > max_facts:
+            continue
+        selected.extend(unique)
+        selected_set.update(unique)
+    return tuple(selected)
 
 
 def _quantity_candidate_priority(
@@ -2500,9 +2627,14 @@ def _quantity_candidate_signals(
             )
         ),
         speaker.casefold() in anchors,
-        anchor_mention and _CONTEXT_ANAPHORIC_QUANTITY.search(combined) is not None,
+        anchor_mention and _quantity_candidate_is_anaphoric(snippet),
         _semantic_child_support_score(ranked[item_index], snippet),
     )
+
+
+def _quantity_candidate_is_anaphoric(snippet: RecallSnippet) -> bool:
+    combined = "\n".join(value for value in (snippet.semantic_text, snippet.text) if value)
+    return _CONTEXT_ANAPHORIC_QUANTITY.search(combined) is not None
 
 
 def _prior_state_candidates(
@@ -2644,6 +2776,13 @@ def _quantity_transition_order(value: str) -> tuple[int, str]:
     match = re.fullmatch(r"(\d+)(?:st|nd|rd|th)", value)
     numeric = int(match.group(1)) if match is not None else order.get(value, 1_000_000_000)
     return numeric, value
+
+
+def _quantity_transition_bundle_order(value: str) -> tuple[int, int, str]:
+    numeric, normalized = _quantity_transition_order(value)
+    if value == "another":
+        return 1, 0, normalized
+    return 0, -numeric, normalized
 
 
 def _line_token_cost(lines: list[str]) -> int:

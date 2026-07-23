@@ -2,10 +2,15 @@
 
 ## Status
 
-Accepted for implementation. V16 retrieval quality remains unverified until new
-immutable runs pass the frozen 40-question preflight and the non-overlapping
-160-question holdout. The v15 question sets and run artifacts remain unchanged
-historical evidence.
+Superseded by ADR 0024 after the formal v16 preflight. V16 completed the frozen
+40-question retrieval-only run but reached 32/38 complete contexts, one question
+below the 85% gate. The v15 and v16 question sets and run artifacts remain
+unchanged historical evidence.
+
+The 33/38 replay recorded below used an earlier quantity-transition ordering.
+The ordering was hardened after that replay, but the replay was not rerun before
+this ADR was accepted. The immutable v16 run is authoritative; ADR 0024 records
+the correction and assigns the repaired policy a new protocol identity.
 
 ## Context
 

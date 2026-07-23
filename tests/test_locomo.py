@@ -57,6 +57,7 @@ from codecairn.evaluation.model import ModelResponse
 from codecairn.evaluation.providers import OpenAICompatibleTextModel
 from codecairn.memory.context import (
     CONTEXT_RENDERER_ID,
+    LEGACY_CONTEXT_EVIDENCE_SLOT_POLICY_ID,
     LEGACY_EXACT_SOURCE_CONTEXT_RENDERER_ID,
 )
 from codecairn.memory.evidence_selector import FACT_SELECTOR_ID
@@ -111,7 +112,7 @@ def _write_corpus_protocol_question_set(
         if question.category in {1, 2, 3, 4}
     )
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v16.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v17.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3845,9 +3846,9 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         )
 
 
-def test_official_v16_command_contract_passes_preflight() -> None:
+def test_official_v17_command_contract_passes_preflight() -> None:
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v16.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v17.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3897,7 +3898,7 @@ def test_official_v16_command_contract_passes_preflight() -> None:
     config = LoCoMoRunConfig(
         dataset_path=FIXTURE,
         output_root=Path("unused"),
-        run_id="official-v16",
+        run_id="official-v17",
         repository_commit="abc123",
         max_workers=10,
         retrieval_config=retrieval_config,
@@ -4526,6 +4527,60 @@ def test_report_accepts_deterministic_v8_context_slot_replay(tmp_path: Path) -> 
 
     assert report["completed_question_count"] == 4
     assert report["infrastructure_failed_count"] == 0
+
+
+def test_v8_context_slot_replay_dispatches_the_manifest_policy(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _question_path, question = _typed_expansion_question(
+        tmp_path,
+        run_id="locomo-v8-context-slot-policy-dispatch",
+    )
+    observed_policies: list[str] = []
+
+    def recording_replay(*args: object, **kwargs: object) -> object:
+        evidence_slot_policy = kwargs.get("evidence_slot_policy")
+        assert isinstance(evidence_slot_policy, str)
+        observed_policies.append(evidence_slot_policy)
+        return replay_context_slot_traces(*args, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo.replay_context_slot_traces",
+        recording_replay,
+    )
+    planner = {
+        **RecallPlannerConfig().public_config,
+        "context_evidence_slot_policy": LEGACY_CONTEXT_EVIDENCE_SLOT_POLICY_ID,
+    }
+
+    validate_context_slot_replay(
+        question,
+        retrieval=question["retrieval"],
+        planner=planner,
+        top_k=20,
+    )
+
+    assert observed_policies == [LEGACY_CONTEXT_EVIDENCE_SLOT_POLICY_ID]
+
+
+def test_v8_context_slot_replay_rejects_an_unknown_manifest_policy(tmp_path: Path) -> None:
+    _question_path, question = _typed_expansion_question(
+        tmp_path,
+        run_id="locomo-v8-context-slot-unknown-policy",
+    )
+    planner = {
+        **RecallPlannerConfig().public_config,
+        "context_evidence_slot_policy": "typed-protected-child-support-unknown",
+    }
+
+    with pytest.raises(ValueError, match="unsupported evidence-slot policy"):
+        validate_context_slot_replay(
+            question,
+            retrieval=question["retrieval"],
+            planner=planner,
+            top_k=20,
+        )
 
 
 def test_report_rejects_missing_v8_context_slot_trace(tmp_path: Path) -> None:

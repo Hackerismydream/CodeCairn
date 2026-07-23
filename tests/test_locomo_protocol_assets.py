@@ -380,6 +380,50 @@ def test_v16_preflight_holdout_and_promotion_share_runtime_protocol(
     }
 
 
+def test_v17_changes_only_the_quantity_slot_policy_contract() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    paths = {
+        "40": benchmark_root / "diagnostic-40-v17.json",
+        "160": benchmark_root / "diagnostic-160-holdout-v17.json",
+        "200": benchmark_root / "diagnostic-200-v17.json",
+    }
+    expected_hashes = {
+        "40": "03b7a000d8f263048a118b92d5cc008e6f3b25214acfccc45b07c80e34f1df3b",
+        "160": "26ae021c9964ffb7df336eaf3ea730aaf05a330fd58f8addf25a5c08eab42e1f",
+        "200": "d7b63a9e05e2619223943ef9d36b18f7dfe3d7d6365a4cb0bbcac385a13109dd",
+    }
+    v17 = {name: json.loads(path.read_text()) for name, path in paths.items()}
+    v16 = {
+        "40": json.loads((benchmark_root / "diagnostic-40-v16.json").read_text()),
+        "160": json.loads((benchmark_root / "diagnostic-160-holdout-v16.json").read_text()),
+        "200": json.loads((benchmark_root / "diagnostic-200-v16.json").read_text()),
+    }
+
+    for name, path in paths.items():
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_hashes[name]
+        expected_protocol = dict(v16[name]["protocol"])
+        expected_protocol["context_evidence_slot_policy"] = "typed-protected-child-support-v2"
+        assert v17[name]["protocol"] == expected_protocol
+    assert v17["40"]["protocol"] == v17["160"]["protocol"] == v17["200"]["protocol"]
+    assert {key: value for key, value in v17["40"].items() if key != "protocol"} == {
+        key: value for key, value in v16["40"].items() if key != "protocol"
+    }
+    assert {key: value for key, value in v17["160"].items() if key != "protocol"} == {
+        key: value for key, value in v16["160"].items() if key != "protocol"
+    }
+    assert {
+        key: value for key, value in v17["200"].items() if key not in {"protocol", "promotion"}
+    } == {key: value for key, value in v16["200"].items() if key not in {"protocol", "promotion"}}
+
+    source = v17["200"]["promotion"]["source_selection"]
+    assert source["question_set_sha256"] == expected_hashes["40"]
+    assert source["protocol_sha256"] == _canonical_sha256(v17["40"]["protocol"])
+    assert source["gates_sha256"] == _canonical_sha256(v17["40"]["gates"])
+    assert {
+        key: value for key, value in v17["200"]["promotion"].items() if key != "source_selection"
+    } == {key: value for key, value in v16["200"]["promotion"].items() if key != "source_selection"}
+
+
 def _select_question_ids(
     questions: tuple[LoCoMoQuestion, ...],
     *,

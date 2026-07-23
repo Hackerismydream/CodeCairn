@@ -11,10 +11,11 @@ runner, IDE, or cloud knowledge platform.
 ## Status
 
 CodeCairn is under active development. Published benchmark numbers live in the
-[public evidence bundle](evidence/benchmark-v1/README.md), where every headline
-measurement links to its manifest, raw aggregate inputs, and verification
-command. The bundle keeps the explicitly unscored LoCoMo smoke run separate
-from the completed retrieval, recovery, and CodingMemoryBench measurements.
+[public evidence bundle](evidence/benchmark-v1/README.md) for release headlines
+or in checked-in versioned diagnostic artifacts linked from the relevant ADR.
+Every measurement links to its manifest and raw aggregate inputs. The release
+bundle keeps the explicitly unscored LoCoMo smoke run separate from the
+completed retrieval, recovery, and CodingMemoryBench measurements.
 
 The first release is planned in three milestones:
 
@@ -147,22 +148,21 @@ and every query sidecar.
 
 Resource-sensitive LoCoMo evidence runs reuse one verified corpus and one frozen
 query-vector artifact, then isolate each conversation in a fresh worker process.
-The v15 protocol first runs retrieval without answer or judge calls and reports
+The v17 protocol first runs retrieval without answer or judge calls and reports
 gold-evidence coverage. Paid scoring starts only after that provider-free gate.
-A three-variant 40-question comparison selects one recall mode; only that mode
-runs the 200-question diagnostic, whose absolute promotion gate is verified by
-`codecairn eval promote-locomo`. Build the artifacts as documented in
-`benchmarks/locomo/README.md`, then run. The v14 retrieval-only diagnostic
-remains immutable historical evidence and failed its context-coverage and
-latency gates; v15 does not claim an improvement until a new immutable run
-passes verification. [ADR 0022](docs/adr/0022-v15-rebalances-fact-selection-and-context-budgeting.md)
+The frozen 40-question preflight must pass before the non-overlapping
+160-question holdout runs; both use the same protocol and provider-free
+artifacts. Build and verify them as documented in
+`benchmarks/locomo/README.md`. The formal v16 preflight remains immutable
+negative evidence, and v17 does not claim an improvement until both new runs
+pass their gates. [ADR 0024](docs/adr/0024-v17-preserves-same-ordinal-anaphoric-evidence-bundles.md)
 records that boundary.
 
 ```bash
 codecairn eval run locomo benchmarks/locomo/data/locomo10.json \
   --run-id <retrieval-run-id> --repository-commit <commit> --mode retrieval \
   --output-root benchmark_results \
-  --question-set benchmarks/locomo/diagnostic-200-v15.json \
+  --question-set benchmarks/locomo/diagnostic-40-v17.json \
   --corpus <content-addressed-corpus> --query-vectors <frozen-query-vectors> \
   --max-workers 10
 

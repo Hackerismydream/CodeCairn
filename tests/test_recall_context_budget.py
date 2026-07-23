@@ -7,6 +7,7 @@ from codecairn.bootstrap import create_cascade, create_runtime
 from codecairn.memory.context import (
     CONTEXT_RENDERER_ID,
     CONTEXT_TOKENIZER_ID,
+    LEGACY_CONTEXT_EVIDENCE_SLOT_POLICY_ID,
     count_context_tokens,
 )
 from codecairn.memory.episode import AttributedEpisode, AttributedTurn
@@ -834,6 +835,254 @@ def test_quantity_slot_prefers_topic_evidence_across_unordered_parents() -> None
     )
 
     assert tuple(candidate[2].fact_id for candidate in selected) == ("fact-book",)
+
+
+def test_quantity_slot_keeps_anchored_anaphoric_pair_for_the_same_ordinal() -> None:
+    third_occurrence = replace(
+        _snippet(
+            fact_id="fact-third-occurrence",
+            text=("2022-10-25T20:16:00+00:00 — Joanna: This is the third time it has happened."),
+            raw_event_index=493,
+        ),
+        source_memory_id="memory-occurrence",
+        source_uri="codecairn://memory/memory-occurrence",
+        relevance_score=5.0,
+        semantic_text="This was the third time Joanna's movie script was shown.",
+        semantic_fact_ids=("semantic-third-occurrence",),
+    )
+    third_question = replace(
+        _snippet(
+            fact_id="fact-third-question",
+            text=(
+                "2022-05-20T19:49:00+00:00 — Nate: Wow, that looks great "
+                "Joanna! Is that your third one?"
+            ),
+            raw_event_index=230,
+        ),
+        source_memory_id="memory-question-answer",
+        source_uri="codecairn://memory/memory-question-answer",
+        relevance_score=-8.0,
+    )
+    third_answer = replace(
+        _snippet(
+            fact_id="fact-third-answer",
+            text=("2022-05-20T19:49:00+00:00 — Joanna: Yep! It is personal, and I am proud of it."),
+            raw_event_index=231,
+        ),
+        source_memory_id="memory-question-answer",
+        source_uri="codecairn://memory/memory-question-answer",
+        relevance_score=-9.0,
+    )
+    occurrence_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        rank=1,
+        memory_id="memory-occurrence",
+        source_uri="codecairn://memory/memory-occurrence",
+        snippets=(third_occurrence,),
+        matched_documents=(
+            RecallMatch(
+                document_id="document-third-occurrence",
+                document_kind="atomic_fact",
+                source="atomic_fact_vector",
+                score=0.5,
+                rank=1,
+                fact_id="semantic-third-occurrence",
+            ),
+        ),
+    )
+    question_answer_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        rank=2,
+        memory_id="memory-question-answer",
+        source_uri="codecairn://memory/memory-question-answer",
+        snippets=(third_question, third_answer),
+    )
+    ranked = (occurrence_parent, question_answer_parent)
+
+    selected = context_slot_candidates(
+        ContextEvidenceSlot(
+            kind="quantity_transition",
+            max_facts=12,
+            anchors=("joanna",),
+            topic_terms=("screenplay", "written"),
+        ),
+        ranked=ranked,
+        snippet_values=((third_occurrence,), (third_question, third_answer)),
+        candidates=(
+            (0, 0, third_occurrence),
+            (1, 0, third_question),
+            (1, 1, third_answer),
+        ),
+    )
+
+    assert tuple(candidate[2].fact_id for candidate in selected) == (
+        "fact-third-occurrence",
+        "fact-third-question",
+        "fact-third-answer",
+    )
+
+
+def test_quantity_slot_prioritizes_high_ordinals_without_splitting_support_pairs() -> None:
+    ordinals = ("first", "second", "third", "fourth", "fifth")
+    snippets: list[RecallSnippet] = []
+    matches: list[RecallMatch] = []
+    for ordinal_index, ordinal in enumerate(ordinals, start=1):
+        semantic_fact_id = f"semantic-{ordinal}"
+        snippets.extend(
+            (
+                replace(
+                    _snippet(
+                        fact_id=f"fact-{ordinal}-occurrence",
+                        text=(
+                            f"2022-01-{ordinal_index:02d}T10:00:00+00:00 — Joanna: "
+                            f"This is the {ordinal} time it has happened."
+                        ),
+                        raw_event_index=ordinal_index * 10,
+                    ),
+                    relevance_score=float(ordinal_index),
+                    semantic_text=(f"This was the {ordinal} time Joanna's movie script was shown."),
+                    semantic_fact_ids=(semantic_fact_id,),
+                ),
+                replace(
+                    _snippet(
+                        fact_id=f"fact-{ordinal}-question",
+                        text=(
+                            f"2022-01-{ordinal_index:02d}T10:01:00+00:00 — Nate: "
+                            f"Joanna, is that your {ordinal} one?"
+                        ),
+                        raw_event_index=ordinal_index * 10 + 1,
+                    ),
+                    relevance_score=-float(ordinal_index),
+                ),
+                replace(
+                    _snippet(
+                        fact_id=f"fact-{ordinal}-answer",
+                        text=(f"2022-01-{ordinal_index:02d}T10:02:00+00:00 — Joanna: Yes, it is."),
+                        raw_event_index=ordinal_index * 10 + 2,
+                    ),
+                    relevance_score=-float(ordinal_index) - 0.5,
+                ),
+            )
+        )
+        matches.append(
+            RecallMatch(
+                document_id=f"document-{ordinal}",
+                document_kind="atomic_fact",
+                source="atomic_fact_vector",
+                score=1.0,
+                rank=ordinal_index,
+                fact_id=semantic_fact_id,
+            )
+        )
+    parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        snippets=tuple(snippets),
+        matched_documents=tuple(matches),
+    )
+    selected = context_slot_candidates(
+        ContextEvidenceSlot(
+            kind="quantity_transition",
+            max_facts=12,
+            anchors=("joanna",),
+            topic_terms=("screenplay", "written"),
+        ),
+        ranked=(parent,),
+        snippet_values=(tuple(snippets),),
+        candidates=tuple(
+            (0, snippet_index, snippet) for snippet_index, snippet in enumerate(snippets)
+        ),
+    )
+    selected_fact_ids = tuple(candidate[2].fact_id for candidate in selected)
+
+    assert selected_fact_ids[:5] == tuple(
+        f"fact-{ordinal}-occurrence" for ordinal in reversed(ordinals)
+    )
+    assert selected_fact_ids[5:] == (
+        "fact-fifth-question",
+        "fact-fifth-answer",
+        "fact-fourth-question",
+        "fact-fourth-answer",
+        "fact-third-question",
+        "fact-third-answer",
+    )
+    assert len(selected_fact_ids) == 11
+    for ordinal in ordinals:
+        pair = {
+            f"fact-{ordinal}-question",
+            f"fact-{ordinal}-answer",
+        }
+        assert len(pair & set(selected_fact_ids)) in {0, 2}
+
+
+def test_quantity_slot_can_replay_the_frozen_v1_candidate_policy() -> None:
+    occurrence = replace(
+        _snippet(
+            fact_id="fact-third-occurrence",
+            text="2022-10-25T20:16:00+00:00 — Joanna: This is the third time.",
+            raw_event_index=10,
+        ),
+        relevance_score=5.0,
+        semantic_text="This was the third time Joanna's movie script was shown.",
+        semantic_fact_ids=("semantic-third-occurrence",),
+    )
+    question = replace(
+        _snippet(
+            fact_id="fact-third-question",
+            text="2022-05-20T19:49:00+00:00 — Nate: Joanna, is that your third one?",
+            raw_event_index=20,
+        ),
+        relevance_score=-8.0,
+    )
+    answer = replace(
+        _snippet(
+            fact_id="fact-third-answer",
+            text="2022-05-20T19:50:00+00:00 — Joanna: Yes, it is.",
+            raw_event_index=21,
+        ),
+        relevance_score=-9.0,
+    )
+    parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        snippets=(occurrence, question, answer),
+        matched_documents=(
+            RecallMatch(
+                document_id="document-third-occurrence",
+                document_kind="atomic_fact",
+                source="atomic_fact_vector",
+                score=1.0,
+                rank=1,
+                fact_id="semantic-third-occurrence",
+            ),
+        ),
+    )
+    candidates = ((0, 0, occurrence), (0, 1, question), (0, 2, answer))
+    slot = ContextEvidenceSlot(
+        kind="quantity_transition",
+        max_facts=12,
+        anchors=("joanna",),
+        topic_terms=("screenplay", "written"),
+    )
+
+    legacy = context_slot_candidates(
+        slot,
+        ranked=(parent,),
+        snippet_values=((occurrence, question, answer),),
+        candidates=candidates,
+        evidence_slot_policy=LEGACY_CONTEXT_EVIDENCE_SLOT_POLICY_ID,
+    )
+    current = context_slot_candidates(
+        slot,
+        ranked=(parent,),
+        snippet_values=((occurrence, question, answer),),
+        candidates=candidates,
+    )
+
+    assert tuple(candidate[2].fact_id for candidate in legacy) == ("fact-third-occurrence",)
+    assert tuple(candidate[2].fact_id for candidate in current) == (
+        "fact-third-occurrence",
+        "fact-third-question",
+        "fact-third-answer",
+    )
 
 
 def test_vocative_alias_slot_protects_a_shortened_name() -> None:

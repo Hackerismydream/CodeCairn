@@ -48,6 +48,7 @@ from codecairn.evaluation.grounded_answer import (
 from codecairn.evaluation.model import ModelResponse, TextModel
 from codecairn.memory.context import (
     CONTEXT_EVIDENCE_SLOT_KINDS,
+    CONTEXT_EVIDENCE_SLOT_POLICY_IDS,
     CONTEXT_RENDERER_ID,
     CONTEXT_SLOT_ADMISSION_OUTCOMES,
     CONTEXT_TOKENIZER_ID,
@@ -7024,12 +7025,19 @@ def _validate_context_slot_replay(
         retrieval,
         candidate_fact_ids=set(cast(list[str], raw_candidate_fact_ids)),
     )
+    evidence_slot_policy = planner.get("context_evidence_slot_policy")
+    if (
+        not isinstance(evidence_slot_policy, str)
+        or evidence_slot_policy not in CONTEXT_EVIDENCE_SLOT_POLICY_IDS
+    ):
+        raise ValueError("LoCoMo v8 context trace has an unsupported evidence-slot policy")
     expected = replay_context_slot_traces(
         _required_str(retrieval, "query"),
         repo_key=_required_str(retrieval, "repo_key"),
         ranked=ranked,
         config=_context_replay_config(planner),
         limit=top_k,
+        evidence_slot_policy=evidence_slot_policy,
     )
     expected_payload = [
         {

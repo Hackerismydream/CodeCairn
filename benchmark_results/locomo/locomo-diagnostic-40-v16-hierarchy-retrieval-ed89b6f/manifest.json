@@ -1,0 +1,293 @@
+{
+  "answer_evidence_contract": "grounded-cited-answer-v13",
+  "answer_model": null,
+  "answer_response_max_attempts": 0,
+  "answer_retry_contract": "grounded-answer-contract-retry-v1",
+  "checkpoint_policy": "journal-replay-or-unknown-spend-fail-closed-v3",
+  "corpus": {
+    "artifact_id": "locomo-grounded-clause-v7-9b48ae6",
+    "build_contract_sha256": "b59b95ee5b56ca72362abbd282b5cf7132fea9f0fe726968ad6c88f33438f203",
+    "content_sha256": "f46d3fcce3e71a61b3664b8d77ea62c4b6a6b8b9d26216713eaea979f08902d2",
+    "repository_commit": "9b48ae656b6e65aec2ab39430f76d46ab3f7f7a9",
+    "tree_sha256": "c6c85ba02b172fbf64e52b5acf0c437361bd43cde8aa90f8bc4c763e13cce56b"
+  },
+  "created_at_utc": "2026-07-23T14:08:43.830794+00:00",
+  "dataset": {
+    "category_counts": {
+      "1": 282,
+      "2": 321,
+      "3": 96,
+      "4": 841,
+      "5": 446
+    },
+    "conversation_count": 10,
+    "license": "CC BY-NC 4.0",
+    "question_count": 1986,
+    "session_count": 272,
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+    "turn_count": 5882,
+    "url": "https://raw.githubusercontent.com/snap-research/locomo/main/data/locomo10.json"
+  },
+  "execution_phase_contract": "verified-shared-corpus-exec-per-conversation-v3",
+  "ingest_max_workers": 1,
+  "judge_contract": null,
+  "judge_model": null,
+  "judge_response_max_attempts": 0,
+  "judge_response_max_chars": 0,
+  "judge_votes": 0,
+  "max_workers": 10,
+  "mode": "retrieval",
+  "model_attempt_journal_contract": null,
+  "query_vectors": {
+    "artifact_id": "locomo-diagnostic-200-v13-9b48ae6",
+    "artifact_question_count": 200,
+    "content_sha256": "819b7cff315a0e1edfbdd8edc6e76ad85467189c3293a319d6d1c5127279b20b",
+    "coverage": "superset",
+    "run_question_count": 40,
+    "run_selection_sha256": "5af177ee3aa75a532d7f8f3927ed58ace8468aff4dd0fabdcdc6a2a351c1f8fb",
+    "selection_sha256": "d46528af81467f0379e4d9456cbad99bf57a7237bc491690a6c5732ef51de579"
+  },
+  "question_worker": {
+    "max_rss_bytes": 2147483648,
+    "name": "verified-shared-corpus-exec-per-conversation-v3",
+    "poll_interval_seconds": 0.25,
+    "progress_signal": "heartbeat-evidence-and-durable-question-checkpoint-deadline-v2",
+    "publish_policy": "conversation-directory-atomic-rename-v1",
+    "reranker_warmup": "one-local-document-before-question-timing-v1",
+    "rss_poll_interval_seconds": 1.0,
+    "stall_timeout_seconds": 600.0
+  },
+  "repository_commit": "ed89b6fc10cc7d2db151e67db0718bf7a2636409",
+  "retrieval": {
+    "embedding": {
+      "adapter": "dashscope-openai-compatible",
+      "adapter_version": "1",
+      "dimension": 1024,
+      "license": "Alibaba Cloud Model Studio service",
+      "model": "text-embedding-v4",
+      "pricing": {
+        "currency": "CNY",
+        "input_per_million": 0.5
+      },
+      "revision": "provider-managed",
+      "source": "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    },
+    "inference_threads": 2,
+    "method": "hybrid-rrf-cross-encoder",
+    "planner": {
+      "context_direct_match_prior": 2.0,
+      "context_evidence_slot_policy": "typed-protected-child-support-v1",
+      "context_max_chars": 23900,
+      "context_max_tokens": 4000,
+      "context_prior_state_fact_limit": 4,
+      "context_quantity_transition_fact_limit": 12,
+      "context_renderer": "exact-source-coverage-aware-facts-first-v8",
+      "context_semantic_support_fact_limit": 16,
+      "context_snippet_chars": 200,
+      "context_snippets_per_memory": 5,
+      "context_summary_chars": 60,
+      "context_temporal_snippets_per_memory": 8,
+      "context_tokenizer": "codecairn/utf8-two-byte-upper-bound-v1",
+      "context_vocative_alias_fact_limit": 2,
+      "diverse_matched_facts_per_memory": 1,
+      "enrichment_order": "matched-neighbor-then-capacity-aware-dialogue-rerank-v7",
+      "expansion_contract": "typed-bounded-one-hop-v2",
+      "expansion_max_entity_facts": 12,
+      "expansion_max_hops": 1,
+      "expansion_max_provenance_facts": 8,
+      "expansion_max_time_facts": 8,
+      "expansion_max_total_facts": 24,
+      "fact_rerank_max_candidates": 256,
+      "fact_rerank_max_candidates_per_parent": 24,
+      "fact_rerank_max_document_chars": 2048,
+      "fact_rerank_max_selected_per_parent": 12,
+      "fact_selector": "bounded-dialogue-aware-cross-encoder-v4",
+      "hard_route_cutoff": false,
+      "matched_facts_per_memory": 3,
+      "maximum_channel_candidates": 64,
+      "maximum_exploration_results": 4,
+      "maximum_rerank_candidates": 96,
+      "minimum_primary_candidates": 40,
+      "minimum_rerank_candidates": 32,
+      "minimum_secondary_candidates": 20,
+      "mode": "hierarchy",
+      "neighbor_snippet_budget": 20,
+      "neighbor_window": 1,
+      "primary_candidate_multiplier": 2,
+      "query_sketcher": "codecairn/deterministic-query-sketch-v3",
+      "query_time_llm_calls": 0,
+      "rerank_candidate_multiplier": 5,
+      "router": "deterministic-cues-v1",
+      "secondary_candidate_multiplier": 1,
+      "sibling_facts_per_memory": 2,
+      "temporal_lane": "explicit-month-prefix-v1",
+      "temporal_neighbor_window": 2,
+      "temporal_sibling_facts_per_memory": 5
+    },
+    "reranker": {
+      "adapter": "fastembed-cross-encoder",
+      "adapter_license": "Apache-2.0",
+      "adapter_version": "0.8.0",
+      "batch_size": 8,
+      "license": "Apache-2.0",
+      "model": "Xenova/ms-marco-MiniLM-L-6-v2",
+      "revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
+      "source": "Xenova/ms-marco-MiniLM-L-6-v2"
+    },
+    "tokenizer_parallelism": false,
+    "tokenizer_threads": 1,
+    "top_k": 20
+  },
+  "retrieval_max_workers": 1,
+  "retrieval_thread_count": 1,
+  "run_id": "locomo-diagnostic-40-v16-hierarchy-retrieval-ed89b6f",
+  "schema_version": 1,
+  "scored": false,
+  "seed": 17,
+  "selection": {
+    "categories": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "conversation_ids": [
+      "conv-26",
+      "conv-30",
+      "conv-41",
+      "conv-42",
+      "conv-43",
+      "conv-44",
+      "conv-47",
+      "conv-48",
+      "conv-49",
+      "conv-50"
+    ],
+    "question_counts": {
+      "1": 10,
+      "2": 10,
+      "3": 10,
+      "4": 10
+    },
+    "question_ids_by_conversation": {
+      "conv-26": [
+        "locomo-question_a861ec724a42433f126a",
+        "locomo-question_e768c8e5cebdcf067757",
+        "locomo-question_e1d9b4f11880b9d1b0f0"
+      ],
+      "conv-30": [],
+      "conv-41": [
+        "locomo-question_faf58bda7cb9ffe5045a",
+        "locomo-question_2738a60950eceb7f1cb1"
+      ],
+      "conv-42": [
+        "locomo-question_b80d07ada1c4a005d8e8",
+        "locomo-question_a2bb2fb8df7ee578963d",
+        "locomo-question_7ec3c5c6f12861690070",
+        "locomo-question_c3670de7658d24c39bf4"
+      ],
+      "conv-43": [
+        "locomo-question_34aa2ba3fce9fcfe7512",
+        "locomo-question_5e8a4a529eb143c8cc46",
+        "locomo-question_2b283be95f5bb4bf69cc"
+      ],
+      "conv-44": [
+        "locomo-question_7b7c0959c6e64c2efa44",
+        "locomo-question_077230ed9581db2d2211",
+        "locomo-question_099cfea3c7b288018268",
+        "locomo-question_5dca680e2a0b0d79817f",
+        "locomo-question_fba9746f30c876fddaa4"
+      ],
+      "conv-47": [
+        "locomo-question_065f3eb69389d2934860",
+        "locomo-question_1e7aecc5e71c4e60c24e",
+        "locomo-question_94f76f6ba03dfa2a4f81",
+        "locomo-question_0470e3f85e04147a740b",
+        "locomo-question_572cbf28a144a64377d8",
+        "locomo-question_2b2771edfb624e3e948e"
+      ],
+      "conv-48": [
+        "locomo-question_f9cf61d43dc56c18f005",
+        "locomo-question_bab01857a265d6d0db9d",
+        "locomo-question_5ba7980b06c8304ded97"
+      ],
+      "conv-49": [
+        "locomo-question_22386e1953774d3593a3",
+        "locomo-question_ea45b1bacfc8ae28fac1",
+        "locomo-question_b0011881553ea4b9fa50",
+        "locomo-question_7feb6300468d3f0f6fd7",
+        "locomo-question_07300f8d26d263bf9ceb",
+        "locomo-question_31be2d31de77c66b20b7",
+        "locomo-question_f6329b7f96a4f4d4ff5c",
+        "locomo-question_a1ecc469e784b085a751"
+      ],
+      "conv-50": [
+        "locomo-question_46ff8ea22414a13e017c",
+        "locomo-question_3323535ba1d118e4ff65",
+        "locomo-question_7c7474704ac1ad098044",
+        "locomo-question_8126ec9e9165a8da383d",
+        "locomo-question_29d29e537b8df7de8d2a",
+        "locomo-question_6930e3d4d594b44206c3"
+      ]
+    },
+    "question_set": {
+      "algorithm": "stratified-sha256-v1",
+      "category_targets": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 10
+      },
+      "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+      "definition_sha256": "85ea8afa0936519762f8ca57aa9edfde9aa7748644b3c638372c48d2e7756a99",
+      "protocol_sha256": "920adb85445a4ea8fc84546ed6d30824aa064c7599fed5f74b7d4b77b241f044",
+      "question_count": 40,
+      "question_ids": [
+        "locomo-question_a861ec724a42433f126a",
+        "locomo-question_e768c8e5cebdcf067757",
+        "locomo-question_e1d9b4f11880b9d1b0f0",
+        "locomo-question_faf58bda7cb9ffe5045a",
+        "locomo-question_2738a60950eceb7f1cb1",
+        "locomo-question_b80d07ada1c4a005d8e8",
+        "locomo-question_a2bb2fb8df7ee578963d",
+        "locomo-question_7ec3c5c6f12861690070",
+        "locomo-question_c3670de7658d24c39bf4",
+        "locomo-question_34aa2ba3fce9fcfe7512",
+        "locomo-question_5e8a4a529eb143c8cc46",
+        "locomo-question_2b283be95f5bb4bf69cc",
+        "locomo-question_7b7c0959c6e64c2efa44",
+        "locomo-question_077230ed9581db2d2211",
+        "locomo-question_099cfea3c7b288018268",
+        "locomo-question_5dca680e2a0b0d79817f",
+        "locomo-question_fba9746f30c876fddaa4",
+        "locomo-question_065f3eb69389d2934860",
+        "locomo-question_1e7aecc5e71c4e60c24e",
+        "locomo-question_94f76f6ba03dfa2a4f81",
+        "locomo-question_0470e3f85e04147a740b",
+        "locomo-question_572cbf28a144a64377d8",
+        "locomo-question_2b2771edfb624e3e948e",
+        "locomo-question_f9cf61d43dc56c18f005",
+        "locomo-question_bab01857a265d6d0db9d",
+        "locomo-question_5ba7980b06c8304ded97",
+        "locomo-question_22386e1953774d3593a3",
+        "locomo-question_ea45b1bacfc8ae28fac1",
+        "locomo-question_b0011881553ea4b9fa50",
+        "locomo-question_7feb6300468d3f0f6fd7",
+        "locomo-question_07300f8d26d263bf9ceb",
+        "locomo-question_31be2d31de77c66b20b7",
+        "locomo-question_f6329b7f96a4f4d4ff5c",
+        "locomo-question_a1ecc469e784b085a751",
+        "locomo-question_46ff8ea22414a13e017c",
+        "locomo-question_3323535ba1d118e4ff65",
+        "locomo-question_7c7474704ac1ad098044",
+        "locomo-question_8126ec9e9165a8da383d",
+        "locomo-question_29d29e537b8df7de8d2a",
+        "locomo-question_6930e3d4d594b44206c3"
+      ],
+      "seed": "codecairn-locomo-diagnostic-200-v1",
+      "selection_id": "locomo-diagnostic-40-v1",
+      "selection_sha256": "5af177ee3aa75a532d7f8f3927ed58ace8468aff4dd0fabdcdc6a2a351c1f8fb"
+    }
+  },
+  "suite": "locomo"
+}
