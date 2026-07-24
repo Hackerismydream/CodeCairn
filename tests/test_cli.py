@@ -255,8 +255,8 @@ def test_cli_rejects_a_gate_for_another_question_set_before_model_providers(
         record_retrieval_gate,
     )
     benchmark_root = Path(__file__).parents[1] / "benchmarks/locomo"
-    question_set = benchmark_root / "diagnostic-40-v22.json"
-    retrieval_gate_question_set = benchmark_root / "diagnostic-200-v22.json"
+    question_set = benchmark_root / "diagnostic-40-v23.json"
+    retrieval_gate_question_set = benchmark_root / "diagnostic-200-v23.json"
     gate_dirs = [tmp_path / name for name in ("corpus", "queries", "canary", "holdout")]
     for directory in gate_dirs:
         directory.mkdir()

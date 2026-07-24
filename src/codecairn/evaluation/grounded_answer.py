@@ -3,6 +3,9 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
+INSUFFICIENT_CITATIONS_NORMALIZATION = "insufficient-citations-removed-v1"
+INSUFFICIENT_EMPTY_ANSWER_NORMALIZATION = "insufficient-empty-answer-replaced-v1"
+
 
 @dataclass(frozen=True, slots=True)
 class RenderedEvidence:
@@ -77,6 +80,45 @@ def parse_grounded_answer(text: str, *, context: GroundedContext) -> GroundedAns
         supporting_evidence_ids=tuple(supporting_ids),
         insufficient=insufficient,
     )
+
+
+def parse_grounded_answer_with_safe_normalization(
+    text: str,
+    *,
+    context: GroundedContext,
+) -> tuple[GroundedAnswer, str | None]:
+    """Parse strictly, repairing only scoreable insufficient-answer contradictions."""
+
+    try:
+        return parse_grounded_answer(text, context=context), None
+    except (RecursionError, ValueError) as original_error:
+        try:
+            payload = json.loads(text, object_pairs_hook=_strict_json_object)
+        except (json.JSONDecodeError, RecursionError, ValueError):
+            raise original_error from None
+        expected_fields = {"answer", "supporting_evidence_ids", "insufficient"}
+        if not isinstance(payload, dict) or set(payload) != expected_fields:
+            raise original_error
+        if payload["insufficient"] is not True:
+            raise original_error
+        supporting_ids = payload["supporting_evidence_ids"]
+        if (
+            isinstance(supporting_ids, list)
+            and supporting_ids
+            and all(isinstance(item, str) and item.strip() for item in supporting_ids)
+        ):
+            payload["supporting_evidence_ids"] = []
+            normalization = INSUFFICIENT_CITATIONS_NORMALIZATION
+        elif payload["answer"] == [] and supporting_ids == []:
+            payload["answer"] = "The context is insufficient."
+            normalization = INSUFFICIENT_EMPTY_ANSWER_NORMALIZATION
+        else:
+            raise original_error
+        normalized = json.dumps(payload, ensure_ascii=False, sort_keys=True)
+        return (
+            parse_grounded_answer(normalized, context=context),
+            normalization,
+        )
 
 
 def _strict_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:

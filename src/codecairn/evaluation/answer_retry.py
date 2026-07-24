@@ -8,14 +8,16 @@ from enum import StrEnum
 from typing import Literal, cast
 
 from codecairn.evaluation.grounded_answer import (
+    INSUFFICIENT_CITATIONS_NORMALIZATION,
+    INSUFFICIENT_EMPTY_ANSWER_NORMALIZATION,
     GroundedAnswer,
     GroundedContext,
-    parse_grounded_answer,
+    parse_grounded_answer_with_safe_normalization,
 )
 from codecairn.evaluation.model import ModelResponse
 
-GROUNDED_ANSWER_RETRY_CONTRACT = "grounded-answer-contract-retry-v1"
-GROUNDED_ANSWER_RETRY_HISTORY_CONTRACT = "grounded-answer-retry-history-v1"
+GROUNDED_ANSWER_RETRY_CONTRACT = "grounded-answer-contract-retry-v2"
+GROUNDED_ANSWER_RETRY_HISTORY_CONTRACT = "grounded-answer-retry-history-v2"
 _MAX_APPLICATION_ATTEMPTS = 2
 _INTEGER_USAGE_FIELDS = (
     "input_tokens",
@@ -41,6 +43,7 @@ _ATTEMPT_FIELDS = {
     "model",
     "response_chars",
     "response_sha256",
+    "normalization",
     *_INTEGER_USAGE_FIELDS,
     *_COST_USAGE_FIELDS,
 }
@@ -83,6 +86,7 @@ class GroundedAnswerAttempt:
     model: str | None
     response_chars: int | None
     response_sha256: str | None
+    normalization: str | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
     cached_input_tokens: int | None = None
@@ -118,7 +122,7 @@ class GroundedAnswerRetryResult:
             else (self.attempts[-1].error_type)
         )
         return {
-            "schema_version": 1,
+            "schema_version": 2,
             "contract": GROUNDED_ANSWER_RETRY_CONTRACT,
             "status": self.status.value,
             "retryable": self.retryable,
@@ -173,13 +177,17 @@ def run_grounded_answer_attempts(
                 answer=None,
             )
         try:
-            answer = parse_grounded_answer(response.text, context=context)
+            answer, normalization = parse_grounded_answer_with_safe_normalization(
+                response.text,
+                context=context,
+            )
         except (RecursionError, ValueError) as error:
             attempt = _response_attempt(
                 attempt_index,
                 status="contract_rejected",
                 response=response,
                 error_type=type(error).__name__,
+                normalization=None,
             )
             _record(attempts, attempt, callback=record_attempt)
             if attempt_index < max_attempts:
@@ -196,6 +204,7 @@ def run_grounded_answer_attempts(
             status="accepted",
             response=response,
             error_type=None,
+            normalization=normalization,
         )
         _record(attempts, attempt, callback=record_attempt)
         return GroundedAnswerRetryResult(
@@ -219,7 +228,7 @@ def validate_grounded_answer_retry_receipt(
         raise ValueError("Grounded answer retry receipt does not match its schema")
     receipt = cast(dict[str, object], value)
     if (
-        receipt.get("schema_version") != 1
+        receipt.get("schema_version") != 2
         or receipt.get("contract") != GROUNDED_ANSWER_RETRY_CONTRACT
     ):
         raise ValueError("Grounded answer retry receipt has an unsupported contract")
@@ -281,7 +290,7 @@ def validate_grounded_answer_retry_receipt(
     if raw_usage != expected_usage:
         raise ValueError("Grounded answer retry receipt usage is not derived from its attempts")
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "contract": GROUNDED_ANSWER_RETRY_CONTRACT,
         "status": status.value,
         "retryable": receipt["retryable"],
@@ -317,7 +326,7 @@ def validate_grounded_answer_retry_history(
         raise ValueError("Only exhausted contract failures may precede the final retry batch")
     final = receipts[-1]
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "contract": GROUNDED_ANSWER_RETRY_HISTORY_CONTRACT,
         "batch_count": len(receipts),
         "status": final["status"],
@@ -333,6 +342,7 @@ def _response_attempt(
     status: Literal["accepted", "contract_rejected"],
     response: ModelResponse,
     error_type: str | None,
+    normalization: str | None,
 ) -> GroundedAnswerAttempt:
     return GroundedAnswerAttempt(
         attempt_index=attempt_index,
@@ -341,6 +351,7 @@ def _response_attempt(
         model=response.model,
         response_chars=len(response.text),
         response_sha256=hashlib.sha256(response.text.encode()).hexdigest(),
+        normalization=normalization,
         input_tokens=response.input_tokens,
         output_tokens=response.output_tokens,
         cached_input_tokens=response.cached_input_tokens,
@@ -370,6 +381,7 @@ def _attempt_payload(attempt: GroundedAnswerAttempt) -> dict[str, object]:
         "model": attempt.model,
         "response_chars": attempt.response_chars,
         "response_sha256": attempt.response_sha256,
+        "normalization": attempt.normalization,
         **{field: getattr(attempt, field) for field in _INTEGER_USAGE_FIELDS},
         **{field: getattr(attempt, field) for field in _COST_USAGE_FIELDS},
     }
@@ -385,6 +397,7 @@ def _parse_attempt(value: object, *, expected_index: int) -> GroundedAnswerAttem
     model = attempt.get("model")
     response_chars = attempt.get("response_chars")
     response_sha256 = attempt.get("response_sha256")
+    normalization = attempt.get("normalization")
     if attempt_index != expected_index or status not in {
         "accepted",
         "contract_rejected",
@@ -398,11 +411,25 @@ def _parse_attempt(value: object, *, expected_index: int) -> GroundedAnswerAttem
             or model is not None
             or response_chars is not None
             or response_sha256 is not None
+            or normalization is not None
         ):
             raise ValueError("Grounded answer provider failure has invalid metadata")
     elif (
         (status == "accepted" and error_type is not None)
         or (status == "contract_rejected" and (not isinstance(error_type, str) or not error_type))
+        or (
+            status == "accepted"
+            and normalization is not None
+            and (
+                not isinstance(normalization, str)
+                or normalization
+                not in {
+                    INSUFFICIENT_CITATIONS_NORMALIZATION,
+                    INSUFFICIENT_EMPTY_ANSWER_NORMALIZATION,
+                }
+            )
+        )
+        or (status == "contract_rejected" and normalization is not None)
         or not isinstance(model, str)
         or not model
         or type(response_chars) is not int
@@ -419,6 +446,7 @@ def _parse_attempt(value: object, *, expected_index: int) -> GroundedAnswerAttem
         model=model,
         response_chars=response_chars,
         response_sha256=response_sha256,
+        normalization=cast(str | None, normalization),
         input_tokens=_optional_nonnegative_int(attempt.get("input_tokens"), field="input_tokens"),
         output_tokens=_optional_nonnegative_int(
             attempt.get("output_tokens"), field="output_tokens"

@@ -718,6 +718,61 @@ def test_v22_changes_only_the_local_retrieval_latency_slo() -> None:
     assert v22["200"]["promotion"] == expected_promotion
 
 
+def test_v23_changes_only_the_grounded_answer_contracts() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    paths = {
+        "40": benchmark_root / "diagnostic-40-v23.json",
+        "160": benchmark_root / "diagnostic-160-holdout-v23.json",
+        "200": benchmark_root / "diagnostic-200-v23.json",
+    }
+    expected_hashes = {
+        "40": "e5f2d077c9d0029dd5a67c314a84652abf3503fc224f15ba2e32e399f3de0c00",
+        "160": "05c8d03f7be2667ccca5d5240345c45bcba3d5843e17037bb17fc27c0cbe0198",
+        "200": "87c346a1a06257819c21a57e695a27dfae5e5c0c34820ddae860df2333cfede9",
+    }
+    v23 = {name: json.loads(path.read_text()) for name, path in paths.items()}
+    v22 = {
+        "40": json.loads((benchmark_root / "diagnostic-40-v22.json").read_text()),
+        "160": json.loads((benchmark_root / "diagnostic-160-holdout-v22.json").read_text()),
+        "200": json.loads((benchmark_root / "diagnostic-200-v22.json").read_text()),
+    }
+
+    for name, path in paths.items():
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_hashes[name]
+        expected_protocol = dict(v22[name]["protocol"])
+        expected_protocol.update(
+            {
+                "answer_evidence_contract": "grounded-cited-answer-v14",
+                "answer_retry_contract": "grounded-answer-contract-retry-v2",
+            }
+        )
+        assert v23[name]["protocol"] == expected_protocol
+    assert v23["40"]["gates"] == v22["40"]["gates"]
+    assert {key: value for key, value in v23["160"].items() if key != "protocol"} == {
+        key: value for key, value in v22["160"].items() if key != "protocol"
+    }
+
+    source = v23["200"]["promotion"]["source_selection"]
+    assert source == {
+        "selection_id": v23["40"]["selection_id"],
+        "question_set_sha256": expected_hashes["40"],
+        "selection_sha256": v23["40"]["selection_sha256"],
+        "protocol_sha256": canonical_sha256(v23["40"]["protocol"]),
+        "gates_sha256": _canonical_sha256(v23["40"]["gates"]),
+    }
+    holdout = v23["200"]["promotion"]["holdout_selection"]
+    assert holdout == {
+        "selection_id": v23["160"]["selection_id"],
+        "question_set_sha256": expected_hashes["160"],
+        "selection_sha256": v23["160"]["selection_sha256"],
+        "protocol_sha256": canonical_sha256(v23["160"]["protocol"]),
+    }
+    expected_promotion = json.loads(json.dumps(v22["200"]["promotion"]))
+    expected_promotion["source_selection"] = source
+    expected_promotion["holdout_selection"] = holdout
+    assert v23["200"]["promotion"] == expected_promotion
+
+
 def _select_question_ids(
     questions: tuple[LoCoMoQuestion, ...],
     *,

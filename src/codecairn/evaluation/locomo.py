@@ -81,7 +81,7 @@ LOCOMO_DATASET_URL = (
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
 LOCOMO_PAID_SCORING_GATE_CONTRACT = "dual-retrieval-context-coverage-v1"
-_ANSWER_EVIDENCE_CONTRACT = "grounded-cited-answer-v13"
+_ANSWER_EVIDENCE_CONTRACT = "grounded-cited-answer-v14"
 _JUDGE_CONTRACT = "locomo-generous-semantic-equivalence-v1"
 _CHECKPOINT_POLICY = "journal-replay-or-unknown-spend-fail-closed-v3"
 _LOCOMO_PROJECTION_CONTRACT = "locomo-grounded-clause-projection-v8"
@@ -397,7 +397,9 @@ class EvidenceAnswerSynthesizer:
             f"answer. {route_instruction} Say the context is insufficient only after "
             "checking every supplied item. Return exactly one JSON object with answer, "
             "supporting_evidence_ids, and insufficient. Cite only source_fact_id values "
-            "listed in rendered_evidence."
+            "listed in rendered_evidence. When insufficient is true, "
+            "supporting_evidence_ids must be an empty list. The answer must never be an "
+            "empty string or list."
         )
         context = _grounded_answer_context(recall)
         user = json.dumps(

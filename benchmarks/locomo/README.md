@@ -73,6 +73,15 @@ runs had zero infrastructure failures. The quality and safety gates remain
 unchanged. See
 [ADR 0033](../../docs/adr/0033-v22-uses-a-four-second-local-retrieval-slo.md).
 
+## V23 insufficient-answer normalization
+
+V23 keeps every V22 selection, retrieval, resource, quality, and promotion
+gate. It advances only the grounded-answer contracts so two safe insufficient
+answer shapes are normalized and scored instead of being reported as
+infrastructure failures. Normalized attempts retain an explicit normalization
+identifier in their receipt and do not trigger a second paid answer call. See
+[ADR 0034](../../docs/adr/0034-v23-normalizes-safe-insufficient-answer-shapes.md).
+
 ### Historical diagnostics
 
 The earlier scored 200-question run

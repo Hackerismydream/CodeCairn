@@ -943,6 +943,8 @@ def test_evidence_answer_synthesizer_uses_bounded_attributed_markdown() -> None:
     assert model.system_prompt is not None
     assert "ordinary common-sense inferences" not in model.system_prompt.casefold()
     assert "preserving action, negation, and qualifiers" in model.system_prompt.casefold()
+    assert "supporting_evidence_ids must be an empty list" in model.system_prompt
+    assert "answer must never be an empty string or list" in model.system_prompt
     assert answer.plan.route == "direct"
     assert answer.response.text == "The context is insufficient."
     assert answer.evidence_ids == ()
@@ -3638,8 +3640,8 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             ],
             "protocol": {
                 "answer_model": "fake-answer",
-                "answer_evidence_contract": "grounded-cited-answer-v13",
-                "answer_retry_contract": "grounded-answer-contract-retry-v1",
+                "answer_evidence_contract": "grounded-cited-answer-v14",
+                "answer_retry_contract": "grounded-answer-contract-retry-v2",
                 "answer_response_max_attempts": 2,
                 "judge_model": "fake-judge",
                 "judge_contract": "locomo-generous-semantic-equivalence-v1",
@@ -3851,9 +3853,9 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         )
 
 
-def test_official_v19_command_contract_passes_preflight(tmp_path: Path) -> None:
+def test_official_v23_command_contract_passes_preflight(tmp_path: Path) -> None:
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v19.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v23.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3882,7 +3884,11 @@ def test_official_v19_command_contract_passes_preflight(tmp_path: Path) -> None:
             "model": "Xenova/ms-marco-MiniLM-L-6-v2",
             "batch_size": 8,
         },
-        "planner": RecallPlannerConfig().public_config,
+        "planner": RecallPlannerConfig(
+            fact_rerank_max_candidates=192,
+            fact_rerank_max_candidates_per_parent=20,
+            fact_rerank_max_document_chars=1024,
+        ).public_config,
     }
     worker_contract = {
         "name": "verified-shared-corpus-exec-per-conversation-v3",
@@ -3964,7 +3970,7 @@ def test_official_v19_command_contract_passes_preflight(tmp_path: Path) -> None:
     config = LoCoMoRunConfig(
         dataset_path=FIXTURE,
         output_root=Path("unused"),
-        run_id="official-v19",
+        run_id="official-v23",
         repository_commit="abc123",
         max_workers=10,
         retrieval_config=retrieval_config,
@@ -4178,7 +4184,7 @@ def test_smoke_retries_malformed_grounded_answer_and_accounts_for_both_attempts(
     assert artifact.summary["usage"]["answer_call_count"] == 3
     assert artifact.summary["usage"]["answer_response_count"] == 3
     assert artifact.summary["answer_attempts"] == {
-        "contract": "grounded-answer-contract-retry-v1",
+        "contract": "grounded-answer-contract-retry-v2",
         "max_attempts": 2,
         "receipt_count": 2,
         "call_count": 3,
@@ -4187,7 +4193,7 @@ def test_smoke_retries_malformed_grounded_answer_and_accounts_for_both_attempts(
         "provider_failed_count": 0,
     }
     manifest = json.loads((artifact.run_dir / "manifest.json").read_text())
-    assert manifest["answer_retry_contract"] == "grounded-answer-contract-retry-v1"
+    assert manifest["answer_retry_contract"] == "grounded-answer-contract-retry-v2"
     assert manifest["answer_response_max_attempts"] == 2
     checkpoints = sorted((artifact.run_dir / "checkpoints/questions").glob("*/*.json"))
     records = [json.loads(path.read_text()) for path in checkpoints]

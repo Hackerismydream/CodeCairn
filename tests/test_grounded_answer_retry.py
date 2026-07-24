@@ -91,6 +91,104 @@ def test_malformed_answer_is_retried_once_and_every_response_is_accounted() -> N
     )
 
 
+def test_insufficient_answer_with_citations_is_safely_normalized_without_retry() -> None:
+    calls = 0
+    response = ModelResponse(
+        text=json.dumps(
+            {
+                "answer": "The context does not specify the answer.",
+                "supporting_evidence_ids": ["fact-poppy"],
+                "insufficient": True,
+            }
+        ),
+        model="fixture-answer",
+        input_tokens=10,
+        output_tokens=8,
+        cost_cny=0.001,
+    )
+
+    def generate(_attempt_index: int) -> ModelResponse:
+        nonlocal calls
+        calls += 1
+        return response
+
+    result = run_grounded_answer_attempts(
+        generate=generate,
+        context=_context(),
+        max_attempts=2,
+    )
+
+    assert calls == 1
+    assert result.status is GroundedAnswerRetryStatus.COMPLETED
+    assert result.answer is not None
+    assert result.answer.answer == "The context does not specify the answer."
+    assert result.answer.insufficient is True
+    assert result.answer.supporting_evidence_ids == ()
+    assert result.receipt["attempt_count"] == 1
+    attempts = result.receipt["attempts"]
+    assert isinstance(attempts, list)
+    assert attempts[0]["normalization"] == "insufficient-citations-removed-v1"
+    assert validate_grounded_answer_retry_receipt(result.receipt) == result.receipt
+
+
+def test_insufficient_answer_with_empty_list_is_safely_normalized_without_retry() -> None:
+    response = ModelResponse(
+        text=json.dumps(
+            {
+                "answer": [],
+                "supporting_evidence_ids": [],
+                "insufficient": True,
+            }
+        ),
+        model="fixture-answer",
+        input_tokens=10,
+        output_tokens=4,
+        cost_cny=0.001,
+    )
+
+    result = run_grounded_answer_attempts(
+        generate=lambda _attempt_index: response,
+        context=_context(),
+        max_attempts=2,
+    )
+
+    assert result.status is GroundedAnswerRetryStatus.COMPLETED
+    assert result.answer is not None
+    assert result.answer.answer == "The context is insufficient."
+    assert result.answer.insufficient is True
+    assert result.answer.supporting_evidence_ids == ()
+    assert result.receipt["attempt_count"] == 1
+    attempts = result.receipt["attempts"]
+    assert isinstance(attempts, list)
+    assert attempts[0]["normalization"] == "insufficient-empty-answer-replaced-v1"
+    assert validate_grounded_answer_retry_receipt(result.receipt) == result.receipt
+
+
+@pytest.mark.parametrize("normalization", ("invented-normalization-v1", []))
+def test_retry_receipt_rejects_an_unknown_answer_normalization(
+    normalization: object,
+) -> None:
+    response = ModelResponse(
+        text=json.dumps(
+            {
+                "answer": "The context is insufficient.",
+                "supporting_evidence_ids": [],
+                "insufficient": True,
+            }
+        ),
+        model="fixture-answer",
+    )
+    result = run_grounded_answer_attempts(
+        generate=lambda _attempt_index: response,
+        context=_context(),
+    )
+    tampered = json.loads(json.dumps(result.receipt))
+    tampered["attempts"][0]["normalization"] = normalization
+
+    with pytest.raises(ValueError, match="invalid metadata"):
+        validate_grounded_answer_retry_receipt(tampered)
+
+
 def test_exhausted_citation_failures_remain_retryable_and_keep_all_usage() -> None:
     response = ModelResponse(
         text=json.dumps(
