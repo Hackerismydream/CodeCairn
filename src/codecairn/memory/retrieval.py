@@ -71,6 +71,9 @@ class RetrievalProviders:
                     "input_per_million": input_price,
                 },
             }
+            transport_policy = getattr(self.embedder, "transport_policy", None)
+            if transport_policy is not None:
+                embedding["transport"] = dict(transport_policy)
         else:
             embedding = {
                 "adapter": "fastembed",

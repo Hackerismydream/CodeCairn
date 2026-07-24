@@ -197,6 +197,11 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
                 "currency": "CNY",
                 "input_per_million": 0.5,
             },
+            "transport": {
+                "timeout_seconds": 30.0,
+                "max_attempts": 3,
+                "retry_backoff_seconds": 1.0,
+            },
         },
         "reranker": {
             "adapter": "fastembed-cross-encoder",
@@ -489,7 +494,32 @@ def test_dashscope_public_config_never_contains_the_api_key() -> None:
             "currency": "CNY",
             "input_per_million": 0.25,
         },
+        "transport": {
+            "timeout_seconds": 30.0,
+            "max_attempts": 3,
+            "retry_backoff_seconds": 1.0,
+        },
     }
+
+
+def test_dashscope_transport_policy_changes_the_public_retrieval_contract() -> None:
+    default = create_retrieval_providers(
+        environment={"DASHSCOPE_API_KEY": "secret-key"},
+    )
+    extended_timeout = create_retrieval_providers(
+        environment={
+            "DASHSCOPE_API_KEY": "secret-key",
+            "CODECAIRN_EMBEDDING_TIMEOUT_SECONDS": "120",
+        },
+    )
+
+    assert default.public_config["embedding"] != extended_timeout.public_config["embedding"]
+    assert extended_timeout.public_config["embedding"]["transport"] == {
+        "timeout_seconds": 120.0,
+        "max_attempts": 3,
+        "retry_backoff_seconds": 1.0,
+    }
+    assert default.config_sha256 != extended_timeout.config_sha256
 
 
 def test_recall_mode_selects_an_auditable_ablation_configuration() -> None:

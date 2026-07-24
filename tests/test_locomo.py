@@ -3003,6 +3003,11 @@ def test_frozen_query_vectors_preserve_the_document_embedding_contract(
         dimension = 3
         index_identity = "test:embedding@revision:3"
         input_price_cny_per_million = 0.5
+        transport_policy: ClassVar[dict[str, object]] = {
+            "timeout_seconds": 120.0,
+            "max_attempts": 3,
+            "retry_backoff_seconds": 1.0,
+        }
 
         def embed_query(self, text: str) -> tuple[float, ...]:
             return (1.0, 2.0, 3.0)

@@ -3294,6 +3294,31 @@ class FrozenQueryEmbeddingAdapter:
             self._input_price_cny_per_million = float(
                 cast(int | float, pricing["input_per_million"])
             )
+        self._transport_policy: dict[str, object] | None = None
+        if "transport" in embedding:
+            transport = _required_dict(
+                embedding.get("transport"),
+                field="query-vector embedding transport",
+            )
+            if set(transport) != {
+                "timeout_seconds",
+                "max_attempts",
+                "retry_backoff_seconds",
+            }:
+                raise ValueError("Query-vector embedding transport policy is invalid")
+            timeout_seconds = _required_number(transport, "timeout_seconds")
+            max_attempts = _required_int(transport, "max_attempts")
+            retry_backoff_seconds = _required_number(
+                transport,
+                "retry_backoff_seconds",
+            )
+            if timeout_seconds <= 0 or max_attempts < 1 or retry_backoff_seconds < 0:
+                raise ValueError("Query-vector embedding transport policy is invalid")
+            self._transport_policy = {
+                "timeout_seconds": timeout_seconds,
+                "max_attempts": max_attempts,
+                "retry_backoff_seconds": retry_backoff_seconds,
+            }
         self._vectors: dict[str, tuple[float, ...]] = {}
         self._vectors_loaded = load_vectors
         if not load_vectors:
@@ -3356,6 +3381,10 @@ class FrozenQueryEmbeddingAdapter:
     @property
     def input_price_cny_per_million(self) -> float | None:
         return self._input_price_cny_per_million
+
+    @property
+    def transport_policy(self) -> dict[str, object] | None:
+        return None if self._transport_policy is None else deepcopy(self._transport_policy)
 
     @property
     def query_batch_size(self) -> int:
@@ -3616,6 +3645,9 @@ def _embedding_provider_identity(embedder: EmbeddingProvider) -> dict[str, objec
             "currency": "CNY",
             "input_per_million": input_price,
         }
+    transport_policy = getattr(embedder, "transport_policy", None)
+    if transport_policy is not None:
+        identity["transport"] = deepcopy(transport_policy)
     return identity
 
 

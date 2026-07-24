@@ -104,6 +104,9 @@ high-confidence-parent slot, and the unchanged v19 retrieval gates.
 [ADR 0027](../../docs/adr/0027-semantic-projection-rejects-foreign-citations-per-clause.md)
 records the failed first v19 corpus build and the clause-local rejection rule
 for model citations that cross a semantic projection request window.
+[ADR 0028](../../docs/adr/0028-embedding-transport-policy-is-artifact-identity.md)
+records the failed 30-second embedding attempt and makes timeout, retry count,
+and retry backoff part of the immutable embedding artifact identity.
 
 Credentials are exported outside shell history. Build one structured semantic
 corpus and reuse it for every recall variant:
@@ -122,7 +125,7 @@ export CODECAIRN_EMBEDDING_REVISION=provider-managed
 export CODECAIRN_EMBEDDING_LICENSE="Alibaba Cloud Model Studio service"
 export CODECAIRN_EMBEDDING_BATCH_SIZE=10
 export CODECAIRN_EMBEDDING_INPUT_PRICE_CNY_PER_MILLION=0.5
-export CODECAIRN_EMBEDDING_TIMEOUT_SECONDS=30
+export CODECAIRN_EMBEDDING_TIMEOUT_SECONDS=120
 export CODECAIRN_EMBEDDING_MAX_ATTEMPTS=3
 export CODECAIRN_EMBEDDING_RETRY_BACKOFF_SECONDS=1
 

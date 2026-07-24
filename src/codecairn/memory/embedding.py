@@ -170,8 +170,9 @@ class DashScopeEmbeddingAdapter:
         self._revision = revision
         self._dimension = dimension
         self._batch_size = batch_size
+        self._timeout_seconds = float(timeout_seconds)
         self._max_attempts = max_attempts
-        self._retry_backoff_seconds = retry_backoff_seconds
+        self._retry_backoff_seconds = float(retry_backoff_seconds)
         self._input_price_cny_per_million = input_price_cny_per_million
         self._usage_lock = Lock()
         self._call_count = 0
@@ -220,6 +221,14 @@ class DashScopeEmbeddingAdapter:
     @property
     def input_price_cny_per_million(self) -> float | None:
         return self._input_price_cny_per_million
+
+    @property
+    def transport_policy(self) -> dict[str, object]:
+        return {
+            "timeout_seconds": self._timeout_seconds,
+            "max_attempts": self._max_attempts,
+            "retry_backoff_seconds": self._retry_backoff_seconds,
+        }
 
     @property
     def usage(self) -> EmbeddingUsage:
