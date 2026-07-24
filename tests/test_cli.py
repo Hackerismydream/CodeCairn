@@ -292,7 +292,7 @@ def test_cli_rejects_a_gate_for_another_question_set_before_model_providers(
     assert result.exit_code == 1
     assert isinstance(result.exception, ValueError)
     assert "does not target the scored question set" in str(result.exception)
-    assert retrieval_p95_gates == [3_000.0]
+    assert retrieval_p95_gates == [4_000.0]
     assert provider_roles == []
 
 

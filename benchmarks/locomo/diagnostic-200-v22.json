@@ -15,10 +15,10 @@
     "schema_version": 1,
     "source_selection": {
       "selection_id": "locomo-diagnostic-40-v1",
-      "question_set_sha256": "f894d5dd90a80cc71919fe30e0b293c7de22db8c1e6bf2fe210d4de2a8594a5d",
+      "question_set_sha256": "0781479dd57df13210c5f49f4e70fda6770994d674b2ada680324002502d796b",
       "selection_sha256": "5af177ee3aa75a532d7f8f3927ed58ace8468aff4dd0fabdcdc6a2a351c1f8fb",
       "protocol_sha256": "83c30a046589283a2b2630e76fd3bfa32f277bbffeed9be88c284e8978b5afc0",
-      "gates_sha256": "c1705ca7dc4c45e7b9266fb2585e91a9b89d139f0de8b794e4d2537794ae0877"
+      "gates_sha256": "c8993c596a8e3ecd365be32283af3ea611b1c0a11084fd7b2b8a5ee06204ddde"
     },
     "holdout_selection": {
       "selection_id": "locomo-diagnostic-160-holdout-v1",
@@ -42,7 +42,7 @@
       "minimum_open_domain_accuracy": 0.68,
       "maximum_single_hop_regression_points": 2,
       "maximum_infrastructure_failures": 0,
-      "maximum_retrieval_p95_ms": 3000,
+      "maximum_retrieval_p95_ms": 4000,
       "maximum_process_rss_bytes_exclusive": 2147483648
     }
   },

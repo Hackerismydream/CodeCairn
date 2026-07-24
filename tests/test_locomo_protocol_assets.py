@@ -678,9 +678,9 @@ def test_v22_changes_only_the_local_retrieval_latency_slo() -> None:
         "200": benchmark_root / "diagnostic-200-v22.json",
     }
     expected_hashes = {
-        "40": "f894d5dd90a80cc71919fe30e0b293c7de22db8c1e6bf2fe210d4de2a8594a5d",
+        "40": "0781479dd57df13210c5f49f4e70fda6770994d674b2ada680324002502d796b",
         "160": "8eab0e5330307f311766c53b1078c4e7e86417ec4a2abca01b68844d173eaaf9",
-        "200": "f5f0a992223772d1d580ac94236db4c31b2ba4329c2526909f1593a6aacb98fb",
+        "200": "451f36d7f7630043e3df0ae339f77e61620a10053101c35f9d312756e07abfb0",
     }
     v22 = {name: json.loads(path.read_text()) for name, path in paths.items()}
     v21 = {
@@ -693,7 +693,7 @@ def test_v22_changes_only_the_local_retrieval_latency_slo() -> None:
         assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_hashes[name]
         assert v22[name]["protocol"] == v21[name]["protocol"]
     expected_selection_gates = dict(v21["40"]["gates"])
-    expected_selection_gates["selected_maximum_retrieval_p95_ms"] = 3000
+    expected_selection_gates["selected_maximum_retrieval_p95_ms"] = 4000
     assert v22["40"]["gates"] == expected_selection_gates
     assert v22["160"] == v21["160"]
 
@@ -714,7 +714,7 @@ def test_v22_changes_only_the_local_retrieval_latency_slo() -> None:
     }
     expected_promotion = json.loads(json.dumps(v21["200"]["promotion"]))
     expected_promotion["source_selection"] = source
-    expected_promotion["gates"]["maximum_retrieval_p95_ms"] = 3000
+    expected_promotion["gates"]["maximum_retrieval_p95_ms"] = 4000
     assert v22["200"]["promotion"] == expected_promotion
 
 

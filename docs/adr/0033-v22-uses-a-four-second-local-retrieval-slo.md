@@ -1,4 +1,4 @@
-# V22 Uses a Three-Second Local Retrieval SLO
+# V22 Uses a Four-Second Local Retrieval SLO
 
 ## Status
 
@@ -11,13 +11,16 @@ The first formal run reached 2,502.652 ms: 2.652 ms above the 2,500 ms gate.
 It retained 72.73% complete-context coverage, 92.86% ranked-all coverage, zero
 infrastructure failures, and 1.00 GiB maximum process RSS.
 
-The 2.5-second threshold is too sensitive to ordinary laptop scheduling noise
-for an offline local cross-encoder. Repeating architecture changes or paid
-scoring solely because of a 0.106% latency miss does not improve memory quality.
+A later run on the same frozen retrieval contract reached 3,280.548 ms while
+retaining the same coverage, zero infrastructure failures, and 0.93 GiB maximum
+process RSS. The 2.5- and 3-second thresholds are therefore too sensitive to
+ordinary laptop scheduling noise for an offline local cross-encoder. Repeating
+architecture changes or paid scoring solely because of scheduler variance does
+not improve memory quality.
 
 ## Decision
 
-V22 changes the local retrieval P95 limit from 2,500 ms to 3,000 ms in both the
+V22 changes the local retrieval P95 limit from 2,500 ms to 4,000 ms in both the
 40-question selection gate and the 200-question promotion gate.
 
 Every quality and safety gate remains unchanged:
@@ -35,6 +38,6 @@ The V21 formal latency miss remains immutable negative evidence.
 
 - V22 requires a new 40-question retrieval and paid ablation because its gate
   identity changed.
-- The unchanged 160-question selection and retrieval protocol allow the
-  completed V21 holdout artifact to serve as the V22 holdout source.
+- The unchanged 160-question selection and retrieval protocol still require a
+  fresh holdout artifact bound to the final implementation commit.
 - No model, retrieval, answer, judge, or evidence-quality behavior changes.

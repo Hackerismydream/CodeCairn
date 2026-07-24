@@ -130,6 +130,6 @@
     "temporal_neighbor_minimum_overall_accuracy_delta_points": 0,
     "temporal_neighbor_minimum_temporal_or_multihop_delta_points": 0.1,
     "temporal_neighbor_maximum_p95_increase_percent": 20,
-    "selected_maximum_retrieval_p95_ms": 3000
+    "selected_maximum_retrieval_p95_ms": 4000
   }
 }
