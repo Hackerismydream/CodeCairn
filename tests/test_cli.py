@@ -233,6 +233,7 @@ def test_cli_rejects_a_gate_for_another_question_set_before_model_providers(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     provider_roles: list[str] = []
+    retrieval_p95_gates: list[float] = []
 
     def record_provider(*, role: str, **_kwargs: object) -> object:
         provider_roles.append(role)
@@ -242,11 +243,18 @@ def test_cli_rejects_a_gate_for_another_question_set_before_model_providers(
         "codecairn.evaluation.providers.create_locomo_text_model",
         record_provider,
     )
+
+    def record_retrieval_gate(
+        config: LoCoMoRetrievalGateConfig,
+    ) -> dict[str, object]:
+        retrieval_p95_gates.append(config.maximum_retrieval_p95_ms)
+        return {"scored_question_set_sha256": "0" * 64}
+
     monkeypatch.setattr(
         "codecairn.evaluation.locomo_retrieval_gate.verify_locomo_retrieval_gate",
-        lambda _config: {"scored_question_set_sha256": "0" * 64},
+        record_retrieval_gate,
     )
-    question_set = Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v18.json"
+    question_set = Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v22.json"
     gate_dirs = [tmp_path / name for name in ("corpus", "queries", "canary", "holdout")]
     for directory in gate_dirs:
         directory.mkdir()
@@ -284,6 +292,7 @@ def test_cli_rejects_a_gate_for_another_question_set_before_model_providers(
     assert result.exit_code == 1
     assert isinstance(result.exception, ValueError)
     assert "does not target the scored question set" in str(result.exception)
+    assert retrieval_p95_gates == [3_000.0]
     assert provider_roles == []
 
 

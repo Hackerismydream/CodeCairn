@@ -925,6 +925,22 @@ class _LocalOperations(ApplicationOperations):
                 )
                 gate_contract = protocol.get("paid_scoring_gate")
                 if gate_contract == LOCOMO_PAID_SCORING_GATE_CONTRACT:
+                    promotion = _bootstrap_mapping(
+                        definition.get("promotion"),
+                        field="LoCoMo question-set promotion",
+                    )
+                    promotion_gates = _bootstrap_mapping(
+                        promotion.get("gates"),
+                        field="LoCoMo question-set promotion gates",
+                    )
+                    raw_maximum_retrieval_p95_ms = promotion_gates.get("maximum_retrieval_p95_ms")
+                    if (
+                        isinstance(raw_maximum_retrieval_p95_ms, bool)
+                        or not isinstance(raw_maximum_retrieval_p95_ms, int | float)
+                        or not math.isfinite(float(raw_maximum_retrieval_p95_ms))
+                        or raw_maximum_retrieval_p95_ms <= 0
+                    ):
+                        raise ValueError("LoCoMo question-set retrieval P95 gate must be positive")
                     required_paths = {
                         "retrieval gate question set": request.retrieval_gate_question_set_path,
                         "retrieval canary run": request.retrieval_canary_run_path,
@@ -950,6 +966,7 @@ class _LocalOperations(ApplicationOperations):
                             repository_commit=request.repository_commit,
                             corpus_path=cast(Path, request.corpus_path),
                             query_vectors_path=cast(Path, request.query_vectors_path),
+                            maximum_retrieval_p95_ms=float(raw_maximum_retrieval_p95_ms),
                         )
                     )
                     if paid_scoring_preflight.get("scored_question_set_sha256") != file_sha256(
