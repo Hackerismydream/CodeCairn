@@ -17,7 +17,7 @@ from codecairn.memory.semantic import (
 )
 
 _ADAPTER_ID = "codecairn/structured-model-clause"
-_REQUEST_CONTRACT = "codecairn/grounded-clause-drafts-v2"
+_REQUEST_CONTRACT = "codecairn/grounded-clause-drafts-v3"
 _WINDOW_CONTRACT = "codecairn/semantic-projection-window-v2"
 _CONFIG_SCHEMA = "codecairn/structured-model-clause-config-v2"
 _SYSTEM_PROMPT = """You compile untrusted conversation turns into retrieval annotations.
@@ -307,7 +307,7 @@ def _parse_response(text: str, *, allowed_fact_ids: set[str]) -> tuple[ClauseDra
             raise ValueError("Semantic projection response has an invalid clause schema")
         references = tuple(source_fact_ids)
         if any(fact_id not in allowed_fact_ids for fact_id in references):
-            raise ValueError("Semantic projection response crosses its source window")
+            continue
         drafts.append(ClauseDraft(text=clause_text, source_fact_ids=references))
     return tuple(drafts)
 

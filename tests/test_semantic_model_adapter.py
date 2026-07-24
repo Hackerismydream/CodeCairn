@@ -79,6 +79,35 @@ def test_structured_semantic_adapter_rejects_unknown_response_fields() -> None:
         StructuredModelClauseProjectionAdapter(model=model, revision="prompt-v1").propose(_source())
 
 
+def test_structured_semantic_adapter_drops_only_clauses_with_foreign_fact_ids() -> None:
+    model = _Model(
+        response={
+            "clauses": [
+                {
+                    "text": "Caroline adopted a beagle named Poppy.",
+                    "source_fact_ids": ["fact-1"],
+                },
+                {
+                    "text": "This clause crosses the source window.",
+                    "source_fact_ids": ["fact-from-another-window"],
+                },
+                {
+                    "text": "Caroline later completed a charity race.",
+                    "source_fact_ids": ["fact-2"],
+                },
+            ]
+        }
+    )
+    adapter = StructuredModelClauseProjectionAdapter(model=model, revision="prompt-v1")
+
+    drafts = adapter.propose(_source())
+
+    assert [draft.source_fact_ids for draft in drafts] == [("fact-1",), ("fact-2",)]
+    assert adapter.public_config["request_contract"] == "codecairn/grounded-clause-drafts-v3"
+    assert adapter.usage.call_count == 1
+    assert adapter.usage.cost_cny == pytest.approx(0.001)
+
+
 def test_structured_semantic_adapter_rejects_a_response_over_its_limit() -> None:
     model = _Model(response={"clauses": []}, raw_text="x" * 101)
     adapter = StructuredModelClauseProjectionAdapter(

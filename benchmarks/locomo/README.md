@@ -101,6 +101,9 @@ complete-context gate. Its holdout and paid scoring stages were not run.
 [ADR 0026](../../docs/adr/0026-v19-compacts-evidence-context.md) records the
 v18 final-context failure, the compact v9 renderer, the bounded
 high-confidence-parent slot, and the unchanged v19 retrieval gates.
+[ADR 0027](../../docs/adr/0027-semantic-projection-rejects-foreign-citations-per-clause.md)
+records the failed first v19 corpus build and the clause-local rejection rule
+for model citations that cross a semantic projection request window.
 
 Credentials are exported outside shell history. Build one structured semantic
 corpus and reuse it for every recall variant:
@@ -182,6 +185,11 @@ deterministic raw child for every authoritative source fact. Raw and semantic
 children intentionally coexist because a semantic citation does not prove that
 the derived clause preserved every retrievable term in its source. A v7 corpus
 cannot be reused because it may omit authoritative facts from the child index.
+The structured projection v3 request contract rejects a schema-valid clause
+when any cited fact lies outside its request window, while retaining independent
+valid sibling clauses. It never retries that paid response, never admits the
+foreign citation, and still records provider usage. If no clause survives, the
+lossless source-fact narrative and raw retrieval children preserve evidence.
 `--resume` reuses only verified conversation checkpoints whose projection
 contract matches exactly. It never combines different model, prompt, limit, or
 cache identities.
