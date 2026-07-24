@@ -1,0 +1,9 @@
+{
+  "category": 1,
+  "category_name": "multi-hop",
+  "outcome": "wrong",
+  "question_id": "locomo-question_e50fed67438fd255c723",
+  "sample_id": "conv-49",
+  "schema_version": 1,
+  "source_artifact_sha256": "d3feca735739bc862ff897d82079d15357f5b914e095a499d91b2d30905725ff"
+}

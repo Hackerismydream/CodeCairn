@@ -1,0 +1,82 @@
+{
+  "events": [
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 1
+    },
+    {
+      "command": "/bin/zsh -lc 'rg -n \"parse_bool|bool\" .'",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 2
+    },
+    {
+      "command": "/bin/zsh -lc 'rg --files .'",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 3
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 4
+    },
+    {
+      "command": "/bin/zsh -lc \"sed -n '1,220p' kata.py\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 5
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "file_read",
+      "path": "kata.py",
+      "step": 6
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 7
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "file_change",
+      "path": "/private/tmp/codecairn-evidence-fbc7023/coding/coding-fbc7023-gpt54/task-02-memory-off-r02-34e1a1d7838c/workspace/kata.py",
+      "step": 8
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 9
+    },
+    {
+      "command": "/bin/zsh -lc \"python - <<'PY'\nfrom kata import parse_bool, env_enabled\n\nsamples = [\\\"true\\\", \\\"TRUE\\\", \\\" false \\\", \\\"1\\\", \\\"0\\\", \\\"yes\\\", \\\"off\\\", \\\"\\\"]\nfor sample in samples:\n    print(repr(sample), parse_bool(sample), env_enabled(sample))\nprint(env_enabled(None))\ntry:\n    parse_bool(\\\"maybe\\\")\nexcept ValueError as exc:\n    print(type(exc).__name__, str(exc))\nPY\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 10
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 11
+    }
+  ],
+  "schema_version": 1
+}

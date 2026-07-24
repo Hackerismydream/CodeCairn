@@ -10,18 +10,22 @@ runner, IDE, or cloud knowledge platform.
 
 ## Status
 
-CodeCairn is under active development. Published benchmark numbers live in the
-[public evidence bundle](evidence/benchmark-v1/README.md) for release headlines
-or in checked-in versioned diagnostic artifacts linked from the relevant ADR.
-Every measurement links to its manifest and raw aggregate inputs. The release
-bundle keeps the explicitly unscored LoCoMo smoke run separate from the
-completed retrieval, recovery, and CodingMemoryBench measurements.
+CodeCairn has completed its three V1 milestones. Published release numbers live
+in the [benchmark-v3 public evidence bundle](evidence/benchmark-v3/README.md);
+every measurement links to an immutable manifest and the public inputs consumed
+by its offline reducer.
 
-The first release is planned in three milestones:
+| V1 milestone | Delivered |
+|---|---|
+| M1 | Agent Trace, resumable import ledger, Markdown truth, and SQLite state |
+| M2 | Evidence-backed extraction, LanceDB projections, and budgeted Recall Context |
+| M3 | Full LoCoMo evaluation, 120-run CodingMemoryBench A/B, retrieval, recovery, and generated resume evidence |
 
-1. Trace, import ledger, Markdown truth, and SQLite state.
-2. Evidence-backed extraction, LanceDB indexing, and Recall Context.
-3. LoCoMo evaluation, isolated coding-task A/B runs, and recovery evidence.
+The current checked-in evidence reports 82.60% on all 1,540 official LoCoMo
+category 1-4 questions with zero infrastructure failures, 96.00% Recall@5 on
+the 100-query retrieval suite, 100.00% index rebuild consistency, and a
+CodingMemoryBench pass-rate change from 85% memory-off to 100% memory-on. These
+are evaluation results rather than production-traffic claims.
 
 ## Development
 
@@ -114,7 +118,7 @@ metrics, English and Chinese resume copy, and a SHA-256 inventory. Verification
 recomputes every report and generated document without provider credentials:
 
 ```bash
-codecairn evidence verify evidence/benchmark-v1
+codecairn evidence verify evidence/benchmark-v3
 ```
 
 The full artifact selection and benchmark interpretation rules are documented
@@ -146,103 +150,23 @@ ablations may select `episode-only` or `hierarchy-no-neighbors`; the effective
 mode and deterministic router contract are included in the retrieval manifest
 and every query sidecar.
 
-Resource-sensitive LoCoMo evidence runs reuse one verified corpus and one frozen
-query-vector artifact, then isolate each conversation in a fresh worker process.
-The current v18 protocol first builds a lossless v8 child projection and freezes
-the 200 diagnostic query vectors. It then runs retrieval without answer or judge
-calls: a frozen 40-question canary must pass before the non-overlapping
-160-question holdout is accepted. Both reuse the same corpus and query-vector
-artifacts. The formal v14 through v17 artifacts remain immutable historical
-evidence; in particular, the v17 holdout remains a negative result rather than
-an improvement claim. [ADR 0024](docs/adr/0024-v17-preserves-same-ordinal-anaphoric-evidence-bundles.md)
-records the v17 boundary, and
-[ADR 0025](docs/adr/0025-v18-projects-lossless-source-fact-recall-children.md)
-defines the v18 repair and acceptance gates.
+Resource-sensitive LoCoMo runs reuse one content-addressed corpus and one frozen
+query-vector artifact, bound their retrieval work per question, and isolate
+conversations in worker processes. The V23 protocol freezes the standard 1,540
+answerable questions and records its corpus, query vectors, embedding,
+reranker, answer contract, judge contract, concurrency, and resource limits in
+immutable manifests.
 
-```bash
-COMMIT="$(git rev-parse --verify HEAD)"
-
-codecairn eval build-locomo-corpus benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-200-v18.json \
-  --corpus-id locomo-grounded-clause-v8 \
-  --repository-commit "$COMMIT" \
-  --output-root benchmark_results/locomo/corpora
-
-codecairn eval build-locomo-query-vectors benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-200-v18.json \
-  --vector-set-id locomo-diagnostic-200-v18 \
-  --output-root benchmark_results/locomo/query-vectors
-
-# Substitute the content-addressed directories printed by the build commands.
-CORPUS="benchmark_results/locomo/corpora/corpus-<content-sha-prefix>"
-QUERIES="benchmark_results/locomo/query-vectors/queries-<content-sha-prefix>"
-CANARY_RUN="benchmark_results/locomo/locomo-diagnostic-40-v18-hierarchy-retrieval"
-HOLDOUT_RUN="benchmark_results/locomo/locomo-diagnostic-160-holdout-v18-hierarchy-retrieval"
-
-CODECAIRN_RECALL_MODE=hierarchy codecairn eval run locomo \
-  benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-40-v18.json \
-  --run-id locomo-diagnostic-40-v18-hierarchy-retrieval \
-  --repository-commit "$COMMIT" \
-  --output-root benchmark_results \
-  --root benchmark_results/runtime-v18-hierarchy-retrieval-40 \
-  --corpus "$CORPUS" \
-  --query-vectors "$QUERIES" \
-  --mode retrieval \
-  --max-workers 10
-
-codecairn eval report-locomo-evidence \
-  "$CANARY_RUN" \
-  --dataset benchmarks/locomo/data/locomo10.json \
-  --output "$CANARY_RUN/evidence-coverage.json"
-
-CODECAIRN_RECALL_MODE=hierarchy codecairn eval run locomo \
-  benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-160-holdout-v18.json \
-  --run-id locomo-diagnostic-160-holdout-v18-hierarchy-retrieval \
-  --repository-commit "$COMMIT" \
-  --output-root benchmark_results \
-  --root benchmark_results/runtime-v18-hierarchy-retrieval-160-holdout \
-  --corpus "$CORPUS" \
-  --query-vectors "$QUERIES" \
-  --mode retrieval \
-  --max-workers 10
-
-codecairn eval report-locomo-evidence \
-  "$HOLDOUT_RUN" \
-  --dataset benchmarks/locomo/data/locomo10.json \
-  --output "$HOLDOUT_RUN/evidence-coverage.json"
-
-# Run only after both provider-free retrieval gates pass.
-CODECAIRN_RECALL_MODE=hierarchy codecairn eval run locomo \
-  benchmarks/locomo/data/locomo10.json \
-  --question-set benchmarks/locomo/diagnostic-200-v18.json \
-  --run-id locomo-diagnostic-200-v18-hierarchy \
-  --repository-commit "$COMMIT" \
-  --output-root benchmark_results \
-  --root benchmark_results/runtime-v18-hierarchy \
-  --corpus "$CORPUS" \
-  --query-vectors "$QUERIES" \
-  --retrieval-gate-question-set benchmarks/locomo/diagnostic-200-v18.json \
-  --retrieval-canary-run "$CANARY_RUN" \
-  --retrieval-holdout-run "$HOLDOUT_RUN" \
-  --mode full \
-  --model deepseek-v4-flash \
-  --judge-model deepseek-v4-flash \
-  --max-workers 10
-```
-
-For a v18 paid run, the verifier reopens both retrieval runs, recomputes their
-reports and evidence coverage, and validates their disjoint question inventory,
-exact frozen definition hashes, commit, actual retrieval configuration,
-protocol, corpus, query vectors, context limit, latency, and RSS before
-constructing either model provider. The exact-schema receipt also binds the
-scored question set, whether it is the 40-question paid slice or the full
-200-question diagnostic. Workers revalidate it before provider construction,
-and promotion verifies the same receipt against both frozen retrieval sources.
-Missing, drifted, or failed gate evidence therefore stops the command before an
-answer or judge request can be made. The exact thresholds and the longer
-operational workflow are documented in `benchmarks/locomo/README.md`.
+Transient provider failures are repaired only through an explicit failed-ID
+selection. The original run remains immutable; a formal composite is accepted
+only when the repair IDs exactly equal the base failure set and all
+artifact-facing contracts match. The public evidence bundle publishes
+privacy-safe source and final outcomes, then recomputes the 82.60% score
+offline. [ADR 0037](docs/adr/0037-locomo-provider-failures-use-exact-repair-runs.md)
+defines exact repair, while
+[ADR 0039](docs/adr/0039-public-evidence-publishes-exact-repair-outcomes.md)
+defines its public verification contract. Operational commands and spend gates
+live in [benchmarks/locomo/README.md](benchmarks/locomo/README.md).
 
 The six versioned routes cover import, memory list, recall, evaluation run,
 evaluation report, and health. Every error response has the same shape and an

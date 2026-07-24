@@ -1,0 +1,9 @@
+{
+  "category": 1,
+  "category_name": "multi-hop",
+  "outcome": "infrastructure_failed",
+  "question_id": "locomo-question_d402202c6dd1a04246c8",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "2c072f044a0ac53d136a963d54511b0094dd2b307839908a456f7304e5af8707"
+}

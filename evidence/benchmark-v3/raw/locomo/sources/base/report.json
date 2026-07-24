@@ -1,0 +1,123 @@
+{
+  "accuracy": 0.839611,
+  "answer_attempts": {
+    "call_count": 1541,
+    "contract": "grounded-answer-contract-retry-v2",
+    "contract_rejected_count": 1,
+    "max_attempts": 2,
+    "provider_failed_count": 715,
+    "receipt_count": 1540,
+    "response_count": 826
+  },
+  "answer_evidence": {
+    "cited_answer_count": 804,
+    "cited_answer_rate": 0.976914,
+    "invalid_citation_count": 0,
+    "structured_answer_count": 825,
+    "valid_citation_count": 1562
+  },
+  "by_category": {
+    "1": {
+      "accuracy": 0.721212,
+      "correct": 119,
+      "count": 165,
+      "name": "multi-hop"
+    },
+    "2": {
+      "accuracy": 0.9,
+      "correct": 171,
+      "count": 190,
+      "name": "temporal"
+    },
+    "3": {
+      "accuracy": 0.73913,
+      "correct": 34,
+      "count": 46,
+      "name": "open-domain"
+    },
+    "4": {
+      "accuracy": 0.869668,
+      "correct": 367,
+      "count": 422,
+      "name": "single-hop"
+    }
+  },
+  "completed_question_count": 823,
+  "correct_count": 691,
+  "infrastructure_failed_count": 717,
+  "judge_votes": 3,
+  "mode": "full",
+  "model_attempt_journal": {
+    "application_call_count": 4014,
+    "completed_outcome_count": 4014,
+    "contract": "locomo-model-attempt-journal-v1",
+    "known_provider_attempt_count": 4014,
+    "provider_attempt_count": 4014,
+    "provider_failed_count": 717,
+    "question_count": 1540,
+    "response_count": 3297,
+    "unknown_spend_count": 0
+  },
+  "model_output_scoring_contract": "contract-exhausted-answer-is-wrong-v1",
+  "question_artifact_count": 1540,
+  "retrieval_diagnostics": {
+    "average_counts": {
+      "atomic_fact_entity_lexical_candidate_count": 2.986,
+      "atomic_fact_lexical_candidate_count": 37.194,
+      "atomic_fact_temporal_lexical_candidate_count": 0.468,
+      "atomic_fact_vector_candidate_count": 37.208,
+      "entity_posting_candidate_count": 0.383,
+      "episode_entity_lexical_candidate_count": 2.981,
+      "episode_lexical_candidate_count": 20.886,
+      "episode_temporal_lexical_candidate_count": 0.468,
+      "episode_vector_candidate_count": 20.901,
+      "neighbor_expansion_count": 0.0
+    },
+    "context": {
+      "averages": {
+        "char_count": 7916.01,
+        "omitted_parent_count": 5.056,
+        "omitted_snippet_count": 161.731,
+        "rendered_fact_count": 30.269,
+        "rendered_parent_count": 14.792,
+        "token_count": 3989.303
+      },
+      "renderer_counts": {
+        "exact-source-flat-facts-first-v9": 1540
+      }
+    },
+    "latency_ms": {
+      "max": 6881.709,
+      "p50": 2106.232,
+      "p95": 3102.023
+    },
+    "route_counts": {
+      "episode_first": 215,
+      "fact_first": 1325
+    }
+  },
+  "run_id": "locomo-full-1540-v23-d19793c-formal-hierarchy-no-neighbors",
+  "schema_version": 1,
+  "scored": true,
+  "scored_question_count": 823,
+  "source_report_sha256": "82aad4dfe6c04444c3acf8b00826ff6b0647a3ecc51be04ecadc5563217ce597",
+  "suite": "locomo",
+  "usage": {
+    "answer_call_count": 1541,
+    "answer_response_count": 826,
+    "cached_input_tokens": 876160,
+    "cost_cny": 3.3174112,
+    "cost_usd": null,
+    "input_tokens": 4027350,
+    "journal_application_call_count": 4014,
+    "journal_completed_outcome_count": 4014,
+    "journal_known_provider_attempt_count": 4014,
+    "journal_provider_attempt_count": 4014,
+    "journal_unknown_spend_count": 0,
+    "known_cost_cny_count": 3297,
+    "known_cost_count": 0,
+    "output_tokens": 74349,
+    "reasoning_tokens": 0,
+    "uncached_input_tokens": 3151190
+  }
+}

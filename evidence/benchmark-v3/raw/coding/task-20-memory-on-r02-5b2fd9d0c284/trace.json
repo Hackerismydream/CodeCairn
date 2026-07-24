@@ -1,0 +1,89 @@
+{
+  "events": [
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 1
+    },
+    {
+      "command": "/bin/zsh -lc 'rg --files .'",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 2
+    },
+    {
+      "command": "/bin/zsh -lc 'rg -n \"truncate_middle|middle trunc\" .'",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 3
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 4
+    },
+    {
+      "command": "/bin/zsh -lc \"sed -n '1,220p' kata.py\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 5
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "file_read",
+      "path": "kata.py",
+      "step": 6
+    },
+    {
+      "command": "/bin/zsh -lc 'rg -n \"truncate_middle|ellipsis|limit\" kata.py'",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 7
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 8
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "file_change",
+      "path": "/private/tmp/codecairn-evidence-fbc7023/coding/coding-fbc7023-gpt54/task-20-memory-on-r02-5b2fd9d0c284/workspace/kata.py",
+      "step": 9
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 10
+    },
+    {
+      "command": "/bin/zsh -lc \"python - <<'PY'\nfrom kata import truncate_middle\n\ncases = [\n    (\\\"abcdef\\\", 6),\n    (\\\"abcdef\\\", 5),\n    (\\\"abcdef\\\", 4),\n    (\\\"abcdef\\\", 3),\n    (\\\"abcdef\\\", 2),\n    (\\\"abcdef\\\", 1),\n    (\\\"abcdef\\\", 0),\n    (\\\"abcdefghij\\\", 8),\n]\nfor value, limit in cases:\n    result = truncate_middle(value, limit)\n    assert len(result) <= limit, (value, limit, result, len(result))\n    if len(value) <= limit:\n        assert result == value, (value, limit, result)\nprint('ok')\nPY\"",
+      "exit_code": 0,
+      "kind": "command",
+      "path": null,
+      "step": 11
+    },
+    {
+      "command": null,
+      "exit_code": null,
+      "kind": "message",
+      "path": null,
+      "step": 12
+    }
+  ],
+  "schema_version": 1
+}

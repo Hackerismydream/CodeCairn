@@ -1,0 +1,257 @@
+{
+  "accuracy": 0.825974,
+  "benchmark_contract": {
+    "answer_evidence_contract": "grounded-cited-answer-v14",
+    "answer_model": {
+      "adapter": "openai-compatible-chat-completions",
+      "base_url": "https://api.deepseek.com",
+      "max_attempts": 3,
+      "model": "deepseek-v4-flash",
+      "pricing": {
+        "cached_input_per_million": 0.02,
+        "currency": "CNY",
+        "output_per_million": 2.0,
+        "uncached_input_per_million": 1.0
+      },
+      "pricing_source": {
+        "observed_at": "2026-07-23",
+        "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+      },
+      "retry_backoff_seconds": 1.0,
+      "send_seed": false,
+      "thinking": "disabled",
+      "timeout_seconds": 120.0
+    },
+    "answer_response_max_attempts": 2,
+    "answer_retry_contract": "grounded-answer-contract-retry-v2",
+    "checkpoint_policy": "journal-replay-or-unknown-spend-fail-closed-v3",
+    "corpus_content_sha256": "789ceec3ff7e631f49a027d13e6847ea679b271c6bfa0cae10362d6ffd32ba4a",
+    "dataset": {
+      "category_counts": {
+        "1": 282,
+        "2": 321,
+        "3": 96,
+        "4": 841,
+        "5": 446
+      },
+      "conversation_count": 10,
+      "license": "CC BY-NC 4.0",
+      "question_count": 1986,
+      "session_count": 272,
+      "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+      "turn_count": 5882,
+      "url": "https://raw.githubusercontent.com/snap-research/locomo/main/data/locomo10.json"
+    },
+    "execution_phase_contract": "verified-shared-corpus-exec-per-conversation-v3",
+    "ingest_max_workers": 1,
+    "judge_contract": "locomo-generous-semantic-equivalence-v1",
+    "judge_model": {
+      "adapter": "openai-compatible-chat-completions",
+      "base_url": "https://api.deepseek.com",
+      "max_attempts": 3,
+      "model": "deepseek-v4-flash",
+      "pricing": {
+        "cached_input_per_million": 0.02,
+        "currency": "CNY",
+        "output_per_million": 2.0,
+        "uncached_input_per_million": 1.0
+      },
+      "pricing_source": {
+        "observed_at": "2026-07-23",
+        "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+      },
+      "retry_backoff_seconds": 1.0,
+      "send_seed": false,
+      "thinking": "disabled",
+      "timeout_seconds": 120.0
+    },
+    "judge_response_max_attempts": 3,
+    "judge_response_max_chars": 32768,
+    "judge_votes": 3,
+    "max_workers": 10,
+    "model_attempt_journal_contract": "locomo-model-attempt-journal-v1",
+    "query_vectors_content_sha256": "04f83a791a55d52dad52f3e386f5ee3405583e1df38ae4a37938dd1476c6343c",
+    "question_worker": {
+      "max_rss_bytes": 2147483648,
+      "name": "verified-shared-corpus-exec-per-conversation-v3",
+      "poll_interval_seconds": 0.25,
+      "progress_signal": "heartbeat-evidence-and-durable-question-checkpoint-deadline-v2",
+      "publish_policy": "conversation-directory-atomic-rename-v1",
+      "reranker_warmup": "one-local-document-before-question-timing-v1",
+      "rss_poll_interval_seconds": 1.0,
+      "stall_timeout_seconds": 600.0
+    },
+    "retrieval": {
+      "embedding": {
+        "adapter": "dashscope-openai-compatible",
+        "adapter_version": "1",
+        "dimension": 1024,
+        "license": "Alibaba Cloud Model Studio service",
+        "model": "text-embedding-v4",
+        "pricing": {
+          "currency": "CNY",
+          "input_per_million": 0.5
+        },
+        "revision": "provider-managed",
+        "source": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "transport": {
+          "max_attempts": 3,
+          "retry_backoff_seconds": 1.0,
+          "timeout_seconds": 120.0
+        }
+      },
+      "inference_threads": 2,
+      "method": "hybrid-rrf-cross-encoder",
+      "planner": {
+        "context_direct_match_prior": 2.0,
+        "context_evidence_slot_policy": "typed-protected-child-support-v3",
+        "context_high_confidence_parent_fact_limit": 4,
+        "context_high_confidence_parent_score_threshold": 5.5,
+        "context_max_chars": 23900,
+        "context_max_tokens": 4000,
+        "context_prior_state_fact_limit": 4,
+        "context_quantity_transition_fact_limit": 12,
+        "context_renderer": "exact-source-flat-facts-first-v9",
+        "context_semantic_support_fact_limit": 16,
+        "context_snippet_chars": 200,
+        "context_snippets_per_memory": 5,
+        "context_summary_chars": 60,
+        "context_temporal_snippets_per_memory": 8,
+        "context_tokenizer": "codecairn/utf8-two-byte-upper-bound-v1",
+        "context_vocative_alias_fact_limit": 2,
+        "diverse_matched_facts_per_memory": 1,
+        "enrichment_order": "matched-neighbor-then-capacity-aware-dialogue-rerank-v7",
+        "expansion_contract": "typed-bounded-one-hop-v2",
+        "expansion_max_entity_facts": 12,
+        "expansion_max_hops": 1,
+        "expansion_max_provenance_facts": 8,
+        "expansion_max_time_facts": 8,
+        "expansion_max_total_facts": 24,
+        "fact_rerank_max_candidates": 192,
+        "fact_rerank_max_candidates_per_parent": 20,
+        "fact_rerank_max_document_chars": 1024,
+        "fact_rerank_max_selected_per_parent": 12,
+        "fact_selector": "bounded-dialogue-aware-cross-encoder-v5",
+        "hard_route_cutoff": false,
+        "matched_facts_per_memory": 3,
+        "maximum_channel_candidates": 64,
+        "maximum_exploration_results": 4,
+        "maximum_rerank_candidates": 96,
+        "minimum_primary_candidates": 40,
+        "minimum_rerank_candidates": 32,
+        "minimum_secondary_candidates": 20,
+        "mode": "hierarchy-no-neighbors",
+        "neighbor_snippet_budget": 20,
+        "neighbor_window": 0,
+        "primary_candidate_multiplier": 2,
+        "query_sketcher": "codecairn/deterministic-query-sketch-v5",
+        "query_time_llm_calls": 0,
+        "rerank_candidate_multiplier": 5,
+        "router": "deterministic-cues-v1",
+        "secondary_candidate_multiplier": 1,
+        "sibling_facts_per_memory": 2,
+        "temporal_lane": "explicit-calendar-prefix-v2",
+        "temporal_neighbor_window": 0,
+        "temporal_sibling_facts_per_memory": 5
+      },
+      "reranker": {
+        "adapter": "fastembed-cross-encoder",
+        "adapter_license": "Apache-2.0",
+        "adapter_version": "0.8.0",
+        "batch_size": 8,
+        "license": "Apache-2.0",
+        "model": "Xenova/ms-marco-MiniLM-L-6-v2",
+        "revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
+        "source": "Xenova/ms-marco-MiniLM-L-6-v2"
+      },
+      "tokenizer_parallelism": false,
+      "tokenizer_threads": 1,
+      "top_k": 20
+    },
+    "retrieval_max_workers": 1,
+    "retrieval_thread_count": 1,
+    "seed": 17
+  },
+  "benchmark_contract_sha256": "d08af52fd5099429ad10701cc3a022c3236cdd9a709fb332413cdf5ea6e617d3",
+  "by_category": {
+    "1": {
+      "accuracy": 0.702128,
+      "correct": 198,
+      "count": 282,
+      "name": "multi-hop"
+    },
+    "2": {
+      "accuracy": 0.872274,
+      "correct": 280,
+      "count": 321,
+      "name": "temporal"
+    },
+    "3": {
+      "accuracy": 0.59375,
+      "correct": 57,
+      "count": 96,
+      "name": "open-domain"
+    },
+    "4": {
+      "accuracy": 0.876338,
+      "correct": 737,
+      "count": 841,
+      "name": "single-hop"
+    }
+  },
+  "contract": "failed-question-exact-replacement-v1",
+  "correct_count": 1272,
+  "formal_score": true,
+  "infrastructure_failed_count": 0,
+  "model_output_scoring_contract": "contract-exhausted-answer-is-wrong-v1",
+  "question_count": 1540,
+  "repair_selection": {
+    "question_count": 717,
+    "question_set_sha256": "e8f476892ccd6b99c125938a964a2e23eb6f1b455e74861f949560e50e6903d5",
+    "selection_id": "locomo-repair-717-v23-d19793c",
+    "selection_sha256": "6c9955ca66a654bd0f5c9e1b2c5342bae839d78f61469256f517c40a15769a58"
+  },
+  "schema_version": 1,
+  "scored_question_count": 1540,
+  "sources": {
+    "base": {
+      "manifest_sha256": "c8d90539dba313a5010697a845b74eadbd70b8f59326a3834dbc9187bc98d20b",
+      "report_sha256": "82aad4dfe6c04444c3acf8b00826ff6b0647a3ecc51be04ecadc5563217ce597",
+      "repository_commit": "d19793c7d9b6246196b80a5fa79c28c70346aa55",
+      "reused_scored_question_count": 823,
+      "run_id": "locomo-full-1540-v23-d19793c-formal-hierarchy-no-neighbors"
+    },
+    "repair": {
+      "manifest_sha256": "ec76ef36db68c5f578897a8bc7c01afa14952a86a5fc3096be185b6160a54bee",
+      "replacement_question_count": 717,
+      "report_sha256": "e9ed81b4ba7250fba045156341039fb750d3b63032dcc1b75d6ffe5c0f81f559",
+      "repository_commit": "88ec0398a5724c66b997d750f10b3612be9ddc29",
+      "run_id": "locomo-repair-717-v23-88ec039-formal-hierarchy-no-neighbors"
+    }
+  },
+  "suite": "locomo-repair-composite",
+  "target": {
+    "question_count": 1540,
+    "question_set_sha256": "c518cf66d6523df952ddb1b310d218b204689904c6a7602d7b30d65177dde2b1",
+    "selection_id": "locomo-full-1540-v23",
+    "selection_sha256": "caf55b45f266fe5738025333400331c92a660a5a607d107a2141e10f729e4b37"
+  },
+  "usage": {
+    "answer_call_count": 2261,
+    "answer_response_count": 1546,
+    "cached_input_tokens": 1594624,
+    "cost_cny": 6.31437348,
+    "cost_usd": null,
+    "input_tokens": 7604493,
+    "journal_application_call_count": 6879,
+    "journal_completed_outcome_count": 6879,
+    "journal_known_provider_attempt_count": 6879,
+    "journal_provider_attempt_count": 6879,
+    "journal_unknown_spend_count": 0,
+    "known_cost_cny_count": 6162,
+    "known_cost_count": 0,
+    "output_tokens": 136306,
+    "reasoning_tokens": 0,
+    "uncached_input_tokens": 6009869
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "accuracy": 0.825974,
+  "by_category": {
+    "1": {
+      "accuracy": 0.702128,
+      "correct": 198,
+      "count": 282,
+      "name": "multi-hop"
+    },
+    "2": {
+      "accuracy": 0.872274,
+      "correct": 280,
+      "count": 321,
+      "name": "temporal"
+    },
+    "3": {
+      "accuracy": 0.59375,
+      "correct": 57,
+      "count": 96,
+      "name": "open-domain"
+    },
+    "4": {
+      "accuracy": 0.876338,
+      "correct": 737,
+      "count": 841,
+      "name": "single-hop"
+    }
+  },
+  "completed_question_count": 1540,
+  "composite_contract": "failed-question-exact-replacement-v1",
+  "correct_count": 1272,
+  "infrastructure_failed_count": 0,
+  "judge_votes": 3,
+  "mode": "full",
+  "model_output_scoring_contract": "contract-exhausted-answer-is-wrong-v1",
+  "question_artifact_count": 1540,
+  "run_id": "locomo-full-1540-v23-composite",
+  "schema_version": 1,
+  "scored": true,
+  "scored_question_count": 1540,
+  "suite": "locomo",
+  "usage": {
+    "answer_call_count": 2261,
+    "answer_response_count": 1546,
+    "cached_input_tokens": 1594624,
+    "cost_cny": 6.31437348,
+    "cost_usd": null,
+    "input_tokens": 7604493,
+    "journal_application_call_count": 6879,
+    "journal_completed_outcome_count": 6879,
+    "journal_known_provider_attempt_count": 6879,
+    "journal_provider_attempt_count": 6879,
+    "journal_unknown_spend_count": 0,
+    "known_cost_cny_count": 6162,
+    "known_cost_count": 0,
+    "output_tokens": 136306,
+    "reasoning_tokens": 0,
+    "uncached_input_tokens": 6009869
+  }
+}

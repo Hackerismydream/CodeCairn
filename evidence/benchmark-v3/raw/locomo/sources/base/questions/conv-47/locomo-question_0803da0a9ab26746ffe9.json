@@ -1,0 +1,9 @@
+{
+  "category": 2,
+  "category_name": "temporal",
+  "outcome": "infrastructure_failed",
+  "question_id": "locomo-question_0803da0a9ab26746ffe9",
+  "sample_id": "conv-47",
+  "schema_version": 1,
+  "source_artifact_sha256": "6c180eb2a29c898352056d2a0347911418ed4832affc774162ead0847ead2bb2"
+}

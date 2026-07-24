@@ -1,0 +1,10 @@
+{
+  "category": 2,
+  "category_name": "temporal",
+  "outcome": "correct",
+  "question_id": "locomo-question_0d6a7937125968f02ec4",
+  "sample_id": "conv-50",
+  "schema_version": 1,
+  "source": "base",
+  "source_artifact_sha256": "dba0ae690b37e18f0dae8c2d19d389d8cfaf5215a88f56af782f5b6c6cbe0176"
+}

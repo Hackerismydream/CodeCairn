@@ -1,0 +1,154 @@
+{
+  "aggregation_command": "uv run codecairn evidence verify evidence/benchmark-v3",
+  "bundle_id": "benchmark-v3",
+  "costs": {
+    "coding_memory_off": null,
+    "coding_memory_on": null,
+    "locomo": {
+      "amount": 6.31437348,
+      "currency": "CNY"
+    }
+  },
+  "dependency_lock": "uv.lock",
+  "dependency_lock_sha256": "318ae8735eee70ed82986995d3d66ac6da9aadd45b070568c0f08cc070d9d56c",
+  "environment": {
+    "machine": "arm64",
+    "python": "3.12.13",
+    "release": "25.3.0",
+    "system": "Darwin"
+  },
+  "generated_at_utc": "2026-07-24T17:40:32.060551+00:00",
+  "generator_commit": "d20cc4bec079be904737546ce342f37502932c45",
+  "known_limitations": [
+    "LoCoMo category 5 is adversarial and excluded from the official scored subset.",
+    "Provider cost is pending where upstream artifacts expose no cost observation.",
+    "Coding tasks and public fixtures are controlled evaluations, not private production traces.",
+    "Latency was measured on one local machine and is not a cross-machine guarantee.",
+    "An earlier CodingMemoryBench v1 run was invalidated and excluded after a verifier defect was found."
+  ],
+  "licensing": {
+    "locomo": "CC BY-NC 4.0; the dataset itself is not redistributed in this bundle.",
+    "locomo_retrieval": {
+      "embedding": {
+        "adapter": null,
+        "model": "Alibaba Cloud Model Studio service"
+      },
+      "reranker": {
+        "adapter": "Apache-2.0",
+        "model": "Apache-2.0"
+      }
+    },
+    "source": "https://github.com/snap-research/locomo"
+  },
+  "models": {
+    "coding_agent": {
+      "adapter": "codex-exec-jsonl",
+      "ephemeral": true,
+      "executable": "codex",
+      "ignore_rules": true,
+      "ignore_user_config": true,
+      "isolated_codex_home": true,
+      "model": "gpt-5.4",
+      "sandbox": "workspace-write",
+      "seed_supported": false,
+      "timeout_seconds": 900,
+      "tools": [
+        "shell",
+        "apply_patch"
+      ]
+    },
+    "locomo_answer": {
+      "adapter": "openai-compatible-chat-completions",
+      "base_url": "https://api.deepseek.com",
+      "max_attempts": 3,
+      "model": "deepseek-v4-flash",
+      "pricing": {
+        "cached_input_per_million": 0.02,
+        "currency": "CNY",
+        "output_per_million": 2.0,
+        "uncached_input_per_million": 1.0
+      },
+      "pricing_source": {
+        "observed_at": "2026-07-23",
+        "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+      },
+      "retry_backoff_seconds": 1.0,
+      "send_seed": false,
+      "thinking": "disabled",
+      "timeout_seconds": 120.0
+    },
+    "locomo_judge": {
+      "adapter": "openai-compatible-chat-completions",
+      "base_url": "https://api.deepseek.com",
+      "max_attempts": 3,
+      "model": "deepseek-v4-flash",
+      "pricing": {
+        "cached_input_per_million": 0.02,
+        "currency": "CNY",
+        "output_per_million": 2.0,
+        "uncached_input_per_million": 1.0
+      },
+      "pricing_source": {
+        "observed_at": "2026-07-23",
+        "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+      },
+      "retry_backoff_seconds": 1.0,
+      "send_seed": false,
+      "thinking": "disabled",
+      "timeout_seconds": 120.0
+    },
+    "locomo_retrieval": {
+      "embedding": {
+        "adapter": "dashscope-openai-compatible",
+        "adapter_version": "1",
+        "dimension": 1024,
+        "license": "Alibaba Cloud Model Studio service",
+        "model": "text-embedding-v4",
+        "pricing": {
+          "currency": "CNY",
+          "input_per_million": 0.5
+        },
+        "revision": "provider-managed",
+        "source": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "transport": {
+          "max_attempts": 3,
+          "retry_backoff_seconds": 1.0,
+          "timeout_seconds": 120.0
+        }
+      },
+      "reranker": {
+        "adapter": "fastembed-cross-encoder",
+        "adapter_license": "Apache-2.0",
+        "adapter_version": "0.8.0",
+        "batch_size": 8,
+        "license": "Apache-2.0",
+        "model": "Xenova/ms-marco-MiniLM-L-6-v2",
+        "revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
+        "source": "Xenova/ms-marco-MiniLM-L-6-v2"
+      }
+    }
+  },
+  "schema_version": 1,
+  "source_runs": {
+    "coding": {
+      "manifest": "experiment.json",
+      "repository_commit": "fbc7023",
+      "run_id": "coding-fbc7023-gpt54"
+    },
+    "locomo": {
+      "manifest": "manifest.json",
+      "repository_commit": null,
+      "run_id": "locomo-full-1540-v23-composite"
+    },
+    "recovery": {
+      "manifest": "manifest.json",
+      "repository_commit": "fbc7023",
+      "run_id": "recovery-fbc7023"
+    },
+    "retrieval": {
+      "manifest": "manifest.json",
+      "repository_commit": "fbc7023",
+      "run_id": "retrieval-fbc7023"
+    }
+  }
+}

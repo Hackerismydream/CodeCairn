@@ -1,0 +1,9 @@
+{
+  "category": 4,
+  "category_name": "single-hop",
+  "outcome": "infrastructure_failed",
+  "question_id": "locomo-question_e31ae414b8cb2c85a32d",
+  "sample_id": "conv-43",
+  "schema_version": 1,
+  "source_artifact_sha256": "13cc28eb118554ebdd123fb3da9829dd2e14122dc82fb28c93cb4de0c2827c0d"
+}

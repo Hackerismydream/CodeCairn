@@ -1,0 +1,53 @@
+# Evidence bundle: benchmark-v3
+
+This directory is generated from immutable evaluation artifacts. Do not edit its
+metrics or recruiting copy by hand; rebuild it with the command in the manifest.
+
+## Headline measurements
+
+| Measurement | Value | Manifest | Raw inputs | Aggregation |
+|---|---:|---|---|---|
+| Retrieval Recall@5 | 96.00% | [raw/retrieval/manifest.json](raw/retrieval/manifest.json) | [`raw/retrieval/queries/*.json`](raw/retrieval/queries) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Retrieval MRR | 0.7979 | [raw/retrieval/manifest.json](raw/retrieval/manifest.json) | [`raw/retrieval/queries/*.json`](raw/retrieval/queries) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Retrieval P95 latency | 10.91 ms | [raw/retrieval/manifest.json](raw/retrieval/manifest.json) | [`raw/retrieval/queries/*.json`](raw/retrieval/queries) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Index rebuild consistency | 100.00% | [raw/recovery/manifest.json](raw/recovery/manifest.json) | [`raw/recovery/checks.json`](raw/recovery/checks.json) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Coding task pass rate, memory off | 85.00% | [raw/coding/experiment.json](raw/coding/experiment.json) | [`raw/coding/*/result.json`](raw/coding) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Coding task pass rate, memory on | 100.00% | [raw/coding/experiment.json](raw/coding/experiment.json) | [`raw/coding/*/result.json`](raw/coding) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Coding task pass-rate change | 15.00 pp | [raw/coding/experiment.json](raw/coding/experiment.json) | [`raw/coding/*/result.json`](raw/coding) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Coding total-token reduction | 2.26% | [raw/coding/experiment.json](raw/coding/experiment.json) | [`raw/coding/*/result.json`](raw/coding) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Steps-to-first-useful-action reduction | 3.41% | [raw/coding/experiment.json](raw/coding/experiment.json) | [`raw/coding/*/result.json`](raw/coding) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Official LoCoMo sessions ingested | 272 sessions | [raw/locomo/manifest.json](raw/locomo/manifest.json) | [`raw/locomo/checkpoints/ingest/*.json`](raw/locomo/checkpoints/ingest) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| LoCoMo full completion | 100.00% | [raw/locomo/manifest.json](raw/locomo/manifest.json) | [`raw/locomo/checkpoints/questions/*/*.json`](raw/locomo/checkpoints/questions) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| LoCoMo answer accuracy | 82.60% | [raw/locomo/manifest.json](raw/locomo/manifest.json) | [`raw/locomo/checkpoints/questions/*/*.json`](raw/locomo/checkpoints/questions) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Automated tests | 644 tests | [bundle-manifest.json](bundle-manifest.json) | [`raw/quality/junit.xml`](raw/quality/junit.xml) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+| Statement coverage | 81.53% | [bundle-manifest.json](bundle-manifest.json) | [`raw/quality/coverage.json`](raw/quality/coverage.json) | `uv run codecairn evidence verify evidence/benchmark-v3` |
+
+## Artifact-derived scale
+
+- LoCoMo: 10 conversations, 272 sessions, 5882 turns, 272 accepted memories, and 0 rejected memories.
+- Retrieval: 100 isolated queries.
+- Coding A/B: 120 runs, 1298 normalized events, 536 command/tool calls, 123 file changes, and 120 hidden-verifier results.
+
+## Pending measurements
+
+- **CodingMemoryBench provider cost** — pending: The provider trace contains no cost observations.
+
+## Known limitations
+
+- LoCoMo category 5 is adversarial and excluded from the official scored subset.
+- Provider cost is pending where upstream artifacts expose no cost observation.
+- Coding tasks and public fixtures are controlled evaluations, not private production traces.
+- Latency was measured on one local machine and is not a cross-machine guarantee.
+- An earlier CodingMemoryBench v1 run was invalidated and excluded after a verifier defect was found.
+
+## Reproduce
+
+```bash
+uv run codecairn evidence verify evidence/benchmark-v3
+```
+
+The verifier recomputes all four suite reports, aggregate counts, recruiting
+copy, and the SHA-256 inventory. It requires no private trace or provider key.
+
+LoCoMo is attributed to the [official repository](https://github.com/snap-research/locomo)
+and is licensed CC BY-NC 4.0. The dataset file is not redistributed here.

@@ -1,0 +1,164 @@
+{
+  "latency_ms": 8.799,
+  "lexical_candidate_count": 9,
+  "query_id": "q004",
+  "rankings": [
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "457581b602a57921a585829b11553f03e9f47979571629919eb8217e7ae4c93d",
+      "final_score": 0.032018442623,
+      "key": "be-tests",
+      "lexical_rank": 1,
+      "lexical_score": 1.438410520554,
+      "memory_id": "memory_22f141f012f75d6df037",
+      "rank": 1,
+      "vector_rank": 4,
+      "vector_score": 0.323032247357
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "b3a94126efd118eaded0b8532714cafc5e532464a9338101cc0be6d269021880",
+      "final_score": 0.031513647643,
+      "key": "be-idempotency",
+      "lexical_rank": 5,
+      "lexical_score": 0.002072382718,
+      "memory_id": "memory_7bd88d82109ab405a3be",
+      "rank": 2,
+      "vector_rank": 2,
+      "vector_score": 0.336499871956
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "e2dd34b0e8d0c374aac25b338678c07bc87dcd05479cbdf4377e33aeb868045f",
+      "final_score": 0.031498015873,
+      "key": "be-secrets",
+      "lexical_rank": 4,
+      "lexical_score": 0.002072382718,
+      "memory_id": "memory_1d317da308d6b6d58e49",
+      "rank": 3,
+      "vector_rank": 3,
+      "vector_score": 0.327098429215
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "9e366b5307e56a7a9decc18180cb7e41d591517dada53e8f7607a999a774d227",
+      "final_score": 0.031099324976,
+      "key": "be-types",
+      "lexical_rank": 8,
+      "lexical_score": 0.002062246203,
+      "memory_id": "memory_548574d9f92bb150a599",
+      "rank": 4,
+      "vector_rank": 1,
+      "vector_score": 0.336540736351
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "ea7c513c59b23266d05e70962d26cbdf3f49449ce5d09b88cda58d86966b6f77",
+      "final_score": 0.030414746544,
+      "key": "be-money",
+      "lexical_rank": 2,
+      "lexical_score": 0.002082619816,
+      "memory_id": "memory_822b19c8551dcceba7a9",
+      "rank": 5,
+      "vector_rank": 10,
+      "vector_score": 0.304880489187
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "8c87f461de96fd5767e8a3b7e016bc2e49ac507199a5a9f129cf301f2607cb79",
+      "final_score": 0.030365769496,
+      "key": "be-audit",
+      "lexical_rank": 3,
+      "lexical_score": 0.002082619816,
+      "memory_id": "memory_bc6903371ac055d6a2a9",
+      "rank": 6,
+      "vector_rank": 9,
+      "vector_score": 0.30957270549
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "ff01ca1b640b7cff0238c566cd15a132b7b5d85dc96b6e4f18d4c97d08f1ba2a",
+      "final_score": 0.030076888286,
+      "key": "be-api",
+      "lexical_rank": 7,
+      "lexical_score": 0.002062246203,
+      "memory_id": "memory_1d7f4956a7aaa5f293af",
+      "rank": 7,
+      "vector_rank": 6,
+      "vector_score": 0.318644850168
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "c852e74c352c0bc8fc2315e41d9602582d3377347dc45a2783330b1338a02b35",
+      "final_score": 0.029877369008,
+      "key": "be-migrations",
+      "lexical_rank": 9,
+      "lexical_score": 0.002062246203,
+      "memory_id": "memory_64ea68cad22a4ba9e2fd",
+      "rank": 8,
+      "vector_rank": 5,
+      "vector_score": 0.320884812844
+    },
+    {
+      "candidate_sources": [
+        "lexical",
+        "vector"
+      ],
+      "content_sha256": "d3029db79f6c6ea2727e85899bae6786dd8638b84d5205f7ca9e6f78c3c67344",
+      "final_score": 0.029857397504,
+      "key": "be-cache",
+      "lexical_rank": 6,
+      "lexical_score": 0.002072382718,
+      "memory_id": "memory_d2ef656b839e0592db7b",
+      "rank": 9,
+      "vector_rank": 8,
+      "vector_score": 0.309812461816
+    },
+    {
+      "candidate_sources": [
+        "vector"
+      ],
+      "content_sha256": "87e710ed5cca83c7aaef229d377f70aa69841f853a88a5c601a1509152b6ab4c",
+      "final_score": 0.014925373134,
+      "key": "be-time",
+      "lexical_rank": null,
+      "lexical_score": null,
+      "memory_id": "memory_fa41608ff39857a7b381",
+      "rank": 10,
+      "vector_rank": 7,
+      "vector_score": 0.318530751634
+    }
+  ],
+  "relevant_keys": [
+    "be-tests"
+  ],
+  "repo_key": "acme/backend",
+  "repository_isolation_violation": false,
+  "schema_version": 1,
+  "text": "I changed Python code; what quick unit-test command comes next?",
+  "vector_candidate_count": 10
+}

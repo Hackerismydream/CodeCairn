@@ -1,0 +1,9 @@
+{
+  "category": 3,
+  "category_name": "open-domain",
+  "outcome": "infrastructure_failed",
+  "question_id": "locomo-question_077230ed9581db2d2211",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source_artifact_sha256": "524864039c08c71355b99d3db30ddc0f814f6f17e985e3f1994fed258882a495"
+}

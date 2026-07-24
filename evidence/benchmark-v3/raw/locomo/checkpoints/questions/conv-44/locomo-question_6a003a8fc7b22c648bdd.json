@@ -1,0 +1,10 @@
+{
+  "category": 4,
+  "category_name": "single-hop",
+  "outcome": "wrong",
+  "question_id": "locomo-question_6a003a8fc7b22c648bdd",
+  "sample_id": "conv-44",
+  "schema_version": 1,
+  "source": "repair",
+  "source_artifact_sha256": "8a05a991a438d6911471971745524fb1a5983eb043f9787e06d350b4b237400a"
+}

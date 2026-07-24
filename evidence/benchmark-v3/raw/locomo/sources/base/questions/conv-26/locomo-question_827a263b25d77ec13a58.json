@@ -1,0 +1,9 @@
+{
+  "category": 3,
+  "category_name": "open-domain",
+  "outcome": "correct",
+  "question_id": "locomo-question_827a263b25d77ec13a58",
+  "sample_id": "conv-26",
+  "schema_version": 1,
+  "source_artifact_sha256": "ccf9353ec8f259d3c98f48cd5fef775582965de185c08dd36f06c859a677e873"
+}
