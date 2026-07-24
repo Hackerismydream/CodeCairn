@@ -102,6 +102,97 @@ def test_repair_report_reuses_only_scored_base_questions_and_replaces_failures(
     assert json.loads(output.read_text(encoding="utf-8")) == report
 
 
+def test_repair_report_accepts_a_fully_observed_answer_contract_failure_as_wrong(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = _write_question_set(
+        tmp_path / "target.json",
+        selection_id="target",
+        question_ids=["q-1", "q-2"],
+        category_targets={"1": 2},
+    )
+    repair = _write_question_set(
+        tmp_path / "repair.json",
+        selection_id="repair",
+        question_ids=["q-2"],
+        category_targets={"1": 1},
+    )
+    base_run = _write_run(
+        tmp_path / "base",
+        run_id="base",
+        repository_commit="a" * 40,
+        question_set=target,
+        question_ids_by_conversation={"conv-1": ["q-1", "q-2"]},
+        statuses={"q-1": "completed", "q-2": "infrastructure_failed"},
+    )
+    repair_run = _write_run(
+        tmp_path / "repair-run",
+        run_id="repair",
+        repository_commit="b" * 40,
+        question_set=repair,
+        question_ids_by_conversation={"conv-1": ["q-2"]},
+        statuses={"q-2": "infrastructure_failed"},
+    )
+    repair_checkpoint = repair_run / "checkpoints" / "questions" / "conv-1" / "q-2.json"
+    payload = json.loads(repair_checkpoint.read_text(encoding="utf-8"))
+    payload.update(
+        {
+            "phase": "answer",
+            "error_type": "ValueError",
+            "answer_attempt_receipt": {
+                "status": "contract_exhausted",
+                "terminal_error_type": "ValueError",
+                "attempt_count": 2,
+                "max_attempts": 2,
+                "attempts": [
+                    {"status": "contract_rejected"},
+                    {"status": "contract_rejected"},
+                ],
+                "usage": {"call_count": 2, "response_count": 2},
+            },
+        }
+    )
+    repair_checkpoint.unlink()
+    write_json_exclusive(repair_checkpoint, payload)
+    reports = {
+        "base": _report(
+            run_id="base",
+            scored=1,
+            failed=1,
+            correct=1,
+            by_category={"1": {"name": "multi-hop", "correct": 1, "count": 1, "accuracy": 1.0}},
+            cost_cny=0.1,
+        ),
+        "repair": _report(
+            run_id="repair",
+            scored=1,
+            failed=0,
+            correct=0,
+            by_category={"1": {"name": "multi-hop", "correct": 0, "count": 1, "accuracy": 0.0}},
+            cost_cny=0.1,
+        ),
+    }
+    monkeypatch.setattr(
+        "codecairn.evaluation.locomo_repair.report_locomo",
+        lambda run_dir: reports[run_dir.name.removesuffix("-run")],
+    )
+
+    report = build_locomo_repair_report(
+        LoCoMoRepairConfig(
+            target_question_set_path=target,
+            repair_question_set_path=repair,
+            base_run=base_run,
+            repair_run=repair_run,
+            output_path=tmp_path / "composite.json",
+        )
+    )
+
+    assert report["correct_count"] == 1
+    assert report["scored_question_count"] == 2
+    assert report["infrastructure_failed_count"] == 0
+
+
 def test_repair_report_rejects_a_repair_selection_that_is_not_the_base_failure_set(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -365,6 +456,7 @@ def _report(
         "run_id": run_id,
         "mode": "full",
         "scored": True,
+        "model_output_scoring_contract": "contract-exhausted-answer-is-wrong-v1",
         "question_artifact_count": scored + failed,
         "completed_question_count": scored,
         "scored_question_count": scored,

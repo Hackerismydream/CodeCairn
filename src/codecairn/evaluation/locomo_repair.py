@@ -16,6 +16,8 @@ from codecairn.evaluation.artifacts import (
 )
 from codecairn.evaluation.locomo import (
     CATEGORY_NAMES,
+    LOCOMO_MODEL_OUTPUT_SCORING_CONTRACT,
+    _is_scored_answer_contract_failure,
     _valid_judge_vote_retry_metadata,
     report_locomo,
 )
@@ -61,6 +63,11 @@ def build_locomo_repair_report(config: LoCoMoRepairConfig) -> dict[str, object]:
     repair_manifest = _run_manifest(config.repair_run, field="repair")
     base_report = _run_report(config.base_run, manifest=base_manifest, field="base")
     repair_report = _run_report(config.repair_run, manifest=repair_manifest, field="repair")
+    if any(
+        report.get("model_output_scoring_contract") != LOCOMO_MODEL_OUTPUT_SCORING_CONTRACT
+        for report in (base_report, repair_report)
+    ):
+        raise ValueError("LoCoMo repair sources use an unsupported model-output scoring contract")
     target_definition = _question_set_definition(
         config.target_question_set_path,
         field="target",
@@ -130,6 +137,7 @@ def build_locomo_repair_report(config: LoCoMoRepairConfig) -> dict[str, object]:
         "schema_version": 1,
         "suite": "locomo-repair-composite",
         "contract": LOCOMO_REPAIR_CONTRACT,
+        "model_output_scoring_contract": LOCOMO_MODEL_OUTPUT_SCORING_CONTRACT,
         "formal_score": True,
         "question_count": question_count,
         "scored_question_count": question_count,
@@ -264,6 +272,7 @@ def _classify_run_questions(
     expected_votes = _required_int(manifest, "judge_votes")
     max_attempts = _required_int(manifest, "judge_response_max_attempts")
     max_response_chars = _required_int(manifest, "judge_response_max_chars")
+    answer_max_attempts = _required_int(manifest, "answer_response_max_attempts")
     scored: set[str] = set()
     failed: set[str] = set()
     for path in sorted((run_dir / "checkpoints" / "questions").glob("*/*.json")):
@@ -291,6 +300,16 @@ def _classify_run_questions(
             and len(labels) == expected_votes
             and all(label in {"correct", "wrong"} for label in labels)
         )
+        if not is_scored:
+            raw_receipt = record.get("answer_attempt_receipt")
+            is_scored = _is_scored_answer_contract_failure(
+                record,
+                mode="full",
+                answer_attempt_receipt=(
+                    cast(dict[str, object], raw_receipt) if isinstance(raw_receipt, dict) else None
+                ),
+                expected_max_attempts=answer_max_attempts,
+            )
         (scored if is_scored else failed).add(question_id)
     return scored, failed
 

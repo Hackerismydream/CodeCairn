@@ -81,6 +81,7 @@ LOCOMO_DATASET_URL = (
 LOCOMO_DATASET_SHA256 = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 LOCOMO_LICENSE = "CC BY-NC 4.0"
 LOCOMO_PAID_SCORING_GATE_CONTRACT = "dual-retrieval-context-coverage-v1"
+LOCOMO_MODEL_OUTPUT_SCORING_CONTRACT = "contract-exhausted-answer-is-wrong-v1"
 _ANSWER_EVIDENCE_CONTRACT = "grounded-cited-answer-v14"
 _JUDGE_CONTRACT = "locomo-generous-semantic-equivalence-v1"
 _CHECKPOINT_POLICY = "journal-replay-or-unknown-spend-fail-closed-v3"
@@ -5059,6 +5060,7 @@ def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> d
     answer_response_count = 0
     answer_contract_rejected_count = 0
     answer_provider_failed_count = 0
+    answer_contract_exhausted_question_count = 0
     journal_counts: Counter[str] = Counter()
     journal_cost_usd = 0.0
     journal_cost_cny = 0.0
@@ -5215,6 +5217,10 @@ def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> d
             answer_provider_failed_count += sum(
                 attempt.get("status") == "provider_failed" for attempt in attempts
             )
+            answer_contract_exhausted_question_count += int(
+                answer_attempt_receipt.get("status")
+                == GroundedAnswerRetryStatus.CONTRACT_EXHAUSTED.value
+            )
             answer_usage = _required_dict(
                 answer_attempt_receipt.get("usage"),
                 field="answer attempt usage",
@@ -5297,6 +5303,16 @@ def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> d
                     for value in (cached_tokens, uncached_tokens, reasoning_tokens, cost_cny)
                 )
         if record.get("status") != "completed":
+            if _is_scored_answer_contract_failure(
+                record,
+                mode=mode,
+                answer_attempt_receipt=answer_attempt_receipt,
+                expected_max_attempts=expected_answer_attempts,
+            ):
+                category = _required_int(record, "category")
+                categories.setdefault(category, []).append(False)
+                scored += 1
+                continue
             infrastructure_failed += 1
             continue
         completed_questions += 1
@@ -5408,6 +5424,7 @@ def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> d
     }
     if mode == "full":
         report["judge_votes"] = expected_votes
+        report["model_output_scoring_contract"] = LOCOMO_MODEL_OUTPUT_SCORING_CONTRACT
     if mode != "retrieval" and uses_answer_retry_contract:
         report["answer_attempts"] = {
             "contract": GROUNDED_ANSWER_RETRY_CONTRACT,
@@ -5418,6 +5435,10 @@ def report_locomo(run_dir: Path, *, _include_worker_resources: bool = True) -> d
             "contract_rejected_count": answer_contract_rejected_count,
             "provider_failed_count": answer_provider_failed_count,
         }
+        if answer_contract_exhausted_question_count:
+            cast(dict[str, object], report["answer_attempts"])[
+                "contract_exhausted_question_count"
+            ] = answer_contract_exhausted_question_count
     if uses_attempt_journal:
         report["model_attempt_journal"] = {
             "contract": MODEL_ATTEMPT_JOURNAL_CONTRACT,
@@ -6512,6 +6533,40 @@ def _report_answer_attempt_receipt(
     ):
         raise ValueError("Failed answer checkpoint does not match its retry receipt")
     return receipt
+
+
+def _is_scored_answer_contract_failure(
+    record: dict[str, object],
+    *,
+    mode: str,
+    answer_attempt_receipt: dict[str, object] | None,
+    expected_max_attempts: int,
+) -> bool:
+    """Treat a fully observed invalid model answer as wrong, not infrastructure."""
+    if (
+        mode != "full"
+        or record.get("status") != "infrastructure_failed"
+        or record.get("phase") != "answer"
+        or answer_attempt_receipt is None
+        or answer_attempt_receipt.get("status")
+        != GroundedAnswerRetryStatus.CONTRACT_EXHAUSTED.value
+        or record.get("error_type") != answer_attempt_receipt.get("terminal_error_type")
+        or answer_attempt_receipt.get("attempt_count") != expected_max_attempts
+        or answer_attempt_receipt.get("max_attempts") != expected_max_attempts
+    ):
+        return False
+    attempts = answer_attempt_receipt.get("attempts")
+    usage = answer_attempt_receipt.get("usage")
+    if not isinstance(attempts, list) or not attempts or not isinstance(usage, dict):
+        return False
+    return (
+        all(
+            isinstance(attempt, dict) and attempt.get("status") == "contract_rejected"
+            for attempt in attempts
+        )
+        and usage.get("response_count") == len(attempts)
+        and usage.get("call_count") == len(attempts)
+    )
 
 
 def _recall_question(

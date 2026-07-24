@@ -4305,6 +4305,28 @@ def test_exhausted_grounded_answer_retries_keep_failure_usage(tmp_path: Path) ->
         assert record["answer_attempt_receipt"]["usage"]["known_cost_cny_count"] == 2
 
 
+def test_full_run_scores_exhausted_grounded_answers_as_wrong(tmp_path: Path) -> None:
+    artifact = run_locomo(
+        LoCoMoRunConfig(
+            dataset_path=FIXTURE,
+            output_root=tmp_path / "runs",
+            run_id="locomo-answer-contract-exhausted-full",
+            repository_commit="abc123",
+            expected_dataset_sha256=None,
+        ),
+        memory_factory=FakeMemory,
+        answer_model=AlwaysUnknownCitationAnswerModel(),
+        judge_model=AlternatingJudgeModel(),
+    )
+
+    assert artifact.summary["completed_question_count"] == 0
+    assert artifact.summary["scored_question_count"] == 4
+    assert artifact.summary["infrastructure_failed_count"] == 0
+    assert artifact.summary["correct_count"] == 0
+    assert artifact.summary["accuracy"] == 0.0
+    assert artifact.summary["answer_attempts"]["contract_exhausted_question_count"] == 4
+
+
 def test_full_run_keeps_exhausted_judge_retries_out_of_the_score(tmp_path: Path) -> None:
     judge = AlwaysMalformedJudgeModel()
     artifact = run_locomo(
