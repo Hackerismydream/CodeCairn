@@ -71,6 +71,7 @@ from codecairn.service.application import (
     LoCoMoEvidenceCoverageRequest,
     LoCoMoPromotionRequest,
     LoCoMoQueryVectorBuildRequest,
+    LoCoMoRepairRequest,
 )
 from codecairn.service.cascade import MemoryIndex, MiniCascade
 from codecairn.service.recall import RecallEngine
@@ -762,6 +763,22 @@ class _LocalOperations(ApplicationOperations):
                 hierarchy_no_neighbors_run=request.hierarchy_no_neighbors_run,
                 hierarchy_run=request.hierarchy_run,
                 run_dir=request.run_dir,
+                output_path=request.output_path,
+            )
+        )
+
+    def build_locomo_repair_report(self, request: LoCoMoRepairRequest) -> dict[str, object]:
+        from codecairn.evaluation.locomo_repair import (
+            LoCoMoRepairConfig,
+            build_locomo_repair_report,
+        )
+
+        return build_locomo_repair_report(
+            LoCoMoRepairConfig(
+                target_question_set_path=request.target_question_set_path,
+                repair_question_set_path=request.repair_question_set_path,
+                base_run=request.base_run,
+                repair_run=request.repair_run,
                 output_path=request.output_path,
             )
         )

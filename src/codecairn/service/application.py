@@ -94,6 +94,15 @@ class LoCoMoPromotionRequest:
 
 
 @dataclass(frozen=True, slots=True)
+class LoCoMoRepairRequest:
+    target_question_set_path: Path
+    repair_question_set_path: Path
+    base_run: Path
+    repair_run: Path
+    output_path: Path
+
+
+@dataclass(frozen=True, slots=True)
 class LoCoMoEvidenceCoverageRequest:
     run_dir: Path
     dataset_path: Path
@@ -117,6 +126,8 @@ class ApplicationOperations(Protocol):
     def build_locomo_promotion_report(
         self, request: LoCoMoPromotionRequest
     ) -> dict[str, object]: ...
+
+    def build_locomo_repair_report(self, request: LoCoMoRepairRequest) -> dict[str, object]: ...
 
     def report_locomo_evidence_coverage(
         self,
@@ -179,6 +190,9 @@ class CodeCairnApplication:
         request: LoCoMoPromotionRequest,
     ) -> dict[str, object]:
         return self._operations.build_locomo_promotion_report(request)
+
+    def build_locomo_repair_report(self, request: LoCoMoRepairRequest) -> dict[str, object]:
+        return self._operations.build_locomo_repair_report(request)
 
     def report_locomo_evidence_coverage(
         self,

@@ -1324,3 +1324,4 @@ def test_cli_help_exposes_single_run_locomo_promotion() -> None:
 
     assert result.exit_code == 0, result.output
     assert "promote-locomo" in result.stdout
+    assert "compose-locomo-repair" in result.stdout

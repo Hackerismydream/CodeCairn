@@ -938,6 +938,7 @@ def load_locomo_question_set(path: Path, *, dataset: LoCoMoDataset) -> LoCoMoQue
         raise ValueError("LoCoMo question set targets a different dataset")
     algorithm = _required_str(raw, "algorithm")
     if algorithm not in {
+        "explicit-question-ids-v1",
         "stratified-sha256-v1",
         "stratified-sha256-window-v1",
     }:
@@ -977,23 +978,48 @@ def load_locomo_question_set(path: Path, *, dataset: LoCoMoDataset) -> LoCoMoQue
     questions = [
         question for conversation in dataset.conversations for question in conversation.questions
     ]
-    selected_ids: set[str] = set()
-    for category, target in sorted(targets):
-        candidates = [question for question in questions if question.category == category]
-        offset = offset_by_category.get(category, 0)
-        if len(candidates) < offset + target:
-            if algorithm == "stratified-sha256-v1":
-                raise ValueError("LoCoMo category target exceeds available questions")
-            raise ValueError("LoCoMo category window exceeds available questions")
-        candidates.sort(
-            key=lambda question: (
-                hashlib.sha256(f"{seed}\0{question.question_id}".encode()).hexdigest(),
-                question.question_id,
+    if algorithm == "explicit-question-ids-v1":
+        raw_question_ids = raw.get("question_ids")
+        if (
+            not isinstance(raw_question_ids, list)
+            or not raw_question_ids
+            or any(
+                not isinstance(question_id, str) or not question_id
+                for question_id in raw_question_ids
             )
+        ):
+            raise ValueError("Explicit LoCoMo question IDs must be a non-empty string array")
+        explicit_ids = cast(list[str], raw_question_ids)
+        if len(explicit_ids) != len(set(explicit_ids)):
+            raise ValueError("Explicit LoCoMo question IDs must be unique")
+        known_questions = {question.question_id: question for question in questions}
+        unknown_ids = set(explicit_ids) - set(known_questions)
+        if unknown_ids:
+            raise ValueError("Explicit LoCoMo question set contains unknown question IDs")
+        observed_targets = Counter(
+            known_questions[question_id].category for question_id in explicit_ids
         )
-        selected_ids.update(
-            question.question_id for question in candidates[offset : offset + target]
-        )
+        if observed_targets != Counter(dict(targets)):
+            raise ValueError("Explicit LoCoMo question-set category targets do not match its IDs")
+        selected_ids = set(explicit_ids)
+    else:
+        selected_ids = set()
+        for category, target in sorted(targets):
+            candidates = [question for question in questions if question.category == category]
+            offset = offset_by_category.get(category, 0)
+            if len(candidates) < offset + target:
+                if algorithm == "stratified-sha256-v1":
+                    raise ValueError("LoCoMo category target exceeds available questions")
+                raise ValueError("LoCoMo category window exceeds available questions")
+            candidates.sort(
+                key=lambda question: (
+                    hashlib.sha256(f"{seed}\0{question.question_id}".encode()).hexdigest(),
+                    question.question_id,
+                )
+            )
+            selected_ids.update(
+                question.question_id for question in candidates[offset : offset + target]
+            )
     question_ids = tuple(
         question.question_id for question in questions if question.question_id in selected_ids
     )

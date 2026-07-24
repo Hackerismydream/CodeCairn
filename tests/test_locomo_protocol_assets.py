@@ -11,6 +11,7 @@ from codecairn.evaluation.locomo import (
     LoCoMoConversation,
     LoCoMoDataset,
     LoCoMoQuestion,
+    load_locomo_dataset,
     load_locomo_question_set,
 )
 
@@ -136,6 +137,65 @@ def test_windowed_question_set_fails_closed_on_invalid_windows(tmp_path: Path) -
         load_locomo_question_set(oversized_window, dataset=dataset)
     with pytest.raises(ValueError, match="legacy question-set algorithm"):
         load_locomo_question_set(legacy_offsets, dataset=dataset)
+
+
+def test_explicit_question_set_preserves_dataset_order_and_validates_category_counts(
+    tmp_path: Path,
+) -> None:
+    questions = tuple(
+        LoCoMoQuestion(
+            question_id=f"q-{index}",
+            question=f"Question {index}?",
+            golden_answer=None,
+            adversarial_answer=None,
+            category=1 if index < 2 else 2,
+            evidence=(),
+        )
+        for index in range(4)
+    )
+    dataset = LoCoMoDataset(
+        source_path="synthetic",
+        sha256="c" * 64,
+        conversations=(
+            LoCoMoConversation(
+                sample_id="synthetic",
+                speaker_a="A",
+                speaker_b="B",
+                sessions=(),
+                questions=questions,
+            ),
+        ),
+    )
+    selected = ("q-3", "q-0")
+    selection_sha256 = hashlib.sha256(
+        json.dumps(sorted(selected), separators=(",", ":")).encode()
+    ).hexdigest()
+    path = tmp_path / "explicit-question-set.json"
+    write_json_exclusive(
+        path,
+        {
+            "schema_version": 1,
+            "selection_id": "explicit-question-set",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "explicit-question-ids-v1",
+            "seed": "base-run-infrastructure-failures",
+            "category_targets": {"1": 1, "2": 1},
+            "question_ids": list(selected),
+            "selection_sha256": selection_sha256,
+        },
+    )
+
+    loaded = load_locomo_question_set(path, dataset=dataset)
+
+    assert loaded.question_ids == ("q-0", "q-3")
+    assert loaded.public_manifest["algorithm"] == "explicit-question-ids-v1"
+
+    forged = json.loads(path.read_text(encoding="utf-8"))
+    forged["category_targets"] = {"1": 2}
+    forged_path = tmp_path / "forged-explicit-question-set.json"
+    write_json_exclusive(forged_path, forged)
+    with pytest.raises(ValueError, match="category targets do not match"):
+        load_locomo_question_set(forged_path, dataset=dataset)
 
 
 def test_v14_protocol_assets_remain_immutable_historical_evidence() -> None:
@@ -793,6 +853,31 @@ def test_v23_full_question_set_freezes_all_standard_locomo_questions() -> None:
     expected_protocol = dict(diagnostic["protocol"])
     expected_protocol.pop("paid_scoring_gate")
     assert full["protocol"] == expected_protocol
+
+
+def test_v23_failed_only_repair_set_is_bound_to_the_negative_full_run() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    repair_path = benchmark_root / "repair-717-v23-d19793c.json"
+    repair = json.loads(repair_path.read_text())
+    full = json.loads((benchmark_root / "full-1540-v23.json").read_text())
+    dataset = load_locomo_dataset(benchmark_root / "data" / "locomo10.json")
+
+    assert hashlib.sha256(repair_path.read_bytes()).hexdigest() == (
+        "e8f476892ccd6b99c125938a964a2e23eb6f1b455e74861f949560e50e6903d5"
+    )
+    assert repair["algorithm"] == "explicit-question-ids-v1"
+    assert repair["category_targets"] == {"1": 117, "2": 131, "3": 50, "4": 419}
+    assert len(repair["question_ids"]) == 717
+    assert repair["selection_sha256"] == (
+        "6c9955ca66a654bd0f5c9e1b2c5342bae839d78f61469256f517c40a15769a58"
+    )
+    assert repair["protocol"] == full["protocol"]
+    assert (
+        repair["repair_source"]["target_question_set_sha256"]
+        == hashlib.sha256((benchmark_root / "full-1540-v23.json").read_bytes()).hexdigest()
+    )
+    loaded = load_locomo_question_set(repair_path, dataset=dataset)
+    assert len(loaded.question_ids) == 717
 
 
 def _select_question_ids(

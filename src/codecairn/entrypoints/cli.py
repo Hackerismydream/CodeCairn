@@ -19,6 +19,7 @@ from codecairn.service.application import (
     LoCoMoEvidenceCoverageRequest,
     LoCoMoPromotionRequest,
     LoCoMoQueryVectorBuildRequest,
+    LoCoMoRepairRequest,
 )
 
 ApplicationFactory = Callable[[Path], CodeCairnApplication]
@@ -371,6 +372,44 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 dataset_path=dataset,
                 output_path=output,
                 oracle_max_tokens=oracle_max_tokens,
+            )
+        )
+        typer.echo(json.dumps(result, sort_keys=True))
+
+    @evaluation_app.command("compose-locomo-repair")
+    def compose_locomo_repair_command(
+        target_question_set: Annotated[
+            Path,
+            typer.Argument(exists=True, dir_okay=False, readable=True),
+        ],
+        repair_question_set: Annotated[
+            Path,
+            typer.Option(
+                "--repair-question-set",
+                exists=True,
+                dir_okay=False,
+                readable=True,
+            ),
+        ],
+        base_run: Annotated[
+            Path,
+            typer.Option("--base-run", exists=True, file_okay=False, readable=True),
+        ],
+        repair_run: Annotated[
+            Path,
+            typer.Option("--repair-run", exists=True, file_okay=False, readable=True),
+        ],
+        output: Annotated[Path, typer.Option("--output")],
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+    ) -> None:
+        """Compose a formal LoCoMo score from a base run and its exact failed-only repair."""
+        result = application_factory(root).build_locomo_repair_report(
+            LoCoMoRepairRequest(
+                target_question_set_path=target_question_set,
+                repair_question_set_path=repair_question_set,
+                base_run=base_run,
+                repair_run=repair_run,
+                output_path=output,
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))
