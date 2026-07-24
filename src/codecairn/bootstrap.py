@@ -925,22 +925,6 @@ class _LocalOperations(ApplicationOperations):
                 )
                 gate_contract = protocol.get("paid_scoring_gate")
                 if gate_contract == LOCOMO_PAID_SCORING_GATE_CONTRACT:
-                    promotion = _bootstrap_mapping(
-                        definition.get("promotion"),
-                        field="LoCoMo question-set promotion",
-                    )
-                    promotion_gates = _bootstrap_mapping(
-                        promotion.get("gates"),
-                        field="LoCoMo question-set promotion gates",
-                    )
-                    raw_maximum_retrieval_p95_ms = promotion_gates.get("maximum_retrieval_p95_ms")
-                    if (
-                        isinstance(raw_maximum_retrieval_p95_ms, bool)
-                        or not isinstance(raw_maximum_retrieval_p95_ms, int | float)
-                        or not math.isfinite(float(raw_maximum_retrieval_p95_ms))
-                        or raw_maximum_retrieval_p95_ms <= 0
-                    ):
-                        raise ValueError("LoCoMo question-set retrieval P95 gate must be positive")
                     required_paths = {
                         "retrieval gate question set": request.retrieval_gate_question_set_path,
                         "retrieval canary run": request.retrieval_canary_run_path,
@@ -953,6 +937,26 @@ class _LocalOperations(ApplicationOperations):
                         raise ValueError(
                             "LoCoMo paid-scoring gate is missing: " + ", ".join(missing)
                         )
+                    gate_definition = _bootstrap_mapping(
+                        read_json(cast(Path, request.retrieval_gate_question_set_path)),
+                        field="LoCoMo retrieval-gate question set",
+                    )
+                    promotion = _bootstrap_mapping(
+                        gate_definition.get("promotion"),
+                        field="LoCoMo retrieval-gate promotion",
+                    )
+                    promotion_gates = _bootstrap_mapping(
+                        promotion.get("gates"),
+                        field="LoCoMo retrieval-gate promotion gates",
+                    )
+                    raw_maximum_retrieval_p95_ms = promotion_gates.get("maximum_retrieval_p95_ms")
+                    if (
+                        isinstance(raw_maximum_retrieval_p95_ms, bool)
+                        or not isinstance(raw_maximum_retrieval_p95_ms, int | float)
+                        or not math.isfinite(float(raw_maximum_retrieval_p95_ms))
+                        or raw_maximum_retrieval_p95_ms <= 0
+                    ):
+                        raise ValueError("LoCoMo retrieval-gate P95 limit must be positive")
                     paid_scoring_preflight = verify_locomo_retrieval_gate(
                         LoCoMoRetrievalGateConfig(
                             target_question_set_path=cast(

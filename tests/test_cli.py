@@ -254,7 +254,9 @@ def test_cli_rejects_a_gate_for_another_question_set_before_model_providers(
         "codecairn.evaluation.locomo_retrieval_gate.verify_locomo_retrieval_gate",
         record_retrieval_gate,
     )
-    question_set = Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v22.json"
+    benchmark_root = Path(__file__).parents[1] / "benchmarks/locomo"
+    question_set = benchmark_root / "diagnostic-40-v22.json"
+    retrieval_gate_question_set = benchmark_root / "diagnostic-200-v22.json"
     gate_dirs = [tmp_path / name for name in ("corpus", "queries", "canary", "holdout")]
     for directory in gate_dirs:
         directory.mkdir()
@@ -281,7 +283,7 @@ def test_cli_rejects_a_gate_for_another_question_set_before_model_providers(
             "--query-vectors",
             str(gate_dirs[1]),
             "--retrieval-gate-question-set",
-            str(question_set),
+            str(retrieval_gate_question_set),
             "--retrieval-canary-run",
             str(gate_dirs[2]),
             "--retrieval-holdout-run",
