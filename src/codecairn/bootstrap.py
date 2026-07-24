@@ -470,7 +470,25 @@ def _recall_planner_config(environment: Mapping[str, str]) -> RecallPlannerConfi
     value = environment.get("CODECAIRN_RECALL_MODE", "hierarchy")
     if value not in {"episode-only", "hierarchy-no-neighbors", "hierarchy"}:
         raise ValueError(f"Unknown recall mode: {value}")
-    return RecallPlannerConfig.for_mode(cast(RecallPlannerMode, value))
+    default = RecallPlannerConfig.for_mode(cast(RecallPlannerMode, value))
+    return replace(
+        default,
+        fact_rerank_max_candidates=_integer_environment(
+            environment=environment,
+            key="CODECAIRN_FACT_RERANK_MAX_CANDIDATES",
+            default=default.fact_rerank_max_candidates,
+        ),
+        fact_rerank_max_candidates_per_parent=_integer_environment(
+            environment=environment,
+            key="CODECAIRN_FACT_RERANK_MAX_CANDIDATES_PER_PARENT",
+            default=default.fact_rerank_max_candidates_per_parent,
+        ),
+        fact_rerank_max_document_chars=_integer_environment(
+            environment=environment,
+            key="CODECAIRN_FACT_RERANK_MAX_DOCUMENT_CHARS",
+            default=default.fact_rerank_max_document_chars,
+        ),
+    )
 
 
 def _model_revision(

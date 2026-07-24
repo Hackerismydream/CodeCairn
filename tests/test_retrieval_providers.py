@@ -254,6 +254,29 @@ def test_retrieval_profile_rejects_non_positive_reranker_batch_size() -> None:
         )
 
 
+def test_retrieval_profile_applies_explicit_fact_rerank_bounds() -> None:
+    providers = create_retrieval_providers(
+        environment={
+            "CODECAIRN_FACT_RERANK_MAX_CANDIDATES": "192",
+            "CODECAIRN_FACT_RERANK_MAX_CANDIDATES_PER_PARENT": "20",
+            "CODECAIRN_FACT_RERANK_MAX_DOCUMENT_CHARS": "1024",
+        }
+    )
+
+    assert providers.planner.fact_rerank_max_candidates == 192
+    assert providers.planner.fact_rerank_max_candidates_per_parent == 20
+    assert providers.planner.fact_rerank_max_document_chars == 1024
+
+
+def test_retrieval_profile_rejects_inconsistent_fact_rerank_bounds() -> None:
+    with pytest.raises(ValueError, match="parent candidate limit"):
+        create_retrieval_providers(
+            environment={
+                "CODECAIRN_FACT_RERANK_MAX_CANDIDATES_PER_PARENT": "8",
+            }
+        )
+
+
 def test_dashscope_adapter_batches_openai_compatible_requests_and_restores_order() -> None:
     requests: list[httpx.Request] = []
 

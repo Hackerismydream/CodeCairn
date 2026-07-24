@@ -47,6 +47,23 @@ gate. V20 records that amendment in new question-set artifacts; it does not
 retroactively promote the v19 runs. See
 [ADR 0031](../../docs/adr/0031-v20-treats-the-40-question-ablation-as-a-non-regression-gate.md).
 
+## V21 bounded fact reranking
+
+V21 bounds the second cross-encoder stage to 192 fact candidates, 20 candidates
+per parent, and 1,024 characters per fact document. A provider-free
+160-question ablation reduced retrieval P95 from 2,782 ms to 2,320 ms on the
+same machine while preserving 72.73% complete-context and 92.86% ranked-all
+evidence coverage. V20 latency failures remain negative evidence. See
+[ADR 0032](../../docs/adr/0032-v21-bounds-fact-reranking-work.md).
+
+Set the V21 bounds explicitly for every corpus, retrieval, and scoring command:
+
+```bash
+export CODECAIRN_FACT_RERANK_MAX_CANDIDATES=192
+export CODECAIRN_FACT_RERANK_MAX_CANDIDATES_PER_PARENT=20
+export CODECAIRN_FACT_RERANK_MAX_DOCUMENT_CHARS=1024
+```
+
 ### Historical diagnostics
 
 The earlier scored 200-question run
