@@ -417,7 +417,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
     @evidence_app.command("build")
     def evidence_build_command(
         bundle_id: Annotated[str, typer.Option("--bundle-id")],
-        locomo_run: Annotated[Path, typer.Option("--locomo-run", exists=True, file_okay=False)],
+        locomo_run: Annotated[Path, typer.Option("--locomo-run", exists=True, readable=True)],
         retrieval_run: Annotated[
             Path, typer.Option("--retrieval-run", exists=True, file_okay=False)
         ],

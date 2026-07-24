@@ -13,6 +13,10 @@ from typing import cast
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
 from codecairn.evaluation.coding import report_coding_runs
 from codecairn.evaluation.locomo import CATEGORY_NAMES, report_locomo
+from codecairn.evaluation.locomo_bundle import (
+    copy_locomo_composite_evidence,
+    report_locomo_composite_evidence,
+)
 from codecairn.evaluation.retrieval import report_recovery, report_retrieval
 
 AGGREGATION_COMMAND = "uv run codecairn evidence verify {bundle_dir}"
@@ -111,17 +115,24 @@ def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
 
 
 def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> None:
-    _copy_locomo_report(config.locomo_run_dir, target / "raw" / "locomo")
-    _copy_named_files(
-        config.locomo_run_dir,
-        target / "raw" / "locomo",
-        ("manifest.json",),
-    )
-    _copy_public_locomo_ingests(config.locomo_run_dir, target / "raw" / "locomo")
-    _copy_public_locomo_questions(
-        config.locomo_run_dir,
-        target / "raw" / "locomo",
-    )
+    if config.locomo_run_dir.is_file():
+        copy_locomo_composite_evidence(
+            config.locomo_run_dir,
+            target / "raw" / "locomo",
+            repository_root=config.repository_root,
+        )
+    else:
+        _copy_locomo_report(config.locomo_run_dir, target / "raw" / "locomo")
+        _copy_named_files(
+            config.locomo_run_dir,
+            target / "raw" / "locomo",
+            ("manifest.json",),
+        )
+        _copy_public_locomo_ingests(config.locomo_run_dir, target / "raw" / "locomo")
+        _copy_public_locomo_questions(
+            config.locomo_run_dir,
+            target / "raw" / "locomo",
+        )
     _copy_named_files(
         config.retrieval_run_dir,
         target / "raw" / "retrieval",
@@ -484,7 +495,11 @@ def _aggregate_bundle(
     recovery_dir = raw / "recovery"
     coding_dir = raw / "coding"
 
-    locomo = report_locomo(locomo_dir)
+    locomo = (
+        report_locomo_composite_evidence(locomo_dir)
+        if (locomo_dir / "composite.json").is_file()
+        else report_locomo(locomo_dir)
+    )
     retrieval = report_retrieval(retrieval_dir)
     recovery = report_recovery(recovery_dir)
     coding = report_coding_runs(coding_dir)
@@ -499,7 +514,7 @@ def _aggregate_bundle(
     locomo_manifest = _required_dict(
         read_json(locomo_dir / "manifest.json"), field="LoCoMo manifest"
     )
-    amendments = _load_amendments(locomo_dir)
+    amendments = [] if (locomo_dir / "composite.json").is_file() else _load_amendments(locomo_dir)
     retrieval_manifest = _required_dict(
         read_json(retrieval_dir / "manifest.json"), field="retrieval manifest"
     )
@@ -729,9 +744,14 @@ def _validate_completed_runs(
         raise ValueError("LoCoMo session count does not match the dataset manifest")
     if counts["locomo_turn_count"] != _required_int(dataset, "turn_count"):
         raise ValueError("LoCoMo turn count does not match the dataset manifest")
-    if counts["locomo_question_run_count"] != _required_int(
-        locomo, "completed_question_count"
-    ) or _required_int(locomo, "infrastructure_failed_count"):
+    expected_completed = (
+        _required_int(locomo, "scored_question_count")
+        if locomo_manifest.get("suite") == "locomo-public-composite"
+        else _required_int(locomo, "completed_question_count")
+    )
+    if counts["locomo_question_run_count"] != expected_completed or _required_int(
+        locomo, "infrastructure_failed_count"
+    ):
         raise ValueError("LoCoMo question artifacts are incomplete")
     if locomo.get("scored") is True:
         selection = _required_dict(locomo_manifest.get("selection"), field="LoCoMo selection")

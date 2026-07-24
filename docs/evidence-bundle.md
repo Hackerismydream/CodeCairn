@@ -17,8 +17,10 @@ drift is still rejected.
 
 ## Build contract
 
-The build requires four completed immutable run directories plus JUnit and
-coverage JSON from the same source checkout:
+The build requires completed immutable benchmark artifacts plus JUnit and
+coverage JSON from the same source checkout. `--locomo-run` accepts either one
+ordinary completed run directory or one exact-repair composite JSON generated
+by `compose-locomo-repair`; the other suites remain completed run directories:
 
 ```bash
 uv run codecairn evidence build \
@@ -37,11 +39,23 @@ uv run codecairn evidence build \
 The output is exclusive: an existing bundle directory is never overwritten.
 The reducer copies manifests, query records, recovery checks, normalized coding
 traces, public verifier results, and normalized LoCoMo ingest/question
-checkpoints. Public LoCoMo question records retain category, status, generated
-answer, normalized judge labels, retry metadata, usage, the non-content
-retrieval identity sidecar, and the original artifact hash while excluding raw
-judge responses, the dataset question, gold answer, evidence text, retrieval
-query, ranked memories, and recalled conversation content.
+checkpoints. An ordinary LoCoMo run retains category, status, generated answer,
+normalized judge labels, retry metadata, usage, the non-content retrieval
+identity sidecar, and the original artifact hash while excluding raw judge
+responses, the dataset question, gold answer, evidence text, retrieval query,
+ranked memories, and recalled conversation content.
+
+An exact-repair composite is first rebuilt from both immutable private source
+runs and compared byte-for-byte at the JSON-value level. The public bundle then
+retains the frozen target and repair selections, source manifest/report
+receipts, one privacy-safe outcome per source question, and one final outcome
+whose `source` is either `base` or `repair`. It excludes generated answers,
+model responses, and memory context. Offline verification recomputes each
+source report from those outcomes, proves that repair IDs exactly equal the
+base infrastructure-failure set, proves that each final outcome is unchanged
+from its named source, and recomputes category scores and usage. This preserves
+the exact-repair proof without redistributing LoCoMo content or private traces.
+
 Public ingest records retain only identifiers, aggregate counts, and the
 original artifact hash, excluding speaker names and runtime paths. Public
 verifier records retain outcome, timing, output
@@ -90,6 +104,11 @@ and the immutable Hugging Face artifact source plus commit revision.
   maximum accepted response length. All attempts remain in the raw checkpoint
   and count toward token and cost totals. Provider-native CNY cost remains
   distinct from USD cost.
+- An exact-repair LoCoMo bundle may publish the same formal accuracy only when
+  both source receipts match, the repair question IDs exactly equal the base
+  infrastructure failures, every repaired question is scored, and the public
+  final outcomes reproduce the immutable composite. The base negative artifact
+  remains part of the evidence rather than being overwritten.
 - CodingMemoryBench compares memory-off and memory-on over the same 20 tasks,
   three repeats, isolated workspaces, and a verifier hidden from the agent.
 - Retrieval reports measure the checked-in 100-query corpus on the recorded
