@@ -117,9 +117,15 @@ def test_expansion_lane_cannot_exceed_the_global_plan_limit() -> None:
 def test_default_query_sketch_is_provider_free() -> None:
     sketch = RecallPlanner().plan("What hobby does Alice enjoy?", limit=5).query_sketch
 
-    assert sketch.sketcher_id == "codecairn/deterministic-query-sketch-v4"
+    assert sketch.sketcher_id == "codecairn/deterministic-query-sketch-v5"
     assert sketch.query_time_llm_calls == 0
-    assert sketch.evidence_slots == ()
+    assert sketch.evidence_slots == (
+        ContextEvidenceSlot(
+            kind="high_confidence_parent",
+            max_facts=4,
+            minimum_parent_score=5.5,
+        ),
+    )
 
 
 def test_query_sketch_exposes_bounded_context_evidence_slots() -> None:
@@ -133,6 +139,11 @@ def test_query_sketch_exposes_bounded_context_evidence_slots() -> None:
 
     assert quantity.evidence_slots == (
         ContextEvidenceSlot(
+            kind="high_confidence_parent",
+            max_facts=4,
+            minimum_parent_score=5.5,
+        ),
+        ContextEvidenceSlot(
             kind="quantity_transition",
             max_facts=12,
             anchors=("joanna",),
@@ -142,6 +153,11 @@ def test_query_sketch_exposes_bounded_context_evidence_slots() -> None:
     )
     assert alias.evidence_slots == (
         ContextEvidenceSlot(
+            kind="high_confidence_parent",
+            max_facts=4,
+            minimum_parent_score=5.5,
+        ),
+        ContextEvidenceSlot(
             kind="vocative_alias",
             max_facts=2,
             anchors=("nate", "joanna"),
@@ -149,6 +165,11 @@ def test_query_sketch_exposes_bounded_context_evidence_slots() -> None:
         ContextEvidenceSlot(kind="semantic_child_support", max_facts=16),
     )
     assert prior_state.evidence_slots == (
+        ContextEvidenceSlot(
+            kind="high_confidence_parent",
+            max_facts=4,
+            minimum_parent_score=5.5,
+        ),
         ContextEvidenceSlot(
             kind="prior_state",
             max_facts=4,
@@ -171,9 +192,9 @@ def test_query_sketch_does_not_route_substrings_or_unrelated_prior_states() -> N
     )
 
     assert athena.temporal_op == "none"
-    assert athena.evidence_slots == ()
+    assert tuple(slot.kind for slot in athena.evidence_slots) == ("high_confidence_parent",)
     assert strengthened.temporal_op == "none"
-    assert strengthened.evidence_slots == ()
+    assert tuple(slot.kind for slot in strengthened.evidence_slots) == ("high_confidence_parent",)
     assert employment.temporal_op == "order"
     assert all(slot.kind != "prior_state" for slot in employment.evidence_slots)
     assert all(slot.kind != "prior_state" for slot in friendship_after_boundary.evidence_slots)
@@ -186,6 +207,7 @@ def test_query_sketch_does_not_route_substrings_or_unrelated_prior_states() -> N
         ("context_quantity_transition_fact_limit", 13),
         ("context_vocative_alias_fact_limit", 3),
         ("context_prior_state_fact_limit", 5),
+        ("context_high_confidence_parent_fact_limit", 5),
     ),
 )
 def test_context_evidence_slot_limits_are_hard_bounded(

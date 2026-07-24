@@ -120,7 +120,7 @@ def test_single_run_promotion_binds_selection_contract_and_all_absolute_gates(
     assert json.loads(config.output_path.read_text(encoding="utf-8")) == report
 
 
-def test_v18_promotion_rejects_a_run_without_paid_scoring_receipt(
+def test_v19_promotion_rejects_a_run_without_paid_scoring_receipt(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -138,7 +138,7 @@ def test_v18_promotion_rejects_a_run_without_paid_scoring_receipt(
         build_locomo_promotion_report(config)
 
 
-def test_v18_promotion_rejects_a_receipt_for_other_retrieval_sources(
+def test_v19_promotion_rejects_a_receipt_for_other_retrieval_sources(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -569,7 +569,7 @@ def _promotion_fixture(
     selection_report_path = tmp_path / "diagnostic-40-report.json"
     run_dir = tmp_path / "diagnostic-200-run"
     run_dir.mkdir()
-    protocol_asset = "diagnostic-200-v17.json" if legacy_protocol else "diagnostic-200-v18.json"
+    protocol_asset = "diagnostic-200-v17.json" if legacy_protocol else "diagnostic-200-v19.json"
     protocol = json.loads(
         (Path(__file__).parents[1] / "benchmarks/locomo" / protocol_asset).read_text(
             encoding="utf-8",
@@ -998,7 +998,11 @@ def _retrieval_manifest(protocol: dict[str, object], *, mode: str) -> dict[str, 
         "planner": {
             "mode": mode,
             **windows,
-            **{field: protocol[field] for field in _FROZEN_PLANNER_PROTOCOL_FIELDS},
+            **{
+                field: protocol[field]
+                for field in _FROZEN_PLANNER_PROTOCOL_FIELDS
+                if field in protocol
+            },
         },
     }
 

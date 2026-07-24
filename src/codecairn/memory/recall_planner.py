@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import date
+from math import isfinite
 from typing import Literal
 
 from codecairn.memory.context import (
@@ -28,6 +29,7 @@ RelationRequirementKind = Literal["temporal_order", "procedure_order"]
 ProvenanceStage = Literal["failure", "change", "verification"]
 QueryVariantKind = Literal["original", "entity", "temporal"]
 ContextEvidenceSlotKind = Literal[
+    "high_confidence_parent",
     "prior_state",
     "quantity_transition",
     "semantic_child_support",
@@ -216,12 +218,19 @@ class ContextEvidenceSlot:
     max_facts: int
     anchors: tuple[str, ...] = ()
     topic_terms: tuple[str, ...] = ()
+    minimum_parent_score: float | None = None
 
     def __post_init__(self) -> None:
         if self.kind not in CONTEXT_EVIDENCE_SLOT_KINDS:
             raise ValueError("Unknown context evidence slot kind")
         if type(self.max_facts) is not int or not 1 <= self.max_facts <= 20:
             raise ValueError("Context evidence slot max_facts must be within [1, 20]")
+        if self.minimum_parent_score is not None and (
+            isinstance(self.minimum_parent_score, bool)
+            or not isinstance(self.minimum_parent_score, int | float)
+            or not isfinite(float(self.minimum_parent_score))
+        ):
+            raise ValueError("Context evidence slot minimum parent score must be finite")
 
 
 CoverageRequirement = (
@@ -232,7 +241,7 @@ CoverageRequirement = (
     | ProvenanceCoverageRequirement
 )
 
-QUERY_SKETCHER_ID = "codecairn/deterministic-query-sketch-v4"
+QUERY_SKETCHER_ID = "codecairn/deterministic-query-sketch-v5"
 
 
 @dataclass(frozen=True, slots=True)
@@ -323,6 +332,8 @@ class RecallPlannerConfig:
     context_quantity_transition_fact_limit: int = 12
     context_vocative_alias_fact_limit: int = 2
     context_prior_state_fact_limit: int = 4
+    context_high_confidence_parent_fact_limit: int = 4
+    context_high_confidence_parent_score_threshold: float = 5.5
     expansion_plan: ExpansionPlan = ExpansionPlan()
 
     def __post_init__(self) -> None:
@@ -406,10 +417,23 @@ class RecallPlannerConfig:
                 self.context_prior_state_fact_limit,
                 4,
             ),
+            "context_high_confidence_parent_fact_limit": (
+                self.context_high_confidence_parent_fact_limit,
+                4,
+            ),
         }
         for field_name, (value, hard_ceiling) in evidence_slot_limits.items():
             if type(value) is not int or not 1 <= value <= hard_ceiling:
                 raise ValueError(f"{field_name} exceeds its context-slot hard ceiling")
+        if (
+            isinstance(self.context_high_confidence_parent_score_threshold, bool)
+            or not isinstance(
+                self.context_high_confidence_parent_score_threshold,
+                int | float,
+            )
+            or not isfinite(float(self.context_high_confidence_parent_score_threshold))
+        ):
+            raise ValueError("High-confidence parent score threshold must be finite")
         if self.mode != "hierarchy" and self.neighbor_window != 0:
             raise ValueError("Only hierarchy mode may expand temporal neighbors")
 
@@ -467,6 +491,12 @@ class RecallPlannerConfig:
             "context_quantity_transition_fact_limit": (self.context_quantity_transition_fact_limit),
             "context_vocative_alias_fact_limit": self.context_vocative_alias_fact_limit,
             "context_prior_state_fact_limit": self.context_prior_state_fact_limit,
+            "context_high_confidence_parent_fact_limit": (
+                self.context_high_confidence_parent_fact_limit
+            ),
+            "context_high_confidence_parent_score_threshold": (
+                self.context_high_confidence_parent_score_threshold
+            ),
             "context_max_chars": self.context_max_chars,
             "context_max_tokens": self.context_max_tokens,
             "context_tokenizer": CONTEXT_TOKENIZER_ID,
@@ -666,7 +696,13 @@ def _context_evidence_slots(
     wants_procedure: bool,
     config: RecallPlannerConfig,
 ) -> tuple[ContextEvidenceSlot, ...]:
-    slots: list[ContextEvidenceSlot] = []
+    slots: list[ContextEvidenceSlot] = [
+        ContextEvidenceSlot(
+            kind="high_confidence_parent",
+            max_facts=config.context_high_confidence_parent_fact_limit,
+            minimum_parent_score=config.context_high_confidence_parent_score_threshold,
+        )
+    ]
     quantity = _QUANTITY_CUES.search(query) is not None
     alias = _ALIAS_CUES.search(query) is not None
     inference = _INFERENCE_CUES.search(query) is not None

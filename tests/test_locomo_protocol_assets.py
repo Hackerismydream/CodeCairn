@@ -484,6 +484,75 @@ def test_v18_freezes_lossless_child_recall_and_calendar_query_contracts() -> Non
     } == {key: value for key, value in v17["200"]["promotion"].items() if key != "source_selection"}
 
 
+def test_v19_freezes_compact_flat_context_and_high_confidence_parent_slot() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    paths = {
+        "40": benchmark_root / "diagnostic-40-v19.json",
+        "160": benchmark_root / "diagnostic-160-holdout-v19.json",
+        "200": benchmark_root / "diagnostic-200-v19.json",
+    }
+    expected_hashes = {
+        "40": "e17ee04bb9ed5ac1f6b5a7072672820ef6195c957a94961a7a1dcbe8cece078f",
+        "160": "68efa6ec4a3de41a1a9a8a6e705fffff69bb1147fa4263a55a0c6c9640231dad",
+        "200": "8466ceca0df5821f149e6ac110b1a9fb2c14723cb198f75aa063a4d174b92461",
+    }
+    v19 = {name: json.loads(path.read_text()) for name, path in paths.items()}
+    v18 = {
+        "40": json.loads((benchmark_root / "diagnostic-40-v18.json").read_text()),
+        "160": json.loads((benchmark_root / "diagnostic-160-holdout-v18.json").read_text()),
+        "200": json.loads((benchmark_root / "diagnostic-200-v18.json").read_text()),
+    }
+
+    for name, path in paths.items():
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_hashes[name]
+        expected_protocol = dict(v18[name]["protocol"])
+        expected_protocol.update(
+            {
+                "query_sketcher": "codecairn/deterministic-query-sketch-v5",
+                "context_renderer": "exact-source-flat-facts-first-v9",
+                "context_evidence_slot_policy": "typed-protected-child-support-v3",
+                "context_high_confidence_parent_fact_limit": 4,
+                "context_high_confidence_parent_score_threshold": 5.5,
+            }
+        )
+        assert v19[name]["protocol"] == expected_protocol
+    assert v19["40"]["protocol"] == v19["160"]["protocol"] == v19["200"]["protocol"]
+    assert {key: value for key, value in v19["40"].items() if key != "protocol"} == {
+        key: value for key, value in v18["40"].items() if key != "protocol"
+    }
+    assert {key: value for key, value in v19["160"].items() if key != "protocol"} == {
+        key: value for key, value in v18["160"].items() if key != "protocol"
+    }
+    assert {
+        key: value for key, value in v19["200"].items() if key not in {"protocol", "promotion"}
+    } == {key: value for key, value in v18["200"].items() if key not in {"protocol", "promotion"}}
+
+    source = v19["200"]["promotion"]["source_selection"]
+    assert source == {
+        "selection_id": v19["40"]["selection_id"],
+        "question_set_sha256": expected_hashes["40"],
+        "selection_sha256": v19["40"]["selection_sha256"],
+        "protocol_sha256": canonical_sha256(v19["40"]["protocol"]),
+        "gates_sha256": _canonical_sha256(v19["40"]["gates"]),
+    }
+    holdout = v19["200"]["promotion"]["holdout_selection"]
+    assert holdout == {
+        "selection_id": v19["160"]["selection_id"],
+        "question_set_sha256": expected_hashes["160"],
+        "selection_sha256": v19["160"]["selection_sha256"],
+        "protocol_sha256": canonical_sha256(v19["160"]["protocol"]),
+    }
+    assert {
+        key: value
+        for key, value in v19["200"]["promotion"].items()
+        if key not in {"source_selection", "holdout_selection"}
+    } == {
+        key: value
+        for key, value in v18["200"]["promotion"].items()
+        if key not in {"source_selection", "holdout_selection"}
+    }
+
+
 def _select_question_ids(
     questions: tuple[LoCoMoQuestion, ...],
     *,

@@ -3,17 +3,21 @@ from __future__ import annotations
 CONTEXT_TOKENIZER_ID = "codecairn/utf8-two-byte-upper-bound-v1"
 CONTEXT_DIRECT_MATCH_PRIOR = 2.0
 LEGACY_CONTEXT_EVIDENCE_SLOT_POLICY_ID = "typed-protected-child-support-v1"
-CONTEXT_EVIDENCE_SLOT_POLICY_ID = "typed-protected-child-support-v2"
+LEGACY_COVERAGE_CONTEXT_EVIDENCE_SLOT_POLICY_ID = "typed-protected-child-support-v2"
+CONTEXT_EVIDENCE_SLOT_POLICY_ID = "typed-protected-child-support-v3"
 CONTEXT_EVIDENCE_SLOT_POLICY_IDS = frozenset(
     {
         LEGACY_CONTEXT_EVIDENCE_SLOT_POLICY_ID,
+        LEGACY_COVERAGE_CONTEXT_EVIDENCE_SLOT_POLICY_ID,
         CONTEXT_EVIDENCE_SLOT_POLICY_ID,
     }
 )
 LEGACY_EXACT_SOURCE_CONTEXT_RENDERER_ID = "exact-source-prioritized-facts-first-v7"
-CONTEXT_RENDERER_ID = "exact-source-coverage-aware-facts-first-v8"
+LEGACY_COVERAGE_CONTEXT_RENDERER_ID = "exact-source-coverage-aware-facts-first-v8"
+CONTEXT_RENDERER_ID = "exact-source-flat-facts-first-v9"
 CONTEXT_EVIDENCE_SLOT_KINDS = frozenset(
     {
+        "high_confidence_parent",
         "prior_state",
         "quantity_transition",
         "semantic_child_support",
@@ -34,6 +38,7 @@ TOKEN_BUDGET_CONTEXT_RENDERERS = frozenset(
         "scored-facts-first-v5",
         "exact-source-facts-first-v6",
         LEGACY_EXACT_SOURCE_CONTEXT_RENDERER_ID,
+        LEGACY_COVERAGE_CONTEXT_RENDERER_ID,
         CONTEXT_RENDERER_ID,
     }
 )

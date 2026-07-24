@@ -2312,6 +2312,12 @@ def _context_slot_candidates(
 ) -> tuple[tuple[int, int, RecallSnippet], ...]:
     if evidence_slot_policy not in CONTEXT_EVIDENCE_SLOT_POLICY_IDS:
         raise ValueError(f"Unsupported context evidence-slot policy: {evidence_slot_policy}")
+    if slot.kind == "high_confidence_parent":
+        return _high_confidence_parent_candidates(
+            slot,
+            ranked=ranked,
+            snippet_values=snippet_values,
+        )
     if slot.kind == "vocative_alias":
         selected = _vocative_alias_candidates(
             slot,
@@ -2367,6 +2373,28 @@ def _context_slot_candidates(
             )
         )
     return selected[: slot.max_facts]
+
+
+def _high_confidence_parent_candidates(
+    slot: ContextEvidenceSlot,
+    *,
+    ranked: tuple[RankedRecall, ...],
+    snippet_values: tuple[tuple[RecallSnippet, ...], ...],
+) -> tuple[tuple[int, int, RecallSnippet], ...]:
+    if not ranked or not snippet_values:
+        return ()
+    threshold = slot.minimum_parent_score
+    if threshold is None or ranked[0].final_score < threshold:
+        return ()
+    parent_memory_id = ranked[0].memory_id
+    selected: list[tuple[int, int, RecallSnippet]] = []
+    for snippet_index, snippet in enumerate(snippet_values[0]):
+        if snippet.relevance_score is None or snippet.source_memory_id != parent_memory_id:
+            continue
+        selected.append((0, snippet_index, snippet))
+        if len(selected) == slot.max_facts:
+            break
+    return tuple(selected)
 
 
 def _vocative_alias_candidates(
@@ -2818,14 +2846,8 @@ def _context_header(query: str, *, repo_key: str, token_limit: int) -> list[str]
 
 
 def _compact_evidence_base(item: RankedRecall) -> list[str]:
-    return [
-        "",
-        (
-            f"## {item.rank}. {_single_line(item.title, limit=120)} "
-            f"[{item.memory_id}]({item.source_uri})"
-        ),
-        "Evidence excerpts:",
-    ]
+    del item
+    return []
 
 
 def _compact_evidence_snippets(
@@ -2853,13 +2875,9 @@ def _context_snippet_line(
     *,
     parent_memory_id: str,
 ) -> str:
+    del parent_memory_id
     text = _context_fact_text(snippet)
-    if snippet.source_memory_id == parent_memory_id:
-        return f"- [{snippet.fact_id}] {snippet.relation}: {text}"
-    return (
-        f"- [{snippet.fact_id}] {snippet.relation}: {text} "
-        f"([{snippet.source_memory_id}]({snippet.source_uri}))"
-    )
+    return f"- [{snippet.fact_id}] {text}"
 
 
 def _hydrated_fact_line(snippet: RecallSnippet) -> str:

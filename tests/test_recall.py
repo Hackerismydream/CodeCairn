@@ -246,7 +246,8 @@ def test_hybrid_recall_unions_candidates_before_deterministic_reranking() -> Non
     assert all(repo_key == "acme/widgets" for repo_key, _memory_id in state.requested)
     assert "other/repo" not in result.markdown
     assert "BM25 found this memory." in result.markdown
-    assert "codecairn://memory/memory-b" in result.markdown
+    assert "codecairn://memory/memory-b" not in result.markdown
+    assert result.sidecar.ranked[0].source_uri == "codecairn://memory/memory-b"
     assert result.sidecar.ranked[0].evidence[0].raw_event_index == 1
     assert [trace.stage for trace in result.sidecar.stage_trace] == [
         "candidate_recall",
@@ -1186,8 +1187,10 @@ def test_context_budget_keeps_compact_evidence_from_every_large_parent() -> None
     assert len(compiled.markdown) <= 23_900
     assert compiled.partial_episode_ids == ("memory-1", "memory-2")
     assert compiled.dropped_episode_ids == ()
-    assert "## 1. Episode 1" in compiled.markdown
-    assert "## 2. Episode 2" in compiled.markdown
+    assert "## 1. Episode 1" not in compiled.markdown
+    assert "## 2. Episode 2" not in compiled.markdown
+    assert "[fact-1]" in compiled.markdown
+    assert "[fact-2]" in compiled.markdown
     assert "Anchor 1" in compiled.markdown
     assert "Anchor 2" in compiled.markdown
 

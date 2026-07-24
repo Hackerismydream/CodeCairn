@@ -129,7 +129,8 @@ def test_cli_recall_emits_markdown_and_a_structured_sidecar(tmp_path: Path) -> N
         ],
     )
     assert markdown.exit_code == 0, markdown.output
-    assert "codecairn://memory/" in markdown.stdout
+    assert "[fact_" in markdown.stdout
+    assert result["sidecar"]["ranked"][0]["source_uri"].startswith("codecairn://memory/")
 
 
 def test_cli_exposes_doctor_and_evaluation_run_report(tmp_path: Path) -> None:

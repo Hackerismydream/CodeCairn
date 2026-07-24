@@ -255,7 +255,7 @@ def test_context_packs_all_matched_facts_across_parents_before_any_sibling() -> 
         ),
         temporal_priority_memory_ids=set(),
         config=RecallPlannerConfig(
-            context_max_tokens=budget_template.trace.token_count,
+            context_max_tokens=max(256, budget_template.trace.token_count),
         ),
     )
 
@@ -1229,6 +1229,109 @@ def test_prior_state_slot_does_not_compare_raw_indexes_across_parents() -> None:
     )
 
     assert tuple(candidate[2].fact_id for candidate in selected) == ("fact-relevant-state",)
+
+
+def test_context_renders_flat_source_facts_without_repeating_parent_chrome() -> None:
+    ranked = (
+        replace(
+            _ranked_parent(snippet_text="first complete source fact"),
+            title="A deliberately verbose conversation title",
+            snippets=(
+                _snippet(
+                    fact_id="fact-first",
+                    text="first complete source fact",
+                    raw_event_index=1,
+                ),
+                _snippet(
+                    fact_id="fact-second",
+                    text="second complete source fact",
+                    raw_event_index=2,
+                ),
+            ),
+        ),
+    )
+
+    compiled = compile_context(
+        "What complete source facts are relevant?",
+        repo_key="locomo/conv-test",
+        ranked=ranked,
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(),
+    )
+
+    assert "## " not in compiled.markdown
+    assert "Evidence excerpts:" not in compiled.markdown
+    assert "[fact-first]" in compiled.markdown
+    assert "[fact-second]" in compiled.markdown
+
+
+def test_high_confidence_parent_slot_reserves_bounded_parent_breadth() -> None:
+    top_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        final_score=6.0,
+        snippets=tuple(
+            replace(
+                _snippet(
+                    fact_id=f"fact-top-{index}",
+                    text=(f"top parent fact {index} " + "T" * 180),
+                    raw_event_index=index,
+                ),
+                relevance_score=(10.0 - index if index != 4 else -10.0),
+                selection_source=FACT_SELECTOR_ID,
+            )
+            for index in range(1, 7)
+        ),
+    )
+    distractor_parent = replace(
+        _ranked_parent(snippet_text="unused"),
+        rank=2,
+        memory_id="memory-distractor",
+        source_uri="codecairn://memory/memory-distractor",
+        final_score=5.0,
+        snippets=tuple(
+            replace(
+                _snippet(
+                    fact_id=f"fact-distractor-{index}",
+                    text=(f"distractor fact {index} " + "D" * 180),
+                    raw_event_index=index,
+                ),
+                source_memory_id="memory-distractor",
+                source_uri="codecairn://memory/memory-distractor",
+                relevance_score=20.0 - index,
+                selection_source=FACT_SELECTOR_ID,
+            )
+            for index in range(1, 7)
+        ),
+    )
+
+    compiled = compile_context(
+        "What does the top result establish?",
+        repo_key="locomo/conv-test",
+        ranked=(top_parent, distractor_parent),
+        temporal_priority_memory_ids=set(),
+        config=RecallPlannerConfig(context_max_tokens=900),
+        evidence_slots=(
+            ContextEvidenceSlot(
+                kind="high_confidence_parent",
+                max_facts=4,
+                minimum_parent_score=5.5,
+            ),
+        ),
+    )
+
+    assert compiled.trace is not None
+    assert "fact-top-4" in compiled.trace.rendered_fact_ids
+    assert len(compiled.trace.slot_traces) == 1
+    slot_trace = compiled.trace.slot_traces[0]
+    assert slot_trace.slot_kind == "high_confidence_parent"
+    assert {
+        attempt.fact_id for attempt in slot_trace.attempts if attempt.outcome == "admitted"
+    } == {
+        "fact-top-1",
+        "fact-top-2",
+        "fact-top-3",
+        "fact-top-4",
+    }
 
 
 def _ranked_parent(

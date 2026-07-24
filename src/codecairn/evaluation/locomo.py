@@ -3656,6 +3656,8 @@ _CONTEXT_SELECTOR_PROTOCOL_FIELDS = (
     "context_quantity_transition_fact_limit",
     "context_vocative_alias_fact_limit",
     "context_prior_state_fact_limit",
+    "context_high_confidence_parent_fact_limit",
+    "context_high_confidence_parent_score_threshold",
 )
 _FROZEN_PLANNER_PROTOCOL_FIELDS = (
     "router",
@@ -7084,6 +7086,7 @@ def _validate_report_retrieval(
             raise ValueError("LoCoMo context token budget does not match its manifest")
         if expected_renderer == CONTEXT_RENDERER_ID and isinstance(context_trace, dict):
             slot_limits = {
+                "high_confidence_parent": planner.get("context_high_confidence_parent_fact_limit"),
                 "semantic_child_support": planner.get("context_semantic_support_fact_limit"),
                 "quantity_transition": planner.get("context_quantity_transition_fact_limit"),
                 "vocative_alias": planner.get("context_vocative_alias_fact_limit"),
@@ -7332,6 +7335,14 @@ def _context_replay_config(planner: dict[str, object]) -> RecallPlannerConfig:
             planner,
             "context_prior_state_fact_limit",
         ),
+        context_high_confidence_parent_fact_limit=_required_int(
+            planner,
+            "context_high_confidence_parent_fact_limit",
+        ),
+        context_high_confidence_parent_score_threshold=_required_number(
+            planner,
+            "context_high_confidence_parent_score_threshold",
+        ),
     )
 
 
@@ -7363,6 +7374,7 @@ def _context_replay_ranked(
         observed_fact_ids.update(snippet.fact_id for snippet in snippets)
         matches = tuple(_context_replay_match(value) for value in raw_matches)
         rank = _required_int(item, "rank")
+        final_score = _required_number(item, "final_score")
         if rank < 1:
             raise ValueError("LoCoMo context slot replay has an invalid parent rank")
         ranked.append(
@@ -7379,7 +7391,7 @@ def _context_replay_ranked(
                 vector_rank=None,
                 lexical_score=None,
                 lexical_rank=None,
-                final_score=0.0,
+                final_score=final_score,
                 evidence=(),
                 matched_documents=matches,
                 snippets=snippets,
@@ -7489,6 +7501,17 @@ def _required_int(record: dict[str, object], field: str) -> int:
     if not isinstance(value, int):
         raise ValueError(f"{field} must be an integer")
     return value
+
+
+def _required_number(record: dict[str, object], field: str) -> float:
+    value = record.get(field)
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, int | float)
+        or not math.isfinite(float(value))
+    ):
+        raise ValueError(f"{field} must be a finite number")
+    return float(value)
 
 
 def _valid_nonnegative_number(value: object) -> bool:

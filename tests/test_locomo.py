@@ -112,7 +112,7 @@ def _write_corpus_protocol_question_set(
         if question.category in {1, 2, 3, 4}
     )
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v18.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v19.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3846,9 +3846,9 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         )
 
 
-def test_official_v18_command_contract_passes_preflight(tmp_path: Path) -> None:
+def test_official_v19_command_contract_passes_preflight(tmp_path: Path) -> None:
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v18.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v19.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3959,7 +3959,7 @@ def test_official_v18_command_contract_passes_preflight(tmp_path: Path) -> None:
     config = LoCoMoRunConfig(
         dataset_path=FIXTURE,
         output_root=Path("unused"),
-        run_id="official-v18",
+        run_id="official-v19",
         repository_commit="abc123",
         max_workers=10,
         retrieval_config=retrieval_config,
@@ -4587,7 +4587,10 @@ def _typed_expansion_question(
     question_paths = sorted((artifact.run_dir / "checkpoints" / "questions").glob("*/*.json"))
     for question_path in question_paths:
         question = json.loads(question_path.read_text(encoding="utf-8"))
-        if question["retrieval"]["context_trace"]["slot_traces"]:
+        if any(
+            slot_trace["attempts"]
+            for slot_trace in question["retrieval"]["context_trace"]["slot_traces"]
+        ):
             return question_path, question
     raise AssertionError("Typed expansion fixture produced no evidence-slot trace")
 

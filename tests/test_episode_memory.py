@@ -243,7 +243,7 @@ def test_procedure_query_uses_remaining_budget_for_complete_parent_episode(
         limit=1,
     )
 
-    assert "Evidence excerpts:" in recalled.markdown
+    assert "Evidence excerpts:" not in recalled.markdown
     assert "Complete parent episode:" in recalled.markdown
     assert recalled.sidecar.hydrated_episode_count == 1
     assert recalled.sidecar.partial_episode_ids == ()
