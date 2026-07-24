@@ -3144,6 +3144,55 @@ def test_query_vector_build_batches_and_audits_embedding_usage(tmp_path: Path) -
     FrozenQueryEmbeddingAdapter(artifact.vector_set_dir, load_vectors=False)
 
 
+def test_query_vector_build_reuses_one_vector_for_duplicate_payloads(tmp_path: Path) -> None:
+    class NonDeterministicEmbedder:
+        model_id = "test/embedding"
+        source_id = "test/embedding-source"
+        revision = "a" * 40
+        dimension = 3
+        index_identity = "test:embedding@revision:3"
+        query_batch_size = 1
+
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def embed_queries(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+            self.calls += 1
+            return tuple((float(self.calls), 2.0, 3.0) for _text in texts)
+
+        def embed_query(self, text: str) -> tuple[float, ...]:
+            raise AssertionError("query-vector build must use the batch interface")
+
+        def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
+            raise AssertionError("query-vector build must not embed documents")
+
+    dataset_payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    standard_questions = [
+        question
+        for conversation in dataset_payload
+        for question in conversation["qa"]
+        if question["category"] in {1, 2, 3, 4}
+    ]
+    standard_questions[1]["question"] = standard_questions[0]["question"]
+    dataset_path = tmp_path / "duplicate-queries.json"
+    dataset_path.write_text(json.dumps(dataset_payload), encoding="utf-8")
+    provider = NonDeterministicEmbedder()
+
+    artifact = build_locomo_query_vectors(
+        LoCoMoQueryVectorConfig(
+            dataset_path=dataset_path,
+            output_root=tmp_path / "query-vectors",
+            vector_set_id="duplicate-query-payloads",
+            expected_dataset_sha256=None,
+        ),
+        embedder=provider,
+    )
+
+    assert provider.calls == 3
+    frozen = FrozenQueryEmbeddingAdapter(artifact.vector_set_dir)
+    assert frozen.embed_query(standard_questions[0]["question"]) == (1.0, 2.0, 3.0)
+
+
 def test_query_vector_exact_contract_is_locked_and_reused_without_provider_calls(
     tmp_path: Path,
 ) -> None:

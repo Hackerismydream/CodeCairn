@@ -86,6 +86,7 @@ _JUDGE_CONTRACT = "locomo-generous-semantic-equivalence-v1"
 _CHECKPOINT_POLICY = "journal-replay-or-unknown-spend-fail-closed-v3"
 _LOCOMO_PROJECTION_CONTRACT = "locomo-grounded-clause-projection-v8"
 _LOSSLESS_SEMANTIC_PROJECTION_ADAPTER = "codecairn/lossless-clause"
+_QUERY_VECTOR_DEDUPLICATION_CONTRACT = "payload-digest-first-vector-v1"
 _ANSWER_CONTEXT_CHARS = 24_000
 _TEMPORAL_QUESTION_CUE = re.compile(
     r"^\s*(?:when|what\s+(?:date|day|month|year|time)|"
@@ -2638,6 +2639,7 @@ def _query_vector_build_contract_sha256(
         "questions": question_contracts,
         "embedding": embedding,
         "normalization_contract": "unicode-strip-v1",
+        "deduplication_contract": _QUERY_VECTOR_DEDUPLICATION_CONTRACT,
         "batch_size": _embedding_query_batch_size(embedder),
         "question_set": None if question_set is None else question_set.public_manifest,
     }
@@ -2745,6 +2747,7 @@ def _build_locomo_query_vectors_unlocked(
         "questions": question_contracts,
         "embedding": embedding,
         "normalization_contract": "unicode-strip-v1",
+        "deduplication_contract": _QUERY_VECTOR_DEDUPLICATION_CONTRACT,
         "batch_size": batch_size,
         "question_set": None if question_set is None else question_set.public_manifest,
     }
@@ -2781,6 +2784,7 @@ def _build_locomo_query_vectors_unlocked(
 
     records: list[dict[str, object]] = []
     usage_receipts: list[dict[str, object]] = []
+    frozen_vector_by_payload: dict[str, str] = {}
     checkpoint_root = building_dir / "checkpoints"
     attempt_root = building_dir / "attempts"
     failure_root = building_dir / "failures"
@@ -2799,7 +2803,17 @@ def _build_locomo_query_vectors_unlocked(
                 build_contract_sha256=build_contract_sha256,
                 dimension=embedder.dimension,
             )
-            records.extend(cast(list[dict[str, object]], resumed_checkpoint["records"]))
+            resumed_records = cast(list[dict[str, object]], resumed_checkpoint["records"])
+            for record in resumed_records:
+                payload_sha256 = _required_str(record, "query_payload_sha256")
+                encoded_vector = _required_str(record, "vector")
+                existing = frozen_vector_by_payload.get(payload_sha256)
+                if existing is not None and existing != encoded_vector:
+                    raise ValueError(
+                        "LoCoMo duplicate query payload has conflicting checkpoint vectors"
+                    )
+                frozen_vector_by_payload[payload_sha256] = encoded_vector
+            records.extend(resumed_records)
             usage_receipts.append(
                 _required_dict(
                     resumed_checkpoint.get("usage_delta"),
@@ -2825,32 +2839,47 @@ def _build_locomo_query_vectors_unlocked(
         attempt["receipt_sha256"] = _canonical_sha256(attempt)
         write_json_exclusive(attempt_path, attempt)
         try:
-            vectors = _embed_query_batch(embedder, batch_queries)
-            if len(vectors) != len(batch_questions):
+            new_payloads: list[str] = []
+            new_queries: list[str] = []
+            pending_payloads: set[str] = set()
+            for query, contract in zip(batch_queries, batch_contracts, strict=True):
+                payload_sha256 = _required_str(contract, "query_payload_sha256")
+                if payload_sha256 in frozen_vector_by_payload or payload_sha256 in pending_payloads:
+                    continue
+                pending_payloads.add(payload_sha256)
+                new_payloads.append(payload_sha256)
+                new_queries.append(query)
+            vectors = _embed_query_batch(embedder, tuple(new_queries)) if new_queries else ()
+            if len(vectors) != len(new_queries):
                 raise ValueError("Embedding provider returned an unexpected query-vector count")
-            batch_records: list[dict[str, object]] = []
-            for question, contract, vector in zip(
-                batch_questions,
-                batch_contracts,
-                vectors,
-                strict=True,
-            ):
+            for payload_sha256, vector in zip(new_payloads, vectors, strict=True):
                 _validate_frozen_vector(vector, dimension=embedder.dimension)
                 packed = struct.pack(f"<{embedder.dimension}f", *vector)
+                frozen_vector_by_payload[payload_sha256] = base64.b64encode(packed).decode("ascii")
+            batch_records: list[dict[str, object]] = []
+            for question, contract in zip(
+                batch_questions,
+                batch_contracts,
+                strict=True,
+            ):
+                payload_sha256 = _required_str(contract, "query_payload_sha256")
                 batch_records.append(
                     {
                         "question_id": question.question_id,
                         "query_role": "question",
-                        "query_payload_sha256": contract["query_payload_sha256"],
+                        "query_payload_sha256": payload_sha256,
                         "encoding": "f32le-base64",
                         "dimension": embedder.dimension,
-                        "vector": base64.b64encode(packed).decode("ascii"),
+                        "vector": frozen_vector_by_payload[payload_sha256],
                     }
                 )
             usage_after = _embedding_usage_snapshot(embedder)
             usage_delta = _embedding_usage_delta(usage_before, usage_after)
             if paid_embedding:
-                _validate_paid_embedding_usage_delta(usage_delta)
+                if new_queries:
+                    _validate_paid_embedding_usage_delta(usage_delta)
+                else:
+                    _validate_zero_embedding_usage_delta(usage_delta)
         except Exception as error:
             usage_after = _embedding_usage_snapshot(embedder)
             failure = {
@@ -2894,6 +2923,7 @@ def _build_locomo_query_vectors_unlocked(
         "question_ids": question_ids,
         "embedding": embedding,
         "normalization_contract": "unicode-strip-v1",
+        "deduplication_contract": _QUERY_VECTOR_DEDUPLICATION_CONTRACT,
         "vectors_sha256": vectors_sha256,
         "build_contract_sha256": build_contract_sha256,
         "usage": usage,
@@ -2911,6 +2941,7 @@ def _build_locomo_query_vectors_unlocked(
         "question_set": None if question_set is None else question_set.public_manifest,
         "embedding": embedding,
         "normalization_contract": "unicode-strip-v1",
+        "deduplication_contract": _QUERY_VECTOR_DEDUPLICATION_CONTRACT,
         "vectors_sha256": vectors_sha256,
         "build_contract": build_contract,
         "build_contract_sha256": build_contract_sha256,
@@ -3136,6 +3167,25 @@ def _validate_paid_embedding_usage_delta(usage: dict[str, object]) -> None:
         or usage["known_cost_cny_count"] != call_count
     ):
         raise ValueError("Paid LoCoMo query-vector usage is incomplete")
+
+
+def _validate_zero_embedding_usage_delta(usage: dict[str, object]) -> None:
+    usage = _validate_embedding_usage(usage)
+    if (
+        any(
+            cast(int, usage[field]) != 0
+            for field in (
+                "call_count",
+                "provider_attempt_count",
+                "unobserved_provider_attempt_count",
+                "known_input_tokens_count",
+                "known_cost_cny_count",
+            )
+        )
+        or usage["input_tokens"] != 0
+        or usage["cost_cny"] != 0.0
+    ):
+        raise ValueError("Cached LoCoMo query-vector batch records unexpected provider usage")
 
 
 def _validate_paid_corpus_embedding_usage_delta(usage: dict[str, object]) -> None:
@@ -3521,6 +3571,12 @@ def _validate_query_vector_manifest_mirrors(
     ):
         if manifest.get(field) != content.get(field):
             raise ValueError(f"LoCoMo query-vector manifest mirror does not match content: {field}")
+    deduplication_contract = content.get("deduplication_contract")
+    if (deduplication_contract is not None or "deduplication_contract" in manifest) and (
+        deduplication_contract != _QUERY_VECTOR_DEDUPLICATION_CONTRACT
+        or manifest.get("deduplication_contract") != deduplication_contract
+    ):
+        raise ValueError("LoCoMo query-vector deduplication contract does not match")
 
 
 def _validate_query_vector_checkpoint_artifacts(
