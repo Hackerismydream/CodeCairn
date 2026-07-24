@@ -64,6 +64,14 @@ export CODECAIRN_FACT_RERANK_MAX_CANDIDATES_PER_PARENT=20
 export CODECAIRN_FACT_RERANK_MAX_DOCUMENT_CHARS=1024
 ```
 
+## V22 local latency SLO
+
+V22 changes only the local retrieval P95 gate from 2,500 ms to 3,000 ms. The
+V21 formal holdout missed the old gate by 2.652 ms while all evidence, accuracy,
+infrastructure, context, and memory gates passed. Those quality and safety
+gates remain unchanged. See
+[ADR 0033](../../docs/adr/0033-v22-uses-a-three-second-local-retrieval-slo.md).
+
 ### Historical diagnostics
 
 The earlier scored 200-question run

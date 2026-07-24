@@ -670,6 +670,54 @@ def test_v21_bounds_fact_reranking_without_changing_other_contracts() -> None:
     }
 
 
+def test_v22_changes_only_the_local_retrieval_latency_slo() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    paths = {
+        "40": benchmark_root / "diagnostic-40-v22.json",
+        "160": benchmark_root / "diagnostic-160-holdout-v22.json",
+        "200": benchmark_root / "diagnostic-200-v22.json",
+    }
+    expected_hashes = {
+        "40": "f894d5dd90a80cc71919fe30e0b293c7de22db8c1e6bf2fe210d4de2a8594a5d",
+        "160": "8eab0e5330307f311766c53b1078c4e7e86417ec4a2abca01b68844d173eaaf9",
+        "200": "f5f0a992223772d1d580ac94236db4c31b2ba4329c2526909f1593a6aacb98fb",
+    }
+    v22 = {name: json.loads(path.read_text()) for name, path in paths.items()}
+    v21 = {
+        "40": json.loads((benchmark_root / "diagnostic-40-v21.json").read_text()),
+        "160": json.loads((benchmark_root / "diagnostic-160-holdout-v21.json").read_text()),
+        "200": json.loads((benchmark_root / "diagnostic-200-v21.json").read_text()),
+    }
+
+    for name, path in paths.items():
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_hashes[name]
+        assert v22[name]["protocol"] == v21[name]["protocol"]
+    expected_selection_gates = dict(v21["40"]["gates"])
+    expected_selection_gates["selected_maximum_retrieval_p95_ms"] = 3000
+    assert v22["40"]["gates"] == expected_selection_gates
+    assert v22["160"] == v21["160"]
+
+    source = v22["200"]["promotion"]["source_selection"]
+    assert source == {
+        "selection_id": v22["40"]["selection_id"],
+        "question_set_sha256": expected_hashes["40"],
+        "selection_sha256": v22["40"]["selection_sha256"],
+        "protocol_sha256": canonical_sha256(v22["40"]["protocol"]),
+        "gates_sha256": _canonical_sha256(v22["40"]["gates"]),
+    }
+    holdout = v22["200"]["promotion"]["holdout_selection"]
+    assert holdout == {
+        "selection_id": v22["160"]["selection_id"],
+        "question_set_sha256": expected_hashes["160"],
+        "selection_sha256": v22["160"]["selection_sha256"],
+        "protocol_sha256": canonical_sha256(v22["160"]["protocol"]),
+    }
+    expected_promotion = json.loads(json.dumps(v21["200"]["promotion"]))
+    expected_promotion["source_selection"] = source
+    expected_promotion["gates"]["maximum_retrieval_p95_ms"] = 3000
+    assert v22["200"]["promotion"] == expected_promotion
+
+
 def _select_question_ids(
     questions: tuple[LoCoMoQuestion, ...],
     *,
