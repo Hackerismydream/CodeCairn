@@ -180,12 +180,10 @@ def verify_locomo_retrieval_gate(
     )
     corpus_content_sha256 = _string(corpus_manifest, "content_sha256")
     query_content_sha256 = _string(query_manifest, "content_sha256")
-    corpus_build_contract = _mapping(
+    _mapping(
         corpus_manifest.get("build_contract"),
         field="LoCoMo corpus build contract",
     )
-    if corpus_build_contract.get("repository_commit") != config.repository_commit:
-        raise ValueError("LoCoMo retrieval gate corpus commit does not match")
 
     sources = tuple(
         _verify_source_run(

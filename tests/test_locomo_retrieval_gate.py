@@ -58,6 +58,25 @@ def test_retrieval_gate_accepts_disjoint_verified_runs_and_returns_a_receipt(
     assert [source["question_count"] for source in receipt["sources"]] == [2, 2]
 
 
+def test_retrieval_gate_accepts_a_verified_corpus_from_an_earlier_commit(
+    tmp_path: Path,
+) -> None:
+    config = _gate_fixture(tmp_path)
+    manifest_path = config.corpus_path / "manifest.json"
+    manifest = read_json(manifest_path)
+    assert isinstance(manifest, dict)
+    manifest["build_contract"]["repository_commit"] = "producer-commit"
+    manifest_path.unlink()
+    write_json_exclusive(manifest_path, manifest)
+
+    receipt = verify_locomo_retrieval_gate(
+        config,
+        reporter=StaticGateReporter(),
+    )
+
+    assert receipt["repository_commit"] == "abc123"
+
+
 def test_retrieval_gate_rejects_an_unfrozen_scored_subset(
     tmp_path: Path,
 ) -> None:

@@ -36,12 +36,21 @@ def parse_grounded_answer(text: str, *, context: GroundedContext) -> GroundedAns
     expected_fields = {"answer", "supporting_evidence_ids", "insufficient"}
     if not isinstance(payload, dict) or set(payload) != expected_fields:
         raise ValueError("Grounded answer does not match the required JSON schema")
-    answer = payload["answer"]
+    raw_answer = payload["answer"]
     supporting_ids = payload["supporting_evidence_ids"]
     insufficient = payload["insufficient"]
+    if isinstance(raw_answer, str):
+        answer = raw_answer
+    elif (
+        isinstance(raw_answer, list)
+        and raw_answer
+        and all(isinstance(item, str) and item.strip() for item in raw_answer)
+    ):
+        answer = "; ".join(item.strip() for item in raw_answer)
+    else:
+        raise ValueError("Grounded answer does not match the required JSON schema")
     if (
-        not isinstance(answer, str)
-        or not isinstance(supporting_ids, list)
+        not isinstance(supporting_ids, list)
         or any(not isinstance(item, str) for item in supporting_ids)
         or type(insufficient) is not bool
     ):

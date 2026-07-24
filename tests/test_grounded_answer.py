@@ -38,6 +38,28 @@ def test_parse_grounded_answer_accepts_rendered_source_fact_citations() -> None:
     )
 
 
+def test_parse_grounded_answer_normalizes_a_supported_list_answer() -> None:
+    context = GroundedContext(
+        markdown="# Grounded Context\n",
+        evidence=(RenderedEvidence("fact-family", "Family activities", "locomo://family"),),
+        token_count=4,
+        token_limit=4_000,
+    )
+
+    answer = parse_grounded_answer(
+        '{"answer":["hiking","camping","painting"],'
+        '"supporting_evidence_ids":["fact-family"],'
+        '"insufficient":false}',
+        context=context,
+    )
+
+    assert answer == GroundedAnswer(
+        answer="hiking; camping; painting",
+        supporting_evidence_ids=("fact-family",),
+        insufficient=False,
+    )
+
+
 @pytest.mark.parametrize(
     "payload",
     (
@@ -47,6 +69,8 @@ def test_parse_grounded_answer_accepts_rendered_source_fact_citations() -> None:
         '{"answer":"Poppy","supporting_evidence_ids":["fact-poppy"],'
         '"insufficient":false,"gold_answer":"Poppy"}',
         '{"answer":1,"supporting_evidence_ids":["fact-poppy"],"insufficient":false}',
+        '{"answer":[],"supporting_evidence_ids":["fact-poppy"],"insufficient":false}',
+        '{"answer":["Poppy",1],"supporting_evidence_ids":["fact-poppy"],"insufficient":false}',
         '{"answer":"Poppy","supporting_evidence_ids":"fact-poppy","insufficient":false}',
         '{"answer":"Poppy","supporting_evidence_ids":[1],"insufficient":false}',
         '{"answer":"Poppy","supporting_evidence_ids":["fact-poppy"],"insufficient":0}',
