@@ -36,6 +36,17 @@ projection and scoring may disable thinking independently; the manifest records
 the effective model configuration and token usage. DashScope
 `text-embedding-v4` creates 1,024-dimensional document and query vectors.
 
+## V20 selection-gate amendment
+
+V20 keeps the v19 question inventory and every representation, retrieval,
+answer, judge, resource, and 200-question promotion contract. It changes the
+40-question core ablation from a two-point improvement requirement to a
+non-regression requirement. The v19 three-arm run produced a 90% tie, which the
+comparison could select deterministically but could not pass under the old
+gate. V20 records that amendment in new question-set artifacts; it does not
+retroactively promote the v19 runs. See
+[ADR 0031](../../docs/adr/0031-v20-treats-the-40-question-ablation-as-a-non-regression-gate.md).
+
 ### Historical diagnostics
 
 The earlier scored 200-question run

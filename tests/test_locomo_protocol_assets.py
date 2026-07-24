@@ -553,6 +553,62 @@ def test_v19_freezes_compact_flat_context_and_high_confidence_parent_slot() -> N
     }
 
 
+def test_v20_changes_only_the_ablation_core_non_regression_gate() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    paths = {
+        "40": benchmark_root / "diagnostic-40-v20.json",
+        "160": benchmark_root / "diagnostic-160-holdout-v20.json",
+        "200": benchmark_root / "diagnostic-200-v20.json",
+    }
+    expected_hashes = {
+        "40": "b186388803a029e641860da4848fcd274f72d52de151b2581c28881426fa7520",
+        "160": "68efa6ec4a3de41a1a9a8a6e705fffff69bb1147fa4263a55a0c6c9640231dad",
+        "200": "dfcc841e7465ca3a993c1dd32c9d8307767b058ee7c73c9fbb4baafb6dd968cb",
+    }
+    v20 = {name: json.loads(path.read_text()) for name, path in paths.items()}
+    v19 = {
+        "40": json.loads((benchmark_root / "diagnostic-40-v19.json").read_text()),
+        "160": json.loads((benchmark_root / "diagnostic-160-holdout-v19.json").read_text()),
+        "200": json.loads((benchmark_root / "diagnostic-200-v19.json").read_text()),
+    }
+
+    for name, path in paths.items():
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_hashes[name]
+        assert v20[name]["protocol"] == v19[name]["protocol"]
+    expected_gates = dict(v19["40"]["gates"])
+    expected_gates["hierarchy_no_neighbors_vs_episode_minimum_accuracy_delta_points"] = 0
+    assert v20["40"]["gates"] == expected_gates
+    assert v20["160"] == v19["160"]
+    assert {key: value for key, value in v20["200"].items() if key != "promotion"} == {
+        key: value for key, value in v19["200"].items() if key != "promotion"
+    }
+
+    source = v20["200"]["promotion"]["source_selection"]
+    assert source == {
+        "selection_id": v20["40"]["selection_id"],
+        "question_set_sha256": expected_hashes["40"],
+        "selection_sha256": v20["40"]["selection_sha256"],
+        "protocol_sha256": canonical_sha256(v20["40"]["protocol"]),
+        "gates_sha256": _canonical_sha256(v20["40"]["gates"]),
+    }
+    holdout = v20["200"]["promotion"]["holdout_selection"]
+    assert holdout == {
+        "selection_id": v20["160"]["selection_id"],
+        "question_set_sha256": expected_hashes["160"],
+        "selection_sha256": v20["160"]["selection_sha256"],
+        "protocol_sha256": canonical_sha256(v20["160"]["protocol"]),
+    }
+    assert {
+        key: value
+        for key, value in v20["200"]["promotion"].items()
+        if key not in {"source_selection", "holdout_selection"}
+    } == {
+        key: value
+        for key, value in v19["200"]["promotion"].items()
+        if key not in {"source_selection", "holdout_selection"}
+    }
+
+
 def _select_question_ids(
     questions: tuple[LoCoMoQuestion, ...],
     *,
