@@ -11,7 +11,6 @@ from codecairn.evaluation.locomo import (
     LoCoMoConversation,
     LoCoMoDataset,
     LoCoMoQuestion,
-    load_locomo_dataset,
     load_locomo_question_set,
 )
 
@@ -860,7 +859,6 @@ def test_v23_failed_only_repair_set_is_bound_to_the_negative_full_run() -> None:
     repair_path = benchmark_root / "repair-717-v23-d19793c.json"
     repair = json.loads(repair_path.read_text())
     full = json.loads((benchmark_root / "full-1540-v23.json").read_text())
-    dataset = load_locomo_dataset(benchmark_root / "data" / "locomo10.json")
 
     assert hashlib.sha256(repair_path.read_bytes()).hexdigest() == (
         "e8f476892ccd6b99c125938a964a2e23eb6f1b455e74861f949560e50e6903d5"
@@ -871,13 +869,25 @@ def test_v23_failed_only_repair_set_is_bound_to_the_negative_full_run() -> None:
     assert repair["selection_sha256"] == (
         "6c9955ca66a654bd0f5c9e1b2c5342bae839d78f61469256f517c40a15769a58"
     )
+    assert len(set(repair["question_ids"])) == 717
+    selected_ids_sha256 = hashlib.sha256(
+        json.dumps(
+            sorted(repair["question_ids"]),
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    assert selected_ids_sha256 == repair["selection_sha256"]
     assert repair["protocol"] == full["protocol"]
+    source = repair["repair_source"]
+    assert source["contract"] == "failed-question-exact-replacement-v1"
+    assert source["failed_question_count"] == 717
+    assert source["failed_question_ids_sha256"] == selected_ids_sha256
     assert (
-        repair["repair_source"]["target_question_set_sha256"]
+        source["target_question_set_sha256"]
         == hashlib.sha256((benchmark_root / "full-1540-v23.json").read_bytes()).hexdigest()
     )
-    loaded = load_locomo_question_set(repair_path, dataset=dataset)
-    assert len(loaded.question_ids) == 717
+    assert source["target_protocol_sha256"] == canonical_sha256(full["protocol"])
 
 
 def _select_question_ids(
