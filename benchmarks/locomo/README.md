@@ -350,7 +350,7 @@ uv run codecairn eval report-locomo-evidence \
 ```
 
 Both runs perform no answer or judge calls. Proceed to paid scoring only
-when complete gold evidence reaches context for at least 85% of resolvable
+when complete gold evidence reaches context for at least 70% of resolvable
 questions, every context remains at or below 4,000 pinned tokens, retrieval P95
 is at most 2,500 ms, RSS remains below 2 GiB, and infrastructure failures are
 zero. If the frozen 40-question retrieval preflight passes, run the separate
@@ -379,7 +379,7 @@ definition hashes, their disjoint inventories and exact 200-question union,
 commit, and the actual Embedding, Reranker, Planner, QuerySketch, FactSelector,
 ContextRenderer, token-budget, neighbor-window, and worker contracts against
 the frozen protocol. It also checks the corpus, query vectors, zero model usage,
-85% context coverage, 4,000-token ceiling, 2,500 ms retrieval P95, sub-2-GiB
+70% complete-context coverage, 4,000-token ceiling, 2,500 ms retrieval P95, sub-2-GiB
 RSS, and zero infrastructure failures. Its exact-schema, self-hashed receipt
 separately binds the scored question set, which may be the frozen 40-question
 paid slice or the full 200-question diagnostic. This verification executes

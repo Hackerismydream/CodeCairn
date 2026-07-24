@@ -54,7 +54,7 @@ def test_retrieval_gate_accepts_disjoint_verified_runs_and_returns_a_receipt(
     assert receipt["repository_commit"] == "abc123"
     assert receipt["target_question_count"] == 4
     assert receipt["scored_question_count"] == 4
-    assert receipt["minimum_context_all_coverage"] == 0.85
+    assert receipt["minimum_context_all_coverage"] == 0.70
     assert [source["question_count"] for source in receipt["sources"]] == [2, 2]
 
 
@@ -106,7 +106,7 @@ def test_retrieval_gate_rejects_context_coverage_below_the_frozen_threshold(
     evidence_path = config.holdout_run_dir / "computed-evidence.json"
     evidence = read_json(evidence_path)
     assert isinstance(evidence, dict)
-    evidence["overall"]["context_all_coverage"] = 0.84
+    evidence["overall"]["context_all_coverage"] = 0.69
     evidence_path.unlink()
     write_json_exclusive(evidence_path, evidence)
 

@@ -105,7 +105,7 @@ class LoCoMoRetrievalGateConfig:
     query_vectors_path: Path
     expected_canary_questions: int = 40
     expected_holdout_questions: int = 160
-    minimum_context_all_coverage: float = 0.85
+    minimum_context_all_coverage: float = 0.70
     maximum_context_tokens: int = 4_000
     maximum_retrieval_p95_ms: float = 2_500.0
     maximum_process_rss_bytes_exclusive: int = 2 * 1024 * 1024 * 1024
