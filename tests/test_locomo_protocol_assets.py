@@ -773,6 +773,28 @@ def test_v23_changes_only_the_grounded_answer_contracts() -> None:
     assert v23["200"]["promotion"] == expected_promotion
 
 
+def test_v23_full_question_set_freezes_all_standard_locomo_questions() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    full_path = benchmark_root / "full-1540-v23.json"
+    full = json.loads(full_path.read_text())
+    diagnostic = json.loads((benchmark_root / "diagnostic-200-v23.json").read_text())
+
+    assert full["selection_id"] == "locomo-full-1540-v23"
+    assert full["category_targets"] == {
+        "1": 282,
+        "2": 321,
+        "3": 96,
+        "4": 841,
+    }
+    assert sum(full["category_targets"].values()) == 1540
+    assert full["selection_sha256"] == (
+        "caf55b45f266fe5738025333400331c92a660a5a607d107a2141e10f729e4b37"
+    )
+    expected_protocol = dict(diagnostic["protocol"])
+    expected_protocol.pop("paid_scoring_gate")
+    assert full["protocol"] == expected_protocol
+
+
 def _select_question_ids(
     questions: tuple[LoCoMoQuestion, ...],
     *,
