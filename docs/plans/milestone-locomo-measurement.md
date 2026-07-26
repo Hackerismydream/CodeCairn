@@ -68,6 +68,15 @@ natural-weighted numbers; both weightings appear in the report JSON so the
 stratified view is never lost. Comparison reports gain a
 `weighting: natural-v1` field so old reports remain interpretable.
 
+The weights are the module constant `LOCOMO_NATURAL_CATEGORY_WEIGHTS`
+(282 multi-hop / 321 temporal / 96 open-domain / 841 single-hop), recorded as
+`weighting.source = frozen-locomo10-category-counts-v1`. No flag is needed and
+none is accepted to restore self-weighting: a stratified comparison set can
+never weigh itself. `--natural-weight-question-set <path>` overrides the
+constant with that question set's `category_targets` and records
+`weighting.source = question-set-category-targets` plus the set's identity, for
+a future dataset revision with a different category distribution.
+
 ### C. Thinking-enabled arm, frozen but not run
 
 A protocol variant `diagnostic-200-v24-thinking.json`, identical to
@@ -97,6 +106,24 @@ CODECAIRN_RECALL_MODE=hierarchy-no-neighbors uv run codecairn eval run locomo \
 #    and --run-id locomo-diagnostic-200-v24-thinking.
 # 3. Compare; a full-1540 v24 run is authorized only if the retrieval gate and
 #    the 200-question promotion thresholds pass, per benchmarks/locomo/README.md.
+```
+
+The three-arm recall selection that precedes a promotion run is unchanged
+except for its weighting default:
+
+```bash
+# Weighs every variant by the frozen LoCoMo scored-category counts. Passing
+# --natural-weight-question-set is only for a dataset revision whose category
+# distribution differs from 282/321/96/841.
+uv run codecairn eval compare-locomo \
+  benchmarks/locomo/diagnostic-40-v23.json \
+  --episode-only-run "$EPISODE_ONLY_RUN" \
+  --hierarchy-no-neighbors-run "$NO_NEIGHBORS_RUN" \
+  --hierarchy-run "$HIERARCHY_RUN" \
+  --output "$SELECTION_REPORT"
+
+test "$(jq -r '.weighting.source' "$SELECTION_REPORT")" \
+  = "frozen-locomo10-category-counts-v1"
 ```
 
 ## Acceptance criteria

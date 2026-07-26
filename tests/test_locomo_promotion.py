@@ -649,7 +649,7 @@ def _promotion_fixture(
     }
     selection_weighting = {
         "id": "natural-v1",
-        "source": "comparison-question-set-category-targets",
+        "source": "question-set-category-targets",
         "selection_id": "locomo-diagnostic-40-v1",
         "question_set_sha256": source_question_set_sha256,
         "category_weights": {"1": 1, "2": 1},

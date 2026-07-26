@@ -247,6 +247,18 @@ test "$(jq -r '.gate_passed' "$SELECTION_REPORT")" = "true"
 SELECTED_MODE="$(jq -r '.selected_variant' "$SELECTION_REPORT")"
 ```
 
+`compare-locomo` reports each variant's stratified accuracy and its
+natural-weighted accuracy, and evaluates the accuracy-delta gates on the
+natural-weighted numbers. Without a flag it weighs the variants by the frozen
+LoCoMo scored-category counts — 282 multi-hop, 321 temporal, 96 open-domain,
+841 single-hop — and records
+`weighting.source = frozen-locomo10-category-counts-v1`. The stratified
+40-question selection never weighs itself, because equal per-category weights
+would score a variant that trades single-hop for open-domain as an improvement.
+`--natural-weight-question-set <path>` replaces the frozen counts with that
+question set's `category_targets`, for a dataset revision whose distribution
+differs.
+
 Run and verify the selected 200-question promotion:
 
 ```bash

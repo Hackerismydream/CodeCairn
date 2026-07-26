@@ -26,7 +26,13 @@ from codecairn.evaluation.locomo import (
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _CANONICAL_VARIANTS = ("episode-only", "hierarchy-no-neighbors", "hierarchy")
 LOCOMO_ABLATION_WEIGHTING_ID = "natural-v1"
-_COMPARISON_WEIGHT_SOURCE = "comparison-question-set-category-targets"
+# Scored-category counts of the official LoCoMo standard question set: 282
+# multi-hop, 321 temporal, 96 open-domain, and 841 single-hop questions. A
+# stratified diagnostic weighs each category equally, which is not how the
+# benchmark is scored, so the ablation weighs its variants by these frozen
+# counts instead of by whatever distribution the comparison set happens to use.
+LOCOMO_NATURAL_CATEGORY_WEIGHTS = {"1": 282, "2": 321, "3": 96, "4": 841}
+_FROZEN_WEIGHT_SOURCE = "frozen-locomo10-category-counts-v1"
 _EXTERNAL_WEIGHT_SOURCE = "question-set-category-targets"
 
 
@@ -37,11 +43,11 @@ class LoCoMoAblationConfig:
     hierarchy_no_neighbors_run: Path
     hierarchy_run: Path
     output_path: Path
-    # Question set whose `category_targets` carry the natural category
-    # distribution, normally `benchmarks/locomo/full-1540-v24.json`. When it is
-    # absent the comparison set weighs itself, so the natural-weighted accuracy
-    # equals the stratified accuracy and the report says so in its weighting
-    # source instead of implying a full-set estimate.
+    # Optional question set whose `category_targets` replace the frozen
+    # `LOCOMO_NATURAL_CATEGORY_WEIGHTS` counts, for example a future dataset
+    # revision. When it is absent the gate uses the frozen counts and records
+    # `frozen-locomo10-category-counts-v1` as its weight source; an explicit
+    # path records the named question set instead.
     natural_weight_question_set_path: Path | None = None
 
 
@@ -109,11 +115,7 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
     _validate_constant_protocol(manifests)
 
     gates = _dict(definition.get("gates"), field="gates")
-    weighting = _resolve_weighting(
-        definition,
-        definition_sha256=definition_sha256,
-        weight_question_set_path=config.natural_weight_question_set_path,
-    )
+    weighting = _resolve_weighting(config.natural_weight_question_set_path)
     outcome = _derive_ablation_outcome(reports, gates=gates, weighting=weighting)
     selected_variant = _str(outcome, "selected_variant")
     run_contracts = {
@@ -482,23 +484,19 @@ def natural_weighted_accuracy(
     return weighted / total
 
 
-def _resolve_weighting(
-    definition: dict[str, object],
-    *,
-    definition_sha256: str,
-    weight_question_set_path: Path | None,
-) -> dict[str, object]:
+def _resolve_weighting(weight_question_set_path: Path | None) -> dict[str, object]:
     if weight_question_set_path is None:
-        source = _COMPARISON_WEIGHT_SOURCE
-        weight_definition = definition
-        question_set_sha256 = definition_sha256
-    else:
-        source = _EXTERNAL_WEIGHT_SOURCE
-        weight_definition = _dict(
-            read_json(weight_question_set_path),
-            field="natural-weight question set",
-        )
-        question_set_sha256 = file_sha256(weight_question_set_path)
+        return {
+            "id": LOCOMO_ABLATION_WEIGHTING_ID,
+            "source": _FROZEN_WEIGHT_SOURCE,
+            "selection_id": None,
+            "question_set_sha256": None,
+            "category_weights": dict(LOCOMO_NATURAL_CATEGORY_WEIGHTS),
+        }
+    weight_definition = _dict(
+        read_json(weight_question_set_path),
+        field="natural-weight question set",
+    )
     weights = _positive_category_targets(
         _dict(
             weight_definition.get("category_targets"),
@@ -507,9 +505,9 @@ def _resolve_weighting(
     )
     return {
         "id": LOCOMO_ABLATION_WEIGHTING_ID,
-        "source": source,
+        "source": _EXTERNAL_WEIGHT_SOURCE,
         "selection_id": _str(weight_definition, "selection_id"),
-        "question_set_sha256": question_set_sha256,
+        "question_set_sha256": file_sha256(weight_question_set_path),
         "category_weights": dict(sorted(weights.items())),
     }
 
@@ -526,10 +524,18 @@ def _validated_weighting(value: object) -> dict[str, object]:
         raise ValueError("LoCoMo selection report weighting has unsupported fields")
     if weighting.get("id") != LOCOMO_ABLATION_WEIGHTING_ID:
         raise ValueError("LoCoMo selection report uses an unsupported accuracy weighting")
-    if weighting.get("source") not in {_COMPARISON_WEIGHT_SOURCE, _EXTERNAL_WEIGHT_SOURCE}:
+    source = weighting.get("source")
+    if source == _FROZEN_WEIGHT_SOURCE:
+        named_set = (weighting.get("selection_id"), weighting.get("question_set_sha256"))
+        if named_set != (None, None):
+            raise ValueError("LoCoMo frozen category weighting must not name a question set")
+        if weighting.get("category_weights") != LOCOMO_NATURAL_CATEGORY_WEIGHTS:
+            raise ValueError("LoCoMo frozen category weighting changes its frozen counts")
+    elif source == _EXTERNAL_WEIGHT_SOURCE:
+        _str(weighting, "selection_id")
+        _sha256(weighting, "question_set_sha256")
+    else:
         raise ValueError("LoCoMo selection report weighting has an unknown weight source")
-    _str(weighting, "selection_id")
-    _sha256(weighting, "question_set_sha256")
     _positive_category_targets(
         _dict(
             weighting.get("category_weights"),

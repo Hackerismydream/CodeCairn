@@ -30,6 +30,7 @@ from codecairn.evaluation.locomo import (
     LoCoMoConversation,
     LoCoMoConversationWork,
     LoCoMoCorpusConfig,
+    LoCoMoDataset,
     LoCoMoQuery,
     LoCoMoQueryVectorConfig,
     LoCoMoQuestionSet,
@@ -55,6 +56,7 @@ from codecairn.evaluation.locomo import (
     _validate_scored_fact_selection as validate_scored_fact_selection,
 )
 from codecairn.evaluation.locomo_ablation import (
+    LOCOMO_NATURAL_CATEGORY_WEIGHTS,
     LoCoMoAblationConfig,
     build_locomo_ablation_report,
     natural_weighted_accuracy,
@@ -436,6 +438,40 @@ class AlternatingJudgeModel:
         response_format: str = "text",
     ) -> ModelResponse:
         label = "WRONG" if self.calls % 3 == 1 else "CORRECT"
+        self.calls += 1
+        return ModelResponse(
+            text=f'{{"label": "{label}"}}',
+            model=self.model_id,
+            input_tokens=8,
+            output_tokens=2,
+        )
+
+
+@dataclass
+class ScriptedJudgeModel:
+    """Judge the named questions WRONG and every other question CORRECT."""
+
+    wrong_questions: frozenset[str] = frozenset()
+    calls: int = 0
+
+    @property
+    def model_id(self) -> str:
+        return "fake-judge"
+
+    @property
+    def public_config(self) -> dict[str, object]:
+        return {"adapter": "fake", "model": self.model_id}
+
+    def generate(
+        self,
+        *,
+        system: str,
+        user: str,
+        seed: int,
+        response_format: str = "text",
+    ) -> ModelResponse:
+        question = json.loads(user)["question"]
+        label = "WRONG" if question in self.wrong_questions else "CORRECT"
         self.calls += 1
         return ModelResponse(
             text=f'{{"label": "{label}"}}',
@@ -3668,8 +3704,9 @@ def test_natural_weighting_flips_the_frozen_v5_hierarchy_comparison() -> None:
             encoding="utf-8"
         )
     )
-    category_weights = full_set["category_targets"]
+    category_weights = LOCOMO_NATURAL_CATEGORY_WEIGHTS
     assert category_weights == {"1": 282, "2": 321, "3": 96, "4": 841}
+    assert full_set["category_targets"] == category_weights
 
     def frozen_v5_report(
         *,
@@ -3718,13 +3755,13 @@ def test_natural_weighting_flips_the_frozen_v5_hierarchy_comparison() -> None:
     assert stratified_delta < 0 < natural_delta
 
 
-def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: Path) -> None:
-    dataset = load_locomo_dataset(FIXTURE)
+def _synthetic_ablation_definition(dataset: LoCoMoDataset) -> dict[str, object]:
+    """Three-arm ablation definition covering one question per scored category."""
     selected = tuple(
         question.question_id
         for conversation in dataset.conversations
         for question in conversation.questions
-        if question.category in {1, 2, 4}
+        if question.category in {1, 2, 3, 4}
     )
     selection_sha256 = hashlib.sha256(
         json.dumps(sorted(selected), separators=(",", ":")).encode()
@@ -3734,84 +3771,87 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         for field, value in RecallPlannerConfig().public_config.items()
         if field not in {"mode", "neighbor_window", "temporal_neighbor_window"}
     }
-    definition_path = tmp_path / "ablation.json"
-    write_json_exclusive(
-        definition_path,
-        {
-            "schema_version": 1,
-            "selection_id": "synthetic-ablation",
-            "dataset_sha256": dataset.sha256,
-            "algorithm": "stratified-sha256-v1",
-            "seed": "selection-seed",
-            "category_targets": {"1": 1, "2": 1, "4": 1},
-            "selection_sha256": selection_sha256,
-            "variants": [
-                {"id": "episode-only", "recall_mode": "episode-only"},
-                {
-                    "id": "hierarchy-no-neighbors",
-                    "recall_mode": "hierarchy-no-neighbors",
-                },
-                {"id": "hierarchy", "recall_mode": "hierarchy"},
-            ],
-            "protocol": {
-                "answer_model": "fake-answer",
-                "answer_evidence_contract": "grounded-cited-answer-v14",
-                "answer_retry_contract": "grounded-answer-contract-retry-v2",
-                "answer_response_max_attempts": 2,
-                "judge_model": "fake-judge",
-                "judge_contract": "locomo-generous-semantic-equivalence-v1",
-                "judge_votes": 3,
-                "judge_response_max_attempts": 3,
-                "judge_response_max_chars": 32_768,
-                "seed": 17,
-                "top_k": 20,
-                "inference_threads": 2,
-                "tokenizer_parallelism": False,
-                "tokenizer_threads": 1,
-                "max_workers": 1,
-                "ingest_max_workers": 1,
-                "retrieval_max_workers": 1,
-                "retrieval_thread_count": 1,
-                "execution_phase_contract": "process-isolated-ingest-then-questions-v1",
-                "worker_contract": None,
-                "worker_max_rss_bytes": None,
-                "worker_stall_timeout_seconds": None,
-                "worker_poll_interval_seconds": None,
-                "worker_rss_poll_interval_seconds": None,
-                "worker_progress_signal": None,
-                "worker_publish_policy": None,
-                "embedding_adapter": None,
-                "embedding_model": "test/embedding",
-                "embedding_dimension": 3,
-                "reranker_model": "test/reranker",
-                "reranker_batch_size": None,
-                "neighbor_windows": {
-                    "episode-only": {
-                        "neighbor_window": 0,
-                        "temporal_neighbor_window": 0,
-                    },
-                    "hierarchy-no-neighbors": {
-                        "neighbor_window": 0,
-                        "temporal_neighbor_window": 0,
-                    },
-                    "hierarchy": {
-                        "neighbor_window": 1,
-                        "temporal_neighbor_window": 2,
-                    },
-                },
-                **frozen_planner_protocol,
+    return {
+        "schema_version": 1,
+        "selection_id": "synthetic-ablation",
+        "dataset_sha256": dataset.sha256,
+        "algorithm": "stratified-sha256-v1",
+        "seed": "selection-seed",
+        "category_targets": {"1": 1, "2": 1, "3": 1, "4": 1},
+        "selection_sha256": selection_sha256,
+        "variants": [
+            {"id": "episode-only", "recall_mode": "episode-only"},
+            {
+                "id": "hierarchy-no-neighbors",
+                "recall_mode": "hierarchy-no-neighbors",
             },
-            "gates": {
-                "required_scored_questions_per_variant": 3,
-                "maximum_infrastructure_failures": 0,
-                "hierarchy_no_neighbors_vs_episode_minimum_accuracy_delta_points": 0.0,
-                "temporal_neighbor_minimum_overall_accuracy_delta_points": 0.0,
-                "temporal_neighbor_minimum_temporal_or_multihop_delta_points": 0.0,
-                "temporal_neighbor_maximum_p95_increase_percent": 20.0,
-                "selected_maximum_retrieval_p95_ms": 2.0,
+            {"id": "hierarchy", "recall_mode": "hierarchy"},
+        ],
+        "protocol": {
+            "answer_model": "fake-answer",
+            "answer_evidence_contract": "grounded-cited-answer-v14",
+            "answer_retry_contract": "grounded-answer-contract-retry-v2",
+            "answer_response_max_attempts": 2,
+            "judge_model": "fake-judge",
+            "judge_contract": "locomo-generous-semantic-equivalence-v1",
+            "judge_votes": 3,
+            "judge_response_max_attempts": 3,
+            "judge_response_max_chars": 32_768,
+            "seed": 17,
+            "top_k": 20,
+            "inference_threads": 2,
+            "tokenizer_parallelism": False,
+            "tokenizer_threads": 1,
+            "max_workers": 1,
+            "ingest_max_workers": 1,
+            "retrieval_max_workers": 1,
+            "retrieval_thread_count": 1,
+            "execution_phase_contract": "process-isolated-ingest-then-questions-v1",
+            "worker_contract": None,
+            "worker_max_rss_bytes": None,
+            "worker_stall_timeout_seconds": None,
+            "worker_poll_interval_seconds": None,
+            "worker_rss_poll_interval_seconds": None,
+            "worker_progress_signal": None,
+            "worker_publish_policy": None,
+            "embedding_adapter": None,
+            "embedding_model": "test/embedding",
+            "embedding_dimension": 3,
+            "reranker_model": "test/reranker",
+            "reranker_batch_size": None,
+            "neighbor_windows": {
+                "episode-only": {
+                    "neighbor_window": 0,
+                    "temporal_neighbor_window": 0,
+                },
+                "hierarchy-no-neighbors": {
+                    "neighbor_window": 0,
+                    "temporal_neighbor_window": 0,
+                },
+                "hierarchy": {
+                    "neighbor_window": 1,
+                    "temporal_neighbor_window": 2,
+                },
             },
+            **frozen_planner_protocol,
         },
-    )
+        "gates": {
+            "required_scored_questions_per_variant": 4,
+            "maximum_infrastructure_failures": 0,
+            "hierarchy_no_neighbors_vs_episode_minimum_accuracy_delta_points": 0.0,
+            "temporal_neighbor_minimum_overall_accuracy_delta_points": 0.0,
+            "temporal_neighbor_minimum_temporal_or_multihop_delta_points": 0.0,
+            "temporal_neighbor_maximum_p95_increase_percent": 20.0,
+            "selected_maximum_retrieval_p95_ms": 2.0,
+        },
+    }
+
+
+def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: Path) -> None:
+    dataset = load_locomo_dataset(FIXTURE)
+    definition = _synthetic_ablation_definition(dataset)
+    definition_path = tmp_path / "ablation.json"
+    write_json_exclusive(definition_path, definition)
     drifted_definition = json.loads(definition_path.read_text(encoding="utf-8"))
     drifted_definition["protocol"]["context_renderer"] = "incompatible-renderer"
     drifted_definition_path = tmp_path / "drifted-protocol.json"
@@ -3899,10 +3939,10 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
     }
     assert report["weighting"] == {
         "id": "natural-v1",
-        "source": "comparison-question-set-category-targets",
-        "selection_id": "synthetic-ablation",
-        "question_set_sha256": file_sha256(definition_path),
-        "category_weights": {"1": 1, "2": 1, "4": 1},
+        "source": "frozen-locomo10-category-counts-v1",
+        "selection_id": None,
+        "question_set_sha256": None,
+        "category_weights": {"1": 282, "2": 321, "3": 96, "4": 841},
     }
     variant_accuracy = report["variant_accuracy"]
     assert isinstance(variant_accuracy, dict)
@@ -3937,7 +3977,7 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
             "algorithm": "stratified-sha256-v1",
             "seed": "selection-seed",
             "category_targets": {"1": 282, "2": 321, "4": 841},
-            "selection_sha256": selection_sha256,
+            "selection_sha256": definition["selection_sha256"],
         },
     )
     natural_report = build_locomo_ablation_report(
@@ -3960,7 +4000,9 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
     # Every fixture variant answers every category correctly, so reweighting
     # cannot move these numbers. The flip case is covered on the frozen v5
     # category accuracies by
-    # `test_natural_weighting_flips_the_frozen_v5_hierarchy_comparison`.
+    # `test_natural_weighting_flips_the_frozen_v5_hierarchy_comparison` and end
+    # to end by
+    # `test_ablation_without_a_weight_question_set_gates_on_natural_counts`.
     assert natural_report["variant_accuracy"] == variant_accuracy
     assert (
         natural_report["stratified_accuracy_delta_points"]
@@ -4030,6 +4072,115 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
                 output_path=tmp_path / "renderer-drifted-ablation-report.json",
             )
         )
+
+
+def test_ablation_without_a_weight_question_set_gates_on_natural_counts(tmp_path: Path) -> None:
+    dataset = load_locomo_dataset(FIXTURE)
+    definition = _synthetic_ablation_definition(dataset)
+    definition_path = tmp_path / "natural-default-ablation.json"
+    write_json_exclusive(definition_path, definition)
+    question_by_category = {
+        question.category: question.question
+        for conversation in dataset.conversations
+        for question in conversation.questions
+    }
+    # Episode-only answers multi-hop, temporal, and open-domain (282 + 321 + 96
+    # of 1,540 natural questions); both hierarchy arms answer only single-hop
+    # (841). The stratified 1/1/1/1 comparison set scores the hierarchy arms 50
+    # points below episode-only, the natural distribution scores them above it.
+    wrong_questions = {
+        "episode-only": frozenset({question_by_category[4]}),
+        "hierarchy-no-neighbors": frozenset(
+            {question_by_category[1], question_by_category[2], question_by_category[3]}
+        ),
+        "hierarchy": frozenset(
+            {question_by_category[1], question_by_category[2], question_by_category[3]}
+        ),
+    }
+    run_paths: dict[str, Path] = {}
+    for mode in ("episode-only", "hierarchy-no-neighbors", "hierarchy"):
+        retrieval_config = {
+            **FAKE_RETRIEVAL_CONFIG,
+            "planner": RecallPlannerConfig.for_mode(mode).public_config,
+        }
+
+        class ConfiguredMemory(FakeMemory):
+            config_sha256 = retrieval_config_sha256(retrieval_config)
+
+            def recall(self, question: str, *, limit: int) -> RecallResult:
+                result = super().recall(question, limit=limit)
+                return replace(
+                    result,
+                    sidecar=replace(
+                        result.sidecar,
+                        retrieval_config_sha256=self.config_sha256,
+                    ),
+                )
+
+        artifact = run_locomo(
+            LoCoMoRunConfig(
+                dataset_path=FIXTURE,
+                output_root=tmp_path / "runs",
+                run_id=f"natural-default-{mode}",
+                repository_commit="abc123",
+                expected_dataset_sha256=None,
+                retrieval_config=retrieval_config,
+                question_set_path=definition_path,
+            ),
+            memory_factory=ConfiguredMemory,
+            answer_model=FakeAnswerModel(),
+            judge_model=ScriptedJudgeModel(wrong_questions=wrong_questions[mode]),
+        )
+        run_paths[mode] = artifact.run_dir
+
+    report = build_locomo_ablation_report(
+        LoCoMoAblationConfig(
+            question_set_path=definition_path,
+            episode_only_run=run_paths["episode-only"],
+            hierarchy_no_neighbors_run=run_paths["hierarchy-no-neighbors"],
+            hierarchy_run=run_paths["hierarchy"],
+            output_path=tmp_path / "natural-default-report.json",
+        )
+    )
+
+    assert report["weighting"] == {
+        "id": "natural-v1",
+        "source": "frozen-locomo10-category-counts-v1",
+        "selection_id": None,
+        "question_set_sha256": None,
+        "category_weights": {"1": 282, "2": 321, "3": 96, "4": 841},
+    }
+    assert report["variant_accuracy"] == {
+        "episode-only": {
+            "stratified": 0.75,
+            "natural_weighted": round(699 / 1540, 6),
+        },
+        "hierarchy-no-neighbors": {
+            "stratified": 0.25,
+            "natural_weighted": round(841 / 1540, 6),
+        },
+        "hierarchy": {
+            "stratified": 0.25,
+            "natural_weighted": round(841 / 1540, 6),
+        },
+    }
+    stratified_deltas = report["stratified_accuracy_delta_points"]
+    natural_deltas = report["accuracy_delta_points"]
+    assert isinstance(stratified_deltas, dict)
+    assert isinstance(natural_deltas, dict)
+    assert stratified_deltas["hierarchy_no_neighbors_vs_episode_only"] == -50.0
+    assert natural_deltas["hierarchy_no_neighbors_vs_episode_only"] == 9.221
+    checks = report["checks"]
+    assert isinstance(checks, list)
+    core_checks = [
+        check
+        for check in checks
+        if isinstance(check, dict)
+        and check["id"] == "hierarchy-no-neighbors.accuracy_delta_vs_episode_points"
+    ]
+    assert [check["observed"] for check in core_checks] == [9.221]
+    assert [check["passed"] for check in core_checks] == [True]
+    assert report["gate_passed"] is True
 
 
 def test_official_v24_command_contract_passes_preflight(tmp_path: Path) -> None:
