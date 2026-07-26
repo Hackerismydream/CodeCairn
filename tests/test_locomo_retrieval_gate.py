@@ -55,6 +55,7 @@ def test_retrieval_gate_accepts_disjoint_verified_runs_and_returns_a_receipt(
     assert receipt["target_question_count"] == 4
     assert receipt["scored_question_count"] == 4
     assert receipt["minimum_context_all_coverage"] == 0.70
+    assert receipt["maximum_context_tokens"] == RecallPlannerConfig().context_max_tokens
     assert [source["question_count"] for source in receipt["sources"]] == [2, 2]
 
 
