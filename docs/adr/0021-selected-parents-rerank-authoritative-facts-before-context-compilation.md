@@ -2,8 +2,9 @@
 
 ## Status
 
-Accepted for implementation. Benchmark quality remains unverified until the
-v14 retrieval-only diagnostic passes its evidence, latency, and resource gates.
+Accepted and implemented. Selected-parent authoritative-fact reranking remains
+current; the v14 limits and diagnostic gate were historical and were rebalanced
+by ADR 0022 and later decisions.
 
 ## Context
 

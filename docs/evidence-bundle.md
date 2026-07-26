@@ -1,122 +1,228 @@
-# Public evidence bundle
+# Public Evidence Bundle
 
-CodeCairn publishes benchmark claims only through a generated evidence bundle.
-The reducer treats saved suite summaries as assertions: it recomputes LoCoMo,
-retrieval, recovery, and CodingMemoryBench reports from their raw JSON inputs
-and rejects the build if any saved summary differs.
+CodeCairn publishes benchmark claims through generated, immutable evidence
+bundles. A current bundle is intended to be an offline-verifiable reduction of
+already completed run artifacts. It is not a promise that the experiment can
+be repeated later with bit-for-bit vectors, identical model output, or the same
+score. Retained historical bundles can also expose verifier-compatibility drift;
+that state is reported below rather than hidden by editing immutable artifacts.
 
-The only compatibility exception is a known historical LoCoMo category-label
-mapping. The reducer may replace those labels when every numeric field and all
-other report content exactly match the recomputed report. It then publishes a
-`raw/locomo/amendment.json` record containing the source summary hash, each
-label correction, and an explicit declaration that no numeric metric changed.
-The original aggregate report is retained as `raw/locomo/source-summary.json`,
-so offline verification can validate both its hash and the exact label-only
-transformation against the fixed legacy and current mappings. Arbitrary report
-drift is still rejected.
+The current published bundle is
+[`evidence/benchmark-v3`](../evidence/benchmark-v3/README.md).
+
+## Bundle lineage
+
+Earlier bundles remain immutable historical artifacts.
+
+| Bundle | LoCoMo status | Quality snapshot | Role |
+|---|---|---|---|
+| [`benchmark-v1`](../evidence/benchmark-v1/README.md) | 10-question unscored smoke; no accuracy claim | 148 tests; generated coverage label 83.50% | First public bundle and current CI smoke target |
+| [`benchmark-v2`](../evidence/benchmark-v2/README.md) | First 1,540-question score: 47.73%; label-only category amendment | 171 tests; generated coverage label 83.53% | Historical full-run evidence; current verifier compatibility is broken |
+| [`benchmark-v3`](../evidence/benchmark-v3/README.md) | V23 exact-repair composite: 82.60% over 1,540 category 1-4 questions | 644 tests; combined line/branch coverage 81.53% | Current public evidence |
+
+Bundle IDs describe artifact generations, not package releases.
 
 ## Build contract
 
-The build requires completed immutable benchmark artifacts plus JUnit and
-coverage JSON from the same source checkout. `--locomo-run` accepts either one
-ordinary completed run directory or one exact-repair composite JSON generated
-by `compose-locomo-repair`; the other suites remain completed run directories:
+`codecairn evidence build` consumes completed immutable run directories plus
+quality artifacts:
 
 ```bash
 uv run codecairn evidence build \
-  --bundle-id benchmark-v1 \
-  --locomo-run /path/to/locomo-run \
+  --bundle-id <new-bundle-id> \
+  --locomo-run /path/to/locomo-run-or-composite.json \
   --retrieval-run /path/to/retrieval-run \
   --recovery-run /path/to/recovery-run \
   --coding-run /path/to/coding-run \
   --quality-junit /path/to/junit.xml \
   --quality-coverage /path/to/coverage.json \
-  --generator-commit <commit> \
+  --generator-commit <full-commit> \
   --repository-root . \
   --output-root evidence
 ```
 
-The output is exclusive: an existing bundle directory is never overwritten.
-The reducer copies manifests, query records, recovery checks, normalized coding
-traces, public verifier results, and normalized LoCoMo ingest/question
-checkpoints. An ordinary LoCoMo run retains category, status, generated answer,
-normalized judge labels, retry metadata, usage, the non-content retrieval
-identity sidecar, and the original artifact hash while excluding raw judge
-responses, the dataset question, gold answer, evidence text, retrieval query,
-ranked memories, and recalled conversation content.
+The output path is exclusive; an existing bundle is never overwritten.
 
-An exact-repair composite is first rebuilt from both immutable private source
-runs and compared byte-for-byte at the JSON-value level. The public bundle then
-retains the frozen target and repair selections, source manifest/report
-receipts, one privacy-safe outcome per source question, and one final outcome
-whose `source` is either `base` or `repair`. It excludes generated answers,
-model responses, and memory context. Offline verification recomputes each
-source report from those outcomes, proves that repair IDs exactly equal the
-base infrastructure-failure set, proves that each final outcome is unchanged
-from its named source, and recomputes category scores and usage. This preserves
-the exact-repair proof without redistributing LoCoMo content or private traces.
+The reducer treats saved suite summaries as assertions. It recomputes LoCoMo,
+retrieval, recovery, and CodingMemoryBench aggregates from their public raw
+records and rejects value-level differences. It then generates metrics,
+inventory counts, README text, and recruiting copy.
 
-Public ingest records retain only identifiers, aggregate counts, and the
-original artifact hash, excluding speaker names and runtime paths. Public
-verifier records retain outcome, timing, output
-hash, verifier-source hash, and the original artifact hash while excluding
-machine-local paths and stderr. The bundle also excludes runtime databases,
-vector indexes, final workspaces, provider secrets, and the LoCoMo dataset file.
+### What the builder machine-checks
 
-## Verification contract
+- input artifact schemas required by each suite;
+- immutable output path;
+- report values against the raw records copied into the public bundle;
+- public redaction and required source receipts;
+- a non-empty caller-supplied generator commit;
+- the dependency-lock hash and environment of the reducer checkout;
+- final SHA-256 inventory.
+
+### What the builder does not machine-check
+
+- that `generator_commit` equals the repository's clean `HEAD`;
+- that JUnit and coverage files were produced by that commit;
+- that older source runs used the bundle-level dependency lock or environment;
+- that a model alias resolves to the same provider-side weights later;
+- that a coding agent without seed support will reproduce the same trajectory.
+
+These are provenance limitations, not reasons to discard the observed result.
+They prevent stronger claims of same-checkout or future score-identical
+reproduction.
+
+## Public content and redaction
+
+The reducer copies only the records needed to recompute public claims.
+
+Retrieval records retain query identity, ranking outcome, metrics, and source
+artifact hashes. Recovery retains deterministic checks. Coding records retain
+normalized traces and hidden-verifier outcomes while excluding final
+workspaces, local paths, and stderr.
+
+Ordinary LoCoMo bundles retain normalized question checkpoints but exclude the
+licensed dataset question, gold answer, evidence text, recalled memory, and raw
+judge responses. Public ingest records retain identifiers and aggregate counts
+without speaker names or runtime paths.
+
+An exact-repair composite retains:
+
+1. source manifest and report receipts;
+2. the frozen target and repair selections;
+3. privacy-safe base and repair outcomes;
+4. one final outcome for every target question with `source=base|repair`;
+5. aggregate ingest records required to prove dataset scale.
+
+Runtime databases, vector indexes, provider secrets, source workspaces, private
+traces, and the LoCoMo dataset are never copied.
+
+## Exact-repair interpretation
+
+`benchmark-v3` combines an immutable base run with an exact repair of all and
+only its 717 infrastructure failures. The base negative artifact remains
+visible.
+
+The final composite has formal scored outcomes for all 1,540 selected
+questions. Of those, 1,538 reached the configured three-vote judge. Two repair
+questions exhausted the frozen answer contract and were scored wrong without
+judge votes.
+
+Therefore:
+
+- `100%` means complete formal scored-outcome coverage;
+- it does not mean every question completed the answer-and-judge happy path;
+- generated copy saying all 1,540 questions received three judge votes is
+  over-broad historical wording and must be corrected by a future generator,
+  not by hand-editing v3.
+
+## Quality metric interpretation
+
+The v3 raw Coverage.py totals are:
+
+| Metric | Value |
+|---|---:|
+| Statement coverage | 86.17% |
+| Branch coverage | 69.11% |
+| Combined statement/branch coverage | 81.53% |
+
+The v3 generator labels `81.53%` as `Statement coverage`, but its reducer reads
+Coverage.py's combined `totals.percent_covered`. The number is reproducible; the
+generated label is inaccurate. A future bundle generator must correct it while
+v3 remains immutable.
+
+CI has no coverage fail-under. These are bundle snapshots, not a continuously
+enforced minimum.
+
+## Suite boundaries in v3
+
+| Suite | What the artifact demonstrates | Important limitation |
+|---|---|---|
+| Retrieval | Historical 20-memory, 100-query relevance result | `retrieval-fbc7023` used hashing/fusion; its manifest lacks model, lock, and environment identity |
+| Recovery | Six deterministic checks and 100% parent/document parity on a two-memory synthetic fixture | Not a production-scale daemon or provider-failure test |
+| CodingMemoryBench | Checked-in pre-retrieved context changed hidden-verifier outcomes over 120 isolated runs | It does not run CodeCairn import, indexing, or retrieval |
+| LoCoMo | 272 attributed Conversation Episodes, DashScope `text-embedding-v4`/local CrossEncoder recall, answer, and judge path | It bypasses the Codex/Claude JSONL importer and public application facade |
+
+The v3 retrieval values—96.00% Recall@5, 0.7979 MRR, and 10.91 ms P95—must not
+be attributed to the current DashScope plus local CrossEncoder production
+profile. A new standalone retrieval artifact is required for that claim.
+
+No current bundle proves the public
+`Codex/Claude import -> index lifecycle -> recall` product loop.
+
+## Cost interpretation
+
+The v3 bundle records `6.31437348 CNY` for LoCoMo source reports. That value
+covers the observed answer/judge usage represented by the composite sources.
+It is not a complete total for corpus construction, semantic projection,
+embedding, or every external service involved in preparing the run.
+
+CodingMemoryBench provider cost remains pending because the captured coding
+trace exposes no cost observation.
+
+## Offline verification
+
+Verify the current bundle with:
 
 ```bash
-uv run codecairn evidence verify evidence/benchmark-v1
+uv run codecairn evidence verify evidence/benchmark-v3
 ```
 
-Verification requires no model provider or private trace. It checks the file
-inventory, recomputes all suite reports and counts, and regenerates the README
-and both resume documents in memory. CI runs this command after the normal lint,
-type, import-boundary, and test gates.
+Verification requires no provider credential, private trace, hidden workspace,
+or LoCoMo dataset. It checks:
 
-Each headline claim in `metrics.json` and the generated README carries three
-provenance fields:
+- the complete file inventory and SHA-256 hashes;
+- suite aggregates from published query/outcome/check records;
+- exact-repair source and ID-set consistency;
+- scale counts and generated metrics;
+- generated README and recruiting copy.
 
-- `manifest`: the immutable run identity and model/configuration record;
-- `raw_inputs`: the records consumed by aggregation;
-- `aggregation_command`: the public command that recomputes the claim.
+It does not:
 
-The generated manifest also records the dependency-lock hash, source commits,
-answer, judge, coding-agent, embedding, and reranker models, available cost
-observations, local environment, model and adapter licenses, and known
-limitations. Retrieval model records preserve both the logical FastEmbed alias
-and the immutable Hugging Face artifact source plus commit revision.
+- rerun an embedding, answer, judge, or coding agent;
+- re-evaluate semantic correctness;
+- execute hidden-verifier commands;
+- prove quality-artifact checkout identity;
+- prove current product-entrypoint behavior.
+
+The correct description is **offline artifact-integrity verification**, not a
+full experiment rerun.
+
+## CI boundary
+
+Current CI runs `make check`, verifies `evidence/benchmark-v1`, and builds
+package artifacts. It does not verify `benchmark-v3`.
+
+Until the workflow changes, v3 may be described as locally offline-verified,
+but not as protected by the main-branch CI gate.
+
+## Historical label-only amendment
+
+`benchmark-v2` contains a known historical LoCoMo category-label mapping
+amendment. The reducer may apply only the declared legacy-to-current label
+replacement when every numeric value and all other report content match. The
+original summary hash and exact label changes remain in the bundle. Arbitrary
+report drift is rejected.
+
+On current main, `codecairn evidence verify evidence/benchmark-v2` fails with
+`Saved LoCoMo report does not match recomputed data`. The current reducer adds
+`model_output_scoring_contract=contract-exhausted-answer-is-wrong-v1`, while the
+immutable v2 saved summary predates that field. This is a verifier
+backward-compatibility gap, not evidence that v2 now passes or that its artifact
+should be hand-edited. `benchmark-v1` and the current `benchmark-v3` verify
+under the same checkout.
 
 ## Interpretation rules
 
-- Category IDs follow the public LoCoMo evaluator: 1 is multi-hop, 2 is
-  temporal, 3 is open-domain, 4 is single-hop, and 5 is adversarial. Full
-  accuracy covers the selected answerable categories 1-4; adversarial questions
-  are reported separately when selected rather than silently treated as
-  answerable questions.
-- LoCoMo smoke validates full-dataset ingestion and a small end-to-end question
-  path. It is always unscored and must never be presented as LoCoMo accuracy.
-- A full LoCoMo bundle publishes accuracy only when the question checkpoints
-  cover every category 1-4 question declared by the selection manifest, every
-  question has the configured valid judge-vote count, and infrastructure
-  failures are zero. A judge vote retries malformed structured output up to the
-  attempt limit recorded in the run manifest. The manifest also records the
-  maximum accepted response length. All attempts remain in the raw checkpoint
-  and count toward token and cost totals. Provider-native CNY cost remains
-  distinct from USD cost.
-- An exact-repair LoCoMo bundle may publish the same formal accuracy only when
-  both source receipts match, the repair question IDs exactly equal the base
-  infrastructure failures, every repaired question is scored, and the public
-  final outcomes reproduce the immutable composite. The base negative artifact
-  remains part of the evidence rather than being overwritten.
-- CodingMemoryBench compares memory-off and memory-on over the same 20 tasks,
-  three repeats, isolated workspaces, and a verifier hidden from the agent.
-- Retrieval reports measure the checked-in 100-query corpus on the recorded
-  local environment. P95 latency is not a cross-machine service SLO.
-- Provider cost remains pending when the raw provider artifact exposes no cost.
-- Public fixtures and controlled coding tasks are not described as private or
-  production user traces.
+- LoCoMo category 1 is multi-hop, 2 temporal, 3 open-domain, 4 single-hop, and
+  5 adversarial.
+- Published v3 accuracy covers the frozen answerable category 1-4 selection.
+  Category 5 is excluded and must not be silently treated as answerable.
+- A LoCoMo smoke run validates plumbing only and is never an accuracy result.
+- CodingMemoryBench compares the same 20 controlled tasks, three repeats, and
+  isolated workspaces with a verifier hidden from the agent.
+- Retrieval latency is a historical single-machine observation, not a service
+  SLO or current production-provider latency.
+- Controlled public fixtures are not private production traces.
+- Provider configuration or endpoint reachability is not a successful run.
 
-LoCoMo is sourced from the
-[official repository](https://github.com/snap-research/locomo) and licensed
-CC BY-NC 4.0. The dataset is not redistributed in the evidence bundle.
+LoCoMo is sourced from the official SNAP Research repository and licensed
+CC BY-NC 4.0. The dataset is not redistributed.

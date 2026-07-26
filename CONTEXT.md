@@ -26,12 +26,15 @@ Fix, or User Preference. A Conversation Episode preserves attributed source
 turns plus a grounded, derived retrieval projection; the source turns remain
 the evidence authority.
 
-**Evidence Gate**: Type-specific validation that decides whether a Coding
-Memory may become durable truth. It validates claims against Evidence Facts,
-not against LLM-provided labels.
+**Evidence Gate**: Type-specific validation for gate-managed proposals and
+Conversation Episodes. It validates claims against Evidence Facts, not against
+LLM-provided labels. Deterministic Failed Command extraction is a separate
+durable-write path and does not call this gate.
 
 **Import Ledger**: SQLite state recording source fingerprints, committed raw
-event cursors, stable episode identities, memory identities, and failures.
+event cursors, stable episode identities, and memory identities. Gate failures,
+recovery failures, and index failures belong to their dedicated SQLite audit
+or queue state.
 
 **Markdown Truth**: One atomic, parseable Markdown artifact per Coding Memory.
 It contains the complete deterministic Evidence Fact snapshot and is the
@@ -53,6 +56,11 @@ remain disposable index data; Markdown is still the evidence authority.
 indexed. Claims use atomic leases and a successful unchanged content hash is a
 no-op.
 
+**Index Readiness**: The operational state in which the LanceDB memory and
+document fingerprints match Markdown truth and the Index Queue has no pending,
+leased, failed, or stale jobs. Durable import and index readiness are separate
+states.
+
 **Recall Context**: A budgeted task-shaped Markdown artifact plus JSON sidecar,
 containing ranked Coding Memories, complete source-fact excerpts, provenance,
 and an auditable record of evidence omitted by the compiler.
@@ -62,8 +70,10 @@ configuration shared by indexing and recall. Production uses the configured
 DashScope embedding endpoint plus a learned local reranker; deterministic
 hashing and fusion-score ranking are test Adapters.
 
-**Evaluation Run**: One immutable execution identified by task, arm, repeat,
-seed, model configuration, workspace snapshot, memory snapshot, and artifacts.
+**Evaluation Run**: One immutable suite execution with an explicit run
+identifier, inputs, output directory, and suite-appropriate manifest. Applicable
+identity may include commit, selection, provider, seed, repeat, workspace,
+memory, corpus, and resource fields; not every suite has every field.
 
 ## Non-negotiable invariants
 
@@ -71,9 +81,14 @@ seed, model configuration, workspace snapshot, memory snapshot, and artifacts.
 2. Committed cursors advance only after their complete durable write set commits.
 3. Quotes must be exact source substrings; roles and outcomes come from events.
 4. Verified Fix requires both change evidence and successful verification.
-5. An index can be deleted and deterministically rebuilt from Markdown truth,
-   with both memory-level and parent-child document parity.
+5. An index can be deleted and structurally rebuilt from Markdown truth, with
+   both memory-level and parent-child document parity. A provider-managed
+   embedding alias does not promise bit-for-bit identical vectors across
+   provider-side model changes.
 6. Evaluation reports are pure readers and never mutate runtime state.
 7. Memory-off runs cannot read from or write to memory-on state.
 8. An index cannot mix vectors from different embedding model identities or
    dimensions.
+9. Recall never scans Markdown as a silent fallback. If the index is absent or
+   behind truth, diagnostics expose that state and recall may report no
+   candidates.

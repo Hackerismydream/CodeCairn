@@ -2,8 +2,9 @@
 
 ## Status
 
-Accepted for implementation. Benchmark quality remains unverified until a new
-LoCoMo corpus is built under the v5 projection contract.
+Accepted and implemented. The v5 projection contract was the first grounded
+semantic baseline and is retained as history; later ADRs evolved the corpus,
+retrieval, selection, and rendering protocols.
 
 ## Context
 

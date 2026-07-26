@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted.
+Superseded for current rendering behavior by ADR 0020 and later recall ADRs.
+The facts-first and auditability principles remain part of the design history.
 
 ## Context
 

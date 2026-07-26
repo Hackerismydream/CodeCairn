@@ -2,9 +2,14 @@
 
 ## Status
 
-Proposed on 2026-07-21. This document records an architecture decision and an
-implementation/evaluation plan. It does not claim that Recall v2 is implemented
-or that a new benchmark has been run.
+Historical proposal from 2026-07-21. Its parent/child projection, postings,
+bounded expansion, and grounded-context direction informed later
+implementation, but its protocol versions, measurements, limits, and future
+tense are not the current runtime contract.
+
+Use `CONTEXT.md`, `docs/architecture.md`, current manifests, and accepted ADRs
+0018-0039 for current behavior. Measurements in this document are retained as
+historical diagnosis and must not be presented as the current public result.
 
 ## Decision Summary
 
@@ -31,7 +36,7 @@ disposable lexical/vector index. Evaluation corpora use an immutable,
 content-addressed normalized corpus artifact as their declared projection
 source.
 
-## Why the Current Result Is Not Enough
+## Why the Historical V18 Result Was Not Enough
 
 The accepted full artifact
 `locomo-full-deepseek-v4-flash-20260721-hierarchy-b4-v18` scored 1,074 of
@@ -125,9 +130,9 @@ depends on `everalgo-rank==0.4.1`; the locked wheel SHA-256 is
 Future comparisons must pin both identities because the repository wrapper
 does not contain the complete ranking implementation.
 
-## Current Root Cause
+## Historical V18 Root Cause
 
-The current LoCoMo projection contract is `locomo-turn-memory-v1`:
+The V18 LoCoMo projection contract was `locomo-turn-memory-v1`:
 
 ```text
 5,882 turns
@@ -142,7 +147,7 @@ facts. Sibling expansion has no useful fact siblings, and chronological
 expansion can only add adjacent turns after ranking. It cannot assemble facts
 linked by a person, place, symbol, event, or time range across sessions.
 
-The current cue router also routes 1,325 of 1,540 questions to `fact_first` and
+The V18 cue router also routed 1,325 of 1,540 questions to `fact_first` and
 only changes the 40/20 candidate budgets. It does not produce subqueries,
 entity anchors, temporal operators, or evidence coverage requirements. Four-way
 RRF still answers only "which parents rank highly", not "which distinct facts
@@ -744,8 +749,10 @@ Recall v2 must not:
 - replace the coding-task memory-on/off experiment with LoCoMo.
 
 LoCoMo measures the general recall and evidence-reasoning substrate. The coding
-A/B suite remains the product-level proof that memory reduces repeated reads,
-failed commands, token cost, or task failure for a Coding Agent.
+A/B suite is controlled evidence that supplied memory context can reduce
+repeated reads and failures on the frozen coding tasks. It does not exercise
+the public import, index-lifecycle, and recall chain and is therefore not
+product-level runtime proof.
 
 ## Intended Recruiting Evidence
 

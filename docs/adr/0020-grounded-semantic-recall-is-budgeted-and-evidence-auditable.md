@@ -2,8 +2,9 @@
 
 ## Status
 
-Accepted for implementation. Benchmark quality remains unverified until a new
-v7 corpus and v13 diagnostic artifact pass the staged evidence and scoring gates.
+Accepted and implemented. Its bounded and evidence-auditable recall principles
+remain current; the v7 corpus and v13 diagnostic protocol are historical and
+were evolved by later ADRs.
 
 ## Context
 

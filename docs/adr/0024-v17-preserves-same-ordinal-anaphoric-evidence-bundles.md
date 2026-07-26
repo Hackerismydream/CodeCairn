@@ -2,9 +2,9 @@
 
 ## Status
 
-Accepted for implementation. V17 retrieval quality remains unverified until a
-new immutable 40-question preflight and the non-overlapping 160-question
-holdout pass. The v16 run remains negative historical evidence.
+Accepted and implemented. The v17 bundle behavior remains design history; ADR
+0025 supersedes the current retrieval representation with lossless source-fact
+children.
 
 ## Context
 

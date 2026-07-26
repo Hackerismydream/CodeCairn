@@ -5,8 +5,9 @@
 Accepted. Shared corpus publication, stable truth/index fingerprints, frozen
 query vectors, retrieval-only runs, cross-variant identity checks, exec-isolated
 conversation workers, RSS receipts, and durable-checkpoint watchdog enforcement
-are implemented. The public evidence-bundle migration remains required before
-publishing a full result.
+are implemented. The public evidence-bundle migration was completed by
+`evidence/benchmark-v3`; later ADRs define the current V23 full-run and exact
+repair contracts.
 
 ## Context
 

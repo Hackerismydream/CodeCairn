@@ -1,5 +1,11 @@
 # Production Embedding Uses DashScope
 
+## Status
+
+Accepted and implemented. The default `text-embedding-v4` composition enforces
+the provider's ten-input batch limit. The generic Adapter can defensively
+support explicitly configured custom models with batch sizes up to twenty.
+
 ## Context
 
 ADR 0013 selected a small English-only local embedding model because it was
@@ -28,9 +34,11 @@ workspace-specific Model Studio URL. Authentication comes from
 `CODECAIRN_EMBEDDING_API_KEY` or the standard `DASHSCOPE_API_KEY`; credentials
 never enter logs, index metadata, sidecars, or evaluation manifests.
 
-The Adapter batches at most 20 inputs, restores provider results by their
-response indexes, retries transport failures, HTTP 429, and HTTP 5xx responses,
-and fails closed on malformed, missing, non-finite, or wrong-dimension vectors.
+The default composition batches at most 10 inputs. The generic Adapter permits
+an explicitly configured custom-model batch size up to 20, restores provider
+results by their response indexes, retries transport failures, HTTP 429, and
+HTTP 5xx responses, and fails closed on malformed, missing, non-finite, or
+wrong-dimension vectors.
 Index identity contains the Adapter version, endpoint, model alias, declared
 provider revision, and dimension. Any change triggers the existing rebuildable
 LanceDB migration path.

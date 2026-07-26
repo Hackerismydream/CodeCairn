@@ -26,6 +26,12 @@ orchestration. It is not a source for CodeCairn's Coding Agent Trace, Evidence
 Gate, task segmentation, Recall Context contract, or coding-task evaluation
 runner.
 
+CodeCairn has independently implemented several of those mechanisms, but that
+does not establish product parity with EverOS. In particular, current public
+CodeCairn import commits Markdown, SQLite, and an index outbox row without
+starting or draining Mini Cascade. EverOS comparisons must therefore separate
+component design from a usable public import-to-recall lifecycle.
+
 Public CodeCairn documentation describes CodeCairn directly. When source code is
 copied rather than independently implemented, its license and attribution must
 be reviewed before the code enters the repository.

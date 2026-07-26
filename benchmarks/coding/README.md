@@ -23,10 +23,23 @@ immutable run directory tied to a repository commit and provider configuration.
 Run the default 120-run suite with an authenticated Codex CLI:
 
 ```bash
-uv run python -m codecairn.evaluation.coding_cli \
-  --suite benchmarks/coding/suite.json \
-  --output-root artifacts/coding \
-  --experiment-id <immutable-id> \
-  --repository-commit <git-commit> \
+test -z "$(git status --porcelain=v1 --untracked-files=normal)"
+COMMIT="$(git rev-parse --verify HEAD)"
+RUN_ID="<immutable-id>"
+
+uv run codecairn eval run coding benchmarks/coding/suite.json \
+  --run-id "$RUN_ID" \
+  --repository-commit "$COMMIT" \
+  --output-root artifacts \
+  --model <codex-model> \
   --max-workers 4
+uv run codecairn eval report coding \
+  artifacts/coding/"$RUN_ID"
 ```
+
+This command consumes the checked-in task contexts. It does not exercise
+CodeCairn trace import, Mini Cascade, or retrieval, so its pass-rate delta is
+controlled context-use evidence rather than proof of the public memory
+lifecycle. The runner records the caller-supplied commit declaration but does
+not itself prove that it equals a clean `HEAD`; the preflight above and release
+review own that provenance check.

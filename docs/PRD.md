@@ -11,17 +11,44 @@ linked memories and can prove whether those memories improve later coding work.
 
 ## Solution
 
-CodeCairn passively imports Codex and Claude Code sessions into one Agent Trace
-contract. It segments traces into stable Task Episodes, derives Evidence Facts
-from raw events, and allows an LLM to compress only those facts into five typed
-Coding Memory proposals. A type-specific Evidence Gate decides what becomes
-durable Markdown truth. SQLite records import and indexing state; LanceDB is a
-rebuildable hybrid index. The runtime emits task-shaped Recall Context through
-shared CLI and HTTP use-case interfaces.
+CodeCairn explicitly imports completed Codex and Claude Code sessions into one
+Agent Trace contract. It segments traces into stable Task Episodes and derives
+Evidence Facts from raw events. The current public import path automatically
+persists deterministic Failed Command memories.
+
+The domain and service layers also implement five gate-managed types: User
+Preference, Repository Convention, Verified Fix, Debug Episode, and
+Conversation Episode. An LLM may propose bounded summaries or grounded
+semantic projections, while a type-specific Evidence Gate decides whether
+those service-level writes become durable Markdown truth. Those five producers
+are not currently exposed by ordinary CLI or HTTP import.
+
+SQLite records import, audit, recovery, and indexing state; LanceDB is a
+rebuildable hybrid index. The runtime can emit task-shaped Recall Context
+through shared CLI and HTTP interfaces, but the public product currently lacks
+the cascade lifecycle required to make newly imported truth searchable.
 
 CodeCairn ships its proof alongside the product: LoCoMo end-to-end question
 answering, a labeled retrieval set, and isolated memory-on/off coding tasks.
 Reports are generated from immutable artifacts rather than hand-entered claims.
+
+## Current Delivery Status
+
+| Capability | Status on main | Release implication |
+|---|---|---|
+| Codex and Claude Code Agent Trace import | Delivered | Public import is post-hoc and explicitly triggered |
+| Failed Command extraction | Delivered on public import | Only automatically produced public memory type |
+| Four proposal-gated types | Service contract only | No public compression/producer path |
+| Conversation Episode | Service/evaluation contract only | Used by LoCoMo, not ordinary trace import |
+| Markdown, SQLite ledger/audits, and outbox | Delivered | Durable import succeeds independently of indexing |
+| Mini Cascade and rebuild parity | Service component delivered | No public CLI/server lifecycle |
+| Hierarchical recall and attributed context | Delivered against an existing index | Fresh import-to-recall loop remains incomplete |
+| Four evaluation suites and evidence bundle | Delivered | Suite boundaries do not prove the public product loop |
+| Package build | Delivered | Release metadata, governance, curated sdist, and tag are missing |
+
+The next release-critical slice is not another benchmark feature. It is a
+black-box product path that imports a supported trace, drains the index through
+a supported owner, reaches healthy parity, and recalls the imported evidence.
 
 ## User Stories
 
@@ -54,7 +81,7 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 27. As a developer, I want lexical and vector candidate sets unioned before ranking, so that exact repository terms are not hidden by vector recall.
 28. As an auditor, I want a JSON retrieval sidecar containing candidate sources and scores, so that ranking metrics are reproducible.
 29. As a coding-agent user, I want concise Markdown Recall Context for a task, so that I can attach useful memory without dumping the corpus.
-30. As a CLI user, I want import, list, recall, eval, and doctor commands, so that the full local loop is scriptable.
+30. As a CLI user, I want import, list, recall, eval, doctor, and an explicit index lifecycle, so that the full local loop is scriptable.
 31. As a backend reviewer, I want HTTP import, list, recall, evaluation, and health routes, so that the same use cases demonstrate route contracts and error handling.
 32. As a maintainer, I want CLI and HTTP to call the same interfaces, so that behavior cannot drift between entrypoints.
 33. As an evaluator, I want LoCoMo ingestion to preserve sessions and speakers, so that published QA accuracy follows the dataset structure.
@@ -69,6 +96,9 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 42. As a coding-agent user, I want exact AtomicFact matches lifted to their parent memory, so that a compressed summary cannot hide the detail I asked for.
 43. As an auditor, I want query route, hierarchy-level candidates, and matched facts in the sidecar, so that a recall decision can be replayed.
 44. As a user, I want bounded chronological neighbors from the same episode, so that a recalled detail retains its immediate context without leaking another repository or task.
+45. As a coding-agent user, I want supported producers for gate-managed memory types, so that the six-type domain is reachable without internal Python calls.
+46. As an auditor, I want an explicit policy for edits to existing Markdown, so that offline changes cannot bypass the Evidence Gate.
+47. As an installer, I want a tagged, licensed, deterministic package whose installed-wheel smoke passes, so that build success is not confused with release readiness.
 
 ## Implementation Decisions
 
@@ -76,6 +106,9 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 - The project uses a `src` layout and inward dependency rules enforced by
   import-linter.
 - The main import seam is `import_session(source, repo_key) -> ImportResult`.
+- Public trace import automatically writes Failed Command memories only. The
+  proposal and Conversation Episode seams are internal service contracts until
+  a public producer is added.
 - Provider Importers retain raw indices and call identifiers and emit one Agent
   Trace contract.
 - Task Episode identity uses repository namespace, provider, session, and stable
@@ -89,25 +122,56 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 - Evidence Facts are derived by code. The LLM may reference fact identifiers and
   author summaries, but cannot author provenance fields.
 - Markdown truth uses same-directory temporary files, flush, fsync, atomic
-  replace, and containment checks. It stores complete deterministic fact
-  snapshots with each Coding Memory.
+  create-if-absent, and containment checks. Audited repair may replace only the
+  exact committed representation. Each file stores complete deterministic fact
+  snapshots with its Coding Memory.
 - SQLite owns import state, audit rows, memory metadata, and a transactional
   index outbox whose uniqueness includes repository namespace.
-- LanceDB is mandatory in the completed version 1 but is never authoritative.
+- LanceDB is mandatory for searchable version-one behavior but is never
+  authoritative.
   It projects each Coding Memory into one Recall Episode parent plus its
   AtomicFact children.
-- Hybrid retrieval searches Episode and AtomicFact projections independently,
-  max-pools child hits to their parents, and unions four lexical and learned-vector
-  rankings before a CrossEncoder reranker. A deterministic soft route changes pool
-  sizes but never hard-disables the secondary level. Logical model aliases, artifact repositories, immutable
-  commit revisions, dimensions, and Adapter versions are recorded in index rows
-  and evaluation artifacts; hashing is a test-only Adapter.
+- Hybrid retrieval searches Episode and AtomicFact projections independently
+  across vector, lexical, entity, and temporal lanes, lifts child hits to their
+  parents, fuses the resulting rankings, expands bounded postings, reranks
+  parents, selects core/coverage results, expands bounded neighbors, and then
+  reranks authoritative facts before context compilation. A deterministic soft
+  route changes pool sizes but never hard-disables the secondary level. Logical
+  model aliases, artifact repositories, immutable commit revisions, dimensions,
+  and Adapter versions are recorded in index rows and evaluation artifacts;
+  hashing is a test-only Adapter.
 - Recall Context is Markdown first with a structured JSON sidecar.
 - CLI and HTTP are presentation adapters over shared use-case interfaces.
 - Evaluation uses immutable suite, task, and run manifests. Report generation is
   pure and cannot rebuild or overwrite a runtime index.
 - Public fixtures are synthetic. Private real traces remain outside Git history
   and are referenced by hash-only manifests.
+
+## Release Acceptance
+
+Version-one component milestones and version-one product acceptance are
+separate:
+
+```text
+component complete
+  = import/evidence/storage/cascade/recall/evaluation implementations exist
+
+product complete
+  = installed public entrypoints own the complete durable-to-search lifecycle
+```
+
+Before the first tag:
+
+1. ordinary import capability and all six type producers must be described
+   exactly as implemented;
+2. a supported cascade owner or sync command must close the import-to-recall
+   loop;
+3. `doctor` must reach healthy parity in an installed-wheel smoke;
+4. the Markdown offline-edit authority conflict must be resolved;
+5. current evidence must be verified in CI without reattributing historical
+   retrieval results;
+6. license, package metadata, curated sdist, release notes, security policy,
+   and contribution policy must exist.
 
 ## Testing Decisions
 
@@ -142,7 +206,8 @@ Reports are generated from immutable artifacts rather than hand-entered claims.
 
 ## Further Notes
 
-The intended resume artifact is the generated evidence bundle, not a prose claim:
-session and event counts, extraction labels, retrieval query results, LoCoMo
-answers and judge votes, 120 coding-run manifests, recovery checks, coverage,
-and the exact commands required to reproduce aggregates.
+The intended resume artifact is the generated evidence bundle, not a prose
+claim: session and event counts, extraction labels, retrieval query results,
+privacy-safe LoCoMo scored outcomes and source receipts, 120 coding-run
+manifests, recovery checks, coverage, and the exact commands required to
+reproduce aggregates.

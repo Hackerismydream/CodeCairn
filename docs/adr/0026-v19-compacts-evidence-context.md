@@ -2,9 +2,9 @@
 
 ## Status
 
-Accepted for implementation. V19 retrieval quality remains unverified until a
-new immutable 40-question preflight and the non-overlapping 160-question
-holdout pass. Paid answer and judge calls remain blocked.
+Accepted and implemented. The v9 flat authoritative-fact renderer and v5 fact
+selector remain current. The V19 promotion gates are historical and later ADRs
+define the current V23 scoring protocol.
 
 ## Context
 

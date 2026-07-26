@@ -2,9 +2,9 @@
 
 ## Status
 
-Accepted for implementation. V18 retrieval quality remains unverified until a
-new immutable 40-question preflight and the non-overlapping 160-question
-holdout pass. Paid answer and judge calls remain blocked.
+Accepted and implemented. Lossless raw source-fact children remain a current
+projection invariant. The v18 evaluation gates are historical and were evolved
+by ADR 0026 and later protocol decisions.
 
 ## Context
 

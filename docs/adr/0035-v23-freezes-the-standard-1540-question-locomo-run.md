@@ -42,7 +42,9 @@ artifact that exactly covers the 1,540-question selection.
 
 ## Consequences
 
-- The full score is reproducible from a checked-in question-set definition.
+- The full question inventory, protocol, and published aggregate are
+  reproducible from checked-in definitions and outcomes. Future provider runs
+  are not promised to reproduce the same model outputs or score.
 - Diagnostic promotion and full-dataset reporting remain separate claims.
 - The run records the exact corpus, query-vector, model, commit, latency, cost,
   and resource artifacts.

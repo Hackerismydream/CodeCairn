@@ -10,22 +10,28 @@ runner, IDE, or cloud knowledge platform.
 
 ## Status
 
-CodeCairn has completed its three V1 milestones. Published release numbers live
-in the [benchmark-v3 public evidence bundle](evidence/benchmark-v3/README.md);
-every measurement links to an immutable manifest and the public inputs consumed
-by its offline reducer.
+CodeCairn has completed the core runtime and evaluation components planned for
+its three V1 milestones. It is still a pre-release project: the public CLI and
+HTTP server do not yet own a Mini Cascade worker or expose a supported
+index-sync command, so importing a new session commits Markdown and SQLite
+state but does not by itself make that memory searchable.
 
-| V1 milestone | Delivered |
+| Area | Current main status |
 |---|---|
-| M1 | Agent Trace, resumable import ledger, Markdown truth, and SQLite state |
-| M2 | Evidence-backed extraction, LanceDB projections, and budgeted Recall Context |
-| M3 | Full LoCoMo evaluation, 120-run CodingMemoryBench A/B, retrieval, recovery, and generated resume evidence |
+| Agent Trace, resumable import, Evidence Gate service seams, Markdown truth, SQLite state | Delivered and covered by contract tests |
+| Public automatic memory extraction | Partial: ordinary import emits Failed Command only |
+| LanceDB projection, Mini Cascade, hierarchical recall, Recall Context | Implemented and exercised through service/evaluation seams |
+| Public import -> index -> recall lifecycle | Incomplete: no CLI/server cascade lifecycle |
+| Evaluation and public evidence | Delivered; `benchmark-v3` verifies offline |
+| Package release | Pre-release: no tagged release or open-source license yet |
 
 The current checked-in evidence reports 82.60% on all 1,540 official LoCoMo
-category 1-4 questions with zero infrastructure failures, 96.00% Recall@5 on
-the 100-query retrieval suite, 100.00% index rebuild consistency, and a
-CodingMemoryBench pass-rate change from 85% memory-off to 100% memory-on. These
-are evaluation results rather than production-traffic claims.
+category 1-4 questions with zero infrastructure failures, 100.00% index rebuild
+consistency on a synthetic recovery fixture, and a CodingMemoryBench pass-rate
+change from 85% memory-off to 100% memory-on. It also retains a historical
+100-query HashingEmbedder/RRF run with 96.00% Recall@5; that number does not
+measure the current DashScope/CrossEncoder production composition. These are
+evaluation results rather than production-traffic claims.
 
 ## Development
 
@@ -36,16 +42,11 @@ uv sync --all-groups
 make check
 ```
 
-The import path auto-detects Codex and Claude Code JSONL and emits one shared
-Agent Trace. Deterministic Evidence Facts and type-specific gates accept
-grounded User Preference and Repository Convention proposals while recording
-rejections for audit. Verified Fix additionally requires a file change followed
-by a successful test, lint, type-check, or build command; Debug Episode connects
-one task, action, and observed outcome. Complete Evidence Fact snapshots remain
-inside Markdown truth and rebuild into a Recall Episode plus AtomicFact child
-documents in LanceDB. Repeated imports validate the committed prefix, resume
-from the active Task Episode, and repair committed Markdown through an audited
-recovery path:
+The public import path auto-detects Codex and Claude Code JSONL, emits one shared
+Agent Trace, derives deterministic Evidence Facts, and automatically persists
+evidence-backed Failed Command memories. Repeated imports validate the
+committed prefix, resume from the active Task Episode, and repair committed
+Markdown through an audited recovery path:
 
 ```bash
 uv run codecairn import /path/to/session.jsonl \
@@ -53,6 +54,21 @@ uv run codecairn import /path/to/session.jsonl \
   --root .codecairn
 uv run codecairn list --repo-key owner/repository --root .codecairn
 ```
+
+These two commands exercise the supported durable-import path. They do not
+drain the index outbox. Until a public cascade lifecycle is added, `recall`
+against a newly imported root can legitimately return no candidates and
+`doctor` reports the pending queue and index mismatch as `degraded`. The exact
+current behavior and the required product acceptance gate are documented in
+[runtime operations](docs/runtime/operations.md).
+
+The domain and service layers also implement gated User Preference, Repository
+Convention, Verified Fix, Debug Episode, and Conversation Episode writes.
+Those seams are covered by service/evaluation tests, but no ordinary CLI or
+HTTP producer currently turns an imported trace into those five memory types.
+Conversation Episode ingestion is used by the LoCoMo adapter rather than the
+Codex/Claude import command. This distinction is tracked in the
+[runtime scope](docs/runtime/README.md).
 
 Production recall uses Alibaba Cloud Model Studio's OpenAI-compatible embedding
 API with `text-embedding-v4` at 1,024 dimensions. CrossEncoder reranking
@@ -94,15 +110,16 @@ Install the package from a checkout, or run the same commands through `uv`:
 ```bash
 uv tool install .
 codecairn --help
+# Recall requires an already synchronized index.
 codecairn recall "pytest command failed" \
   --repo-key owner/repository \
   --root .codecairn
 codecairn doctor --root .codecairn
 ```
 
-The evaluation command dispatches all three independent evidence suites plus
-the recovery suite through the same application interface used by HTTP. Inputs
-and output roots are explicit; every run identifier is immutable.
+The evaluation command dispatches four independent suites—LoCoMo, retrieval,
+recovery, and coding—through the same application interface used by HTTP.
+Inputs and output roots are explicit; every run identifier is immutable.
 
 ```bash
 codecairn eval run retrieval benchmarks/retrieval \
@@ -141,9 +158,9 @@ official DeepSeek endpoint, exporting only `DEEPSEEK_API_KEY` defaults both
 roles to `deepseek-v4-pro` with thinking enabled; role-level model, endpoint,
 key, profile, and reasoning-effort variables remain available for controlled
 overrides. Health reports configuration state only and never emits credentials.
-DeepSeek supplies LoCoMo answers and judge votes; DashScope supplies Qwen
-embeddings and a pinned local model supplies CrossEncoder reranking. Run
-manifests record all configurations separately.
+DeepSeek supplies LoCoMo answers and judge votes; DashScope
+`text-embedding-v4` supplies embeddings and a pinned local model supplies
+CrossEncoder reranking. Run manifests record all configurations separately.
 
 Hierarchical recall defaults to `CODECAIRN_RECALL_MODE=hierarchy`. Reproducible
 ablations may select `episode-only` or `hierarchy-no-neighbors`; the effective
@@ -185,6 +202,8 @@ never return provider credentials.
 
 Project contracts live in [CONTEXT.md](CONTEXT.md),
 [docs/architecture.md](docs/architecture.md), and [docs/adr/](docs/adr/).
+Use the [documentation index](docs/INDEX.md) to find runtime, operations,
+evaluation, evidence, release-readiness, and decision records.
 
 ## License
 

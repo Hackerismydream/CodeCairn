@@ -2,10 +2,8 @@
 
 ## Status
 
-Accepted for implementation. V15 benchmark quality remains unverified until a
-new immutable retrieval-only diagnostic passes its evidence, latency, and
-resource gates. The v14 question sets and run artifacts remain unchanged
-historical evidence.
+Accepted and implemented. The v15 contract and artifacts remain historical
+evidence; later ADRs supersede its current retrieval and context policy.
 
 ## Context
 
