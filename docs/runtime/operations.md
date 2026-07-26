@@ -9,11 +9,13 @@ index.
 
 | Capability | CLI | HTTP | Current behavior |
 |---|---|---|---|
-| Import session | `codecairn import` | `POST /api/v1/import` | Normalizes the trace and persists deterministic Failed Command memories |
+| Import session | `codecairn import` | `POST /api/v1/import` | Normalizes the trace, persists deterministic Failed Command memories, and drains the index outbox unless opted out |
 | List durable memory | `codecairn list` | `GET /api/v1/memories` | Reads committed SQLite memory state by `repo_key` |
 | Recall | `codecairn recall` | `POST /api/v1/recall` | Searches the existing LanceDB projection |
 | Diagnostics | `codecairn doctor` | `GET /api/v1/health` | Reports truth, ledger, queue, index parity, and provider configuration |
-| Dedicated index sync/retry/rebuild control | Not exposed | Not exposed | Status is visible through diagnostics; Mini Cascade control exists only as a service composition seam |
+| Index sync | `codecairn index sync` | `POST /api/v1/index/sync` | Drains the outbox until idle and returns queue health |
+| Index rebuild | `codecairn index rebuild` | `POST /api/v1/index/rebuild` | Rebuilds the projection from Markdown truth and returns the parity report |
+| Index status | `codecairn index status` | `GET /api/v1/index` | Reports queue and parity state without resolving a retrieval provider |
 | Evaluation run/report | `codecairn eval ...` | Evaluation run/report routes | Uses immutable explicit input/output roots |
 | Evidence build/verify | `codecairn evidence ...` | Not exposed | Builds or verifies public evidence bundles |
 
@@ -26,34 +28,36 @@ codecairn import
       +--> SQLite ledger committed
       +--> Index Queue pending
       |
-      x    no public worker or sync command
+      +--> outbox drained in-process (skipped by --no-index)
       |
 codecairn recall
       |
-      +--> searches the existing LanceDB state only
+      +--> searches the LanceDB state produced by the drain
 ```
 
-Consequences:
+The import commit remains the durability boundary. The drain runs after the
+import result is computed, and a drain failure is reported as `index` state in
+the import payload instead of failing the import. Consequences:
 
-- Import success proves durable truth and queue commit, not search readiness.
+- Import success proves durable truth and queue commit. Search readiness is
+  proven by the `index` section of the import payload or by `doctor`.
 - Ordinary trace import does not automatically produce User Preference,
   Repository Convention, Verified Fix, Debug Episode, or Conversation Episode.
-- A fresh runtime can contain one committed memory and one pending index job
-  while LanceDB contains zero documents.
-- `doctor` correctly reports this state as `degraded`.
+- After `--no-index`, or after a failed drain, a runtime can contain committed
+  memory and pending index jobs while LanceDB contains zero documents.
+  `codecairn index sync` completes the transition.
+- `doctor` reports an undrained runtime as `degraded`.
 - Recall can return `completion=partial`, `degraded_stages=["no_candidates"]`,
   and no ranked memories even when `list` returns durable memory.
 
-Tests and evaluation code explicitly compose and run `MiniCascade`; ordinary
-CLI and server startup do not. There is currently no supported operator
-workaround on the public command surface. Internal Python helpers are not
-documented as a stable product API.
+Neither entrypoint starts a background cascade worker. The queue-to-index
+transition is driven by import, `codecairn index sync`, or
+`POST /api/v1/index/sync`. Internal Python helpers are not documented as a
+stable product API.
 
-## Required product acceptance gate
+## Product acceptance gate
 
-The public local loop is complete only when one supported lifecycle owns the
-queue-to-index transition. The implementation may use a server worker, a
-one-shot CLI command, or both, but it must satisfy this black-box contract:
+The public local loop satisfies this black-box contract:
 
 ```text
 fresh root
@@ -64,22 +68,21 @@ fresh root
   -> recall returns the imported memory with provenance
 ```
 
-The lifecycle must also expose pending, leased, failed, stale, and indexed
-counts; preserve atomic leases; retry without duplicating embeddings; and
-rebuild both parent and child projections from Markdown.
-
-Until that gate passes, documentation must describe CodeCairn as having
-implemented runtime components and evaluation evidence, not as an
-install-and-use complete memory product.
+The lifecycle also exposes pending, leased, failed, stale, and indexed counts;
+preserves atomic leases; retries without duplicating embeddings; and rebuilds
+both parent and child projections from Markdown.
 
 ## CLI
 
 Runtime commands:
 
 ```text
-codecairn import SOURCE --repo-key REPO --root ROOT
+codecairn import SOURCE --repo-key REPO --root ROOT [--no-index]
 codecairn list --repo-key REPO --root ROOT
 codecairn recall TASK --repo-key REPO --root ROOT [--limit N]
+codecairn index sync --root ROOT [--worker-id ID] [--max-jobs N]
+codecairn index rebuild --root ROOT
+codecairn index status --root ROOT
 codecairn doctor --root ROOT
 ```
 
@@ -116,7 +119,7 @@ schemas. Evaluation protocol details live in
 
 ## HTTP
 
-The six versioned routes are:
+The nine versioned routes are:
 
 | Method | Route | Use case |
 |---|---|---|
@@ -125,7 +128,13 @@ The six versioned routes are:
 | `POST` | `/api/v1/recall` | Compile Recall Context |
 | `POST` | `/api/v1/evaluations` | Run one evaluation suite |
 | `GET` | `/api/v1/evaluations/{suite}/{run_id}` | Read an evaluation report |
+| `POST` | `/api/v1/index/sync` | Drain the index outbox until idle |
+| `POST` | `/api/v1/index/rebuild` | Rebuild the projection from Markdown truth |
+| `GET` | `/api/v1/index` | Read index queue and parity state |
 | `GET` | `/api/v1/health` | Read operational diagnostics |
+
+`POST /api/v1/import` accepts a boolean `index` field, default true, matching
+the CLI `--index/--no-index` option.
 
 CLI and HTTP call the same `CodeCairnApplication` facade. HTTP adds request
 validation, a stable error envelope, `x-request-id`, and path authorization;

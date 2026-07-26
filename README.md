@@ -11,17 +11,17 @@ runner, IDE, or cloud knowledge platform.
 ## Status
 
 CodeCairn has completed the core runtime and evaluation components planned for
-its three V1 milestones. It is still a pre-release project: the public CLI and
-HTTP server do not yet own a Mini Cascade worker or expose a supported
-index-sync command, so importing a new session commits Markdown and SQLite
-state but does not by itself make that memory searchable.
+its three V1 milestones. It is still a pre-release project: import commits
+Markdown and SQLite state and then drains the index outbox in process, and
+`codecairn index sync|rebuild|status` operates the projection, but neither
+entrypoint runs a background worker.
 
 | Area | Current main status |
 |---|---|
 | Agent Trace, resumable import, Evidence Gate service seams, Markdown truth, SQLite state | Delivered and covered by contract tests |
 | Public automatic memory extraction | Partial: ordinary import emits Failed Command only |
 | LanceDB projection, Mini Cascade, hierarchical recall, Recall Context | Implemented and exercised through service/evaluation seams |
-| Public import -> index -> recall lifecycle | Incomplete: no CLI/server cascade lifecycle |
+| Public import -> index -> recall lifecycle | Delivered: import drains by default, `codecairn index` operates the projection |
 | Evaluation and public evidence | Delivered; `benchmark-v3` verifies offline |
 | Package release | Pre-release: no tagged release or open-source license yet |
 
@@ -53,13 +53,17 @@ uv run codecairn import /path/to/session.jsonl \
   --repo-key owner/repository \
   --root .codecairn
 uv run codecairn list --repo-key owner/repository --root .codecairn
+uv run codecairn recall "test command failed" \
+  --repo-key owner/repository --root .codecairn
 ```
 
-These two commands exercise the supported durable-import path. They do not
-drain the index outbox. Until a public cascade lifecycle is added, `recall`
-against a newly imported root can legitimately return no candidates and
-`doctor` reports the pending queue and index mismatch as `degraded`. The exact
-current behavior and the required product acceptance gate are documented in
+`import` drains the index outbox after its commit, so `recall` searches the
+memory it just imported. `--no-index` skips the drain; the outbox commit is the
+durability boundary either way, and a failed drain is reported as `index` state
+in the import output rather than failing the import. `codecairn index sync`
+completes a skipped or failed drain, `codecairn index rebuild` reprojects from
+Markdown truth, and `codecairn index status` and `doctor` report queue and
+parity state. The full surface is documented in
 [runtime operations](docs/runtime/operations.md).
 
 The domain and service layers also implement gated User Preference, Repository

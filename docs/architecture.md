@@ -248,11 +248,12 @@ Import is strongly durable for Markdown plus the SQLite transaction. Search is
 eventually consistent because indexing is a separate outbox consumer. Recall
 does not scan Markdown as a degraded fallback.
 
-The current public CLI and HTTP server do not start or expose that consumer.
-Consequently, current main can commit truth while remaining index-degraded.
-This lifecycle gap is documented in
-[`runtime/operations.md`](runtime/operations.md) and must not be hidden by the
-architecture diagram.
+Import drives that consumer in process after its commit, and both entrypoints
+expose sync, rebuild, and status for it. Neither runs a background worker, so a
+root imported with `--no-index`, or one whose drain failed, commits truth and
+stays index-degraded until the next sync. `doctor` reports that state, and the
+surface is documented in
+[`runtime/operations.md`](runtime/operations.md).
 
 ## Mini Cascade
 
@@ -271,9 +272,10 @@ Upserts re-read committed Markdown rather than trusting the SQLite mirror to
 author child documents. Jobs are content-addressed, atomically leased, and
 idempotent for an unchanged successful revision.
 
-Tests and evaluation compose Mini Cascade explicitly. Product entrypoints
-currently do not; the next product slice must give the lifecycle one supported
-owner without creating a second index writer.
+Import, `codecairn index sync|rebuild|status`, and the three `/api/v1/index`
+routes drive Mini Cascade through the shared application facade. Tests and
+evaluation still compose it directly. There is one index writer, and no
+entrypoint introduces a second one.
 
 ## Retrieval
 
@@ -428,7 +430,8 @@ Detailed suite ownership and current evidence live in
 The following are not implemented product capabilities:
 
 1. A public producer for five gate-managed Coding Memory types.
-2. A public Mini Cascade lifecycle for import-to-recall completion.
+2. A background index worker; the queue-to-index transition is driven by
+   import or an explicit `index` operation.
 3. A resolved policy for offline edits to gate-managed Markdown.
 4. A thin Codex/Claude Code integration that invokes recall and later imports
    sessions during ordinary use.

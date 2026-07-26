@@ -2,9 +2,11 @@
 
 ## Status
 
-Accepted and implemented as a service contract. Current public CLI and server
-composition commit the outbox but do not own a Mini Cascade worker or expose a
-supported sync/retry/rebuild command.
+Accepted and amended. The storage and outbox contract below is implemented and
+unchanged. ADR 0040 replaces the note that no public entrypoint exposed a
+supported sync or rebuild command: the CLI and HTTP surface now own index sync,
+rebuild, and status, and import drains the outbox after its commit. Neither
+entrypoint starts a background cascade worker.
 
 CodeCairn uses Markdown as truth, SQLite as operational state, and LanceDB as a
 required rebuildable index. Import returns after atomic Markdown persistence and

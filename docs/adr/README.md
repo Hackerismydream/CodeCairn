@@ -28,10 +28,10 @@ Read ADRs 0001-0011 for repository boundary, product scope, normalized traces,
 stable episodes, derived evidence, storage/outbox behavior, entrypoint parity,
 evaluation structure, milestones, and resumable import.
 
-The current lifecycle caveat is important: ADR 0006's asynchronous outbox is
-implemented, but the public CLI and server do not yet own a Mini Cascade worker
-or index-sync operation. See
-[`../runtime/operations.md`](../runtime/operations.md).
+ADR 0040 amends the lifecycle notes in ADR 0006 and ADR 0008: index sync,
+rebuild, and status are now public CLI and HTTP operations and import drains
+the outbox by default, while neither entrypoint starts a background cascade
+worker. See [`../runtime/operations.md`](../runtime/operations.md).
 
 ### Retrieval and projection
 
@@ -64,6 +64,14 @@ The current public result is the V23 exact-repair composite in
 wording errata are documented in
 [`../evidence-bundle.md`](../evidence-bundle.md), not retroactively edited into
 the immutable evidence bundle.
+
+### Product surface and measurement correctness
+
+Read ADR 0040 for the public index maintenance surface and deferred provider
+construction, then ADRs 0041-0042 for the calibrated V24 context budget and the
+natural-weighted ablation gate. ADR 0041 amends the 4,000-token ceiling of ADRs
+0023 and 0026; ADR 0042 amends how the ADR 0031 gate compares accuracy. The V23
+protocol files and every published V23 result keep their frozen contracts.
 
 ## Adding a decision
 
