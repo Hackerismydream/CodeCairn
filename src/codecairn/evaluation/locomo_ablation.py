@@ -25,6 +25,9 @@ from codecairn.evaluation.locomo import (
 
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _CANONICAL_VARIANTS = ("episode-only", "hierarchy-no-neighbors", "hierarchy")
+LOCOMO_ABLATION_WEIGHTING_ID = "natural-v1"
+_COMPARISON_WEIGHT_SOURCE = "comparison-question-set-category-targets"
+_EXTERNAL_WEIGHT_SOURCE = "question-set-category-targets"
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,6 +37,12 @@ class LoCoMoAblationConfig:
     hierarchy_no_neighbors_run: Path
     hierarchy_run: Path
     output_path: Path
+    # Question set whose `category_targets` carry the natural category
+    # distribution, normally `benchmarks/locomo/full-1540-v24.json`. When it is
+    # absent the comparison set weighs itself, so the natural-weighted accuracy
+    # equals the stratified accuracy and the report says so in its weighting
+    # source instead of implying a full-set estimate.
+    natural_weight_question_set_path: Path | None = None
 
 
 def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, object]:
@@ -100,7 +109,12 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
     _validate_constant_protocol(manifests)
 
     gates = _dict(definition.get("gates"), field="gates")
-    outcome = _derive_ablation_outcome(reports, gates=gates)
+    weighting = _resolve_weighting(
+        definition,
+        definition_sha256=definition_sha256,
+        weight_question_set_path=config.natural_weight_question_set_path,
+    )
+    outcome = _derive_ablation_outcome(reports, gates=gates, weighting=weighting)
     selected_variant = _str(outcome, "selected_variant")
     run_contracts = {
         variant: _selected_run_contract(manifest) for variant, manifest in manifests.items()
@@ -114,6 +128,7 @@ def build_locomo_ablation_report(config: LoCoMoAblationConfig) -> dict[str, obje
         "question_set_protocol_sha256": _protocol_sha256(protocol),
         "question_set_gates": dict(gates),
         "question_set_gates_sha256": _frozen_compact_sha256(gates),
+        "weighting": weighting,
         "repository_commit": _str(manifests["hierarchy"], "repository_commit"),
         "variants": reports,
         "run_manifests": manifest_receipts,
@@ -208,6 +223,7 @@ def validate_locomo_ablation_report(
             for variant in _CANONICAL_VARIANTS
         },
         gates=gates,
+        weighting=_validated_weighting(report.get("weighting")),
     )
     for field, expected_value in expected_outcome.items():
         if report.get(field) != expected_value:
@@ -300,9 +316,13 @@ def _derive_ablation_outcome(
     reports: dict[str, dict[str, object]],
     *,
     gates: dict[str, object],
+    weighting: dict[str, object],
 ) -> dict[str, object]:
     if set(reports) != set(_CANONICAL_VARIANTS):
         raise ValueError("LoCoMo ablation requires three canonical run reports")
+    category_weights = _positive_category_targets(
+        _dict(weighting.get("category_weights"), field="ablation category weights")
+    )
     required_questions = _int(gates, "required_scored_questions_per_variant")
     maximum_failures = _int(gates, "maximum_infrastructure_failures")
     minimum_core_delta = _number(
@@ -316,11 +336,16 @@ def _derive_ablation_outcome(
     )
     maximum_neighbor_p95_increase = _number(gates, "temporal_neighbor_maximum_p95_increase_percent")
     maximum_selected_p95 = _number(gates, "selected_maximum_retrieval_p95_ms")
-    episode_accuracy = _accuracy(reports["episode-only"])
-    no_neighbor_accuracy = _accuracy(reports["hierarchy-no-neighbors"])
-    hierarchy_accuracy = _accuracy(reports["hierarchy"])
-    core_delta = round((no_neighbor_accuracy - episode_accuracy) * 100, 3)
-    neighbor_delta = round((hierarchy_accuracy - no_neighbor_accuracy) * 100, 3)
+    stratified = {variant: _accuracy(reports[variant]) for variant in _CANONICAL_VARIANTS}
+    natural = {
+        variant: natural_weighted_accuracy(
+            reports[variant],
+            category_weights=category_weights,
+        )
+        for variant in _CANONICAL_VARIANTS
+    }
+    core_delta = round((natural["hierarchy-no-neighbors"] - natural["episode-only"]) * 100, 3)
+    neighbor_delta = round((natural["hierarchy"] - natural["hierarchy-no-neighbors"]) * 100, 3)
     temporal_delta = round(
         (
             _category_accuracy(reports["hierarchy"], category=2)
@@ -411,11 +436,26 @@ def _derive_ablation_outcome(
         )
     )
     return {
+        "variant_accuracy": {
+            variant: {
+                "stratified": round(stratified[variant], 6),
+                "natural_weighted": round(natural[variant], 6),
+            }
+            for variant in _CANONICAL_VARIANTS
+        },
         "accuracy_delta_points": {
             "hierarchy_no_neighbors_vs_episode_only": core_delta,
             "hierarchy_vs_hierarchy_no_neighbors": neighbor_delta,
             "hierarchy_temporal_category_vs_no_neighbors": temporal_delta,
             "hierarchy_multihop_category_vs_no_neighbors": multihop_delta,
+        },
+        "stratified_accuracy_delta_points": {
+            "hierarchy_no_neighbors_vs_episode_only": round(
+                (stratified["hierarchy-no-neighbors"] - stratified["episode-only"]) * 100, 3
+            ),
+            "hierarchy_vs_hierarchy_no_neighbors": round(
+                (stratified["hierarchy"] - stratified["hierarchy-no-neighbors"]) * 100, 3
+            ),
         },
         "checks": checks,
         "temporal_neighbor_checks": temporal_neighbor_checks,
@@ -423,6 +463,80 @@ def _derive_ablation_outcome(
         "selected_variant": selected_variant,
         "gate_passed": all(cast(bool, check["passed"]) for check in checks),
     }
+
+
+def natural_weighted_accuracy(
+    report: dict[str, object],
+    *,
+    category_weights: dict[str, int],
+) -> float:
+    """Reweigh one scored run's per-category accuracy by frozen category counts."""
+
+    if not category_weights:
+        raise ValueError("LoCoMo natural weighting requires at least one category weight")
+    weighted = 0.0
+    total = 0
+    for category, weight in sorted(category_weights.items()):
+        weighted += _category_accuracy(report, category=int(category)) * weight
+        total += weight
+    return weighted / total
+
+
+def _resolve_weighting(
+    definition: dict[str, object],
+    *,
+    definition_sha256: str,
+    weight_question_set_path: Path | None,
+) -> dict[str, object]:
+    if weight_question_set_path is None:
+        source = _COMPARISON_WEIGHT_SOURCE
+        weight_definition = definition
+        question_set_sha256 = definition_sha256
+    else:
+        source = _EXTERNAL_WEIGHT_SOURCE
+        weight_definition = _dict(
+            read_json(weight_question_set_path),
+            field="natural-weight question set",
+        )
+        question_set_sha256 = file_sha256(weight_question_set_path)
+    weights = _positive_category_targets(
+        _dict(
+            weight_definition.get("category_targets"),
+            field="natural-weight category targets",
+        )
+    )
+    return {
+        "id": LOCOMO_ABLATION_WEIGHTING_ID,
+        "source": source,
+        "selection_id": _str(weight_definition, "selection_id"),
+        "question_set_sha256": question_set_sha256,
+        "category_weights": dict(sorted(weights.items())),
+    }
+
+
+def _validated_weighting(value: object) -> dict[str, object]:
+    weighting = _dict(value, field="selection report weighting")
+    if set(weighting) != {
+        "id",
+        "source",
+        "selection_id",
+        "question_set_sha256",
+        "category_weights",
+    }:
+        raise ValueError("LoCoMo selection report weighting has unsupported fields")
+    if weighting.get("id") != LOCOMO_ABLATION_WEIGHTING_ID:
+        raise ValueError("LoCoMo selection report uses an unsupported accuracy weighting")
+    if weighting.get("source") not in {_COMPARISON_WEIGHT_SOURCE, _EXTERNAL_WEIGHT_SOURCE}:
+        raise ValueError("LoCoMo selection report weighting has an unknown weight source")
+    _str(weighting, "selection_id")
+    _sha256(weighting, "question_set_sha256")
+    _positive_category_targets(
+        _dict(
+            weighting.get("category_weights"),
+            field="selection report category weights",
+        )
+    )
+    return weighting
 
 
 def _validate_run_contract(

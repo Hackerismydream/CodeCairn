@@ -647,6 +647,13 @@ def _promotion_fixture(
             retrieval_p95_ms=1100.0,
         ),
     }
+    selection_weighting = {
+        "id": "natural-v1",
+        "source": "comparison-question-set-category-targets",
+        "selection_id": "locomo-diagnostic-40-v1",
+        "question_set_sha256": source_question_set_sha256,
+        "category_weights": {"1": 1, "2": 1},
+    }
     selection_checks = [
         *[
             check
@@ -682,7 +689,7 @@ def _promotion_fixture(
     temporal_checks = [
         {
             "id": "hierarchy.accuracy_delta_vs_no_neighbors_points",
-            "observed": 5.0,
+            "observed": 7.5,
             "threshold": 0.0,
             "passed": True,
         },
@@ -760,6 +767,7 @@ def _promotion_fixture(
             "question_set_protocol_sha256": source_protocol_sha256,
             "question_set_gates": source_gates,
             "question_set_gates_sha256": _canonical_sha256(source_gates),
+            "weighting": selection_weighting,
             "repository_commit": "abc123",
             "variants": variant_reports,
             "run_manifests": {
@@ -773,11 +781,23 @@ def _promotion_fixture(
                 )
             },
             "run_contracts": run_contracts,
+            "variant_accuracy": {
+                "episode-only": {"stratified": 0.70, "natural_weighted": 0.65},
+                "hierarchy-no-neighbors": {
+                    "stratified": 0.75,
+                    "natural_weighted": 0.70,
+                },
+                "hierarchy": {"stratified": 0.80, "natural_weighted": 0.775},
+            },
             "accuracy_delta_points": {
                 "hierarchy_no_neighbors_vs_episode_only": 5.0,
-                "hierarchy_vs_hierarchy_no_neighbors": 5.0,
+                "hierarchy_vs_hierarchy_no_neighbors": 7.5,
                 "hierarchy_temporal_category_vs_no_neighbors": 5.0,
                 "hierarchy_multihop_category_vs_no_neighbors": 10.0,
+            },
+            "stratified_accuracy_delta_points": {
+                "hierarchy_no_neighbors_vs_episode_only": 5.0,
+                "hierarchy_vs_hierarchy_no_neighbors": 5.0,
             },
             "checks": selection_checks,
             "temporal_neighbor_checks": temporal_checks,

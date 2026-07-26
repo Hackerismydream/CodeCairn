@@ -106,7 +106,6 @@ class LoCoMoRetrievalGateConfig:
     expected_canary_questions: int = 40
     expected_holdout_questions: int = 160
     minimum_context_all_coverage: float = 0.70
-    maximum_context_tokens: int = 4_000
     maximum_retrieval_p95_ms: float = 2_500.0
     maximum_process_rss_bytes_exclusive: int = 2 * 1024 * 1024 * 1024
 
@@ -117,8 +116,6 @@ class LoCoMoRetrievalGateConfig:
             raise ValueError("LoCoMo retrieval gate question counts must be positive")
         if not 0 < self.minimum_context_all_coverage <= 1:
             raise ValueError("LoCoMo retrieval gate coverage must be within (0, 1]")
-        if self.maximum_context_tokens < 1:
-            raise ValueError("LoCoMo retrieval gate context limit must be positive")
         if self.maximum_retrieval_p95_ms <= 0:
             raise ValueError("LoCoMo retrieval gate latency limit must be positive")
         if self.maximum_process_rss_bytes_exclusive < 1:
@@ -151,6 +148,7 @@ def verify_locomo_retrieval_gate(
         raise ValueError("LoCoMo target protocol has no supported paid-scoring gate")
     if scored.protocol != protocol:
         raise ValueError("LoCoMo scored question set changes the retrieval-gate protocol")
+    maximum_context_tokens = _positive_integer(protocol, "context_max_tokens")
     protocol_sha256 = _canonical_sha256(protocol)
     promotion = _mapping(
         target_definition.get("promotion"),
@@ -196,7 +194,7 @@ def verify_locomo_retrieval_gate(
             corpus_content_sha256=corpus_content_sha256,
             query_content_sha256=query_content_sha256,
             minimum_context_all_coverage=config.minimum_context_all_coverage,
-            maximum_context_tokens=config.maximum_context_tokens,
+            maximum_context_tokens=maximum_context_tokens,
             maximum_retrieval_p95_ms=config.maximum_retrieval_p95_ms,
             maximum_process_rss_bytes_exclusive=(config.maximum_process_rss_bytes_exclusive),
             reporter=active_reporter,
@@ -255,7 +253,7 @@ def verify_locomo_retrieval_gate(
         "corpus_content_sha256": corpus_content_sha256,
         "query_vectors_content_sha256": query_content_sha256,
         "minimum_context_all_coverage": config.minimum_context_all_coverage,
-        "maximum_context_tokens": config.maximum_context_tokens,
+        "maximum_context_tokens": maximum_context_tokens,
         "maximum_retrieval_p95_ms": config.maximum_retrieval_p95_ms,
         "maximum_process_rss_bytes_exclusive": (config.maximum_process_rss_bytes_exclusive),
         "sources": public_sources,

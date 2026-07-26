@@ -3746,6 +3746,8 @@ def _normalize_query(text: str) -> str:
 _PROTOCOL_GENERATION_FIELDS = frozenset(
     {
         "answer_model",
+        "answer_thinking",
+        "answer_reasoning_effort",
         "answer_evidence_contract",
         "answer_retry_contract",
         "model_attempt_journal_contract",
@@ -3946,6 +3948,8 @@ def validate_locomo_scored_manifest_protocol(
     observed.update(
         {
             "answer_model": answer.get("model"),
+            "answer_thinking": answer.get("thinking"),
+            "answer_reasoning_effort": answer.get("reasoning_effort"),
             "answer_evidence_contract": manifest.get("answer_evidence_contract"),
             "answer_retry_contract": manifest.get("answer_retry_contract"),
             "model_attempt_journal_contract": manifest.get("model_attempt_journal_contract"),
@@ -4155,6 +4159,8 @@ def _validate_run_protocol(
     observed.update(
         {
             "answer_model": answer.get("model"),
+            "answer_thinking": answer.get("thinking"),
+            "answer_reasoning_effort": answer.get("reasoning_effort"),
             "answer_evidence_contract": _ANSWER_EVIDENCE_CONTRACT,
             "answer_retry_contract": GROUNDED_ANSWER_RETRY_CONTRACT,
             "model_attempt_journal_contract": (

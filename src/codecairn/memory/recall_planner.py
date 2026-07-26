@@ -320,8 +320,8 @@ class RecallPlannerConfig:
     fact_rerank_max_candidates_per_parent: int = MAX_FACT_RERANK_CANDIDATES_PER_PARENT
     fact_rerank_max_selected_per_parent: int = MAX_SELECTED_FACTS_PER_PARENT
     fact_rerank_max_document_chars: int = MAX_FACT_RERANK_DOCUMENT_CHARS
-    context_max_chars: int = 23_900
-    context_max_tokens: int = 4_000
+    context_max_chars: int = 47_800
+    context_max_tokens: int = 8_000
     context_summary_chars: int = 60
     # Retained in the frozen protocol for backward compatibility. Exact source
     # facts are atomic evidence and are never truncated to this legacy hint.

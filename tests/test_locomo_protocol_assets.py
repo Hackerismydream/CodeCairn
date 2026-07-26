@@ -890,6 +890,70 @@ def test_v23_failed_only_repair_set_is_bound_to_the_negative_full_run() -> None:
     assert source["target_protocol_sha256"] == canonical_sha256(full["protocol"])
 
 
+def test_v24_changes_only_the_calibrated_context_budget() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    paths = {
+        "200": benchmark_root / "diagnostic-200-v24.json",
+        "full": benchmark_root / "full-1540-v24.json",
+    }
+    expected_hashes = {
+        "200": "1b93d43b51ca20bf012e8d3221e82749777fdaeda123a9a38e72bf097a91a18f",
+        "full": "29d7166a090571d4460dade52b0382967936989cf60a6dfbde568494368fc3f4",
+    }
+    v24 = {name: json.loads(path.read_text()) for name, path in paths.items()}
+    v23 = {
+        "200": json.loads((benchmark_root / "diagnostic-200-v23.json").read_text()),
+        "full": json.loads((benchmark_root / "full-1540-v23.json").read_text()),
+    }
+
+    for name, path in paths.items():
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_hashes[name]
+        expected_protocol = dict(v23[name]["protocol"])
+        expected_protocol.update(
+            {
+                "context_max_chars": 47_800,
+                "context_max_tokens": 8_000,
+            }
+        )
+        assert v24[name]["protocol"] == expected_protocol
+    assert {key: value for key, value in v24["200"].items() if key != "protocol"} == {
+        key: value for key, value in v23["200"].items() if key != "protocol"
+    }
+    assert v24["full"]["selection_id"] == "locomo-full-1540-v24"
+    assert {
+        key: value for key, value in v24["full"].items() if key not in {"protocol", "selection_id"}
+    } == {
+        key: value for key, value in v23["full"].items() if key not in {"protocol", "selection_id"}
+    }
+    expected_full_protocol = dict(v24["200"]["protocol"])
+    expected_full_protocol.pop("paid_scoring_gate")
+    assert v24["full"]["protocol"] == expected_full_protocol
+
+
+def test_v24_thinking_arm_changes_only_the_answer_reasoning_contract() -> None:
+    benchmark_root = Path(__file__).parents[1] / "benchmarks" / "locomo"
+    thinking_path = benchmark_root / "diagnostic-200-v24-thinking.json"
+    thinking = json.loads(thinking_path.read_text())
+    diagnostic = json.loads((benchmark_root / "diagnostic-200-v24.json").read_text())
+
+    assert hashlib.sha256(thinking_path.read_bytes()).hexdigest() == (
+        "0e304e270a087a5d1ce72ead12bb6fbaa822e385c5363d185470a1467aaa329d"
+    )
+    expected_protocol = dict(diagnostic["protocol"])
+    expected_protocol.update(
+        {
+            "answer_thinking": "enabled",
+            "answer_reasoning_effort": "high",
+        }
+    )
+    assert thinking["protocol"] == expected_protocol
+    assert thinking["protocol"]["judge_model"] == diagnostic["protocol"]["judge_model"]
+    assert thinking["protocol"]["judge_votes"] == diagnostic["protocol"]["judge_votes"]
+    assert {key: value for key, value in thinking.items() if key != "protocol"} == {
+        key: value for key, value in diagnostic.items() if key != "protocol"
+    }
+
+
 def _select_question_ids(
     questions: tuple[LoCoMoQuestion, ...],
     *,

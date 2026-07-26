@@ -15,7 +15,12 @@ import httpx
 import pytest
 
 from codecairn.bootstrap import create_cascade, create_runtime
-from codecairn.evaluation.artifacts import canonical_json, read_json, write_json_exclusive
+from codecairn.evaluation.artifacts import (
+    canonical_json,
+    file_sha256,
+    read_json,
+    write_json_exclusive,
+)
 from codecairn.evaluation.attempt_journal import ModelAttemptJournal
 from codecairn.evaluation.locomo import (
     CodeCairnConversationMemory,
@@ -52,6 +57,7 @@ from codecairn.evaluation.locomo import (
 from codecairn.evaluation.locomo_ablation import (
     LoCoMoAblationConfig,
     build_locomo_ablation_report,
+    natural_weighted_accuracy,
 )
 from codecairn.evaluation.model import ModelResponse
 from codecairn.evaluation.providers import OpenAICompatibleTextModel
@@ -116,6 +122,7 @@ def _write_corpus_protocol_question_set(
             encoding="utf-8"
         )
     )
+    planner = RecallPlannerConfig().public_config
     protocol = definition["protocol"]
     protocol.update(
         {
@@ -124,6 +131,8 @@ def _write_corpus_protocol_question_set(
             "embedding_dimension": 3,
             "reranker_model": "test/reranker",
             "reranker_batch_size": reranker_batch_size,
+            "context_max_chars": planner["context_max_chars"],
+            "context_max_tokens": planner["context_max_tokens"],
         }
     )
     question_set_path = tmp_path / f"frozen-corpus-protocol-{reranker_batch_size}.json"
@@ -306,6 +315,7 @@ class FakeMemory:
                     omitted_memory_ids=(),
                     omitted_snippet_count=0,
                     token_count=35,
+                    token_limit=planner_config.context_max_tokens,
                     admission_candidate_fact_ids=("fixture-evidence",),
                     slot_traces=replay_context_slot_traces(
                         question,
@@ -3652,6 +3662,62 @@ def test_frozen_question_set_fails_closed_on_selection_drift(tmp_path: Path) -> 
         load_locomo_question_set(path, dataset=dataset)
 
 
+def test_natural_weighting_flips_the_frozen_v5_hierarchy_comparison() -> None:
+    full_set = json.loads(
+        (Path(__file__).parents[1] / "benchmarks/locomo/full-1540-v24.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    category_weights = full_set["category_targets"]
+    assert category_weights == {"1": 282, "2": 321, "3": 96, "4": 841}
+
+    def frozen_v5_report(
+        *,
+        multi_hop: float,
+        temporal: float,
+        open_domain: float,
+        single_hop: float,
+    ) -> dict[str, object]:
+        return {
+            "accuracy": (multi_hop + temporal + open_domain + single_hop) / 4,
+            "by_category": {
+                "1": {"accuracy": multi_hop},
+                "2": {"accuracy": temporal},
+                "3": {"accuracy": open_domain},
+                "4": {"accuracy": single_hop},
+            },
+        }
+
+    episode_only = frozen_v5_report(
+        multi_hop=0.42,
+        temporal=0.72,
+        open_domain=0.56,
+        single_hop=0.82,
+    )
+    hierarchy = frozen_v5_report(
+        multi_hop=0.42,
+        temporal=0.70,
+        open_domain=0.46,
+        single_hop=0.88,
+    )
+
+    stratified_delta = round(
+        (float(hierarchy["accuracy"]) - float(episode_only["accuracy"])) * 100, 3
+    )
+    natural_delta = round(
+        (
+            natural_weighted_accuracy(hierarchy, category_weights=category_weights)
+            - natural_weighted_accuracy(episode_only, category_weights=category_weights)
+        )
+        * 100,
+        3,
+    )
+
+    assert stratified_delta == -1.5
+    assert natural_delta == pytest.approx(2.2, abs=0.05)
+    assert stratified_delta < 0 < natural_delta
+
+
 def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: Path) -> None:
     dataset = load_locomo_dataset(FIXTURE)
     selected = tuple(
@@ -3827,6 +3893,29 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         "hierarchy_temporal_category_vs_no_neighbors": 0.0,
         "hierarchy_multihop_category_vs_no_neighbors": 0.0,
     }
+    assert report["stratified_accuracy_delta_points"] == {
+        "hierarchy_no_neighbors_vs_episode_only": 0.0,
+        "hierarchy_vs_hierarchy_no_neighbors": 0.0,
+    }
+    assert report["weighting"] == {
+        "id": "natural-v1",
+        "source": "comparison-question-set-category-targets",
+        "selection_id": "synthetic-ablation",
+        "question_set_sha256": file_sha256(definition_path),
+        "category_weights": {"1": 1, "2": 1, "4": 1},
+    }
+    variant_accuracy = report["variant_accuracy"]
+    assert isinstance(variant_accuracy, dict)
+    assert set(variant_accuracy) == {
+        "episode-only",
+        "hierarchy-no-neighbors",
+        "hierarchy",
+    }
+    assert all(
+        set(entry) == {"stratified", "natural_weighted"}
+        for entry in variant_accuracy.values()
+        if isinstance(entry, dict)
+    )
     assert report["selected_variant"] == "hierarchy"
     assert report["selected_run_contract"] == {
         "repository_commit": "abc123",
@@ -3837,6 +3926,47 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         "judge_model": AlternatingJudgeModel().public_config,
     }
     assert (tmp_path / "ablation-report.json").is_file()
+
+    natural_weight_path = tmp_path / "natural-weights.json"
+    write_json_exclusive(
+        natural_weight_path,
+        {
+            "schema_version": 1,
+            "selection_id": "synthetic-natural-distribution",
+            "dataset_sha256": dataset.sha256,
+            "algorithm": "stratified-sha256-v1",
+            "seed": "selection-seed",
+            "category_targets": {"1": 282, "2": 321, "4": 841},
+            "selection_sha256": selection_sha256,
+        },
+    )
+    natural_report = build_locomo_ablation_report(
+        LoCoMoAblationConfig(
+            question_set_path=definition_path,
+            episode_only_run=run_paths["episode-only"],
+            hierarchy_no_neighbors_run=run_paths["hierarchy-no-neighbors"],
+            hierarchy_run=run_paths["hierarchy"],
+            output_path=tmp_path / "natural-weighted-ablation-report.json",
+            natural_weight_question_set_path=natural_weight_path,
+        )
+    )
+    assert natural_report["weighting"] == {
+        "id": "natural-v1",
+        "source": "question-set-category-targets",
+        "selection_id": "synthetic-natural-distribution",
+        "question_set_sha256": file_sha256(natural_weight_path),
+        "category_weights": {"1": 282, "2": 321, "4": 841},
+    }
+    # Every fixture variant answers every category correctly, so reweighting
+    # cannot move these numbers. The flip case is covered on the frozen v5
+    # category accuracies by
+    # `test_natural_weighting_flips_the_frozen_v5_hierarchy_comparison`.
+    assert natural_report["variant_accuracy"] == variant_accuracy
+    assert (
+        natural_report["stratified_accuracy_delta_points"]
+        == (report["stratified_accuracy_delta_points"])
+    )
+    assert natural_report["accuracy_delta_points"] == report["accuracy_delta_points"]
 
     hierarchy_checkpoint_path = sorted(
         (run_paths["hierarchy"] / "checkpoints" / "questions").glob("*/*.json")
@@ -3902,9 +4032,9 @@ def test_ablation_report_validates_constant_protocol_and_frozen_gates(tmp_path: 
         )
 
 
-def test_official_v23_command_contract_passes_preflight(tmp_path: Path) -> None:
+def test_official_v24_command_contract_passes_preflight(tmp_path: Path) -> None:
     definition = json.loads(
-        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v23.json").read_text(
+        (Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v24.json").read_text(
             encoding="utf-8"
         )
     )
@@ -3979,7 +4109,7 @@ def test_official_v23_command_contract_passes_preflight(tmp_path: Path) -> None:
         "corpus_content_sha256": "c" * 64,
         "query_vectors_content_sha256": "f" * 64,
         "minimum_context_all_coverage": 0.85,
-        "maximum_context_tokens": 4_000,
+        "maximum_context_tokens": 8_000,
         "maximum_retrieval_p95_ms": 2_500.0,
         "maximum_process_rss_bytes_exclusive": 2 * 1024 * 1024 * 1024,
         "sources": [
@@ -3990,7 +4120,7 @@ def test_official_v23_command_contract_passes_preflight(tmp_path: Path) -> None:
                 "selection_sha256": "2" * 64,
                 "question_count": 1,
                 "context_all_coverage": 0.9,
-                "maximum_context_tokens": 4_000,
+                "maximum_context_tokens": 8_000,
                 "retrieval_p95_ms": 2_000.0,
                 "max_process_rss_bytes": 1_000_000_000,
                 "manifest_sha256": "3" * 64,
@@ -4005,7 +4135,7 @@ def test_official_v23_command_contract_passes_preflight(tmp_path: Path) -> None:
                 "selection_sha256": "8" * 64,
                 "question_count": 1,
                 "context_all_coverage": 0.9,
-                "maximum_context_tokens": 4_000,
+                "maximum_context_tokens": 8_000,
                 "retrieval_p95_ms": 2_000.0,
                 "max_process_rss_bytes": 1_000_000_000,
                 "manifest_sha256": "9" * 64,
@@ -4019,7 +4149,7 @@ def test_official_v23_command_contract_passes_preflight(tmp_path: Path) -> None:
     config = LoCoMoRunConfig(
         dataset_path=FIXTURE,
         output_root=Path("unused"),
-        run_id="official-v23",
+        run_id="official-v24",
         repository_commit="abc123",
         max_workers=10,
         retrieval_config=retrieval_config,
@@ -4097,6 +4227,170 @@ def test_official_v23_command_contract_passes_preflight(tmp_path: Path) -> None:
             judge_model=FrozenProtocolModel(),
             question_worker_contract=worker_contract,
         )
+
+
+def test_official_v24_thinking_arm_binds_the_answer_reasoning_contract(tmp_path: Path) -> None:
+    definition = json.loads(
+        (
+            Path(__file__).parents[1] / "benchmarks/locomo/diagnostic-200-v24-thinking.json"
+        ).read_text(encoding="utf-8")
+    )
+    protocol = definition["protocol"]
+    question_set = LoCoMoQuestionSet(
+        selection_id="test",
+        definition_sha256="a" * 64,
+        dataset_sha256="b" * 64,
+        algorithm="stratified-sha256-v1",
+        seed="test",
+        category_targets=((1, 1),),
+        question_ids=("q1",),
+        selection_sha256="c" * 64,
+        protocol=protocol,
+    )
+
+    class FrozenProtocolModel(FakeAnswerModel):
+        @property
+        def model_id(self) -> str:
+            return "deepseek-v4-flash"
+
+    class ReasoningEffortOnlyModel(FrozenProtocolModel):
+        @property
+        def public_config(self) -> dict[str, object]:
+            return {**super().public_config, "reasoning_effort": "high"}
+
+    class ThinkingModel(FrozenProtocolModel):
+        @property
+        def public_config(self) -> dict[str, object]:
+            return {
+                **super().public_config,
+                "thinking": "enabled",
+                "reasoning_effort": "high",
+            }
+
+    worker_contract = {
+        "name": "verified-shared-corpus-exec-per-conversation-v3",
+        "max_rss_bytes": 2147483648,
+        "stall_timeout_seconds": 600.0,
+        "poll_interval_seconds": 0.25,
+        "rss_poll_interval_seconds": 1.0,
+        "progress_signal": "heartbeat-evidence-and-durable-question-checkpoint-deadline-v2",
+        "publish_policy": "conversation-directory-atomic-rename-v1",
+        "reranker_warmup": "one-local-document-before-question-timing-v1",
+    }
+    corpus_path = tmp_path / "content-addressed-corpus"
+    query_vectors_path = tmp_path / "content-addressed-query-vectors"
+    corpus_path.mkdir()
+    query_vectors_path.mkdir()
+    write_json_exclusive(corpus_path / "manifest.json", {"content_sha256": "c" * 64})
+    write_json_exclusive(
+        query_vectors_path / "manifest.json",
+        {"content_sha256": "f" * 64},
+    )
+    receipt: dict[str, object] = {
+        "schema_version": 1,
+        "contract": "dual-retrieval-context-coverage-v1",
+        "repository_commit": "abc123",
+        "dataset_sha256": "b" * 64,
+        "target_question_set_sha256": "d" * 64,
+        "target_selection_sha256": "e" * 64,
+        "target_question_count": 2,
+        "scored_question_set_sha256": "a" * 64,
+        "scored_selection_sha256": "c" * 64,
+        "scored_question_count": 1,
+        "protocol_sha256": hashlib.sha256(canonical_json(protocol).encode()).hexdigest(),
+        "corpus_content_sha256": "c" * 64,
+        "query_vectors_content_sha256": "f" * 64,
+        "minimum_context_all_coverage": 0.85,
+        "maximum_context_tokens": 8_000,
+        "maximum_retrieval_p95_ms": 2_500.0,
+        "maximum_process_rss_bytes_exclusive": 2 * 1024 * 1024 * 1024,
+        "sources": [
+            {
+                "run_id": "canary",
+                "selection_id": "canary",
+                "question_set_sha256": "1" * 64,
+                "selection_sha256": "2" * 64,
+                "question_count": 1,
+                "context_all_coverage": 0.9,
+                "maximum_context_tokens": 8_000,
+                "retrieval_p95_ms": 2_000.0,
+                "max_process_rss_bytes": 1_000_000_000,
+                "manifest_sha256": "3" * 64,
+                "summary_sha256": "4" * 64,
+                "evidence_report_sha256": "5" * 64,
+                "resource_usage_sha256": "6" * 64,
+            },
+            {
+                "run_id": "holdout",
+                "selection_id": "holdout",
+                "question_set_sha256": "7" * 64,
+                "selection_sha256": "8" * 64,
+                "question_count": 1,
+                "context_all_coverage": 0.9,
+                "maximum_context_tokens": 8_000,
+                "retrieval_p95_ms": 2_000.0,
+                "max_process_rss_bytes": 1_000_000_000,
+                "manifest_sha256": "9" * 64,
+                "summary_sha256": "a" * 64,
+                "evidence_report_sha256": "b" * 64,
+                "resource_usage_sha256": "c" * 64,
+            },
+        ],
+    }
+    receipt["receipt_sha256"] = hashlib.sha256(canonical_json(receipt).encode()).hexdigest()
+    config = LoCoMoRunConfig(
+        dataset_path=FIXTURE,
+        output_root=Path("unused"),
+        run_id="official-v24-thinking",
+        repository_commit="abc123",
+        max_workers=10,
+        retrieval_config={
+            "inference_threads": 2,
+            "tokenizer_parallelism": False,
+            "tokenizer_threads": 1,
+            "embedding": {
+                "adapter": "dashscope-openai-compatible",
+                "model": "text-embedding-v4",
+                "dimension": 1024,
+            },
+            "reranker": {
+                "model": "Xenova/ms-marco-MiniLM-L-6-v2",
+                "batch_size": 8,
+            },
+            "planner": RecallPlannerConfig(
+                fact_rerank_max_candidates=192,
+                fact_rerank_max_candidates_per_parent=20,
+                fact_rerank_max_document_chars=1024,
+            ).public_config,
+        },
+        corpus_path=corpus_path,
+        query_vectors_path=query_vectors_path,
+        paid_scoring_preflight=receipt,
+    )
+
+    with pytest.raises(ValueError, match="answer_reasoning_effort"):
+        validate_run_protocol(
+            question_set,
+            config=config,
+            answer_model=FrozenProtocolModel(),
+            judge_model=FrozenProtocolModel(),
+            question_worker_contract=worker_contract,
+        )
+    with pytest.raises(ValueError, match="answer_thinking"):
+        validate_run_protocol(
+            question_set,
+            config=config,
+            answer_model=ReasoningEffortOnlyModel(),
+            judge_model=FrozenProtocolModel(),
+            question_worker_contract=worker_contract,
+        )
+    validate_run_protocol(
+        question_set,
+        config=config,
+        answer_model=ThinkingModel(),
+        judge_model=FrozenProtocolModel(),
+        question_worker_contract=worker_contract,
+    )
 
 
 def test_locomo_marks_retrieval_identity_mismatch_as_infrastructure_failure(
