@@ -26,7 +26,7 @@ from codecairn.service.recall import _context_slot_candidates as context_slot_ca
 from codecairn.service.recall import _render_context as render_context
 
 
-def test_recall_context_obeys_the_pinned_four_thousand_token_budget(tmp_path: Path) -> None:
+def test_recall_context_obeys_the_pinned_eight_thousand_token_budget(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     runtime = create_runtime(root)
     for index, actor in enumerate(("Alice", "Bob", "Caroline", "Melanie"), start=1):
@@ -42,7 +42,7 @@ def test_recall_context_obeys_the_pinned_four_thousand_token_budget(tmp_path: Pa
     trace = recalled.sidecar.context_trace
     assert trace is not None
     assert trace.tokenizer_id == CONTEXT_TOKENIZER_ID
-    assert trace.token_limit == 4_000
+    assert trace.token_limit == 8_000
     assert trace.token_count == count_context_tokens(recalled.markdown)
     assert trace.token_count <= trace.token_limit
     assert trace.renderer == CONTEXT_RENDERER_ID
@@ -103,7 +103,7 @@ def test_context_skips_an_oversized_middle_fact_and_keeps_a_short_tail_fact() ->
             _ranked_parent(snippet_text="unused"),
             snippets=(
                 _snippet(fact_id="fact-first", text="First fact.", raw_event_index=1),
-                _snippet(fact_id="fact-middle", text="X" * 9_000, raw_event_index=2),
+                _snippet(fact_id="fact-middle", text="X" * 18_000, raw_event_index=2),
                 _snippet(
                     fact_id="fact-tail",
                     text="GOLD-SMALL-FACT",
@@ -515,7 +515,7 @@ def test_context_keeps_a_parent_when_a_later_fact_fits_after_an_oversized_first_
         replace(
             _ranked_parent(snippet_text="unused"),
             snippets=(
-                _snippet(fact_id="fact-first", text="X" * 9_000, raw_event_index=1),
+                _snippet(fact_id="fact-first", text="X" * 18_000, raw_event_index=1),
                 _snippet(
                     fact_id="fact-second",
                     text="GOLD-SMALL-FACT",
@@ -604,7 +604,7 @@ def test_parent_hydration_spends_budget_only_on_facts_not_already_rendered() -> 
     assert "[fact-hydrated]" in compiled.markdown
     assert compiled.trace is not None
     assert compiled.trace.rendered_fact_ids == ("fact-source", "fact-hydrated")
-    assert compiled.trace.token_count <= compiled.trace.token_limit == 4_000
+    assert compiled.trace.token_count <= compiled.trace.token_limit == 8_000
 
 
 def test_context_protects_a_semantic_child_hit_from_raw_score_starvation() -> None:

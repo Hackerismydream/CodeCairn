@@ -60,6 +60,52 @@ def test_http_import_auto_detects_claude_code(tmp_path: Path) -> None:
     assert imported.json()["created_memory_count"] == 1
 
 
+def test_http_index_routes_report_drain_and_rebuild_state(tmp_path: Path) -> None:
+    client = TestClient(
+        create_app(
+            create_application(tmp_path / "runtime"),
+            source_roots=(FIXTURE.parent,),
+            artifact_root=tmp_path / "artifacts",
+        )
+    )
+
+    imported = client.post(
+        "/api/v1/import",
+        json={"source_path": str(FIXTURE), "repo_key": "acme/widgets", "index": False},
+    )
+    assert imported.status_code == 200, imported.text
+    assert imported.json()["index"] == {
+        "requested": False,
+        "synced": False,
+        "health": None,
+        "error_type": None,
+        "error": None,
+    }
+
+    status = client.get("/api/v1/index")
+    assert status.status_code == 200, status.text
+    assert status.json()["pending"] == 1
+
+    synced = client.post("/api/v1/index/sync", json={})
+    assert synced.status_code == 200, synced.text
+    assert synced.json() == {
+        "pending": 0,
+        "leased": 0,
+        "indexed": 1,
+        "failed": 0,
+        "stale": 0,
+    }
+
+    rebuilt = client.post("/api/v1/index/rebuild")
+    assert rebuilt.status_code == 200, rebuilt.text
+    assert rebuilt.json()["parity"] is True
+    assert rebuilt.json()["truth_count"] == 1
+
+    invalid = client.post("/api/v1/index/sync", json={"max_jobs": 0})
+    assert invalid.status_code == 422
+    assert invalid.json()["error"]["code"] == "validation_error"
+
+
 def test_http_import_rejects_source_outside_configured_roots(tmp_path: Path) -> None:
     allowed = tmp_path / "allowed"
     allowed.mkdir()
@@ -177,7 +223,7 @@ def test_http_health_and_evaluation_routes_share_application_use_cases(tmp_path:
     assert reported.json() == executed.json()
 
 
-def test_http_has_six_versioned_routes_and_stable_validation_errors(tmp_path: Path) -> None:
+def test_http_has_nine_versioned_routes_and_stable_validation_errors(tmp_path: Path) -> None:
     app = create_app(
         create_application(tmp_path / "runtime"),
         source_roots=(FIXTURE.parent,),
@@ -192,6 +238,9 @@ def test_http_has_six_versioned_routes_and_stable_validation_errors(tmp_path: Pa
         "/api/v1/recall",
         "/api/v1/evaluations",
         "/api/v1/evaluations/{suite}/{run_id}",
+        "/api/v1/index",
+        "/api/v1/index/sync",
+        "/api/v1/index/rebuild",
         "/api/v1/health",
     }
     response = client.post(

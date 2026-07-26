@@ -30,6 +30,7 @@ from codecairn.evaluation.locomo_retrieval_gate import (
 )
 from codecairn.evaluation.worker_process import WorkerProcessLimits, WorkerProcessResult
 from codecairn.memory.provider_config import RETRIEVAL_REMEDIATION
+from codecairn.memory.recall_planner import RecallPlannerConfig
 
 FIXTURE = Path(__file__).parent / "fixtures" / "codex" / "failed_command.jsonl"
 CLAUDE_FIXTURE = Path(__file__).parent / "fixtures" / "claude" / "failed_command.jsonl"
@@ -132,6 +133,118 @@ def test_cli_recall_emits_markdown_and_a_structured_sidecar(tmp_path: Path) -> N
     assert markdown.exit_code == 0, markdown.output
     assert "[fact_" in markdown.stdout
     assert result["sidecar"]["ranked"][0]["source_uri"].startswith("codecairn://memory/")
+
+
+def test_cli_import_indexes_by_default_so_recall_needs_no_maintenance_command(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "runtime"
+    runner = CliRunner()
+
+    imported = runner.invoke(
+        app,
+        ["import", str(FIXTURE), "--repo-key", "acme/widgets", "--root", str(root)],
+    )
+    assert imported.exit_code == 0, imported.output
+    result = json.loads(imported.stdout)
+    assert result["created_memory_count"] == 1
+    assert result["index"]["requested"] is True
+    assert result["index"]["synced"] is True
+    assert result["index"]["health"]["pending"] == 0
+
+    recalled = runner.invoke(
+        app,
+        ["recall", "pytest command failed", "--repo-key", "acme/widgets", "--root", str(root)],
+    )
+    assert recalled.exit_code == 0, recalled.output
+    assert json.loads(recalled.stdout)["sidecar"]["ranked"][0]["memory_id"].startswith("memory_")
+
+    doctor = runner.invoke(app, ["doctor", "--root", str(root)])
+    assert doctor.exit_code == 0, doctor.output
+    assert json.loads(doctor.stdout)["status"] == "healthy"
+
+
+def test_cli_index_commands_drain_rebuild_and_report_the_outbox(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runner = CliRunner()
+
+    imported = runner.invoke(
+        app,
+        [
+            "import",
+            str(FIXTURE),
+            "--repo-key",
+            "acme/widgets",
+            "--root",
+            str(root),
+            "--no-index",
+        ],
+    )
+    assert imported.exit_code == 0, imported.output
+    assert json.loads(imported.stdout)["index"] == {
+        "requested": False,
+        "synced": False,
+        "health": None,
+        "error_type": None,
+        "error": None,
+    }
+
+    status = runner.invoke(app, ["index", "status", "--root", str(root)])
+    assert status.exit_code == 0, status.output
+    assert json.loads(status.stdout)["pending"] == 1
+
+    degraded = runner.invoke(app, ["doctor", "--root", str(root)])
+    assert degraded.exit_code == 0, degraded.output
+    assert json.loads(degraded.stdout)["status"] == "degraded"
+
+    synced = runner.invoke(app, ["index", "sync", "--root", str(root)])
+    assert synced.exit_code == 0, synced.output
+    assert json.loads(synced.stdout) == {
+        "pending": 0,
+        "leased": 0,
+        "indexed": 1,
+        "failed": 0,
+        "stale": 0,
+    }
+
+    healthy = runner.invoke(app, ["doctor", "--root", str(root)])
+    assert healthy.exit_code == 0, healthy.output
+    assert json.loads(healthy.stdout)["status"] == "healthy"
+
+    rebuilt = runner.invoke(app, ["index", "rebuild", "--root", str(root)])
+    assert rebuilt.exit_code == 0, rebuilt.output
+    parity = json.loads(rebuilt.stdout)
+    assert parity["parity"] is True
+    assert parity["document_parity"] is True
+    assert parity["truth_count"] == parity["index_count"] == 1
+
+
+def test_cli_import_survives_a_drain_failure_and_reports_it_as_index_state(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _without_embedding_credentials(monkeypatch)
+    root = tmp_path / "runtime"
+
+    imported = CliRunner().invoke(
+        app,
+        ["import", str(FIXTURE), "--repo-key", "acme/widgets", "--root", str(root)],
+    )
+
+    assert imported.exit_code == 0, imported.output
+    result = json.loads(imported.stdout)
+    assert result["created_memory_count"] == 1
+    assert result["index"]["requested"] is True
+    assert result["index"]["synced"] is False
+    assert result["index"]["error_type"] == "ProviderConfigurationError"
+    assert "DASHSCOPE_API_KEY" in result["index"]["error"]
+
+    listed = CliRunner().invoke(
+        app,
+        ["list", "--repo-key", "acme/widgets", "--root", str(root)],
+    )
+    assert listed.exit_code == 0, listed.output
+    assert len(json.loads(listed.stdout)) == 1
 
 
 def test_cli_exposes_doctor_and_evaluation_run_report(tmp_path: Path) -> None:
@@ -1313,6 +1426,7 @@ def _write_synthetic_locomo_gate_question_sets(
     }
     protocol = {
         "paid_scoring_gate": LOCOMO_PAID_SCORING_GATE_CONTRACT,
+        "context_max_tokens": RecallPlannerConfig().context_max_tokens,
     }
 
     def selection_sha256(categories: tuple[int, ...]) -> str:

@@ -22,6 +22,7 @@ from codecairn.service.application import (
     LoCoMoPromotionRequest,
     LoCoMoQueryVectorBuildRequest,
     LoCoMoRepairRequest,
+    import_response,
 )
 
 ApplicationFactory = Callable[[Path], CodeCairnApplication]
@@ -52,8 +53,10 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
     )
     evaluation_app = typer.Typer(help="Run or report immutable evaluation artifacts.")
     evidence_app = typer.Typer(help="Build or verify a public benchmark evidence bundle.")
+    index_app = typer.Typer(help="Operate the rebuildable search index.")
     app.add_typer(evaluation_app, name="eval")
     app.add_typer(evidence_app, name="evidence")
+    app.add_typer(index_app, name="index")
 
     @app.command("import")
     def import_session_command(
@@ -63,10 +66,11 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         ],
         repo_key: Annotated[str, typer.Option("--repo-key")],
         root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        index: Annotated[bool, typer.Option("--index/--no-index")] = True,
     ) -> None:
         """Import one supported agent session and persist evidence-backed memories."""
-        result = application_factory(root).import_session(source, repo_key=repo_key)
-        typer.echo(json.dumps(asdict(result), sort_keys=True))
+        outcome = application_factory(root).import_session(source, repo_key=repo_key, index=index)
+        typer.echo(json.dumps(import_response(outcome), sort_keys=True))
 
     @app.command("list")
     def list_memories_command(
@@ -304,6 +308,15 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
             Path, typer.Option("--hierarchy-run", exists=True, file_okay=False)
         ],
         output: Annotated[Path, typer.Option("--output")],
+        natural_weight_question_set: Annotated[
+            Path | None,
+            typer.Option(
+                "--natural-weight-question-set",
+                exists=True,
+                dir_okay=False,
+                readable=True,
+            ),
+        ] = None,
         root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
     ) -> None:
         """Compare the frozen three-layer LoCoMo diagnostic and evaluate its gate."""
@@ -314,6 +327,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
                 hierarchy_no_neighbors_run=hierarchy_no_neighbors_run,
                 hierarchy_run=hierarchy_run,
                 output_path=output,
+                natural_weight_question_set_path=natural_weight_question_set,
             )
         )
         typer.echo(json.dumps(result, sort_keys=True))
@@ -475,6 +489,30 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         """Recompute and verify one public evidence bundle without provider access."""
         result = application_factory(Path(".codecairn")).verify_evidence_bundle(bundle_dir)
         typer.echo(json.dumps(result, sort_keys=True))
+
+    @index_app.command("sync")
+    def index_sync_command(
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        worker_id: Annotated[str, typer.Option("--worker-id")] = "cli",
+        max_jobs: Annotated[int | None, typer.Option("--max-jobs", min=1)] = None,
+    ) -> None:
+        """Drain the index outbox until it is idle and report queue state."""
+        health = application_factory(root).sync_index(worker_id=worker_id, max_jobs=max_jobs)
+        typer.echo(json.dumps(asdict(health), sort_keys=True))
+
+    @index_app.command("rebuild")
+    def index_rebuild_command(
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+    ) -> None:
+        """Rebuild the search index from durable truth and report truth-index parity."""
+        typer.echo(json.dumps(asdict(application_factory(root).rebuild_index()), sort_keys=True))
+
+    @index_app.command("status")
+    def index_status_command(
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+    ) -> None:
+        """Report index outbox state without resolving retrieval providers."""
+        typer.echo(json.dumps(asdict(application_factory(root).index_status()), sort_keys=True))
 
     @app.command("doctor")
     def doctor_command(

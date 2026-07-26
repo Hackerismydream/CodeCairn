@@ -371,13 +371,13 @@ def test_recall_context_honestly_omits_source_facts_larger_than_the_budget(
     alice = _single_turn_episode(
         source_episode_id="alice-large-session",
         actor="Alice",
-        text="Alice adopted Poppy the beagle. " + "alice-filler " * 1_000,
+        text="Alice adopted Poppy the beagle. " + "alice-filler " * 2_000,
         event_index=1,
     )
     bob = _single_turn_episode(
         source_episode_id="bob-large-session",
         actor="Bob",
-        text="Bob finished the charity marathon. " + "bob-filler " * 1_000,
+        text="Bob finished the charity marathon. " + "bob-filler " * 2_000,
         event_index=2,
     )
     alice_decision = runtime.write_episode(alice)
@@ -407,7 +407,7 @@ def test_recall_context_honestly_omits_source_facts_larger_than_the_budget(
     assert recalled.sidecar.context_trace is not None
     assert recalled.sidecar.context_trace.rendered_memory_ids == ()
     assert len(recalled.sidecar.context_trace.omitted_fact_ids) == 2
-    assert recalled.sidecar.context_trace.token_count <= 4_000
+    assert recalled.sidecar.context_trace.token_count <= 8_000
     assert recalled.sidecar.context_trace.char_count == len(recalled.markdown)
 
 

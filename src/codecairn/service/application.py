@@ -1,14 +1,22 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Literal, Protocol
 
-from codecairn.memory.models import CodingMemory, ImportResult, RecallResult
+from codecairn.memory.models import (
+    CodingMemory,
+    ImportResult,
+    IndexHealth,
+    RebuildReport,
+    RecallResult,
+)
 from codecairn.service.runtime import MemoryRuntime
 
 EvaluationSuite = Literal["locomo", "retrieval", "recovery", "coding"]
+
+IMPORT_INDEX_WORKER_ID = "import"
 
 
 @dataclass(frozen=True, slots=True)
@@ -81,6 +89,7 @@ class LoCoMoAblationRequest:
     hierarchy_no_neighbors_run: Path
     hierarchy_run: Path
     output_path: Path
+    natural_weight_question_set_path: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -111,8 +120,33 @@ class LoCoMoEvidenceCoverageRequest:
     oracle_max_tokens: int = 4_000
 
 
+@dataclass(frozen=True, slots=True)
+class IndexSyncReport:
+    """Result of the index drain that follows one import commit."""
+
+    requested: bool
+    synced: bool
+    health: IndexHealth | None = None
+    error_type: str | None = None
+    error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ImportOutcome:
+    """One durable import result plus the index drain attempted after it."""
+
+    result: ImportResult
+    index: IndexSyncReport
+
+
 class ApplicationOperations(Protocol):
     def doctor(self) -> dict[str, object]: ...
+
+    def sync_index(self, *, worker_id: str, max_jobs: int | None = None) -> IndexHealth: ...
+
+    def rebuild_index(self) -> RebuildReport: ...
+
+    def index_status(self) -> IndexHealth: ...
 
     def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]: ...
 
@@ -161,12 +195,14 @@ class CodeCairnApplication:
         *,
         repo_key: str,
         source_root: Path | None = None,
-    ) -> ImportResult:
-        return self._memory_runtime().import_session(
+        index: bool = True,
+    ) -> ImportOutcome:
+        result = self._memory_runtime().import_session(
             source_path,
             repo_key=repo_key,
             source_root=source_root,
         )
+        return ImportOutcome(result=result, index=self._drain_index(requested=index))
 
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
         return self._memory_runtime().list_memories(repo_key=repo_key)
@@ -176,6 +212,15 @@ class CodeCairnApplication:
 
     def doctor(self) -> dict[str, object]:
         return self._operations.doctor()
+
+    def sync_index(self, *, worker_id: str, max_jobs: int | None = None) -> IndexHealth:
+        return self._operations.sync_index(worker_id=worker_id, max_jobs=max_jobs)
+
+    def rebuild_index(self) -> RebuildReport:
+        return self._operations.rebuild_index()
+
+    def index_status(self) -> IndexHealth:
+        return self._operations.index_status()
 
     def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]:
         return self._operations.run_evaluation(request)
@@ -219,3 +264,23 @@ class CodeCairnApplication:
         if self._runtime is None:
             self._runtime = self._runtime_factory()
         return self._runtime
+
+    def _drain_index(self, *, requested: bool) -> IndexSyncReport:
+        """Drain the outbox after the import commit without owning its durability."""
+        if not requested:
+            return IndexSyncReport(requested=False, synced=False)
+        try:
+            health = self._operations.sync_index(worker_id=IMPORT_INDEX_WORKER_ID)
+        except Exception as error:
+            return IndexSyncReport(
+                requested=True,
+                synced=False,
+                error_type=type(error).__name__,
+                error=str(error),
+            )
+        return IndexSyncReport(requested=True, synced=True, health=health)
+
+
+def import_response(outcome: ImportOutcome) -> dict[str, object]:
+    """Render one import outcome as the shared CLI and HTTP payload."""
+    return {**asdict(outcome.result), "index": asdict(outcome.index)}

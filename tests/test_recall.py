@@ -1118,7 +1118,7 @@ def test_context_budget_preserves_complete_facts_and_prioritizes_temporal_siblin
 
     trace = compiled.trace
     assert trace is not None
-    assert trace.token_count <= trace.token_limit == 4_000
+    assert trace.token_count <= trace.token_limit == 8_000
     assert 0 < len(trace.rendered_memory_ids) < len(ranked)
     assert set(trace.rendered_memory_ids).isdisjoint(trace.omitted_memory_ids)
     assert set(trace.rendered_memory_ids) | set(trace.omitted_memory_ids) == {

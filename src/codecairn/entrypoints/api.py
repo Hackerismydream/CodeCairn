@@ -19,6 +19,7 @@ from codecairn.service.application import (
     CodeCairnApplication,
     EvaluationReportRequest,
     EvaluationRunRequest,
+    import_response,
 )
 
 _LOGGER = logging.getLogger("codecairn.api")
@@ -29,6 +30,12 @@ _LOOPBACK_HOSTS = {"127.0.0.1", "::1", "localhost"}
 class ImportRequest(BaseModel):
     source_path: Path
     repo_key: str = Field(min_length=1)
+    index: bool = True
+
+
+class IndexSyncRequest(BaseModel):
+    worker_id: str = Field(default="http", min_length=1, max_length=128)
+    max_jobs: int | None = Field(default=None, ge=1)
 
 
 class RecallRequest(BaseModel):
@@ -187,12 +194,13 @@ def create_app(
                 code="source_path_forbidden",
                 message="Session source is outside configured roots",
             )
-        result = application.import_session(
+        outcome = application.import_session(
             source_path,
             repo_key=request.repo_key,
             source_root=source_root,
+            index=request.index,
         )
-        return asdict(result)
+        return import_response(outcome)
 
     @app.get("/api/v1/memories")
     def list_memories(
@@ -359,6 +367,20 @@ def create_app(
                 run_dir=run_dir,
             )
         )
+
+    @app.post("/api/v1/index/sync")
+    def sync_index(request: IndexSyncRequest) -> dict[str, Any]:
+        return asdict(
+            application.sync_index(worker_id=request.worker_id, max_jobs=request.max_jobs)
+        )
+
+    @app.post("/api/v1/index/rebuild")
+    def rebuild_index() -> dict[str, Any]:
+        return asdict(application.rebuild_index())
+
+    @app.get("/api/v1/index")
+    def index_status() -> dict[str, Any]:
+        return asdict(application.index_status())
 
     @app.get("/api/v1/health")
     def health() -> dict[str, object]:

@@ -43,7 +43,7 @@ from codecairn.memory.embedding import (
 from codecairn.memory.episode import EpisodeSemanticizer, LosslessEpisodeSemanticizer
 from codecairn.memory.evidence import EvidenceGate
 from codecairn.memory.model_artifact import validate_hf_artifact
-from codecairn.memory.models import RecallDocumentFingerprint
+from codecairn.memory.models import IndexHealth, RebuildReport, RecallDocumentFingerprint
 from codecairn.memory.projection import fingerprint, project_recall_documents
 from codecairn.memory.provider_config import (
     RETRIEVAL_REMEDIATION,
@@ -661,6 +661,22 @@ class _LocalOperations(ApplicationOperations):
             "providers": provider_status,
         }
 
+    def sync_index(self, *, worker_id: str, max_jobs: int | None = None) -> IndexHealth:
+        cascade = create_cascade(self._root, retrieval=self._retrieval_factory())
+        if max_jobs is None:
+            cascade.run_until_idle(worker_id=worker_id)
+        else:
+            cascade.run_until_idle(worker_id=worker_id, max_jobs=max_jobs)
+        return cascade.health()
+
+    def rebuild_index(self) -> RebuildReport:
+        return create_cascade(self._root, retrieval=self._retrieval_factory()).rebuild()
+
+    def index_status(self) -> IndexHealth:
+        """Read queue state only, so index status stays independent of retrieval providers."""
+        state = SQLiteState(self._root / "state.sqlite3")
+        return state.index_health(now_ms=time.time_ns() // 1_000_000)
+
     def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]:
         output_root = request.output_root.resolve() / request.suite
         if request.suite != "locomo":
@@ -781,6 +797,7 @@ class _LocalOperations(ApplicationOperations):
                 hierarchy_no_neighbors_run=request.hierarchy_no_neighbors_run,
                 hierarchy_run=request.hierarchy_run,
                 output_path=request.output_path,
+                natural_weight_question_set_path=(request.natural_weight_question_set_path),
             )
         )
 
