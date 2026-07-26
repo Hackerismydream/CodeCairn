@@ -173,7 +173,10 @@ rebuildable migration path when the index is operated.
   recovery;
 - `index_queue`: pending, leased, indexed, failed, and stale jobs;
 - `index`: memory/document fingerprint parity and error type;
-- `providers`: configuration availability without secrets.
+- `providers`: configuration availability without secrets. An unusable or
+  unresolvable retrieval configuration is reported as
+  `providers.retrieval.configured = false` with an error and a remediation
+  hint, never as a command failure.
 
 `status=healthy` requires parseable Markdown, no pending recovery, zero pending,
 leased, failed, or stale queue jobs, and exact memory/document parity. Provider

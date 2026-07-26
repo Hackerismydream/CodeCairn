@@ -19,6 +19,7 @@ from codecairn.memory.model_artifact import (
     fastembed_version,
     validate_hf_artifact,
 )
+from codecairn.memory.provider_config import ProviderConfigurationError
 
 VECTOR_DIMENSION = 256
 DEFAULT_EMBEDDING_MODEL = "text-embedding-v4"
@@ -223,6 +224,12 @@ class DashScopeEmbeddingAdapter:
         return self._input_price_cny_per_million
 
     @property
+    def configuration_error(self) -> str | None:
+        if self._configured:
+            return None
+        return "DashScope embedding requires CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"
+
+    @property
     def transport_policy(self) -> dict[str, object]:
         return {
             "timeout_seconds": self._timeout_seconds,
@@ -317,10 +324,9 @@ class DashScopeEmbeddingAdapter:
         return tuple(indexed[index] for index in range(len(texts)))
 
     def _post(self, payload: dict[str, object]) -> httpx.Response:
-        if not self._configured:
-            raise ValueError(
-                "DashScope embedding requires CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"
-            )
+        configuration_error = self.configuration_error
+        if configuration_error is not None:
+            raise ProviderConfigurationError(configuration_error)
         for attempt in range(1, self._max_attempts + 1):
             with self._usage_lock:
                 self._provider_attempt_count += 1

@@ -34,6 +34,12 @@ class RetrievalProviders:
         return retrieval_config_sha256(self.public_config)
 
     @property
+    def configuration_error(self) -> str | None:
+        """Explain why this resolved configuration cannot serve retrieval, if it cannot."""
+        reported = getattr(self.embedder, "configuration_error", None)
+        return reported if isinstance(reported, str) else None
+
+    @property
     def public_config(self) -> dict[str, object]:
         if self.profile == "hashing-test":
             return {

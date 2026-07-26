@@ -13,6 +13,10 @@ from codecairn.bootstrap import create_retrieval_providers
 from codecairn.memory.embedding import DashScopeEmbeddingAdapter, FastEmbedEmbeddingAdapter
 from codecairn.memory.model_artifact import fastembed_version
 from codecairn.memory.models import RerankDocument
+from codecairn.memory.provider_config import (
+    RETRIEVAL_REMEDIATION,
+    ProviderConfigurationError,
+)
 from codecairn.memory.recall_planner import RecallPlannerConfig
 from codecairn.memory.reranking import FastEmbedRerankingAdapter
 
@@ -220,8 +224,37 @@ def test_production_retrieval_profile_uses_dashscope_without_calling_it() -> Non
 def test_dashscope_profile_defers_the_api_key_guard_until_embedding_is_used() -> None:
     providers = create_retrieval_providers(environment={})
 
-    with pytest.raises(ValueError, match="CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"):
+    assert providers.configuration_error == (
+        "DashScope embedding requires CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY"
+    )
+    with pytest.raises(
+        ProviderConfigurationError,
+        match="CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY",
+    ) as failure:
         providers.embedder.embed_query("query text")
+    assert failure.value.remediation == RETRIEVAL_REMEDIATION
+
+
+def test_usable_retrieval_profiles_report_no_configuration_error() -> None:
+    assert (
+        create_retrieval_providers(
+            environment={"DASHSCOPE_API_KEY": "secret-key"}
+        ).configuration_error
+        is None
+    )
+    assert (
+        create_retrieval_providers(
+            environment={"CODECAIRN_RETRIEVAL_PROFILE": "fastembed"}
+        ).configuration_error
+        is None
+    )
+
+
+def test_unresolvable_retrieval_configuration_raises_the_typed_provider_error() -> None:
+    with pytest.raises(ProviderConfigurationError, match="Unknown retrieval profile") as failure:
+        create_retrieval_providers(environment={"CODECAIRN_RETRIEVAL_PROFILE": "not-a-profile"})
+
+    assert failure.value.remediation == RETRIEVAL_REMEDIATION
 
 
 def test_text_v4_profile_rejects_an_unsupported_dimension() -> None:

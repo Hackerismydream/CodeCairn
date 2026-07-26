@@ -29,6 +29,7 @@ from codecairn.evaluation.locomo_retrieval_gate import (
     verify_locomo_retrieval_gate,
 )
 from codecairn.evaluation.worker_process import WorkerProcessLimits, WorkerProcessResult
+from codecairn.memory.provider_config import RETRIEVAL_REMEDIATION
 
 FIXTURE = Path(__file__).parent / "fixtures" / "codex" / "failed_command.jsonl"
 CLAUDE_FIXTURE = Path(__file__).parent / "fixtures" / "claude" / "failed_command.jsonl"
@@ -182,6 +183,132 @@ def test_cli_exposes_doctor_and_evaluation_run_report(tmp_path: Path) -> None:
     )
     assert reported.exit_code == 0, reported.output
     assert json.loads(reported.stdout) == json.loads(executed.stdout)
+
+
+def _without_embedding_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CODECAIRN_RETRIEVAL_PROFILE", "dashscope")
+    monkeypatch.delenv("DASHSCOPE_API_KEY", raising=False)
+    monkeypatch.delenv("CODECAIRN_EMBEDDING_API_KEY", raising=False)
+
+
+def test_cli_doctor_reports_an_unusable_retrieval_provider_as_data(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _without_embedding_credentials(monkeypatch)
+
+    doctor = CliRunner().invoke(app, ["doctor", "--root", str(tmp_path / "runtime")])
+
+    assert doctor.exit_code == 0, doctor.output
+    retrieval = json.loads(doctor.stdout)["providers"]["retrieval"]
+    assert retrieval["configured"] is False
+    assert "DASHSCOPE_API_KEY" in retrieval["error"]
+    assert "CODECAIRN_RETRIEVAL_PROFILE=fastembed" in retrieval["remediation"]
+
+
+def test_cli_doctor_reports_an_unresolvable_retrieval_profile_as_data(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("CODECAIRN_RETRIEVAL_PROFILE", "not-a-profile")
+
+    doctor = CliRunner().invoke(app, ["doctor", "--root", str(tmp_path / "runtime")])
+
+    assert doctor.exit_code == 0, doctor.output
+    diagnostics = json.loads(doctor.stdout)
+    assert diagnostics["providers"]["retrieval"] == {
+        "configured": False,
+        "error": "Unknown retrieval profile: not-a-profile",
+        "remediation": RETRIEVAL_REMEDIATION,
+    }
+    assert diagnostics["index"]["error_type"] == "ProviderConfigurationError"
+    assert diagnostics["status"] == "degraded"
+
+
+def test_cli_evidence_verify_recomputes_the_public_bundle_without_a_provider_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _without_embedding_credentials(monkeypatch)
+    bundle_dir = Path(__file__).parents[1] / "evidence" / "benchmark-v1"
+
+    verified = CliRunner().invoke(app, ["evidence", "verify", str(bundle_dir)])
+
+    assert verified.exit_code == 0, verified.output
+    assert json.loads(verified.stdout)["verified"] is True
+
+
+def test_cli_pure_readers_never_resolve_retrieval_providers(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runner = CliRunner()
+    runtime_root = tmp_path / "runtime"
+    artifact_root = tmp_path / "artifacts"
+    executed = runner.invoke(
+        app,
+        [
+            "eval",
+            "run",
+            "recovery",
+            str(FIXTURE),
+            "--run-id",
+            "cli-recovery",
+            "--repository-commit",
+            "abc123",
+            "--output-root",
+            str(artifact_root),
+            "--root",
+            str(runtime_root),
+        ],
+    )
+    assert executed.exit_code == 0, executed.output
+    monkeypatch.setenv("CODECAIRN_RETRIEVAL_PROFILE", "not-a-profile")
+
+    reported = runner.invoke(
+        app,
+        [
+            "eval",
+            "report",
+            "recovery",
+            str(artifact_root / "recovery" / "cli-recovery"),
+            "--root",
+            str(runtime_root),
+        ],
+    )
+    verified = runner.invoke(
+        app,
+        ["evidence", "verify", str(Path(__file__).parents[1] / "evidence" / "benchmark-v1")],
+    )
+
+    assert reported.exit_code == 0, reported.output
+    assert json.loads(reported.stdout) == json.loads(executed.stdout)
+    assert verified.exit_code == 0, verified.output
+
+
+def test_cli_recall_fails_closed_with_one_remediation_line(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _without_embedding_credentials(monkeypatch)
+
+    recalled = CliRunner().invoke(
+        app,
+        [
+            "recall",
+            "pytest command failed",
+            "--repo-key",
+            "acme/widgets",
+            "--root",
+            str(tmp_path / "runtime"),
+        ],
+    )
+
+    assert recalled.exit_code == 2
+    assert recalled.stdout == ""
+    assert recalled.stderr.splitlines() == [
+        "codecairn: DashScope embedding requires CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY",
+        f"hint: {RETRIEVAL_REMEDIATION}",
+    ]
 
 
 def test_cli_rejects_v18_paid_scoring_before_constructing_model_providers(

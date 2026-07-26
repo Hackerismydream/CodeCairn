@@ -6,8 +6,9 @@ import os
 import shutil
 import sys
 import time
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import asdict, replace
+from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
@@ -42,7 +43,12 @@ from codecairn.memory.embedding import (
 from codecairn.memory.episode import EpisodeSemanticizer, LosslessEpisodeSemanticizer
 from codecairn.memory.evidence import EvidenceGate
 from codecairn.memory.model_artifact import validate_hf_artifact
+from codecairn.memory.models import RecallDocumentFingerprint
 from codecairn.memory.projection import fingerprint, project_recall_documents
+from codecairn.memory.provider_config import (
+    RETRIEVAL_REMEDIATION,
+    ProviderConfigurationError,
+)
 from codecairn.memory.recall_planner import RecallPlannerConfig, RecallPlannerMode
 from codecairn.memory.reranking import (
     DEFAULT_RERANKER_BATCH_SIZE,
@@ -90,6 +96,18 @@ def create_retrieval_providers(
     environment: Mapping[str, str] | None = None,
 ) -> RetrievalProviders:
     """Resolve one fail-closed retrieval configuration without loading model weights."""
+    try:
+        return _resolve_retrieval_providers(environment=environment)
+    except ProviderConfigurationError:
+        raise
+    except ValueError as error:
+        raise ProviderConfigurationError(str(error)) from error
+
+
+def _resolve_retrieval_providers(
+    *,
+    environment: Mapping[str, str] | None,
+) -> RetrievalProviders:
     resolved_environment = os.environ if environment is None else environment
     profile = resolved_environment.get("CODECAIRN_RETRIEVAL_PROFILE", "dashscope")
     planner = _recall_planner_config(resolved_environment)
@@ -551,16 +569,21 @@ def _model_license(
 
 
 class _LocalOperations(ApplicationOperations):
-    def __init__(self, root: Path, *, retrieval: RetrievalProviders) -> None:
+    def __init__(
+        self,
+        root: Path,
+        *,
+        retrieval_factory: Callable[[], RetrievalProviders],
+    ) -> None:
         self._root = root.resolve()
-        self._retrieval = retrieval
+        self._retrieval_factory = retrieval_factory
 
     def doctor(self) -> dict[str, object]:
         truth_store = MarkdownMemoryStore(self._root)
         truth = truth_store.scan()
         state = SQLiteState(self._root / "state.sqlite3")
         ledger = state.operational_counts()
-        queue = create_cascade(self._root, retrieval=self._retrieval).health()
+        queue = state.index_health(now_ms=time.time_ns() // 1_000_000)
         truth_fingerprints = {
             (memory.repo_key, memory.memory_id, memory.content_sha256 or "")
             for memory in truth.memories
@@ -573,18 +596,33 @@ class _LocalOperations(ApplicationOperations):
                 markdown=truth_store.read_markdown(memory),
             )
         }
+        retrieval: RetrievalProviders | None
+        try:
+            retrieval = self._retrieval_factory()
+        except ProviderConfigurationError as error:
+            retrieval = None
+            retrieval_status: dict[str, object] = {
+                "configured": False,
+                "error": str(error),
+                "remediation": error.remediation,
+            }
+        else:
+            retrieval_status = _retrieval_status(retrieval)
         index_path = self._root / "index.lancedb"
         index_error: str | None = None
-        try:
-            index = LanceMemoryIndex(index_path, embedder=self._retrieval.embedder)
-            if index_path.exists():
-                index_fingerprints, index_document_fingerprints = index.fingerprint_snapshot()
-            else:
-                index_fingerprints, index_document_fingerprints = set(), set()
-        except Exception as error:
-            index_fingerprints = set()
-            index_document_fingerprints = set()
-            index_error = type(error).__name__
+        index_fingerprints: set[tuple[str, str, str]] = set()
+        index_document_fingerprints: set[RecallDocumentFingerprint] = set()
+        if retrieval is None:
+            index_error = ProviderConfigurationError.__name__
+        else:
+            try:
+                index = LanceMemoryIndex(index_path, embedder=retrieval.embedder)
+                if index_path.exists():
+                    index_fingerprints, index_document_fingerprints = index.fingerprint_snapshot()
+            except Exception as error:
+                index_fingerprints = set()
+                index_document_fingerprints = set()
+                index_error = type(error).__name__
         markdown_ready = not truth.issues
         index_ready = (
             index_error is None
@@ -595,7 +633,7 @@ class _LocalOperations(ApplicationOperations):
             and queue.failed == 0
             and queue.stale == 0
         )
-        provider_status = _provider_status(retrieval=self._retrieval)
+        provider_status = _provider_status(retrieval=retrieval_status)
         status = (
             "healthy"
             if markdown_ready and index_ready and ledger.pending_recovery_count == 0
@@ -809,6 +847,7 @@ class _LocalOperations(ApplicationOperations):
             build_locomo_corpus,
         )
 
+        retrieval = self._retrieval_factory()
         projection_adapter = create_clause_projection_adapter()
         projection_config = _semantic_projection_public_config(projection_adapter)
 
@@ -816,10 +855,10 @@ class _LocalOperations(ApplicationOperations):
             return CodeCairnConversationMemory(
                 runtime=create_runtime(
                     root,
-                    retrieval=self._retrieval,
+                    retrieval=retrieval,
                     clause_adapter=projection_adapter,
                 ),
-                cascade=create_cascade(root, retrieval=self._retrieval),
+                cascade=create_cascade(root, retrieval=retrieval),
                 repo_key=f"locomo/{root.name}",
                 semantic_projection=projection_config,
             )
@@ -830,16 +869,12 @@ class _LocalOperations(ApplicationOperations):
                 output_root=request.output_root,
                 corpus_id=request.corpus_id,
                 repository_commit=request.repository_commit,
-                retrieval_config=self._retrieval.public_config,
+                retrieval_config=retrieval.public_config,
                 semantic_projection=projection_config,
                 semantic_projection_usage=lambda: _semantic_projection_usage(projection_adapter),
                 embedding_usage=(
-                    (
-                        lambda: _embedding_usage(
-                            cast(DashScopeEmbeddingAdapter, self._retrieval.embedder)
-                        )
-                    )
-                    if isinstance(self._retrieval.embedder, DashScopeEmbeddingAdapter)
+                    (lambda: _embedding_usage(cast(DashScopeEmbeddingAdapter, retrieval.embedder)))
+                    if isinstance(retrieval.embedder, DashScopeEmbeddingAdapter)
                     else None
                 ),
                 resume=request.resume,
@@ -881,7 +916,7 @@ class _LocalOperations(ApplicationOperations):
                     else request.expected_dataset_sha256
                 ),
             ),
-            embedder=self._retrieval.embedder,
+            embedder=self._retrieval_factory().embedder,
         )
         return {
             "query_vectors_dir": str(artifact.vector_set_dir),
@@ -1027,7 +1062,7 @@ class _LocalOperations(ApplicationOperations):
             else None
         )
 
-        retrieval = self._retrieval
+        retrieval = self._retrieval_factory()
         if request.query_vectors_path is not None:
             retrieval = replace(
                 retrieval,
@@ -2526,15 +2561,28 @@ def _valid_nonnegative_number(value: object) -> bool:
 
 
 def create_application(root: Path) -> CodeCairnApplication:
+    """Compose one application whose retrieval providers resolve on first retrieval use."""
     resolved = root.resolve()
-    retrieval = create_retrieval_providers()
+    retrieval_factory: Callable[[], RetrievalProviders] = cache(create_retrieval_providers)
     return CodeCairnApplication(
-        runtime=create_runtime(resolved, retrieval=retrieval),
-        operations=_LocalOperations(resolved, retrieval=retrieval),
+        runtime_factory=lambda: create_runtime(resolved, retrieval=retrieval_factory()),
+        operations=_LocalOperations(resolved, retrieval_factory=retrieval_factory),
     )
 
 
-def _provider_status(*, retrieval: RetrievalProviders) -> dict[str, object]:
+def _retrieval_status(retrieval: RetrievalProviders) -> dict[str, object]:
+    configuration_error = retrieval.configuration_error
+    if configuration_error is None:
+        return {"configured": True, **retrieval.public_config}
+    return {
+        "configured": False,
+        "error": configuration_error,
+        "remediation": RETRIEVAL_REMEDIATION,
+        **retrieval.public_config,
+    }
+
+
+def _provider_status(*, retrieval: dict[str, object]) -> dict[str, object]:
     codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
     answer_configured = _provider_role_configured("ANSWER")
     judge_configured = _provider_role_configured("JUDGE")
@@ -2550,7 +2598,7 @@ def _provider_status(*, retrieval: RetrievalProviders) -> dict[str, object]:
             "answer_configured": answer_configured,
             "judge_configured": judge_configured,
         },
-        "retrieval": retrieval.public_config,
+        "retrieval": retrieval,
     }
 
 

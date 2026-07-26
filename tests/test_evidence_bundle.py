@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
+from typer.testing import CliRunner
 
+from codecairn.bootstrap import app
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
 from codecairn.evaluation.coding import report_coding_runs
 from codecairn.evaluation.evidence_bundle import (
@@ -397,6 +400,45 @@ def _make_legacy_full_locomo_source(root: Path) -> Path:
 def _replace_json(path: Path, value: object) -> None:
     path.unlink()
     write_json_exclusive(path, value)
+
+
+def test_evidence_build_command_never_resolves_retrieval_providers(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    sources = _make_source_runs(tmp_path / "sources")
+    monkeypatch.setenv("CODECAIRN_RETRIEVAL_PROFILE", "not-a-profile")
+
+    built = CliRunner().invoke(
+        app,
+        [
+            "evidence",
+            "build",
+            "--bundle-id",
+            "benchmark-test",
+            "--locomo-run",
+            str(sources / "locomo"),
+            "--retrieval-run",
+            str(sources / "retrieval"),
+            "--recovery-run",
+            str(sources / "recovery"),
+            "--coding-run",
+            str(sources / "coding"),
+            "--quality-junit",
+            str(sources / "junit.xml"),
+            "--quality-coverage",
+            str(sources / "coverage.json"),
+            "--generator-commit",
+            "abc123",
+            "--output-root",
+            str(tmp_path / "evidence"),
+            "--repository-root",
+            str(Path(__file__).parents[1]),
+        ],
+    )
+
+    assert built.exit_code == 0, built.output
+    assert json.loads(built.stdout)["generated"] is True
 
 
 def _make_source_runs(root: Path) -> Path:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Protocol
@@ -144,9 +145,15 @@ class ApplicationOperations(Protocol):
 class CodeCairnApplication:
     """Shared use-case surface consumed by CLI and HTTP presentation adapters."""
 
-    def __init__(self, *, runtime: MemoryRuntime, operations: ApplicationOperations) -> None:
-        self._runtime = runtime
+    def __init__(
+        self,
+        *,
+        runtime_factory: Callable[[], MemoryRuntime],
+        operations: ApplicationOperations,
+    ) -> None:
+        self._runtime_factory = runtime_factory
         self._operations = operations
+        self._runtime: MemoryRuntime | None = None
 
     def import_session(
         self,
@@ -155,17 +162,17 @@ class CodeCairnApplication:
         repo_key: str,
         source_root: Path | None = None,
     ) -> ImportResult:
-        return self._runtime.import_session(
+        return self._memory_runtime().import_session(
             source_path,
             repo_key=repo_key,
             source_root=source_root,
         )
 
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
-        return self._runtime.list_memories(repo_key=repo_key)
+        return self._memory_runtime().list_memories(repo_key=repo_key)
 
     def recall(self, query: str, *, repo_key: str, limit: int = 5) -> RecallResult:
-        return self._runtime.recall(query, repo_key=repo_key, limit=limit)
+        return self._memory_runtime().recall(query, repo_key=repo_key, limit=limit)
 
     def doctor(self) -> dict[str, object]:
         return self._operations.doctor()
@@ -207,3 +214,8 @@ class CodeCairnApplication:
         self, request: LoCoMoQueryVectorBuildRequest
     ) -> dict[str, object]:
         return self._operations.build_locomo_query_vectors(request)
+
+    def _memory_runtime(self) -> MemoryRuntime:
+        if self._runtime is None:
+            self._runtime = self._runtime_factory()
+        return self._runtime

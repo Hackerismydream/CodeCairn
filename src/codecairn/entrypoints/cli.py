@@ -4,10 +4,12 @@ import json
 from collections.abc import Callable
 from dataclasses import asdict
 from pathlib import Path
-from typing import Annotated, Literal, cast
+from typing import Annotated, Any, Literal, cast
 
 import typer
+from typer.core import TyperGroup
 
+from codecairn.memory.provider_config import ProviderConfigurationError
 from codecairn.service.application import (
     CodeCairnApplication,
     EvaluationReportRequest,
@@ -24,11 +26,27 @@ from codecairn.service.application import (
 
 ApplicationFactory = Callable[[Path], CodeCairnApplication]
 
+PROVIDER_CONFIGURATION_EXIT_CODE = 2
+
+
+class _FailClosedGroup(TyperGroup):
+    """Render an unusable retrieval configuration as one actionable line."""
+
+    # ctx stays Any because click.Context is not a declared dependency of this package.
+    def invoke(self, ctx: Any) -> Any:
+        try:
+            return super().invoke(ctx)
+        except ProviderConfigurationError as error:
+            typer.echo(f"codecairn: {error}", err=True)
+            typer.echo(f"hint: {error.remediation}", err=True)
+            raise typer.Exit(code=PROVIDER_CONFIGURATION_EXIT_CODE) from None
+
 
 def build_app(application_factory: ApplicationFactory) -> typer.Typer:
     """Build the CLI against an injected runtime composition function."""
     app = typer.Typer(
         name="codecairn",
+        cls=_FailClosedGroup,
         help="Auditable long-term memory runtime for coding agents.",
         no_args_is_help=True,
     )
