@@ -10,7 +10,6 @@ readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
   "fastembed>=0.8,<0.9",
-  "fastapi>=0.115,<1.0",
   "filelock>=3.20,<4.0",
   "httpx>=0.28,<1.0",
   "huggingface-hub>=1.24,<2.0",
@@ -19,7 +18,6 @@ dependencies = [
   "pydantic>=2.9,<3.0",
   "pyarrow>=25,<26",
   "typer>=0.15,<1.0",
-  "uvicorn>=0.32,<1.0",
 ]
 
 [dependency-groups]
@@ -34,7 +32,6 @@ dev = [
 [project.scripts]
 codecairn = "codecairn.bootstrap:main"
 codecairn-mcp = "codecairn.bootstrap:mcp_main"
-codecairn-server = "codecairn.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/codecairn"]
@@ -48,7 +45,7 @@ branch = true
 source = ["codecairn"]
 
 [tool.ruff]
-line-length = 132
+line-length = 136
 target-version = "py312"
 
 [tool.ruff.lint]

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "protocol_id": "codecairn-locomo-v01",
+  "dataset": {
+    "path": "benchmarks/locomo/data/locomo10.json",
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
+  },
+  "question_sets": {
+    "diagnostic_200": {
+      "path": "benchmarks/locomo/diagnostic-200-v24.json",
+      "sha256": "1b93d43b51ca20bf012e8d3221e82749777fdaeda123a9a38e72bf097a91a18f"
+    },
+    "full_1540": {
+      "path": "benchmarks/locomo/full-1540-v24.json",
+      "sha256": "29d7166a090571d4460dade52b0382967936989cf60a6dfbde568494368fc3f4"
+    }
+  },
+  "selection_contract": "V24 files supply deterministic question identities only; this file owns the v0.1 execution protocol.",
+  "memory_ingest": {
+    "contract": "session-as-repository-knowledge-v1",
+    "namespace": "locomo/<sample-id>",
+    "session_max_utf8_bytes": 32768
+  },
+  "recall": {
+    "contract": "public-active-only-hybrid-v01",
+    "limit": 20,
+    "token_budget": 8192,
+    "retrieval_profile": "recorded-in-run-manifest"
+  },
+  "answer": {
+    "adapter": "openai-compatible-chat-v1",
+    "temperature": 0,
+    "response_contract": "json-object-with-string-answer",
+    "maximum_attempts": 2,
+    "provider_identity": "recorded-in-run-manifest"
+  },
+  "judge": {
+    "adapter": "openai-compatible-chat-v1",
+    "temperature": 0,
+    "contract": "generous-semantic-equivalence-v1",
+    "votes": 3,
+    "maximum_attempts_per_vote": 2,
+    "provider_identity": "recorded-in-run-manifest"
+  },
+  "journal": "exclusive-started-and-finished-record-per-provider-attempt-v1",
+  "failure_policy": "provider-or-runtime-failure-is-infrastructure-failure-and-never-a-scored-answer",
+  "repair_policy": "exact-infrastructure-failure-set-with-unchanged-protocol-dataset-and-providers-v1"
+}

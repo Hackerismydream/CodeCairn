@@ -263,12 +263,7 @@ def test_later_episode_can_close_one_existing_issue_workstream(tmp_path: Path) -
         },
         {
             "type": "response_item",
-            "payload": {
-                "type": "function_call",
-                "name": "exec_command",
-                "arguments": json.dumps({"cmd": "check"}),
-                "call_id": "first",
-            },
+            "payload": {"type": "function_call", "name": "exec_command", "arguments": json.dumps({"cmd": "check"}), "call_id": "first"},
         },
         {
             "type": "response_item",
@@ -306,10 +301,7 @@ def test_later_episode_can_close_one_existing_issue_workstream(tmp_path: Path) -
     assert report.completed == 2
     assert {memory.payload.workstream_state for memory in work_states} == {"closed", "open"}
     assert {memory.payload.workstream_key for memory in work_states} == {"issue:acme/widgets#42"}
-    assert (
-        next(memory.payload for memory in work_states if memory.payload.workstream_state == "closed").terminal_outcome
-        == "completed"
-    )
+    assert next(memory.payload for memory in work_states if memory.payload.workstream_state == "closed").terminal_outcome == "completed"
     assert sorted(state.memory_status(repo_key="acme/widgets", memory_id=memory.memory_id) for memory in work_states) == [
         "active",
         "superseded",

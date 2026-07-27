@@ -158,11 +158,7 @@ def test_rebuild_projects_active_and_historical_status(tmp_path: Path) -> None:
     first = runtime.store_memory(_knowledge(1, subject="checks"))
     second = runtime.store_memory(_knowledge(2, subject="checks"))
     runtime.supersede(
-        repo_key=first.repo_key,
-        predecessor_id=first.memory_id,
-        successor_id=second.memory_id,
-        reason="New command.",
-        proposer="user",
+        repo_key=first.repo_key, predecessor_id=first.memory_id, successor_id=second.memory_id, reason="New command.", proposer="user"
     )
     state = SQLiteState(root / "state.sqlite3")
     embedder = HashingEmbedder()

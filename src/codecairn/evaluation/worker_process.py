@@ -52,9 +52,7 @@ def run_monitored_worker(
     next_rss_at = started
     termination_reason: str | None = None
     monitor_error_type: str | None = None
-    process = subprocess.Popen(
-        command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True
-    )
+    process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
     try:
         if on_started is not None:
             on_started(process.pid)

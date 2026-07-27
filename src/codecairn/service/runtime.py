@@ -51,9 +51,7 @@ from codecairn.memory.trace import extend_raw_prefix_sha256
 
 
 class TraceImporter(Protocol):
-    def read(
-        self, source_path: Path, *, source_root: Path | None = None, checkpoint: ImportCheckpoint | None = None
-    ) -> AgentTrace: ...
+    def read(self, source_path: Path, *, source_root: Path | None = None, checkpoint: ImportCheckpoint | None = None) -> AgentTrace: ...
 
 
 class MemoryStore(Protocol):
@@ -114,11 +112,7 @@ class RuntimeState(Protocol):
     def list_prepared_semantic_commits(self) -> tuple[PreparedSemanticCommit, ...]: ...
 
     def complete_semantic_commit(
-        self,
-        commit: PreparedSemanticCommit,
-        artifacts: tuple[MemoryArtifact, ...],
-        *,
-        on_stage: Callable[[str], None] | None = None,
+        self, commit: PreparedSemanticCommit, artifacts: tuple[MemoryArtifact, ...], *, on_stage: Callable[[str], None] | None = None
     ) -> int: ...
 
     def prepare_evolution(self, commit: PreparedEvolutionCommit) -> str: ...
@@ -134,9 +128,7 @@ class RuntimeState(Protocol):
         on_stage: Callable[[str], None] | None = None,
     ) -> bool: ...
 
-    def record_proposal_outcome(
-        self, proposal: EvolutionProposal, resolution: ProposalResolution, *, created_at_ms: int
-    ) -> None: ...
+    def record_proposal_outcome(self, proposal: EvolutionProposal, resolution: ProposalResolution, *, created_at_ms: int) -> None: ...
 
     def memory_status(self, *, repo_key: str, memory_id: str) -> str | None: ...
 
@@ -736,9 +728,7 @@ def _bounded_display(value: str, *, maximum: int) -> str:
 
 
 def _next_resume_checkpoint(trace: AgentTrace, *, episodes: tuple[TaskEpisode, ...]) -> tuple[int, str, tuple[str, ...], int]:
-    last_closed_cursor = max(
-        (episode.end_event_index_exclusive for episode in episodes), default=trace.resumed_from_raw_event_index
-    )
+    last_closed_cursor = max((episode.end_event_index_exclusive for episode in episodes), default=trace.resumed_from_raw_event_index)
     unclosed = tuple(
         event for event in trace.events if event.evidence.raw_event_index >= last_closed_cursor and is_episode_signal(event)
     )

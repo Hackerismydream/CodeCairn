@@ -255,13 +255,7 @@ def test_codex_agent_uses_ephemeral_auth_home_and_does_not_forward_secrets(tmp_p
 
     execution = CodexExecAgent(model="fixed-model").run(
         AgentRunRequest(
-            workspace=workspace,
-            prompt="Repair the task.",
-            recall_context=None,
-            arm="memory-off",
-            task_id="task-01",
-            repeat=1,
-            seed=17,
+            workspace=workspace, prompt="Repair the task.", recall_context=None, arm="memory-off", task_id="task-01", repeat=1, seed=17
         )
     )
 

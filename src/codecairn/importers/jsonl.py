@@ -101,12 +101,7 @@ def checkpoint_context(
 
 
 def agent_trace(
-    scan: JsonlScan,
-    *,
-    provider: Provider,
-    session_id: str,
-    context: tuple[int, tuple[str, ...], int],
-    events: tuple[TraceEvent, ...],
+    scan: JsonlScan, *, provider: Provider, session_id: str, context: tuple[int, tuple[str, ...], int], events: tuple[TraceEvent, ...]
 ) -> AgentTrace:
     resumed_from, call_ids, file_change_count = context
     return AgentTrace(

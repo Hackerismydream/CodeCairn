@@ -227,11 +227,7 @@ def test_markdown_rebuild_derives_status_from_edges(tmp_path: Path) -> None:
     old = runtime.store_memory(_knowledge(claim="Run make test."))
     new = runtime.store_memory(_knowledge(claim="Run make check."))
     runtime.supersede(
-        repo_key=old.repo_key,
-        predecessor_id=old.memory_id,
-        successor_id=new.memory_id,
-        reason="The command changed.",
-        proposer="user",
+        repo_key=old.repo_key, predecessor_id=old.memory_id, successor_id=new.memory_id, reason="The command changed.", proposer="user"
     )
     state = SQLiteState(root / "state.sqlite3")
     state.rebuild_evolution_projection(MarkdownMemoryStore(root).scan_evolutions().evolutions)

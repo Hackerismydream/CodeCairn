@@ -132,12 +132,7 @@ def test_custom_output_cannot_steal_function_call_pair(tmp_path: Path) -> None:
         {"type": "response_item", "payload": {"type": "message", "role": "user", "content": "Verify it."}},
         {
             "type": "response_item",
-            "payload": {
-                "type": "function_call",
-                "name": "exec_command",
-                "call_id": "shared-call",
-                "arguments": '{"cmd":"pytest -q"}',
-            },
+            "payload": {"type": "function_call", "name": "exec_command", "call_id": "shared-call", "arguments": '{"cmd":"pytest -q"}'},
         },
         {
             "type": "response_item",
@@ -203,11 +198,7 @@ def test_write_stdin_result_can_author_long_running_command_outcome(tmp_path: Pa
         },
         {
             "type": "response_item",
-            "payload": {
-                "type": "function_call_output",
-                "call_id": "wait-call",
-                "output": {"exit_code": 1, "output": "tests failed"},
-            },
+            "payload": {"type": "function_call_output", "call_id": "wait-call", "output": {"exit_code": 1, "output": "tests failed"}},
         },
     ]
     source = tmp_path / "write-stdin-outcome.jsonl"
@@ -267,9 +258,7 @@ def test_late_session_metadata_does_not_rename_existing_evidence(tmp_path: Path)
 
 def test_unicode_line_separator_in_patch_path_is_rejected(tmp_path: Path) -> None:
     source = tmp_path / "unicode-separator.jsonl"
-    source.write_text(
-        FIXTURE.read_text(encoding="utf-8").replace("created_by_patch.txt", "src/line\u2028break.py"), encoding="utf-8"
-    )
+    source.write_text(FIXTURE.read_text(encoding="utf-8").replace("created_by_patch.txt", "src/line\u2028break.py"), encoding="utf-8")
 
     with pytest.raises(TraceParseError, match="Invalid apply_patch path evidence"):
         CodexImporter().read(source)

@@ -151,9 +151,8 @@ product.
 - **FR-23**: `codecairn init` derives repository identity, writes
   `codecairn.toml`, records an explicit retrieval profile, and prints working
   import, recall, MCP, and hook commands.
-- **FR-24**: CLI and MCP are the required version 0.1 interfaces. Existing HTTP
-  method/path/error envelopes remain compatible and return version 0.1 memory
-  records, but HTTP does not require feature-for-feature expansion.
+- **FR-24**: CLI and MCP are the required version 0.1 interfaces. The legacy
+  unpublished HTTP compatibility adapter is retired under ADR 0052.
 - **FR-24a**: CLI supplies safe repository export and namespace reset with
   dry-run, explicit confirmation, and recoverable backup-first behavior.
 - **FR-24b**: Onboarding supplies visible, reviewable `AGENTS.md` and

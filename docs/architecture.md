@@ -88,11 +88,11 @@ The import-linter contracts remain:
 
 | Package | Version 0.1 responsibility | Excluded responsibility |
 |---|---|---|
-| `memory` | Four memory records, Source records, lifecycle invariants, provider ports, recall value objects | Filesystem, SQL, HTTP, CLI |
+| `memory` | Four memory records, Source records, lifecycle invariants, provider ports, recall value objects | Filesystem, SQL, CLI |
 | `service` | Capture, evolution, import, process, index, recall, inspection, diagnostics | Provider JSONL branches or presentation |
 | `importers` | Codex/Claude source discovery and JSONL normalization | Capture policy or persistence |
 | `storage` | Markdown, SQLite, and LanceDB adapters | Product workflow decisions |
-| `entrypoints` | CLI, MCP, hook, and compatibility HTTP presentation | Alternative domain behavior |
+| `entrypoints` | CLI, MCP, and hook presentation | Alternative domain behavior |
 | `bootstrap` | Config loading and concrete composition | Durable rules |
 | `evaluation` | Thin suite adapters, immutable runs, reducers, verifier | Product-only duplicate runtime |
 
@@ -307,9 +307,9 @@ service use cases:
 | Export/reset namespace | yes | no | no |
 | Evaluate/verify | yes/Make | no | no |
 
-The existing HTTP adapter remains compatible for existing routes. New v0.1
-lifecycle operations do not require HTTP parity. Exact integration contracts
-are in [`v0.1/agent-integration.md`](v0.1/agent-integration.md).
+Version 0.1 retires the unpublished HTTP compatibility adapter under ADR 0052.
+Exact CLI, MCP, and hook contracts are in
+[`v0.1/agent-integration.md`](v0.1/agent-integration.md).
 
 ## Configuration and provider boundary
 

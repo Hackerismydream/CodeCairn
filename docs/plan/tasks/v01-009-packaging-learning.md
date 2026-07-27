@@ -1,7 +1,7 @@
 ---
 id: v01-009
 scope: package publication surface and learner documentation
-status: planned
+status: ready
 depends-on: [v01-008]
 ---
 

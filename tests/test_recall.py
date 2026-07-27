@@ -29,9 +29,7 @@ def _knowledge(*, subject: str, content: str, created_at_ms: int) -> CodingMemor
 
 def test_recall_returns_ranked_context_with_source_uri(tmp_path: Path) -> None:
     runtime = create_runtime(tmp_path / "runtime", retrieval_adapters=TEST_RETRIEVAL)
-    runtime.store_memory(
-        _knowledge(subject="repository-checks", content="Run make check before committing changes.", created_at_ms=1)
-    )
+    runtime.store_memory(_knowledge(subject="repository-checks", content="Run make check before committing changes.", created_at_ms=1))
     runtime.store_memory(
         _knowledge(subject="database-migrations", content="SQLite migrations run during initialization.", created_at_ms=2)
     )

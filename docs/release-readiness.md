@@ -1,8 +1,8 @@
 # Release Readiness
 
 Status: not release-ready. The product lifecycle through fixture-backed client
-hooks is implemented, but evaluation, distribution, real-client smoke, and
-release evidence gates remain.
+hooks and offline evaluation gates is implemented, but distribution,
+real-client smoke, paid release runs, and release evidence remain.
 
 ## Baseline evidence
 
@@ -30,11 +30,11 @@ This proves the baseline checkout, not version 0.1 release readiness.
 | Onboarding | implemented in checkout | installed-artifact smoke | v01-005/009 |
 | MCP | seven tools and one resource pass in process | installed-package smoke | v01-006/009 |
 | Client hooks | both fixtures import idempotently; installer is atomic | real Claude SessionEnd and Codex Stop smoke | v01-007/010 |
-| Evaluation commands | historical complex CLI | eight documented Make targets | v01-008 |
-| Source budget | 9,998 core / 12,594 total at v01-007 | at most 10,000 / 15,000 | v01-001–008 |
+| Evaluation commands | eight Make targets; offline lifecycle/scale/retrieval and paid plans pass | candidate-bound paid results | v01-008/010 |
+| Source budget | 9,681 core / 13,314 total at v01-008 | internal gate at most 9,700 / 14,100 | v01-001–008 |
 | Package metadata | partial | MIT, full metadata, curated artifacts | v01-009 |
 | Installed smoke | absent | CLI/MCP/hook lifecycle outside checkout | v01-009/010 |
-| Current evidence CI | stale bundle selection | selected release bundle verified | v01-008 |
+| Current evidence CI | benchmark-v3 verifies through immutable reader | selected release bundle verified | v01-008/010 |
 | Release benchmark | historical 82.60% only | new full run at candidate commit, at least 82.00% | v01-010 |
 | Governance | absent | changelog, security, contribution, conduct | v01-009 |
 | Tag/publication | absent | verified implementation/evidence SHA pair and artifact inventory | v01-010 |

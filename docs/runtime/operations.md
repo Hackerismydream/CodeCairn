@@ -1,32 +1,32 @@
 # Runtime Operations
 
 This document describes behavior implemented on current `main` after
-`v01-007`. Release packaging and release evaluation remain specified under
+`v01-008`. Release packaging and candidate-bound paid evaluation remain specified under
 [`../v0.1/`](../v0.1/).
 
 ## Current support matrix
 
-| Capability | CLI | HTTP | Current behavior |
-|---|---|---|---|
-| Import session | `codecairn import` | `POST /api/v1/import` | Incrementally normalizes Codex or Claude JSONL, closes eligible Task Episodes, and commits one deterministic Task Experience per closed Episode |
-| Initialize repository | `codecairn init` | not exposed | Derives and freezes repository identity, writes strict non-secret config, and constructs an explicit retrieval profile |
-| Process queued work | `codecairn process` | not exposed | Leases bounded semantic and index jobs; disabled semantic extraction remains visibly pending |
-| Direct memory | `codecairn remember` | not exposed | Creates Repository Knowledge, Repository Working Preference, or Work State; direct Task Experience is rejected |
-| Session hooks | `codecairn hook install/run` | not exposed | Claude `SessionEnd` and Codex `Stop` import owned transcripts without model calls or client blocking |
-| Evolve memory | `codecairn memory ...` | not exposed | Applies validated immutable Supersession, returns deterministic history, and creates forward-only restore revisions |
-| List memory | `codecairn list` | `GET /api/v1/memories` | Reads four-type durable memory in the resolved repository namespace |
-| Recall | `codecairn recall` | `POST /api/v1/recall` | Drains a bounded namespace index batch, then compiles active-only hybrid retrieval with optional explicit history |
-| Diagnostics | `codecairn doctor` | `GET /api/v1/health` | Reports imports, memories, Write Intent recovery, semantic jobs, and queued index projections |
-| Namespace operations | `codecairn namespace ...` | not exposed | Creates a consistent export or performs a confirmation-gated, backup-first reset |
-| Index commands | `codecairn index ...` | index routes | Transitional CLI presentation remains; the lifecycle-aware LanceDB cascade and parity service are implemented |
-| Historical evidence | `codecairn evidence verify` | not exposed | Verifies frozen evidence without loading the live runtime |
+| Capability | Command | Current behavior |
+|---|---|---|
+| Import session | `codecairn import` | Incrementally normalizes Codex or Claude JSONL, closes eligible Task Episodes, and commits one deterministic Task Experience per closed Episode |
+| Initialize repository | `codecairn init` | Derives and freezes repository identity, writes strict non-secret config, and constructs an explicit retrieval profile |
+| Process queued work | `codecairn process` | Leases bounded semantic and index jobs; disabled semantic extraction remains visibly pending |
+| Direct memory | `codecairn remember` | Creates Repository Knowledge, Repository Working Preference, or Work State; direct Task Experience is rejected |
+| Session hooks | `codecairn hook install/run` | Claude `SessionEnd` and Codex `Stop` import owned transcripts without model calls or client blocking |
+| Evolve memory | `codecairn memory ...` | Applies validated immutable Supersession, returns deterministic history, and creates forward-only restore revisions |
+| List memory | `codecairn list` | Reads four-type durable memory in the resolved repository namespace |
+| Recall | `codecairn recall` | Drains a bounded namespace index batch, then compiles active-only hybrid retrieval with optional explicit history |
+| Diagnostics | `codecairn doctor` | Reports imports, memories, Write Intent recovery, semantic jobs, and queued index projections |
+| Namespace operations | `codecairn namespace ...` | Creates a consistent export or performs a confirmation-gated, backup-first reset |
+| Index commands | `codecairn index ...` | Operates the lifecycle-aware LanceDB cascade and parity service |
+| Historical evidence | `codecairn evidence verify` | Verifies frozen evidence without loading the live runtime |
 
 ## Capture lifecycle
 
 ```text
 observe source suffix
   -> close next-user spans
-  -> close final span only for Stop, SessionEnd, or finalize=true
+  -> close final span only for Stop, SessionEnd, or --finalize
   -> reserve Episode closure in SQLite
   -> prepare one Write Intent for the complete capture batch
   -> temp-write, file-fsync, atomically create, directory-fsync Markdown
@@ -34,8 +34,8 @@ observe source suffix
      semantic job, index job, source cursor, and completed intent
 ```
 
-Manual EOF is not a boundary unless `--finalize` or HTTP `finalize=true` is
-explicit. An appended assistant/tool suffix after a committed boundary becomes
+Manual EOF is not a boundary unless `--finalize` is explicit. An appended
+assistant/tool suffix after a committed boundary becomes
 a linked continuation Episode. A new user event starts an independent Episode.
 Repeated boundaries at an unchanged cursor are no-ops.
 
@@ -93,7 +93,7 @@ is only `configured`, never reported as live verified.
 ## MCP
 
 `codecairn-mcp` is a protocol-clean stdio program over the same
-`CodeCairnApplication` used by CLI and HTTP:
+`CodeCairnApplication` used by CLI:
 
 | Tool | Behavior |
 |---|---|
@@ -143,27 +143,6 @@ and failure outcomes are recorded as bounded Hook Receipts; failures degrade
 `doctor` and include `codecairn import <owned-session.jsonl>` as the manual
 fallback. Repeated events reuse the source cursor, and an appended Stop imports
 only the new Episode. A cwd inside the runtime root is skipped.
-
-## HTTP
-
-The compatibility import request is:
-
-```json
-{
-  "source_path": "/allowed/root/session.jsonl",
-  "repo_key": "owner/repository",
-  "finalize": false,
-  "index": true
-}
-```
-
-HTTP source paths must remain beneath a configured source root. The server
-binds only to loopback. `SourceRewritten` is returned as
-`error.code="source_rewritten"`; generic malformed traces use
-`error.code="trace_invalid"`.
-
-CLI and HTTP call the same `CodeCairnApplication` facade. HTTP does not create
-a watcher, queue worker, semantic provider, or background index worker.
 
 ## Durable state and queues
 

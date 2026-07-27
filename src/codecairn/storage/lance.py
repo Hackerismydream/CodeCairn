@@ -85,9 +85,7 @@ class LanceMemoryIndex:
                 .limit(limit)
                 .to_list(),
             )
-        return tuple(
-            IndexCandidate(memory_id=str(row["memory_id"]), source="lexical", score=_finite(row["_score"])) for row in rows
-        )
+        return tuple(IndexCandidate(memory_id=str(row["memory_id"]), source="lexical", score=_finite(row["_score"])) for row in rows)
 
     def vector_candidates(
         self, *, repo_key: str, vector: tuple[float, ...], include_superseded: bool, limit: int

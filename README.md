@@ -13,9 +13,10 @@ runner, IDE, hidden prompt injector, or cloud knowledge platform.
 The repository is pre-release. The version 0.1 product design, source-budget
 guardrail, historical-evidence boundary, four-type domain, complete capture
 pipeline, immutable evolution layer, lifecycle-aware recall, repository
-onboarding, explicit MCP access, and Claude/Codex session hooks are implemented.
-Evaluation simplification and release packaging remain in progress. The distinction between current
-behavior and the release target matters:
+onboarding, explicit MCP access, Claude/Codex session hooks, and the
+eight-command evaluation surface are implemented. Release packaging remains in
+progress. The distinction between current behavior and the release target
+matters:
 
 | Area | Current implementation | Version 0.1 target |
 |---|---|---|
@@ -24,14 +25,15 @@ behavior and the release target matters:
 | Memory model | Four durable types with system-owned provenance and derived lifecycle status | Same |
 | Evolution | Immutable Supersession, CLI/MCP history, and forward-only restore | Same |
 | Recall | Active-only hybrid recall with explicit history, bounded index preflight, pinned Work State, attributed context, and installed production retrieval profiles | Same |
-| Product surfaces | CLI, seven-tool/one-resource stdio MCP, Claude/Codex hooks, and loopback HTTP compatibility | Same |
+| Product surfaces | CLI, seven-tool/one-resource stdio MCP, and Claude/Codex hooks | Same |
 | Setup | `codecairn init`, strict repository binding, derived identity, explicit retrieval and semantic profiles | Same |
+| Evaluation | Offline lifecycle/scale/retrieval gates, paid-run preflight, lean LoCoMo/Coding runners, and historical verifier | Candidate-bound paid results |
 | Distribution | Checkout build, no license/tag | MIT, curated persistent-tool/PyPI package |
-| Source size | 9,998 core / 12,594 total physical Python lines at `v01-007` | at most 10,000 core / 15,000 total |
+| Source size | 9,681 core / 13,314 total physical Python lines at `v01-008` | internal gate at most 9,700 core / 14,100 total |
 
 The implementation plan is
-[`docs/plan/README.md`](docs/plan/README.md). Do not treat commands marked as
-version 0.1 targets in design documents as available on current `main`.
+[`docs/plan/README.md`](docs/plan/README.md). Task `v01-009` is the next
+implementation slice.
 
 ## Current development path
 
@@ -145,7 +147,10 @@ The current checked-in evidence bundle is
 recomputes the published aggregates and SHA-256 inventory:
 
 ```bash
-uv run codecairn evidence verify evidence/benchmark-v3
+make evidence-verify
+make eval-smoke
+make eval-scale
+make eval-retrieval
 ```
 
 The historical bundle reports 82.60% on 1,540 LoCoMo category 1–4 questions.

@@ -56,9 +56,7 @@ def create_runtime(
         memory_store=MarkdownMemoryStore(resolved),
         state=state,
         recall_engine=recall,
-        semantic_extractor=(
-            create_semantic_extractor(semantic, environment=resolved_environment) if semantic is not None else None
-        ),
+        semantic_extractor=(create_semantic_extractor(semantic, environment=resolved_environment) if semantic is not None else None),
     )
 
 
@@ -97,9 +95,7 @@ class _LocalOperations(ApplicationOperations):
         live_state = "not_checked"
         if live:
             embedder, reranker = self._adapters()
-            live_state = (
-                "live_verified" if len(embedder.embed_query("CodeCairn provider check")) == embedder.dimension else "failed"
-            )
+            live_state = "live_verified" if len(embedder.embed_query("CodeCairn provider check")) == embedder.dimension else "failed"
             if self._retrieval and self._retrieval.profile == "fastembed":
                 reranker.rerank("CodeCairn provider check", (("provider-check", "local reranker check", 0.0),))
         degraded = bool(
@@ -121,9 +117,7 @@ class _LocalOperations(ApplicationOperations):
             ),
             "markdown": _doctor_row("degraded" if truth_issues else "ok", "restore the latest namespace export"),
             "sqlite": _doctor_row("ok", "codecairn init"),
-            "index_queue": _doctor_row(
-                "degraded" if index.failed or index.stale else "ok", "codecairn process --index --retry-failed"
-            ),
+            "index_queue": _doctor_row("degraded" if index.failed or index.stale else "ok", "codecairn process --index --retry-failed"),
             "lancedb": _doctor_row("degraded" if index.pending or index.failed or index.stale else "ok", "codecairn index rebuild"),
             "hooks": _doctor_row(
                 "degraded" if hook_failed else "ok" if hooks else "not_configured",
@@ -155,9 +149,7 @@ class _LocalOperations(ApplicationOperations):
                 if live
                 else ("configured" if self._retrieval is not None or self._retrieval_adapters is not None else "missing"),
                 "semantic": self._semantic.profile,
-                "semantic_state": (
-                    "disabled" if not self._semantic.network else "missing_key" if semantic_missing else "configured"
-                ),
+                "semantic_state": ("disabled" if not self._semantic.network else "missing_key" if semantic_missing else "configured"),
             },
             "privacy": {
                 "storage": "local",

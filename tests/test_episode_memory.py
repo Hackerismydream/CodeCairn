@@ -59,12 +59,7 @@ def _memories() -> tuple[CodingMemory, ...]:
             origin="capture",
             source_order_key=order,
             payload=TaskExperiencePayload(
-                goal=fact.value,
-                outcome="unknown",
-                actions=(),
-                result="No result was observed.",
-                blockers=(),
-                verification_fact_ids=(),
+                goal=fact.value, outcome="unknown", actions=(), result="No result was observed.", blockers=(), verification_fact_ids=()
             ),
         ),
         CodingMemory.create(
@@ -153,12 +148,7 @@ def test_all_four_memory_types_round_trip_markdown_and_sqlite(tmp_path: Path) ->
     truth = MarkdownMemoryStore(tmp_path)
     scanned = tuple(sorted((artifact.memory for artifact in truth.scan().memories), key=lambda memory: memory.memory_id))
     assert scanned == tuple(sorted(restored, key=lambda memory: memory.memory_id))
-    assert {memory.memory_type for memory in restored} == {
-        "task_experience",
-        "repository_knowledge",
-        "user_preference",
-        "work_state",
-    }
+    assert {memory.memory_type for memory in restored} == {"task_experience", "repository_knowledge", "user_preference", "work_state"}
 
 
 def test_unknown_memory_type_and_field_are_rejected() -> None:

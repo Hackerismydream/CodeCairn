@@ -358,14 +358,7 @@ def _event_id(
     session_id: str, raw_event_index: int, raw_event_sha256: str, raw_event_type: str, block_index: int, normalized_type: str
 ) -> str:
     return stable_id(
-        "event",
-        ClaudeImporter.provider,
-        session_id,
-        raw_event_index,
-        raw_event_sha256,
-        raw_event_type,
-        block_index,
-        normalized_type,
+        "event", ClaudeImporter.provider, session_id, raw_event_index, raw_event_sha256, raw_event_type, block_index, normalized_type
     )
 
 

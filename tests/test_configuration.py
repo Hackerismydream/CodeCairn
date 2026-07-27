@@ -96,9 +96,7 @@ def test_linked_worktree_uses_common_binding(tmp_path: Path) -> None:
         },
     )
     worktree = tmp_path / "worktree"
-    subprocess.run(
-        ("git", "-C", str(repository), "worktree", "add", "-b", "linked", str(worktree)), check=True, capture_output=True
-    )
+    subprocess.run(("git", "-C", str(repository), "worktree", "add", "-b", "linked", str(worktree)), check=True, capture_output=True)
 
     initialized = initialize_repository(start=worktree, root=tmp_path / "runtime", repo_key="acme/widgets", environment={})
 

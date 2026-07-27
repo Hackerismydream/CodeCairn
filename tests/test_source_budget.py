@@ -68,4 +68,4 @@ def test_source_budget_cli_fails_a_tight_stage(tmp_path: Path) -> None:
 
     assert result.returncode == 1
     assert '"passed": false' in result.stdout
-    assert "core=10001 exceeds release limit=10000" in result.stdout
+    assert "core=10001 exceeds release limit=9700" in result.stdout

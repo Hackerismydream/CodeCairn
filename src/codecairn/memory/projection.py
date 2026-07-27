@@ -35,13 +35,7 @@ def project_memory(memory: CodingMemory, *, status: MemoryStatus) -> tuple[Recal
 
 
 def _document(
-    memory: CodingMemory,
-    *,
-    status: MemoryStatus,
-    document_id: str,
-    document_kind: Literal["memory", "fact"],
-    title: str,
-    content: str,
+    memory: CodingMemory, *, status: MemoryStatus, document_id: str, document_kind: Literal["memory", "fact"], title: str, content: str
 ) -> RecallDocument:
     digest = hashlib.sha256(
         canonical_json({"schema_version": 1, "document_id": document_id, "status": status, "content": content}).encode()

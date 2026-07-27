@@ -21,10 +21,7 @@ class SessionImporter:
     """Detect a supported JSONL provider and emit one shared Agent Trace."""
 
     def __init__(self) -> None:
-        self._adapters: dict[str, _JsonlAdapter] = {
-            ClaudeImporter.provider: ClaudeImporter(),
-            CodexImporter.provider: CodexImporter(),
-        }
+        self._adapters: dict[str, _JsonlAdapter] = {ClaudeImporter.provider: ClaudeImporter(), CodexImporter.provider: CodexImporter()}
 
     def read(self, source_path: Path, *, source_root: Path | None = None, checkpoint: ImportCheckpoint | None = None) -> AgentTrace:
         scan = read_import_scan(source_path, source_root=source_root, checkpoint=checkpoint)

@@ -33,9 +33,7 @@ class RecallIndex(Protocol):
     @property
     def profile_identity(self) -> str: ...
 
-    def lexical_candidates(
-        self, *, repo_key: str, query: str, include_superseded: bool, limit: int
-    ) -> tuple[IndexCandidate, ...]: ...
+    def lexical_candidates(self, *, repo_key: str, query: str, include_superseded: bool, limit: int) -> tuple[IndexCandidate, ...]: ...
 
     def vector_candidates(
         self, *, repo_key: str, vector: tuple[float, ...], include_superseded: bool, limit: int
@@ -183,12 +181,9 @@ class RecallEngine:
             if (memory := self._state.get_memory(repo_key=repo_key, memory_id=memory_id)) is not None
         }
         statuses = {
-            memory_id: cast(MemoryStatus, self._state.memory_status(repo_key=repo_key, memory_id=memory_id))
-            for memory_id in memories
+            memory_id: cast(MemoryStatus, self._state.memory_status(repo_key=repo_key, memory_id=memory_id)) for memory_id in memories
         }
-        valid = {
-            memory_id: memory for memory_id, memory in memories.items() if statuses[memory_id] == "active" or include_superseded
-        }
+        valid = {memory_id: memory for memory_id, memory in memories.items() if statuses[memory_id] == "active" or include_superseded}
         if self._reranker is not None:
             reranked = dict(
                 self._reranker.rerank(
@@ -244,9 +239,7 @@ class RecallEngine:
     def _pinned_work_state(self, *, repo_key: str, workstream_key: str | None) -> str | None:
         if workstream_key is None:
             return None
-        matches = tuple(
-            memory_id for key, memory_id in self._state.active_workstream_heads(repo_key=repo_key) if key == workstream_key
-        )
+        matches = tuple(memory_id for key, memory_id in self._state.active_workstream_heads(repo_key=repo_key) if key == workstream_key)
         return matches[0] if len(matches) == 1 else None
 
     @staticmethod

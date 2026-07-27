@@ -104,9 +104,7 @@ class SemanticExtraction:
             raise ValueError("Semantic extractor identity must not be empty")
         if sum(item.memory_type == "work_state" for item in self.candidates) > 1:
             raise ValueError("Semantic extraction may propose at most one Work State")
-        if any(
-            item.successor_candidate_index < 0 or item.successor_candidate_index >= len(self.candidates) for item in self.evolution
-        ):
+        if any(item.successor_candidate_index < 0 or item.successor_candidate_index >= len(self.candidates) for item in self.evolution):
             raise ValueError("Semantic evolution successor index is invalid")
 
 

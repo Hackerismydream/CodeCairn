@@ -94,9 +94,7 @@ class SQLiteState:
             resume_file_change_fact_count=row["resume_file_change_fact_count"],
         )
 
-    def list_episodes(
-        self, *, repo_key: str, provider: str, session_id: str, source_generation: int = 1
-    ) -> tuple[TaskEpisode, ...]:
+    def list_episodes(self, *, repo_key: str, provider: str, session_id: str, source_generation: int = 1) -> tuple[TaskEpisode, ...]:
         with self._connect() as connection:
             rows = connection.execute(
                 """
@@ -164,9 +162,7 @@ class SQLiteState:
             )
             if updated.rowcount == 1:
                 return
-            row = connection.execute(
-                "SELECT status, error_code FROM write_intents WHERE operation_id = ?", (operation_id,)
-            ).fetchone()
+            row = connection.execute("SELECT status, error_code FROM write_intents WHERE operation_id = ?", (operation_id,)).fetchone()
             if row is None or row["status"] != "conflicted" or row["error_code"] != error_code:
                 raise IdentityConflict("Write Intent cannot be marked conflicted")
 
@@ -352,11 +348,7 @@ class SQLiteState:
         )
 
     def complete_semantic_commit(
-        self,
-        commit: PreparedSemanticCommit,
-        artifacts: tuple[MemoryArtifact, ...],
-        *,
-        on_stage: Callable[[str], None] | None = None,
+        self, commit: PreparedSemanticCommit, artifacts: tuple[MemoryArtifact, ...], *, on_stage: Callable[[str], None] | None = None
     ) -> int:
         _validate_semantic_artifacts(commit, artifacts)
         batch_json = canonical_json(commit.canonical_batch)
@@ -437,9 +429,7 @@ class SQLiteState:
             status = cast(
                 MemoryStatus | None, _memory_status(connection, repo_key=commit.repo_key, memory_id=commit.record.predecessor_id)
             )
-            require_applied(
-                evaluate_proposal(commit.proposal, predecessor=predecessor, successor=successor, predecessor_status=status)
-            )
+            require_applied(evaluate_proposal(commit.proposal, predecessor=predecessor, successor=successor, predecessor_status=status))
             if _would_cycle(connection, commit.record):
                 raise EvolutionRejected("cycle", "Evolution would create a cycle")
             _prepare_intent(
@@ -536,10 +526,7 @@ class SQLiteState:
                         commit.record.created_at_ms,
                     ),
                 )
-            elif (
-                existing["canonical_evolution_json"] != encoded
-                or (existing["markdown_path"], existing["content_sha256"]) != metadata
-            ):
+            elif existing["canonical_evolution_json"] != encoded or (existing["markdown_path"], existing["content_sha256"]) != metadata:
                 raise IdentityConflict("Evolution identity conflicts with state")
             connection.execute(
                 ("UPDATE memory_status SET status = 'superseded' WHERE repo_key = ? AND memory_id = ? AND status = 'active'"),
@@ -911,11 +898,7 @@ class SQLiteState:
         index_cursor = source_cursor if int(pending["count"]) == 0 else -1
         states = {str(row["status"]): int(row["count"]) for row in semantic}
         semantic_state = (
-            "failed"
-            if states.get("failed", 0)
-            else "pending"
-            if states.get("pending", 0) or states.get("leased", 0)
-            else "complete"
+            "failed" if states.get("failed", 0) else "pending" if states.get("pending", 0) or states.get("leased", 0) else "complete"
         )
         return source_cursor, index_cursor, semantic_state
 
@@ -1331,8 +1314,7 @@ def _insert_memory(connection: sqlite3.Connection, artifact: MemoryArtifact) -> 
             if (
                 episode_memory["memory_id"] != memory.memory_id
                 or episode_memory["canonical_memory_json"] != encoded
-                or (episode_memory["markdown_path"], episode_memory["content_sha256"])
-                != (str(artifact.path), artifact.content_sha256)
+                or (episode_memory["markdown_path"], episode_memory["content_sha256"]) != (str(artifact.path), artifact.content_sha256)
             ):
                 raise IdentityConflict(f"Task Experience conflicts with Episode: {memory.episode_id}")
             return False
@@ -1342,10 +1324,7 @@ def _insert_memory(connection: sqlite3.Connection, artifact: MemoryArtifact) -> 
     ).fetchone()
     expected_metadata = (str(artifact.path), artifact.content_sha256)
     if existing is not None:
-        if (
-            existing["canonical_memory_json"] != encoded
-            or (existing["markdown_path"], existing["content_sha256"]) != expected_metadata
-        ):
+        if existing["canonical_memory_json"] != encoded or (existing["markdown_path"], existing["content_sha256"]) != expected_metadata:
             raise IdentityConflict(f"Coding Memory identity conflicts with state: {memory.memory_id}")
         return False
     _validate_fact_links(connection, memory)
@@ -1477,9 +1456,7 @@ def _get_memory(connection: sqlite3.Connection, *, repo_key: str, memory_id: str
 
 
 def _memory_status(connection: sqlite3.Connection, *, repo_key: str, memory_id: str) -> str | None:
-    row = connection.execute(
-        "SELECT status FROM memory_status WHERE repo_key = ? AND memory_id = ?", (repo_key, memory_id)
-    ).fetchone()
+    row = connection.execute("SELECT status FROM memory_status WHERE repo_key = ? AND memory_id = ?", (repo_key, memory_id)).fetchone()
     return None if row is None else str(row["status"])
 
 

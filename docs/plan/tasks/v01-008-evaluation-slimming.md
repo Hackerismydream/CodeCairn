@@ -1,7 +1,7 @@
 ---
 id: v01-008
 scope: evaluation surface, historical verifier, and source budget
-status: ready
+status: done
 depends-on: [v01-007]
 ---
 
@@ -129,3 +129,27 @@ execution.
 - internal release target is at most 9,700 core and 14,100 total;
 - no code was moved to evade counting;
 - all checks and package build pass.
+
+## Completion evidence
+
+Completed on the v0.1 mainline after `v01-007`:
+
+- all eight Make targets are authoritative;
+- `eval-smoke` passed the offline lifecycle/MCP/hook test set;
+- `eval-scale` imported 1,000 sessions and 100,000 events twice with 0 duplicate
+  Episode or Memory;
+- `eval-retrieval` ran 100 queries at 97% Recall@5, 100% provenance coverage,
+  zero stale leakage, and approximately 27 ms local P95 under the named
+  deterministic evaluation protocol;
+- LoCoMo diagnostic/full selection parsing, separate answer/judge providers,
+  immutable attempt journals, pure reduction, and exact-failure repair/
+  composition are implemented; HELP plans make no provider call;
+- historical `benchmark-v3` still verifies all 4,411 files;
+- source count is 9,681 core / 3,633 evaluation / 13,314 total, below the
+  enforced 9,700 / 14,100 internal targets;
+- the speculative HTTP compatibility adapter was retired under ADR 0052;
+- `make format`, `make check`, every offline evaluation target, evidence
+  verification, and `uv build` passed.
+
+These fixture/deterministic results are v0.1 gates, not the candidate-bound
+LoCoMo or Coding A/B release results owned by `v01-010`.

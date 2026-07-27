@@ -88,9 +88,7 @@ def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
     root = bundle_dir.resolve()
     inventory = _required_dict(read_json(root / "inventory.json"), field="inventory")
     files = _required_dict(inventory.get("files"), field="inventory files")
-    actual_paths = {
-        path.relative_to(root).as_posix() for path in root.rglob("*") if path.is_file() and path.name != "inventory.json"
-    }
+    actual_paths = {path.relative_to(root).as_posix() for path in root.rglob("*") if path.is_file() and path.name != "inventory.json"}
     if actual_paths != set(files):
         raise ValueError("Evidence bundle file inventory does not match the filesystem")
     for relative, expected in files.items():
@@ -109,12 +107,7 @@ def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
         raise ValueError("Generated English resume does not match aggregate metrics")
     if (root / "resume.zh-CN.md").read_text(encoding="utf-8") != _render_resume_zh(metrics):
         raise ValueError("Generated Chinese resume does not match aggregate metrics")
-    return {
-        "schema_version": 1,
-        "bundle_id": _required_str(manifest, "bundle_id"),
-        "verified": True,
-        "verified_file_count": len(files),
-    }
+    return {"schema_version": 1, "bundle_id": _required_str(manifest, "bundle_id"), "verified": True, "verified_file_count": len(files)}
 
 
 def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> None:
@@ -1092,9 +1085,7 @@ def _render_resume_zh(metrics: dict[str, object]) -> str:
     claims = _claim_map(metrics)
     counts = _required_dict(metrics.get("counts"), field="counts")
     pending = _required_list(metrics.get("pending"), field="pending")
-    pending_lines = "\n".join(
-        f"- {_required_str(_required_dict(item, field='pending'), 'measurement')}: pending." for item in pending
-    )
+    pending_lines = "\n".join(f"- {_required_str(_required_dict(item, field='pending'), 'measurement')}: pending." for item in pending)
     locomo_report = _required_dict(metrics.get("locomo"), field="LoCoMo report")
     if locomo_report.get("scored") is True:
         locomo_evidence = (

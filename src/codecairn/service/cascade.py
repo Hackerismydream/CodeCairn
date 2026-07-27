@@ -9,9 +9,7 @@ from codecairn.memory.schema import CodingMemory
 
 
 class CascadeState(Protocol):
-    def claim_index_jobs(
-        self, *, repo_key: str, worker_id: str, max_jobs: int, now_ms: int, lease_ms: int
-    ) -> tuple[IndexJob, ...]: ...
+    def claim_index_jobs(self, *, repo_key: str, worker_id: str, max_jobs: int, now_ms: int, lease_ms: int) -> tuple[IndexJob, ...]: ...
 
     def complete_index_job(self, job: IndexJob, *, worker_id: str, profile_identity: str) -> None: ...
 
@@ -59,9 +57,7 @@ class MiniCascade:
                 repo_key=repo_key,
                 memory_ids=tuple(
                     sorted(
-                        memory_id
-                        for memory_id, fingerprints in expected_by_id.items()
-                        if actual_by_id.get(memory_id) != fingerprints
+                        memory_id for memory_id, fingerprints in expected_by_id.items() if actual_by_id.get(memory_id) != fingerprints
                     )
                 ),
             )

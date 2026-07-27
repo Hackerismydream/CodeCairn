@@ -231,8 +231,9 @@ replacement. Stage gates are:
 - after `v01-001`: core at most 15,500;
 - after `v01-004`: core at most 11,500;
 - after `v01-007`: core at most 10,000;
-- after `v01-008`: core at most 10,000 and total at most 15,000, with
-  9,700/14,100 as the internal release target.
+- after `v01-008`: the 10,000/15,000 public ceilings remain, while the
+  source-budget command enforces the stricter 9,700/14,100 internal release
+  target.
 
 Any new old-API alias, dual write, or parallel retrieval mode matrix blocks the
 owning task.

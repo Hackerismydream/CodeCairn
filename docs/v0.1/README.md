@@ -102,7 +102,7 @@ source.
 | CLI | Setup, import, remember, recall, inspection, processing, index, doctor, export/reset, evaluation |
 | MCP | Live explicit memory access for Codex and Claude Code |
 | Hooks | Post-session or post-turn trace import |
-| HTTP | Existing compatibility surface; not a parity requirement |
+| HTTP | Deferred; v0.1 supports local CLI, stdio MCP, and hooks |
 
 ## Scope-wide constraints
 

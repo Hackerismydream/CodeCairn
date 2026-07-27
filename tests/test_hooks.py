@@ -44,10 +44,7 @@ def _envelope(name: str, *, repository: Path, transcript: Path | None) -> bytes:
 
 @pytest.mark.parametrize(
     ("client", "envelope", "trace"),
-    (
-        ("claude", "claude_session_end.json", "claude/failed_command.jsonl"),
-        ("codex", "codex_stop.json", "codex/failed_command.jsonl"),
-    ),
+    (("claude", "claude_session_end.json", "claude/failed_command.jsonl"), ("codex", "codex_stop.json", "codex/failed_command.jsonl")),
 )
 def test_hook_imports_once_across_one_hundred_repeats(
     tmp_path: Path, monkeypatch: Any, client: HookClient, envelope: str, trace: str
@@ -84,10 +81,7 @@ def test_nullable_codex_source_uses_one_supported_local_match(tmp_path: Path) ->
     transcript.write_text("{}\n")
 
     event = parse_hook_event(
-        "codex",
-        _envelope("codex_stop_nullable.json", repository=repository, transcript=None),
-        client_version="0.144.6",
-        home=tmp_path,
+        "codex", _envelope("codex_stop_nullable.json", repository=repository, transcript=None), client_version="0.144.6", home=tmp_path
     )
 
     assert event.source_path == transcript.resolve()
@@ -127,9 +121,7 @@ def test_repeated_codex_stop_imports_only_the_appended_turn(tmp_path: Path, monk
         b"{",
         b"[]",
         b"x" * (64 * 1024 + 1),
-        json.dumps(
-            {"session_id": "missing", "transcript_path": "/not/owned.jsonl", "cwd": "/tmp", "hook_event_name": "Stop"}
-        ).encode(),
+        json.dumps({"session_id": "missing", "transcript_path": "/not/owned.jsonl", "cwd": "/tmp", "hook_event_name": "Stop"}).encode(),
     ),
 )
 def test_hook_run_never_blocks_client_or_writes_stdout(tmp_path: Path, monkeypatch: Any, raw: bytes) -> None:
@@ -196,9 +188,7 @@ def test_storage_failure_is_non_blocking_and_visible(tmp_path: Path, monkeypatch
 def test_install_preserves_settings_mode_and_is_byte_idempotent(tmp_path: Path, monkeypatch: Any) -> None:
     target = tmp_path / "settings.json"
     target.write_text(
-        json.dumps(
-            {"theme": "dark", "hooks": {"SessionEnd": [{"matcher": "other", "hooks": [{"type": "command", "command": "x"}]}]}}
-        )
+        json.dumps({"theme": "dark", "hooks": {"SessionEnd": [{"matcher": "other", "hooks": [{"type": "command", "command": "x"}]}]}})
         + "\n"
     )
     target.chmod(0o640)
@@ -231,9 +221,7 @@ def test_install_dry_run_and_unsupported_client_do_not_write(tmp_path: Path, mon
 
     assert preview["changed"] is True
     assert target.read_bytes() == original
-    monkeypatch.setattr(
-        hook_module, "detect_client_version", lambda _client: (_ for _ in ()).throw(ValueError("unsupported_client"))
-    )
+    monkeypatch.setattr(hook_module, "detect_client_version", lambda _client: (_ for _ in ()).throw(ValueError("unsupported_client")))
     with pytest.raises(ValueError, match="unsupported_client"):
         install_hook(client="codex", target=target, executable=executable, dry_run=False)
     assert target.read_bytes() == original
@@ -267,9 +255,7 @@ def test_failed_install_readback_restores_original(tmp_path: Path, monkeypatch: 
 def test_failed_hook_degrades_doctor_with_retry(tmp_path: Path, monkeypatch: Any) -> None:
     repository, root = _repository(tmp_path)
     monkeypatch.setattr(bootstrap, "detect_client_version", lambda _client: "0.144.6")
-    receipt = bootstrap.run_hook(
-        "codex", _envelope("codex_stop.json", repository=repository, transcript=tmp_path / "missing.jsonl")
-    )
+    receipt = bootstrap.run_hook("codex", _envelope("codex_stop.json", repository=repository, transcript=tmp_path / "missing.jsonl"))
     application = bootstrap.create_application(root, repo_key="acme/widgets")
     doctor = application.doctor()
 

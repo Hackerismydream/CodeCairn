@@ -50,20 +50,14 @@ def _write_codex_session(path: Path, *, exit_codes: tuple[int, ...]) -> None:
                 },
                 {
                     "type": "response_item",
-                    "payload": {
-                        "type": "function_call_output",
-                        "call_id": call_id,
-                        "output": f"Process exited with code {exit_code}",
-                    },
+                    "payload": {"type": "function_call_output", "call_id": call_id, "output": f"Process exited with code {exit_code}"},
                 },
             )
         )
     path.write_text("".join(f"{json.dumps(record)}\n" for record in records), encoding="utf-8")
 
 
-@pytest.mark.parametrize(
-    ("fixture", "provider"), [("codex/failed_command.jsonl", "codex"), ("claude/failed_command.jsonl", "claude")]
-)
+@pytest.mark.parametrize(("fixture", "provider"), [("codex/failed_command.jsonl", "codex"), ("claude/failed_command.jsonl", "claude")])
 def test_import_creates_one_auditable_task_experience(tmp_path: Path, fixture: str, provider: str) -> None:
     root = tmp_path / "runtime"
     runtime = _runtime(root)
@@ -143,8 +137,7 @@ def test_unclosed_suffix_waits_for_explicit_finalize(tmp_path: Path) -> None:
     assert len(runtime.list_memories(repo_key="acme/widgets")) == 1
 
     source.write_text(
-        source.read_text(encoding="utf-8").replace("Run the repository test suite.", "Rewrite the finalized task."),
-        encoding="utf-8",
+        source.read_text(encoding="utf-8").replace("Run the repository test suite.", "Rewrite the finalized task."), encoding="utf-8"
     )
     with pytest.raises(SourceRewritten):
         runtime.import_session(source, repo_key="acme/widgets")
@@ -182,11 +175,7 @@ def test_append_after_committed_boundary_creates_linked_continuation(tmp_path: P
     first = runtime.import_session(source, repo_key="acme/widgets", boundary_kind="codex_stop")
     record = {
         "type": "response_item",
-        "payload": {
-            "type": "message",
-            "role": "assistant",
-            "content": [{"type": "output_text", "text": "I documented the failure."}],
-        },
+        "payload": {"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": "I documented the failure."}]},
     }
     with source.open("a", encoding="utf-8") as handle:
         handle.write(f"{json.dumps(record)}\n")
@@ -284,9 +273,7 @@ def test_recovery_marks_conflicting_markdown_intent_conflicted(tmp_path: Path) -
     conflicting.write_text("conflicting immutable bytes\n", encoding="utf-8")
 
     with pytest.raises(IdentityConflict):
-        _runtime(root).import_session(
-            FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize"
-        )
+        _runtime(root).import_session(FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize")
 
     assert state.list_prepared_captures() == ()
     assert state.operational_counts().pending_recovery_count == 0

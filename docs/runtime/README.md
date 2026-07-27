@@ -23,7 +23,7 @@ entrypoints -> service -> memory
 `bootstrap` composes adapters. `evaluation` calls product/service contracts
 with isolated roots.
 
-## Implemented runtime through `v01-007`
+## Implemented runtime through `v01-008`
 
 Current `main` implements the local memory lifecycle:
 
@@ -39,14 +39,15 @@ Current `main` implements the local memory lifecycle:
 - active-only hybrid recall over LanceDB with bounded preflight, pinned open
   Work State, provenance, ranking, omission, and token-budget sidecars;
 - repository initialization, explicit provider profiles, doctor,
-  export/reset, CLI, seven MCP tools, one MCP resource, and compatibility HTTP;
+  export/reset, CLI, seven MCP tools, and one MCP resource;
 - Claude Code `SessionEnd` and Codex `Stop` hooks with atomic/idempotent
   settings installation and bounded operational receipts;
-- a deterministic source gate and pure verification of historical evidence.
+- eight authoritative evaluation commands, deterministic lifecycle/scale/
+  retrieval gates, lean paid-run contracts, a deterministic source gate, and
+  pure verification of historical evidence.
 
-Release evaluation simplification, persistent install/package curation,
-real-client smoke, and release-candidate evidence remain in `v01-008` through
-`v01-010`.
+Persistent install/package curation, real-client smoke, and release-candidate
+evidence remain in `v01-009` and `v01-010`.
 
 ## Current write paths
 
@@ -92,9 +93,9 @@ Agent Trace
   -> active-only Recall Context
 ```
 
-The remaining release work is a small one-command evaluation surface, curated
-persistent packaging and learner documentation, real installed-client
-lifecycle smoke, and a clean implementation/evidence SHA pair.
+The remaining release work is curated persistent packaging and learner
+documentation, real installed-client lifecycle smoke, and a clean
+implementation/evidence SHA pair.
 
 The exact record contract is
 [`../v0.1/schema-contract.md`](../v0.1/schema-contract.md); lifecycle policy is
@@ -114,7 +115,7 @@ ownership and current-to-target mapping are in
 | Supersession/restore | evolution service and domain validation |
 | Memory revision to search rows | Mini Cascade |
 | Candidate selection to Recall Context | recall service |
-| Transport values/errors | CLI, MCP, hook, or compatibility HTTP |
+| Transport values/errors | CLI, MCP, or hook |
 
 Storage adapters never choose type cardinality, supersession, or recall policy.
 Entrypoints never implement an alternative memory lifecycle.
@@ -132,7 +133,7 @@ Entrypoints never implement an alternative memory lifecycle.
 
 ## Test boundary
 
-Public behavior is asserted through CLI, MCP, hook, compatibility HTTP, or a
+Public behavior is asserted through CLI, MCP, hook, or a
 service interface. Concrete adapter tests prove transaction, safety, and
 rebuild rules. Evaluation fixtures do not substitute for the installed product
 smoke required by the release plan.

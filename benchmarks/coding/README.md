@@ -20,22 +20,26 @@ The suite is deliberately small enough to inspect. It measures the harness and t
 repository history, not general software-engineering ability. Published values must come from an
 immutable run directory tied to a repository commit and provider configuration.
 
-Run the default 120-run suite with an authenticated Codex CLI:
+Inspect the resolved paid-run plan without invoking Codex:
 
 ```bash
-test -z "$(git status --porcelain=v1 --untracked-files=normal)"
-COMMIT="$(git rev-parse --verify HEAD)"
-RUN_ID="<immutable-id>"
-
-uv run codecairn eval run coding benchmarks/coding/suite.json \
-  --run-id "$RUN_ID" \
-  --repository-commit "$COMMIT" \
-  --output-root artifacts \
-  --model <codex-model> \
-  --max-workers 4
-uv run codecairn eval report coding \
-  artifacts/coding/"$RUN_ID"
+make eval-coding-ab HELP=1
 ```
+
+Run the default 120-run suite from a clean commit with an authenticated Codex
+CLI:
+
+```bash
+RUN_ID="<immutable-id>" \
+MODEL="<codex-model>" \
+SPEND_ACK=YES \
+SPEND_CEILING_USD="<hard-ceiling>" \
+make eval-coding-ab
+```
+
+The artifact records the declared ceiling and that Codex spend enforcement is
+the external provider account limit; the CLI does not expose a hard-dollar
+flag.
 
 This command consumes the checked-in task contexts. It does not exercise
 CodeCairn trace import, Mini Cascade, or retrieval, so its pass-rate delta is

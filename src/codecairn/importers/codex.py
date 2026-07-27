@@ -113,9 +113,7 @@ def _normalize(
         raw_event_type=raw_event_type,
         call_id=call_id,
     )
-    event_id = stable_id(
-        "event", CodexImporter.provider, session_id, raw_event_index, raw_event_sha256, raw_event_type, payload_type
-    )
+    event_id = stable_id("event", CodexImporter.provider, session_id, raw_event_index, raw_event_sha256, raw_event_type, payload_type)
 
     if raw_event_type == "session_meta":
         return TraceEvent(event_id=event_id, kind="metadata", evidence=evidence)
@@ -233,11 +231,7 @@ def _parse_apply_patch(
             raise TraceParseError(f"apply_patch exceeds the {_MAX_PATCH_LINES}-line import limit")
         if previous_line is not None:
             _record_patch_line(
-                previous_line,
-                changes=changes,
-                event_id=event_id,
-                evidence=evidence,
-                remaining_session_facts=remaining_session_facts,
+                previous_line, changes=changes, event_id=event_id, evidence=evidence, remaining_session_facts=remaining_session_facts
             )
         previous_line = _patch_line(raw_line)
     if previous_line != "*** End Patch":

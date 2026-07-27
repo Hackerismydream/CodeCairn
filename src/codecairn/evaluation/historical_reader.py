@@ -82,9 +82,7 @@ def report_locomo_composite(source: Path) -> dict[str, object]:
 
     base_outcomes = source_outcomes["base"]
     repair_outcomes = source_outcomes["repair"]
-    failed_base_ids = {
-        question_id for question_id, outcome in base_outcomes.items() if outcome["outcome"] == "infrastructure_failed"
-    }
+    failed_base_ids = {question_id for question_id, outcome in base_outcomes.items() if outcome["outcome"] == "infrastructure_failed"}
     repair_ids = _string_set(repair_definition.get("question_ids"), field="repair question IDs")
     if failed_base_ids != repair_ids or set(repair_outcomes) != repair_ids:
         raise ValueError("LoCoMo public repair does not exactly replace base failures")

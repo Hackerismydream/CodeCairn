@@ -30,10 +30,10 @@ Read ADRs 0001-0011 for repository boundary, product scope, normalized traces,
 stable episodes, derived evidence, storage/outbox behavior, entrypoint parity,
 evaluation structure, milestones, and resumable import.
 
-ADR 0040 amends the lifecycle notes in ADR 0006 and ADR 0008: index sync,
-rebuild, and status are now public CLI and HTTP operations and import drains
-the outbox by default, while neither entrypoint starts a background cascade
-worker. See [`../runtime/operations.md`](../runtime/operations.md).
+ADR 0040 records the historical CLI/HTTP index lifecycle. ADR 0052 later
+retires the unpublished HTTP adapter; index sync, rebuild, and status remain
+public CLI operations. See
+[`../runtime/operations.md`](../runtime/operations.md).
 
 ### Retrieval and projection
 
@@ -77,7 +77,7 @@ protocol files and every published V23 result keep their frozen contracts.
 
 ### Version 0.1 product and simplification
 
-ADRs 0043–0051 define the accepted version 0.1 target:
+ADRs 0043–0052 define the accepted version 0.1 target:
 
 - ADR 0043 removes mandatory verification from memory storage while retaining
   system-owned provenance;
@@ -86,12 +86,13 @@ ADRs 0043–0051 define the accepted version 0.1 target:
 - ADR 0045 defines Source, Experience, Knowledge, Evolution, and Recall;
 - ADR 0046 makes Supersession and Restore append-only;
 - ADR 0047 reduces the product to four Coding Memory types;
-- ADR 0048 selects CLI, MCP, and hooks as product surfaces while retaining
-  HTTP compatibility;
+- ADR 0048 selects CLI, MCP, and hooks as product surfaces;
 - ADR 0049 makes 10,000 core / 15,000 total Python lines release gates;
 - ADR 0050 amends ADR 0015's target initialization profile.
 - ADR 0051 amends ADR 0043 by removing the unowned standalone verification
   operation while retaining system-derived verification facets.
+- ADR 0052 retires the unpublished HTTP compatibility adapter so the
+  application service has only the three required local presentations.
 
 These decisions are specified for implementation under
 [`../plan/tasks/`](../plan/tasks/). Current shipped behavior remains

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import shlex
@@ -70,7 +71,20 @@ class TraceEvent:
 
 
 def report_coding_runs(run_dir: Path) -> dict[str, object]:
-    return _report_coding(run_dir)
+    report = _report_coding(run_dir)
+    results = [cast(dict[str, object], read_json(path)) for path in sorted(run_dir.glob("*/result.json"))]
+    by_arm = {
+        arm: {(cast(str, item["task_id"]), cast(int, item["repeat"])): item for item in results if item.get("arm") == arm}
+        for arm in ("memory-off", "memory-on")
+    }
+    pairs = set(by_arm["memory-off"]) & set(by_arm["memory-on"])
+    report["memory_induced_regression_count"] = sum(
+        by_arm["memory-off"][key].get("outcome") == "passed" and by_arm["memory-on"][key].get("outcome") == "failed" for key in pairs
+    )
+    report["memory_induced_improvement_count"] = sum(
+        by_arm["memory-off"][key].get("outcome") == "failed" and by_arm["memory-on"][key].get("outcome") == "passed" for key in pairs
+    )
+    return report
 
 
 @dataclass(frozen=True, slots=True)
@@ -111,6 +125,7 @@ class CodingRunConfig:
     repeats: int = 3
     seed: int = 17
     max_workers: int = 1
+    spend_ceiling_usd: float | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -233,6 +248,8 @@ def run_coding_evaluation(config: CodingRunConfig, *, agent: CodingAgent) -> Cod
         raise ValueError("repeats must be positive")
     if config.max_workers < 1:
         raise ValueError("max_workers must be positive")
+    if config.spend_ceiling_usd is not None and (not math.isfinite(config.spend_ceiling_usd) or config.spend_ceiling_usd <= 0):
+        raise ValueError("spend_ceiling_usd must be positive")
     suite = load_coding_suite(config.suite_path)
     run_dir = (config.output_root / config.experiment_id).resolve()
     run_dir.mkdir(parents=True, exist_ok=False)
@@ -247,6 +264,8 @@ def run_coding_evaluation(config: CodingRunConfig, *, agent: CodingAgent) -> Cod
         "repeats": config.repeats,
         "seed": config.seed,
         "max_workers": config.max_workers,
+        "spend_ceiling_usd": config.spend_ceiling_usd,
+        "spend_enforcement": "external-provider-account-limit",
         "arms": ["memory-off", "memory-on"],
         "execution_order": ["memory-off", "memory-on"],
         "planned_run_count": len(suite.tasks) * config.repeats * 2,
@@ -341,13 +360,7 @@ def _run_one(
     }
     write_json_exclusive(item_dir / "manifest.json", manifest)
     request = AgentRunRequest(
-        workspace=workspace,
-        prompt=task.prompt,
-        recall_context=recall_context,
-        arm=arm,
-        task_id=task.task_id,
-        repeat=repeat,
-        seed=seed,
+        workspace=workspace, prompt=task.prompt, recall_context=recall_context, arm=arm, task_id=task.task_id, repeat=repeat, seed=seed
     )
     try:
         execution = agent.run(request)

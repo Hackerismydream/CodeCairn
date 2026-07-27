@@ -150,10 +150,7 @@ class EvolutionRecord:
         if self.created_at_ms < 0 or not self.reason:
             raise ValueError("Evolution Record time or reason is invalid")
         if self.evolution_id != evolution_identity(
-            repo_key=self.repo_key,
-            relation_kind=self.relation_kind,
-            predecessor_id=self.predecessor_id,
-            successor_id=self.successor_id,
+            repo_key=self.repo_key, relation_kind=self.relation_kind, predecessor_id=self.predecessor_id, successor_id=self.successor_id
         ):
             raise ValueError("Evolution Record identity does not match its edge")
 
@@ -272,11 +269,7 @@ class MemoryHistory:
 
 
 def evaluate_proposal(
-    proposal: EvolutionProposal,
-    *,
-    predecessor: CodingMemory | None,
-    successor: CodingMemory,
-    predecessor_status: MemoryStatus | None,
+    proposal: EvolutionProposal, *, predecessor: CodingMemory | None, successor: CodingMemory, predecessor_status: MemoryStatus | None
 ) -> ProposalResolution:
     if successor.repo_key != proposal.repo_key or (predecessor is not None and predecessor.repo_key != proposal.repo_key):
         return ProposalResolution("rejected", "wrong_namespace")
@@ -320,8 +313,7 @@ def evaluate_proposal(
 def require_applied(resolution: ProposalResolution) -> None:
     if resolution.outcome != "applied":
         raise EvolutionRejected(
-            resolution.error_code or resolution.outcome,
-            f"Supersession was not applied: {resolution.error_code or resolution.outcome}",
+            resolution.error_code or resolution.outcome, f"Supersession was not applied: {resolution.error_code or resolution.outcome}"
         )
 
 
@@ -417,11 +409,7 @@ def compare_source_order(left: SourceOrderKey | None, right: SourceOrderKey | No
 
 
 def _restore_policy(predecessor: CodingMemory, successor: CodingMemory) -> ProposalResolution:
-    if (
-        successor.origin != "restored"
-        or successor.restore_predecessor_id != predecessor.memory_id
-        or successor.restored_from is None
-    ):
+    if successor.origin != "restored" or successor.restore_predecessor_id != predecessor.memory_id or successor.restored_from is None:
         return ProposalResolution("rejected", "invalid_restore")
     return ProposalResolution("applied")
 

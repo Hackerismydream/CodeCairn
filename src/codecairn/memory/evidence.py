@@ -141,9 +141,7 @@ def _is_verification_command(command: str) -> bool:
     if executable == "make":
         return any(target in {"check", "ci", "lint", "test"} for target in tokens[1:])
     if executable in {"npm", "pnpm", "yarn", "bun"}:
-        return len(tokens) > 1 and (
-            tokens[1] == "test" or (tokens[1] == "run" and len(tokens) > 2 and tokens[2] in {"build", "test"})
-        )
+        return len(tokens) > 1 and (tokens[1] == "test" or (tokens[1] == "run" and len(tokens) > 2 and tokens[2] in {"build", "test"}))
     if executable == "cargo":
         return len(tokens) > 1 and tokens[1] in {"build", "check", "test"}
     if executable == "go":

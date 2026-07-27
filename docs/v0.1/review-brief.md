@@ -58,8 +58,7 @@ as accepted target behavior.
 - Immutable Evolution Records and forward-only Restore.
 - Default active-only recall; matching open Work State pinned within a bounded
   context.
-- CLI, MCP, and Claude/Codex session-end hooks are primary; HTTP is
-  compatibility only.
+- CLI, MCP, and Claude/Codex session-end hooks are the product surfaces.
 - No watcher, hidden prompt injection, dashboard, cloud service, dynamic
   profiles, Raven, or formal EverOS comparison in v0.1.
 - Source ceilings: at most 10,000 non-evaluation Python lines and 15,000 total,

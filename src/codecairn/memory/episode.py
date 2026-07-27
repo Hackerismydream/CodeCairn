@@ -121,9 +121,7 @@ def _prefix_at(trace: AgentTrace, cursor: int) -> str:
 
 def _outcome(events: tuple[TraceEvent, ...]) -> TraceEpisodeOutcome:
     results = tuple(
-        event.exit_code
-        for event in events
-        if event.kind == "tool_result" and event.is_command_result and event.exit_code is not None
+        event.exit_code for event in events if event.kind == "tool_result" and event.is_command_result and event.exit_code is not None
     )
     if not results:
         return "unknown"

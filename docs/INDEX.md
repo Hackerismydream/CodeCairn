@@ -63,7 +63,7 @@ external tracker when tasks are published or assigned.
 | Document | Purpose |
 |---|---|
 | [`runtime/README.md`](runtime/README.md) | Implemented baseline versus target runtime |
-| [`runtime/operations.md`](runtime/operations.md) | Exact current CLI/HTTP commands and failure posture |
+| [`runtime/operations.md`](runtime/operations.md) | Exact current CLI/MCP/hook commands and failure posture |
 | [`release-readiness.md`](release-readiness.md) | Current blockers and final release matrix |
 | [`reference-boundaries.md`](reference-boundaries.md) | Clean-room and external-reference boundaries |
 
