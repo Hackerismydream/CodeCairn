@@ -27,8 +27,10 @@ exit codes or claim another file changed.
 ## 2. The trace becomes one Episode
 
 The Episode builder assigns one stable Task Episode to the user task and its
-related actions. Re-importing an appended transcript reuses the Episode
-identity instead of duplicating committed work.
+related actions using a half-open normalized event span. A repeated boundary at
+the same cursor reuses the committed Episode. Appended assistant/tool events
+create a linked continuation, while an appended new user task creates an
+independent Episode; neither changes the committed identity.
 
 ## 3. Capture creates memory
 
@@ -58,9 +60,12 @@ the two optional proposals remain a visible pending job.
 
 ## 4. Durable commit and projection
 
-The transaction creates immutable Markdown, SQLite mirrors, source checkpoints,
-and queue items. The index worker projects active memory into LanceDB. Losing
-LanceDB loses no durable memory.
+SQLite first reserves one Write Intent for the complete deterministic Markdown
+batch. Files are temp-written, fsynced, and atomically created; a completion
+transaction then writes mirrors, advances the source cursor, and creates queue
+items. Restart completes or reports a conflict for an unresolved intent. The
+index worker projects active memory into LanceDB. Losing LanceDB loses no
+durable memory.
 
 ## 5. A later session updates work
 
@@ -81,13 +86,18 @@ recall(task="Change parser formatting without losing comments")
 
 CodeCairn:
 
-1. filters to the current repository and active memories;
-2. pins the matching issue #42 Work State only when it is open;
-3. ranks closed Work State, Repository Knowledge, User Preference, and Task
+1. performs a bounded deterministic index preflight for the repository cursor;
+2. filters to the current repository and active memories;
+3. pins the matching issue #42 Work State only when it is open;
+4. ranks closed Work State, Repository Knowledge, User Preference, and Task
    Experience;
-4. applies type caps and a total context budget;
-5. returns Markdown with `codecairn://memory/...` citations;
-6. returns a sidecar containing identities, ranks, provenance, and omissions.
+5. applies type caps and a total context budget;
+6. returns Markdown with `codecairn://memory/...` citations;
+7. returns a sidecar containing identities, ranks, provenance, omissions,
+   source/index cursors, semantic state, and freshness.
+
+If preflight cannot reach the required cursor within its bound, recall returns
+`index_not_ready` rather than stale context.
 
 The superseded open Work State does not enter normal context. The active closed
 state may rank as history but is not pinned as unresolved work.
@@ -103,7 +113,9 @@ new Work State
 ```
 
 Restoring the old state creates a third memory revision and a new forward
-Evolution Record. It never deletes the newer state or reverses history.
+Evolution Record that supersedes the unique active tip in that lineage. It
+never deletes the newer state or reverses history; an ambiguous lineage is an
+error.
 
 ## What each module teaches
 

@@ -1,7 +1,7 @@
 ---
 id: v01-008
 scope: evaluation surface, historical verifier, and source budget
-status: ready
+status: planned
 depends-on: [v01-007]
 ---
 
@@ -24,7 +24,7 @@ current runners and immutable readers, not every experiment generation.
 Primary:
 
 - `Makefile`
-- add `scripts/source_budget.py`
+- `scripts/source_budget.py` from `v01-000a`
 - `src/codecairn/evaluation/`
 - `src/codecairn/locomo_worker.py`
 - `src/codecairn/entrypoints/cli.py`
@@ -36,9 +36,9 @@ Primary:
 - `docs/evaluation/README.md`
 - `docs/evidence-bundle.md`
 
-## Characterize before deleting
+## Guardrails already required
 
-Add focused regression tests proving:
+Do not begin unless `v01-000a` already proves:
 
 1. `evidence/benchmark-v3` verifies all 4,411 inventory files;
 2. current V24 diagnostic/full manifests parse;
@@ -50,9 +50,10 @@ Only then remove superseded execution paths.
 
 ## Required changes
 
-1. Add Make targets:
-   `eval-smoke`, `eval-locomo-200`, `eval-locomo-full`, `eval-coding-ab`,
-   `evidence-verify`, and `source-budget`.
+1. Complete Make targets:
+   `eval-smoke`, `eval-scale`, `eval-retrieval`, `eval-locomo-200`,
+   `eval-locomo-full`, `eval-coding-ab`, `evidence-verify`, and
+   `source-budget`.
 2. Make the smoke fully offline and cover the complete lifecycle, MCP, and hook
    fixtures.
 3. Collapse LoCoMo execution into:
@@ -70,10 +71,15 @@ Only then remove superseded execution paths.
 7. Move obsolete benchmark specifications to documentation/history if useful,
    or delete them if Git history is sufficient. Do not ship them as executable
    product code.
-8. Implement deterministic source counting and make both ceilings fail CI.
-9. Add package-area line totals to the task report.
+8. Retain and strengthen the early deterministic source gate; do not re-create
+   it in evaluation code.
+9. Add package-area line totals and the 9,700/14,100 internal targets to the
+   task report.
 10. Update CI to verify the current selected evidence bundle, not only
     `benchmark-v1`.
+11. Emit coding-native hook freshness, stale leakage, provenance coverage,
+    continuation, selected-memory precision/latency, A/B outcome, and
+    memory-induced regression metrics.
 
 ## Paid-run safety
 
@@ -93,6 +99,8 @@ maintainer runs. The release task owns the actual full run.
 
 ```bash
 make eval-smoke
+make eval-scale
+make eval-retrieval
 make evidence-verify
 make source-budget
 make format
@@ -114,9 +122,10 @@ execution.
 
 ## Exit criteria
 
-- the six Make targets are the authoritative surface;
+- the eight Make targets are the authoritative surface;
 - historical v3 verification still passes;
 - product lifecycle smoke passes offline;
 - core is at most 10,000 and total source at most 15,000 physical Python lines;
+- internal release target is at most 9,700 core and 14,100 total;
 - no code was moved to evade counting;
 - all checks and package build pass.

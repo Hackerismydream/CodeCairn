@@ -23,7 +23,10 @@ entrypoints -> service -> memory
 `bootstrap` composes adapters. `evaluation` calls product/service contracts
 with isolated roots.
 
-## Current baseline: `main@954f728`
+## Implemented baseline: `954f728`
+
+The accepted pre-development planning baseline is `2c79b3f`. Later
+documentation-only commits do not change the implemented behavior below.
 
 ### Implemented
 
@@ -31,7 +34,8 @@ with isolated roots.
 - Stable Task Episodes, deterministic Evidence Facts, and resumable import.
 - Automatic deterministic Failed Command memory.
 - Service-only Evidence Gate paths for five other historical types.
-- Atomic Markdown plus SQLite Import Ledger and Index Queue.
+- Prepared Markdown plus SQLite Import Ledger and Index Queue. Public import
+  does not yet implement the version 0.1 cross-store Write Intent protocol.
 - Public CLI/HTTP index sync, rebuild, status, and import-time drain.
 - LanceDB parent/child projection and hierarchical Recall Context.
 - Lazy retrieval-provider construction with typed configuration errors.
@@ -105,12 +109,14 @@ It adds:
 - one four-type Coding Profile;
 - storage without mandatory verification;
 - pending/retryable semantic capture;
+- Write Intent crash recovery for Markdown/SQLite batches;
 - forward-only Supersession and Restore;
 - CLI, MCP, and post-session hooks;
 - `init`, strict config, processing, and human diagnostics;
 - source-code and release-evidence gates.
 
-The complete record contract is
+The exact record contract is
+[`../v0.1/schema-contract.md`](../v0.1/schema-contract.md); lifecycle policy is
 [`../v0.1/memory-lifecycle.md`](../v0.1/memory-lifecycle.md). Target module
 ownership and current-to-target mapping are in
 [`../architecture.md`](../architecture.md).
@@ -123,7 +129,7 @@ ownership and current-to-target mapping are in
 | Agent Trace to Task Episodes | memory domain called by import service |
 | Episode to deterministic Task Experience | capture service using domain constructors |
 | Optional Knowledge proposal | semantic provider port plus capture validation |
-| Memory create | service transaction over Markdown/SQLite ports |
+| Memory create | service Write Intent over Markdown/SQLite ports |
 | Supersession/restore | evolution service and domain validation |
 | Memory revision to search rows | Mini Cascade |
 | Candidate selection to Recall Context | recall service |
@@ -137,7 +143,8 @@ Entrypoints never implement an alternative memory lifecycle.
 - malformed or mutated traces fail before their cursor advances;
 - unsafe Markdown and conflicting durable identities fail closed;
 - semantic absence preserves deterministic experience and records pending work;
-- invalid automatic supersession records a failed processing job;
+- invalid automatic supersession records a rejected proposal outcome without
+  failing completed semantic extraction;
 - failed index work preserves durable truth and reports degradation;
 - missing candidates return an attributed partial result, not invented memory;
 - provider reachability alone never counts as successful inference.

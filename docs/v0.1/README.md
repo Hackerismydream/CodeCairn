@@ -5,10 +5,11 @@ Status: accepted design. Implementation is incomplete until the task files under
 
 ## Purpose and boundary
 
-Version 0.1 turns the implemented CodeCairn components into a small, usable
-Memory OS product for coding agents. It owns memory capture, evolution, recall,
-inspection, and local operations. Codex and Claude Code remain clients; they
-own agent execution and tool use.
+Version 0.1 turns the implemented CodeCairn components into a small, auditable
+local long-term memory runtime for coding agents. It owns memory capture,
+evolution, recall, inspection, and local operations. Internally it has Memory
+OS authority. Codex and Claude Code remain clients; they own agent execution
+and tool use.
 
 The release has one implicit Coding Profile. It does not introduce a generic
 profile/plugin framework, Raven adapter, cloud service, or dashboard.
@@ -63,8 +64,8 @@ The canonical definitions live in [`../../CONTEXT.md`](../../CONTEXT.md).
 | Owner | Creates or calls | Stores or returns |
 |---|---|---|
 | Provider importer | Agent Trace | source references and normalized events |
-| Capture service | Task Experience and optional Knowledge items | Markdown plus SQLite transaction |
-| Evolution service | validated Evolution Record | Markdown plus active-status projection |
+| Capture service | Task Experience and optional Knowledge items | Write Intent, Markdown, SQLite completion |
+| Evolution service | validated Evolution Record | Multi-file Write Intent plus active-status projection |
 | Mini Cascade | search documents from durable artifacts | LanceDB only |
 | Recall service | active-memory selection and context compilation | Markdown result plus JSON sidecar |
 | CLI/MCP/hooks | service use cases | presentation only |
@@ -91,13 +92,14 @@ owned trace
 
 Manual `remember` enters at the Coding Memory step and is marked
 `agent_asserted`. It does not invent source provenance. Direct User Preference
-still requires references to normalized user-authored source.
+requires Source Fact Registry IDs that resolve to normalized user-authored
+source.
 
 ## Product entrypoints
 
 | Surface | Version 0.1 role |
 |---|---|
-| CLI | Setup, import, remember, recall, inspection, processing, index, doctor, evaluation |
+| CLI | Setup, import, remember, recall, inspection, processing, index, doctor, export/reset, evaluation |
 | MCP | Live explicit memory access for Codex and Claude Code |
 | Hooks | Post-session or post-turn trace import |
 | HTTP | Existing compatibility surface; not a parity requirement |
@@ -109,6 +111,8 @@ still requires references to normalized user-authored source.
 - Memory content and Evolution Records are append-only.
 - Default recall excludes superseded memory.
 - A missing semantic provider creates visible pending work, not lost source.
+- Hook capture followed by recall provides deterministic read-your-writes or a
+  typed freshness error, never stale success.
 - Historical pre-v0.1 runtime roots are not a compatibility target.
 - Product core must fit within 10,000 Python lines; total package within 15,000.
 - Every public metric is generated from a checked-in run artifact.
@@ -117,6 +121,8 @@ still requires references to normalized user-authored source.
 
 - [`memory-lifecycle.md`](memory-lifecycle.md) — records, cardinality,
   supersession, storage, and migration boundary.
+- [`schema-contract.md`](schema-contract.md) — exact durable/operational
+  fields, bounds, canonical identity, Markdown/SQLite mapping, and DTO rules.
 - [`agent-integration.md`](agent-integration.md) — CLI, MCP, Claude Code, and
   Codex contracts.
 - [`onboarding-and-operations.md`](onboarding-and-operations.md) — init,
@@ -128,5 +134,5 @@ still requires references to normalized user-authored source.
 
 ## Cross-cutting decisions
 
-ADRs 0043–0050 own the accepted version 0.1 product decisions. Earlier ADRs
+ADRs 0043–0051 own the accepted version 0.1 product decisions. Earlier ADRs
 remain historical context and are amended or superseded where noted.

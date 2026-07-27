@@ -30,9 +30,10 @@ optional Knowledge, an Evolution Record, active recall, and history.
 
 Read:
 
-1. [`memory-lifecycle.md`](memory-lifecycle.md)
-2. `src/codecairn/memory/`
-3. domain tests for model and lifecycle invariants
+1. [`schema-contract.md`](schema-contract.md)
+2. [`memory-lifecycle.md`](memory-lifecycle.md)
+3. `src/codecairn/memory/`
+4. domain tests for model and lifecycle invariants
 
 Look for closed enums, stable identities, append-only records, and validation
 that does not import storage or entrypoints.
@@ -55,7 +56,7 @@ Ignore evaluation until those flows are clear.
 Read:
 
 1. Markdown adapter;
-2. SQLite adapter and queue transactions;
+2. SQLite adapter, Write Intents, recovery, and queue transactions;
 3. LanceDB projection and rebuild;
 4. [`../runtime/operations.md`](../runtime/operations.md).
 
@@ -91,7 +92,7 @@ Use [`../adr/README.md`](../adr/README.md):
 
 - ADRs 0001–0011 explain the foundation;
 - ADRs 0012–0042 explain the implemented retrieval and evidence history;
-- ADRs 0043–0050 define the version 0.1 simplification and product.
+- ADRs 0043–0051 define the version 0.1 simplification and product.
 
 ADRs are causal history. Maintained design documents own the current target.
 

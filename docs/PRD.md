@@ -4,10 +4,11 @@ Status: accepted for implementation on 2026-07-27.
 
 ## Product statement
 
-CodeCairn is a local-first Memory OS that agents use but do not own. Version
-0.1 ships one complete Coding Profile: it converts Codex and Claude Code work
-into inspectable memory, evolves stale memory through supersession, and returns
-bounded context to the next coding task.
+CodeCairn is an auditable local long-term memory runtime for coding agents.
+Agents use but do not own it. Version 0.1 ships one complete Coding Profile: it
+converts Codex and Claude Code work into inspectable repository memory, evolves
+active revisions through supersession, and returns bounded context to the next
+coding task.
 
 The release is both a usable product and a readable learning project. A feature
 that works only through an internal Python seam, a benchmark-only adapter, or a
@@ -44,17 +45,25 @@ The agent receives active memory with source links. If later work makes prior
 knowledge stale, the new memory takes over normal recall while history remains
 inspectable and restorable.
 
-The release demo is:
+The release demo is an explicit sequence, not one implied `init` side effect:
 
 ```text
-uvx codecairn init
-  -> register MCP and one session-end hook
+uv tool install codecairn==0.1.0
+  -> codecairn init
+  -> register one client MCP server
+  -> dry-run and install one client hook
+  -> review/trust the Codex hook when Codex is selected
+  -> codecairn doctor --strict
   -> finish a coding task
-  -> hook imports and processes the trace
+  -> hook imports deterministic Task Experience and queues projection
   -> next session calls recall
+  -> recall performs bounded deterministic index preflight
   -> agent receives active Work State, Knowledge, Preference, and Experience
   -> memory history shows any superseded predecessor
 ```
+
+The measured onboarding claims are five minutes for offline manual
+import-to-recall and ten minutes for one client's MCP-plus-hook integration.
 
 ## Users
 
@@ -91,7 +100,7 @@ product.
   model, authors namespace, source references, roles, command outcomes, file
   changes, exact quotes, and verification state.
 - **FR-06**: User Preference candidates come only from user-authored source
-  content. Model paraphrase is allowed and retains its source references.
+  content. Model paraphrase is allowed and retains Source Fact Registry IDs.
 - **FR-07**: A missing semantic model never discards source import or the
   deterministic Task Experience. Optional semantic work remains pending and
   visible through diagnostics.
@@ -101,8 +110,9 @@ product.
 - **FR-08**: Task Experience is append-only.
 - **FR-09**: An open or terminal Work State supersedes the prior active state
   for the same Workstream.
-- **FR-10**: A newer explicit User Preference may supersede the previous
-  preference on the same subject.
+- **FR-10**: A provably newer explicit User Preference may supersede the
+  previous preference on the same subject. Cross-session order that cannot be
+  proven defaults to keep-both.
 - **FR-11**: Repository Knowledge supersedes only a same-subject item proposed
   as obsolete or contradictory; otherwise both remain active.
 - **FR-12**: Supersession is automatic after structural validation and does not
@@ -110,7 +120,7 @@ product.
 - **FR-13**: Every supersession is an immutable Evolution Record. It never
   deletes or rewrites a memory.
 - **FR-14**: Restore creates a new memory revision from historical content and
-  may supersede the current revision.
+  supersedes the unique active tip in that historical memory's lineage.
 
 ### Recall
 
@@ -123,6 +133,9 @@ product.
   omissions.
 - **FR-18**: Historical recall is explicit through `include_superseded` and
   `memory history`.
+- **FR-18a**: Recall provides read-your-writes for deterministic memory through
+  a bounded namespace index preflight. Failure to reach the required cursor is
+  `index_not_ready`, never stale success.
 
 ### Product surfaces
 
@@ -141,11 +154,20 @@ product.
 - **FR-24**: CLI and MCP are the required version 0.1 interfaces. Existing HTTP
   method/path/error envelopes remain compatible and return version 0.1 memory
   records, but HTTP does not require feature-for-feature expansion.
+- **FR-24a**: CLI supplies safe repository export and namespace reset with
+  dry-run, explicit confirmation, and recoverable backup-first behavior.
+- **FR-24b**: Onboarding supplies visible, reviewable `AGENTS.md` and
+  `CLAUDE.md` instructions that ask the agent to recall before work and
+  remember durable repository knowledge. CodeCairn does not inject them.
+- **FR-24c**: Configuration and `doctor` disclose whether embedding and
+  semantic extraction are local, networked, or disabled, and which source
+  content class may leave the machine.
 
 ### Evaluation and release
 
-- **FR-25**: The repository exposes one-command smoke, LoCoMo-200,
-  LoCoMo-1540, coding A/B, and evidence-verification targets.
+- **FR-25**: The repository exposes one-command lifecycle smoke, scale,
+  retrieval, LoCoMo-200, LoCoMo-1540, coding A/B, evidence verification, and
+  source-budget targets.
 - **FR-26**: The offline smoke covers import, four-type capture, supersession,
   active recall, history, restore, MCP, and hook ingestion.
 - **FR-27**: A release score comes only from a frozen manifest and raw
@@ -153,7 +175,7 @@ product.
 - **FR-28**: The shipped product core is at most 10,000 physical Python lines
   and all `src/codecairn` source is at most 15,000.
 - **FR-29**: The package ships under MIT with curated wheel/sdist contents and
-  supports `uvx codecairn init`.
+  supports persistent `uv tool install codecairn==0.1.0`.
 - **FR-30**: The release includes a five-minute quickstart, five-layer
   architecture map, end-to-end trace walkthrough, code-reading path, ADR index,
   and evaluation guide.
@@ -164,7 +186,8 @@ product.
 - SQLite owns transactional cursors, work queues, active projections, and
   diagnostics.
 - LanceDB is disposable and rebuildable from Markdown plus Evolution Records.
-- A committed source cursor advances only after its complete durable write set.
+- A committed source cursor advances only in the completion transaction after
+  its complete Write Intent file set has been fsynced and verified.
 - A supersession never crosses a Memory Namespace, references itself, or forms
   a cycle.
 - Index identity cannot mix embedding provider, model, revision, adapter, or
@@ -176,7 +199,13 @@ product.
 
 ## Release acceptance
 
-Version 0.1 is releasable only when all of these pass on one clean commit:
+Version 0.1 uses an immutable implementation/evidence pair. Provider runs bind
+to a clean `implementation_sha`. A direct descendant `evidence_sha` may add
+only generated artifacts and generated documentation; the release tag points
+to `evidence_sha`. Any code change creates a new implementation candidate and
+invalidates every prior gate.
+
+Version 0.1 is releasable only when all of these pass for that pair:
 
 1. `make format` and `make check`.
 2. Installed-wheel CLI import-to-recall smoke.
@@ -190,7 +219,7 @@ Version 0.1 is releasable only when all of these pass on one clean commit:
 8. Local recall P95 at or below four seconds under the release protocol.
 9. `make evidence-verify` against the new release bundle.
 10. Source-budget verification at or below 10,000 core and 15,000 total lines.
-11. Clean wheel and sdist installation through `uvx`.
+11. Clean wheel and sdist installation through a persistent tool environment.
 12. Documentation link, command, and terminology checks.
 
 ## Out of scope
@@ -202,6 +231,8 @@ Version 0.1 is releasable only when all of these pass on one clean commit:
 - Dashboard or memory-editing UI.
 - Cloud hosting, authentication, organizations, billing, or multi-user tenancy.
 - Global cross-repository memory.
+- Standalone Memory Verification operation; system-derived Task Experience
+  verification facets remain.
 - General document or multimodal ingestion.
 - A formal same-harness EverOS comparison.
 - Compatibility migration for pre-release runtime roots. Historical evidence

@@ -1,7 +1,7 @@
 ---
 id: v01-010
 scope: version 0.1 release-candidate evidence
-status: ready
+status: planned
 depends-on: [v01-009]
 ---
 
@@ -9,9 +9,9 @@ depends-on: [v01-009]
 
 ## Objective
 
-Prove the installable Memory OS, agent integrations, source budget, benchmark,
-and public evidence on one clean commit. This task produces evidence and fixes
-release blockers; it does not add product scope.
+Prove the installable memory runtime, agent integrations, source budget,
+benchmark, and public evidence on one clean implementation/evidence SHA pair.
+This task produces evidence; it does not add product scope.
 
 ## Preconditions
 
@@ -23,7 +23,7 @@ release blockers; it does not add product scope.
 
 ## Required execution
 
-1. Record the candidate full SHA and environment inventory.
+1. Record the clean `implementation_sha` and environment inventory.
 2. Run `make format`, `make check`, `make source-budget`, and `make eval-smoke`.
 3. Build wheel/sdist from the candidate and run the fresh-environment installed
    CLI/MCP smoke.
@@ -36,25 +36,35 @@ release blockers; it does not add product scope.
    infrastructure IDs fail, run exact repair and preserve the base.
 7. Require full LoCoMo at least 82.00%; target at least 82.60%. A lower result
    blocks release and is not hidden by the historical v3 bundle.
-8. Measure local recall P95 under the frozen release workload and require at
+8. Run the 100-query retrieval suite and require Recall@5 at least 90%,
+   provenance coverage 100%, stale predecessor leakage zero, and local P95 at
    most four seconds.
-9. Run coding memory-off/on A/B in isolated workspaces and publish the observed
-   outcomes without inventing a success delta.
+9. Run coding memory-off/on A/B in isolated workspaces, require zero
+    memory-induced regressions, and publish the observed delta.
 10. Build a new evidence bundle, check redaction, run `make evidence-verify`,
-    and bind its inventory to the candidate SHA.
-11. Repeat offline tests after artifact generation to prove the candidate code
+    and bind its inventory to `implementation_sha`.
+11. Commit generated evidence/docs only as the direct `evidence_sha`
+    descendant. The verifier binds the clean evidence HEAD without embedding a
+    self-referential SHA.
+12. Repeat offline tests after artifact generation to prove the candidate code
     is unchanged.
-12. Update README/changelog/release-readiness with generated results only.
+13. Update README/changelog/release-readiness with generated results only.
+14. Any code change creates a new `implementation_sha` and requires every
+    offline, paid, installed, and real-client gate to rerun.
 
 ## Artifact outputs
 
-The release commit or a no-code evidence commit directly descended from it must
+The no-code `evidence_sha` directly descended from `implementation_sha` must
 contain:
 
 - frozen release protocol;
 - diagnostic and full LoCoMo manifests/raw outcomes/aggregate;
 - exact repair artifacts if used;
 - coding A/B manifests/outcomes;
+- scale import manifest/raw aggregate;
+- retrieval query outcomes and aggregate;
+- Write Intent fault-injection outcomes;
+- hook freshness, duplicate, and real-client receipts;
 - recall latency inputs and aggregate;
 - installed smoke report;
 - source-budget report;
@@ -73,6 +83,8 @@ git diff --exit-code
 make format
 make check
 make eval-smoke
+make eval-scale
+make eval-retrieval
 make source-budget
 make evidence-verify
 uv build
@@ -95,8 +107,8 @@ Do not tag or describe release success when:
 
 ## Exit criteria
 
-- every release threshold in `docs/v0.1/evaluation-and-release.md` passes on one
-  clean candidate;
+- every release threshold in `docs/v0.1/evaluation-and-release.md` passes on
+  the documented clean implementation/evidence SHA pair;
 - all artifacts and limitations are reviewable;
-- the tag, if created, points at that exact candidate;
+- the tag, if created, points at `evidence_sha`;
 - no deferred feature entered the release.

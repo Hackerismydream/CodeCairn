@@ -1,7 +1,7 @@
 ---
 id: v01-007
 scope: Claude Code and Codex session-end import hooks
-status: ready
+status: planned
 depends-on: [v01-006]
 ---
 
@@ -38,6 +38,8 @@ clients and record their version/source:
 No fixture may contain a real home path, key, conversation, or repository
 content. If Codex does not supply a transcript path, resolution from
 `session_id` must be explicit and tested against its supported local layout.
+The minimum tested matrix is Codex CLI `0.144.6` Stop and Claude Code
+`2.1.220` SessionEnd. Newer release versions are recorded during `v01-010`.
 
 ## Required changes
 
@@ -46,8 +48,9 @@ content. If Codex does not supply a transcript path, resolution from
 2. Implement `codecairn hook run --client claude|codex` exactly as
    `agent-integration.md` specifies: one stdin JSON value, empty stdout, always
    zero exit, bounded work.
-3. Import source and create semantic/index queue records synchronously; do not
-   call model providers or drain the full index in the hook.
+3. Import source, deterministic Task Experience, and index outbox
+   synchronously; do not call model providers or drain the full index in the
+   hook. `v01-004` recall preflight owns read-your-writes.
 4. Record bounded success/failure Hook Receipts in operational state. Include
    client, event, source/session identity digest, repo key, timestamps, outcome,
    error code, and retry hint; exclude content and secrets.
@@ -60,6 +63,11 @@ content. If Codex does not supply a transcript path, resolution from
    versions print a dry-run/manual path and make no mutation.
 9. `doctor` reports recent failures and exact manual import/retry commands.
 10. Document explicit removal and manual import fallback.
+11. Configure an explicit five-second client timeout and test cold-start P95:
+    at most one second for no-op receipt and four seconds for the release
+    fixture. Do not rely on async command hooks or relative cwd.
+12. Handle nullable Codex transcript, unsupported versions, and untrusted
+    project hooks as visible receipts/remedies, never guessed provenance.
 
 ## Failure posture
 
@@ -90,6 +98,9 @@ Acceptance cases:
 - second install is byte-identical;
 - failed readback leaves recoverable original configuration;
 - doctor renders the receipt and remediation.
+- hook fixture -> no explicit process -> recall returns the new deterministic
+  Task Experience;
+- each client fixture repeats 100 times with zero duplicate Episodes/Memories.
 
 Perform one real-client smoke for each installed client before release; unit
 fixtures alone do not satisfy v01-010.
@@ -101,3 +112,4 @@ fixtures alone do not satisfy v01-010.
 - external config edits are atomic, verified, and removable;
 - failures are non-blocking but operationally visible;
 - all checks pass and line deltas are reported.
+- product core is at most 10,000 physical Python lines.

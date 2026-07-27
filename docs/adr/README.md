@@ -77,7 +77,7 @@ protocol files and every published V23 result keep their frozen contracts.
 
 ### Version 0.1 product and simplification
 
-ADRs 0043–0050 define the accepted version 0.1 target:
+ADRs 0043–0051 define the accepted version 0.1 target:
 
 - ADR 0043 removes mandatory verification from memory storage while retaining
   system-owned provenance;
@@ -90,6 +90,8 @@ ADRs 0043–0050 define the accepted version 0.1 target:
   HTTP compatibility;
 - ADR 0049 makes 10,000 core / 15,000 total Python lines release gates;
 - ADR 0050 amends ADR 0015's target initialization profile.
+- ADR 0051 amends ADR 0043 by removing the unowned standalone verification
+  operation while retaining system-derived verification facets.
 
 These decisions are specified for implementation under
 [`../plan/tasks/`](../plan/tasks/). Current shipped behavior remains

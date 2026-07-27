@@ -1,17 +1,20 @@
 # CodeCairn
 
-CodeCairn is a local-first Memory OS for agents. It turns owned Codex and
-Claude Code sessions into inspectable long-term memory, keeps human-readable
-Markdown as durable truth, and compiles bounded Recall Context for later work.
+CodeCairn is an auditable local long-term memory runtime for coding agents. It
+turns owned Codex and Claude Code sessions into inspectable repository memory,
+keeps human-readable Markdown as durable truth, and compiles bounded Recall
+Context for later work.
 
 CodeCairn owns memory; the coding agent owns execution. It is not an agent
 runner, IDE, hidden prompt injector, or cloud knowledge platform.
 
 ## Status
 
-The repository is pre-release. Local `main@954f728` contains the complete Fable
-EverOS-alignment baseline, including public index maintenance, import-time
-drain, lazy retrieval providers, and corrected LoCoMo V24 measurement assets.
+The repository is pre-release. The implementation code baseline is `954f728`;
+the accepted pre-development planning baseline is `2c79b3f`. Together they
+contain the complete Fable EverOS-alignment implementation and planning work,
+including public index maintenance, import-time drain, lazy retrieval
+providers, and corrected LoCoMo V24 measurement assets.
 
 The version 0.1 product design is accepted but not yet implemented. The
 distinction matters:
@@ -25,7 +28,7 @@ distinction matters:
 | Recall | Hierarchical indexed recall | Active-only typed recall with pinned Work State |
 | Product surfaces | CLI and loopback HTTP | CLI, MCP, and session-end hooks; HTTP compatibility |
 | Setup | Manual root, repo key, and provider environment | `codecairn init`, config file, derived repository identity |
-| Distribution | Checkout build, no license/tag | MIT, curated PyPI/`uvx` package |
+| Distribution | Checkout build, no license/tag | MIT, curated persistent-tool/PyPI package |
 | Source size | 34,091 physical Python lines | at most 10,000 core / 15,000 total |
 
 The implementation plan is
@@ -90,14 +93,15 @@ Version 0.1 has five layers:
 
 1. Source — normalized traces and system-derived observations.
 2. Experience — one Task Experience per Task Episode.
-3. Knowledge — Repository Knowledge, User Preference, and Work State.
+3. Knowledge — Repository Knowledge, Repository Working Preference, and Work
+   State.
 4. Evolution — immutable Supersession and derived status.
 5. Recall — bounded task-shaped context.
 
 It exposes four durable Coding Memory types: Task Experience, Repository
-Knowledge, User Preference, and Work State. Debugging, failed commands, and
-verified results are Task Experience facets rather than separate top-level
-types.
+Knowledge, User Preference (presented as Repository Working Preference), and
+Work State. Debugging, failed commands, and verified results are Task
+Experience facets rather than separate top-level types.
 
 Raven integration is intentionally deferred until after version 0.1.
 
@@ -119,6 +123,8 @@ Version 0.1 will provide:
 
 ```text
 make eval-smoke
+make eval-scale
+make eval-retrieval
 make eval-locomo-200
 make eval-locomo-full
 make eval-coding-ab

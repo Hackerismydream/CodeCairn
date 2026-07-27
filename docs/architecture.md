@@ -6,9 +6,10 @@ surface already exists on `main`.
 
 ## Product boundary
 
-CodeCairn is a local-first Memory OS for agents. It owns durable memory
-independently from Codex, Claude Code, Raven, or another agent runtime. Version
-0.1 ships one implicit Coding Profile for repository-scoped work.
+CodeCairn is an auditable local long-term memory runtime for coding agents. It
+owns durable memory independently from Codex, Claude Code, Raven, or another
+agent runtime. Internally it has Memory OS authority; version 0.1 ships one
+implicit Coding Profile for repository-scoped work.
 
 CodeCairn does not execute an agent, inject hidden prompts, ingest arbitrary
 documents, run a cloud service, or provide a memory-editing UI. Raven
@@ -125,7 +126,9 @@ Repository Convention is a Repository Knowledge category. Conversation Episode
 is retained only as a source/experience adapter where an evaluation needs it.
 
 The complete field and transition contract is
-[`v0.1/memory-lifecycle.md`](v0.1/memory-lifecycle.md).
+[`v0.1/memory-lifecycle.md`](v0.1/memory-lifecycle.md). Exact field, bound,
+canonicalization, identity, and storage mappings are in
+[`v0.1/schema-contract.md`](v0.1/schema-contract.md).
 
 ## Capture flow
 
@@ -133,12 +136,13 @@ The complete field and transition contract is
 owned provider transcript
   -> provider detection
   -> strict normalized events
-  -> stable Task Episodes closed by next-task, Stop, SessionEnd, or manual EOF
+  -> stable Task Episodes closed by next-task, Stop, SessionEnd,
+     or explicit manual finalize
   -> deterministic Task Experience
   -> optional semantic proposals
   -> system validates source roles and cardinality
   -> automatic supersession proposal validation
-  -> atomic Markdown + SQLite transaction
+  -> write intent + deterministic Markdown batch + SQLite completion
   -> semantic/index jobs
 ```
 
@@ -155,7 +159,8 @@ Task Experience.
 Manual `remember` enters at the Coding Memory boundary. Its origin is
 `agent_asserted`; Repository Knowledge and Work State may have no Evidence
 References and cannot claim source-derived facts they did not observe. A
-direct User Preference still requires references to user-authored source.
+direct User Preference requires Source Fact Registry IDs that resolve to
+user-authored facts.
 
 ## Evolution flow
 
@@ -170,15 +175,20 @@ successor memory + proposed predecessor
   -> enqueue predecessor and successor projections
 ```
 
-The model selects only `keep_both` or `supersede`. CodeCairn owns validation.
-Task Experience never supersedes. Restore copies historical content into a new
-memory revision and applies the normal forward-only evolution rules.
+The model selects only `keep_both` or `supersede` and supplies a closed
+`relation_kind`. CodeCairn owns validation. Source recency comes from a
+`source_order_key`, never import time; incomparable cross-session sources keep
+both. Semantic-job completion and proposal outcome are separate. Task
+Experience never supersedes. Restore copies historical content into a new
+memory revision and supersedes the unique active tip in that memory's lineage;
+an ambiguous lineage is an error.
 
 ## Recall flow
 
 ```text
 task query
   -> resolve Memory Namespace
+  -> bounded deterministic index preflight
   -> active-only candidate search
   -> pin matching open Work State
   -> rank Knowledge, Preference, Experience
@@ -187,9 +197,14 @@ task query
   -> emit structured JSON sidecar
 ```
 
-Normal recall never silently includes superseded memory. `include_superseded`
-and `memory history` are explicit historical operations. Recall Context is a
-derived view and is not written back as memory.
+Normal recall never silently includes superseded memory. Every recall first
+drains a bounded number of deterministic index jobs for the selected namespace.
+If the required cursor cannot become ready inside the bound, recall returns
+`index_not_ready`; it never returns a stale success. Semantic extraction may
+remain pending while its deterministic Task Experience is recallable, and the
+sidecar reports source/index cursors, semantic state, and freshness.
+`include_superseded` and `memory history` are explicit historical operations.
+Recall Context is a derived view and is not written back as memory.
 
 ## Storage authority
 
@@ -224,6 +239,8 @@ SQLite owns transactions and operational projections:
 - derived active status;
 - pending, leased, failed, and retryable processing jobs;
 - index outbox and readiness diagnostics.
+- prepared/completed/conflicted multi-file Write Intents;
+- Source Fact Registry rows and bounded Hook Receipts.
 
 SQLite content mirrors are rebuildable from Markdown except for operational
 source cursors and queues. They are not an independent editing surface.
@@ -239,9 +256,29 @@ an explicit degraded state with a remediation command.
 
 ## Consistency boundaries
 
-The source-import transaction commits normalized identity, Markdown memory,
-SQLite mirrors, and queue records before advancing the source cursor. Search and
-semantic enrichment are eventually consistent.
+SQLite and the filesystem cannot share one ACID transaction. Version 0.1 uses
+the following write-intent recovery protocol instead of claiming atomicity:
+
+1. transaction A inserts a `prepared` Write Intent containing the operation
+   identity, deterministic payloads, expected safe paths and digests, record
+   IDs, and prior/target source cursor; it does not advance the cursor;
+2. each file is written to a same-directory temporary file, file-fsynced,
+   atomically created, and followed by a directory fsync;
+3. one intent covers the complete Memory/Evolution batch, so recovery knows the
+   expected set even though filesystem renames are individually atomic;
+4. transaction B verifies the complete file set, writes memory/evolution
+   mirrors and derived status, creates semantic/index jobs, advances the source
+   cursor, and marks the intent `completed`;
+5. startup and every mutating application composition recover unresolved
+   intents before accepting new work: matching files complete transaction B,
+   missing files are deterministically recreated, and conflicting bytes mark
+   the intent `conflicted` with a typed recovery error.
+
+The fault-injection suite covers intent commit, temporary write, file fsync,
+atomic create, directory fsync, transaction-B start, transaction-B rollback,
+and post-commit acknowledgement. A committed cursor therefore always has its
+complete durable write set. Search and semantic enrichment remain queued, but
+recall owns the bounded freshness preflight described above.
 
 | Failure | Durable result | User-visible result |
 |---|---|---|
@@ -249,7 +286,7 @@ semantic enrichment are eventually consistent.
 | Semantic provider fails | Source and Task Experience committed | Failed retryable job |
 | Index drain fails | Markdown and SQLite committed | Degraded index with remediation |
 | Hook input invalid | No partial memory | Hook failure visible in `doctor` |
-| Supersession invalid | Successor may remain active; no edge applied | Failed processing job or typed command error |
+| Supersession invalid | Successor may remain active; no edge applied | Rejected proposal outcome or typed command error |
 | LanceDB lost | No truth lost | Rebuild required |
 
 ## Product surfaces
@@ -267,6 +304,7 @@ service use cases:
 | List/show/history | yes | yes | no |
 | Supersede/restore | yes | history/remember workflow | no |
 | Doctor | yes | yes | failure writer only |
+| Export/reset namespace | yes | no | no |
 | Evaluate/verify | yes/Make | no | no |
 
 The existing HTTP adapter remains compatible for existing routes. New v0.1
@@ -295,9 +333,9 @@ defers semantic capture.
 ## Evaluation boundary
 
 Evaluation is a consumer of product contracts, not a second product runtime.
-Version 0.1 retains four user-facing evaluation paths:
+Version 0.1 retains four user-facing evaluation families:
 
-1. offline lifecycle smoke;
+1. offline lifecycle, scale, recovery, and retrieval;
 2. LoCoMo diagnostic and full runs;
 3. coding memory-off/on A/B;
 4. immutable evidence verification.
@@ -309,7 +347,8 @@ and release contract is
 
 ## Readability budget
 
-At `main@954f728`, `src/codecairn` has 34,091 physical Python lines: 17,250
+At implementation baseline `954f728`, `src/codecairn` has 34,091 physical
+Python lines: 17,250
 outside `evaluation` and 16,841 inside it. Version 0.1 accepts at most:
 
 - 10,000 physical Python lines in product core excluding `evaluation`;
@@ -321,9 +360,10 @@ not evade it.
 
 ## Current-to-target delta
 
-| Current `main@954f728` | Version 0.1 target | Task |
+| Implementation baseline `954f728` | Version 0.1 target | Task |
 |---|---|---|
-| Six types plus Evidence Gate paths | Four types; optional verification | `v01-001` |
+| No early source gate; historical verifier owns worker code | CI source budget plus a read-only historical verifier adapter | `v01-000a` |
+| Six types plus Evidence Gate paths | Four types; no standalone verification operation | `v01-001` |
 | Import emits Failed Command only | Complete cardinality and pending semantic jobs | `v01-002` |
 | No durable evolution | Evolution Records, status, restore | `v01-003` |
 | Recall has no lifecycle filter | Active-only recall and history | `v01-004` |

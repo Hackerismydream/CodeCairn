@@ -1,8 +1,9 @@
 # CodeCairn
 
-CodeCairn is a local-first Memory OS for agents. It owns durable memory
-independently from any agent runtime; version 0.1 delivers one complete Coding
-Profile for repository-scoped work.
+CodeCairn is an auditable local long-term memory runtime for coding agents. It
+owns durable memory independently from any agent runtime; internally this is
+its Memory OS authority. Version 0.1 delivers one complete Coding Profile for
+repository-scoped work.
 
 ## Product language
 
@@ -77,7 +78,8 @@ _Avoid_: Repository Convention as a top-level memory type
 
 **User Preference**:
 A reusable working or output preference derived from user-authored source
-content.
+content. Version 0.1 presents this repository-scoped type as **Repository
+Working Preference**; global personal preference is deferred.
 
 **Workstream**:
 One independently progressing unit of work inside a Memory Namespace, identified
@@ -129,9 +131,10 @@ The authoritative, human-readable representation of Coding Memories and
 Evolution Records. “Truth” describes storage authority, not factual
 verification.
 
-**Memory Verification**:
-An optional operation that checks a Coding Memory against Evidence Facts.
-Verification never decides whether the memory may be stored.
+**Verification Facet**:
+A system-derived Task Experience facet that records an observed verification
+fact. Version 0.1 has no standalone Memory Verification record or operation,
+and verification never decides whether memory may be stored.
 
 **Import Ledger**:
 Operational state that records source fingerprints, committed cursors, stable
@@ -140,6 +143,11 @@ episode identities, memory identities, and processing failures.
 **Index Queue**:
 The transactional outbox of durable revisions waiting to enter the disposable
 search projection.
+
+**Write Intent**:
+The SQLite recovery record that reserves one deterministic multi-file durable
+write before Markdown is created and is completed only after Markdown,
+mirrors, projections, queues, and any source cursor agree.
 
 **Index Readiness**:
 The state in which the search projection matches Markdown Truth and no index

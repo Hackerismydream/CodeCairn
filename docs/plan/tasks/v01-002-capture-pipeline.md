@@ -1,7 +1,7 @@
 ---
 id: v01-002
 scope: source-to-memory capture and semantic processing
-status: ready
+status: blocked
 depends-on: [v01-001]
 ---
 
@@ -39,11 +39,14 @@ Primary:
 
 1. Build deterministic Task Experience content from the Task Episode's task,
    observed actions, command/file facets, and outcome.
-2. Finalize an Episode at the next user task, explicit Stop/SessionEnd, or
-   manual-import EOF. Persist boundary kind and stable source span.
+2. Implement the exact half-open Episode state machine: next user,
+   cursor-owned Stop/SessionEnd, and only explicit manual `finalize=true`.
+   Persist boundary kind as metadata outside identity.
 3. Use one stable identity per closed Episode and capture schema. Appended
    events after a committed boundary create a linked continuation Episode;
    they cannot replace or duplicate the committed experience.
+   First appended new-user events are independent, prefix mismatch is
+   `source_rewritten`, and concurrent closure uses SQLite uniqueness.
 4. Define a semantic extractor port that proposes Repository Knowledge, User
    Preference, Work State, and evolution relations. It does not rewrite Task
    Experience.
@@ -52,13 +55,15 @@ Primary:
    or the Episode closes an existing open Workstream.
    Its key must be one of the system-derived issue/branch/task/session
    candidates.
-7. Commit deterministic memory, source cursor, and semantic job atomically.
+7. Commit deterministic memory, source cursor, and semantic job through the
+   documented Write Intent/fsync/recovery protocol.
 8. Implement pending/leased/completed/failed semantic jobs with bounded retry
    and idempotent output fingerprint.
 9. Add `process_pending` service behavior for semantic batches. Index draining
    may continue through the existing surface until v01-005 unifies the command.
-10. On semantic success, commit optional items and enqueue all new projections
-   in one transaction.
+10. On semantic success, persist one immutable Proposal batch plus optional
+    memories and enqueue projections. Do not apply evolution; `v01-003` owns
+    apply/keep/reject.
 11. On semantic absence/failure, keep the Task Experience and expose pending or
     failed status; never report semantic completion.
 
@@ -94,6 +99,8 @@ Add acceptance cases for:
 - repeated Stop with no new event and appended continuation import;
 - an unclosed suffix that produces no memory until finalized;
 - transaction failure before and after Markdown creation.
+- all eight Write Intent crash points across capture.
+- next-user/Stop/manual-finalize collisions and concurrent closure.
 
 ## Exit criteria
 

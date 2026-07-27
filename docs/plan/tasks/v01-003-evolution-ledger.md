@@ -1,7 +1,7 @@
 ---
 id: v01-003
 scope: supersession, status projection, and restore
-status: ready
+status: blocked
 depends-on: [v01-002]
 ---
 
@@ -27,8 +27,9 @@ Primary:
 
 ## Required changes
 
-1. Implement `EvolutionRecord`, `EvolutionProposal`, `MemoryStatus`, and stable
-   identity exactly as the lifecycle design specifies.
+1. Implement `EvolutionRecord`, `EvolutionProposal`, proposal outcome,
+   `SourceOrderKey`, `MemoryStatus`, and stable identity exactly as the schema
+   and lifecycle contracts specify.
 2. Validate existing IDs, same namespace, active predecessor, no self-edge, and
    no cycle before applying an edge.
 3. Encode type policy:
@@ -40,17 +41,23 @@ Primary:
    - cross-type edges are rejected.
 4. Treat repeated identical application as a no-op and conflicting content as
    an error.
-5. Persist Evolution Markdown, SQLite mirror, derived statuses, and both index
-   outbox revisions atomically.
-6. Rebuild status from Memory and Evolution Markdown and prove parity.
-7. Add `restore(memory_id)` that creates a new memory with
-   `origin=restored`/`restored_from`, then follows normal supersession.
+5. Apply with `BEGIN IMMEDIATE` CAS and the required one-successor and active
+   Work State-head uniqueness constraints.
+6. Persist Evolution Markdown, SQLite mirror, derived statuses, and both index
+   outbox revisions through one multi-file Write Intent.
+7. Rebuild status from Memory and Evolution Markdown and prove parity.
+8. Add `restore(memory_id)` that creates a new memory with `origin=restored`,
+   `restored_from`, and `restore_predecessor_id`, then follows normal
+   supersession.
    Accept only superseded Repository Knowledge, User Preference, or Work State;
    reject Task Experience and already-active memory. Treat the explicit restore
    as a user lifecycle decision while preserving namespace/type/key/cycle
    validation.
-8. Automatic invalid proposals become failed semantic jobs; explicit service
-   calls return typed validation errors.
+9. Restore selects the unique active tip in the restored memory's lineage;
+   zero or multiple tips return `ambiguous_lineage`.
+10. Automatic proposal outcomes are `applied`, `kept_both`, or `rejected`.
+    A policy rejection does not fail completed semantic extraction; explicit
+    service calls return typed validation errors.
 
 ## Public service contract
 
@@ -80,12 +87,16 @@ Required cases:
 - wrong namespace/type/subject/workstream;
 - self-edge and multi-node cycle;
 - inactive predecessor;
+- incomparable cross-session order keeps both;
 - idempotent retry and conflicting edge;
+- concurrent same-predecessor and same-Workstream-head races;
 - transaction rollback;
+- policy rejection preserves completed semantic job;
 - Markdown-to-SQLite status rebuild;
 - predecessor and successor index requeue;
 - restore creates a new ID and preserves all prior files.
 - restore rejects append-only Task Experience and already-active memory.
+- restore returns `ambiguous_lineage` for zero or multiple active tips.
 
 ## Exit criteria
 

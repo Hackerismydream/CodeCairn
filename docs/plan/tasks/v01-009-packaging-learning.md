@@ -1,7 +1,7 @@
 ---
 id: v01-009
 scope: package publication surface and learner documentation
-status: ready
+status: planned
 depends-on: [v01-008]
 ---
 
@@ -9,9 +9,9 @@ depends-on: [v01-008]
 
 ## Objective
 
-Produce a deterministic MIT-licensed package that a new user can run through
-`uvx`, and make the implementation readable through one maintained learning
-path.
+Produce a deterministic MIT-licensed package that a new user can install
+persistently through `uv tool install`, and make the implementation readable
+through one maintained learning path.
 
 ## Paths
 
@@ -55,6 +55,11 @@ Primary:
    support channels that do not exist.
 10. Add a changelog entry that separates historical baseline evidence from
     version 0.1 release evidence.
+11. Provide reviewable `AGENTS.md` and `CLAUDE.md` snippets for recall,
+    remember, and history behavior without modifying those files automatically.
+12. Document the real install -> init -> MCP add -> hook dry-run/install ->
+    Codex trust -> doctor -> task -> next recall sequence and measure manual
+    five-minute versus one-client ten-minute outcomes separately.
 
 ## Documentation quality gate
 

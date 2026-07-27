@@ -1,18 +1,20 @@
 ---
 id: v01-001
 scope: memory domain and obsolete write paths
-status: ready
-depends-on: [v01-000]
+status: blocked
+depends-on: [v01-000a]
 ---
 
 # Replace the six-type gated domain with four memory types
 
 ## Objective
 
-Implement the durable record vocabulary in
+Implement the exact records in
+[`../../v0.1/schema-contract.md`](../../v0.1/schema-contract.md) and lifecycle
+vocabulary in
 [`../../v0.1/memory-lifecycle.md`](../../v0.1/memory-lifecycle.md), retain
-system-derived Source evidence, and remove Evidence Gate as a write
-prerequisite.
+system-derived Source evidence, and remove Evidence Gate and standalone Memory
+Verification as product operations.
 
 ## Context
 
@@ -48,7 +50,9 @@ unrelated behavior.
    from the lifecycle document; timestamps and model attempt IDs are excluded.
 3. Preserve Evidence Reference and deterministic Evidence Fact derivation.
    Capture-derived Markdown stores the bounded selected fact snapshots; direct
-   memory may have neither facts nor references.
+   Repository Knowledge and Work State may have neither facts nor references.
+   Persist the Source Fact Registry and require direct User Preference to use
+   resolvable user-authored `source_fact_ids`.
 4. Remove `MemoryProposal`, `GateDecision`, `EvidenceGate`, gate audit
    persistence, and gate-only tests.
 5. Replace type-specific write entrypoints with one create-only
@@ -61,6 +65,9 @@ unrelated behavior.
    “fresh root and re-import” error.
 9. Delete obsolete modules or symbols once callers migrate; do not keep aliases
    for pre-release internal APIs.
+10. Implement the closed schema, unknown-field rejection, exact
+    canonicalization, full-digest typed IDs, bounds, and Markdown/SQLite mapping
+    from the schema contract.
 
 ## Public behavior
 
@@ -85,6 +92,7 @@ uv run mypy
 uv run lint-imports
 make format
 make check
+make source-budget
 rg "EvidenceGate|GateDecision|MemoryProposal|debug_episode|failed_command|verified_fix|repository_convention" src/codecairn
 ```
 
@@ -98,4 +106,5 @@ and must be isolated outside the product memory model.
 - the public/service write path does not gate storage on verification;
 - old roots fail before mutation;
 - all checks pass;
+- product core is at most 15,500 physical Python lines;
 - the commit reports product-core and total source-line deltas.

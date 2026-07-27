@@ -1,7 +1,8 @@
 # CodeCairn v0.1 Delivery Plan
 
-Status: ready for implementation. Product and architecture decisions are
-accepted; each implementation unit is specified under [`tasks/`](tasks/).
+Status: implementation contracts accepted. The source-budget and historical
+verifier guardrail is the only ready implementation task; later tasks become
+ready when their dependency merges.
 
 ## Baseline
 
@@ -28,6 +29,8 @@ target described in the new documents.
 
 ```text
 v01-000 Fable baseline (done)
+   |
+v01-000a source budget + historical verifier guardrails
    |
 v01-001 four-type domain + remove write gate
    |
@@ -63,19 +66,22 @@ parallel. Implementation merges only after every listed dependency is on
 | ID | Outcome | Depends on | State |
 |---|---|---|---|
 | [`v01-000`](tasks/v01-000-fable-baseline.md) | Fable baseline on `main` | none | done |
-| [`v01-001`](tasks/v01-001-domain-slimming.md) | Four-type domain and optional verification | v01-000 | ready |
-| [`v01-002`](tasks/v01-002-capture-pipeline.md) | Complete episode capture | v01-001 | ready |
-| [`v01-003`](tasks/v01-003-evolution-ledger.md) | Supersession and restore | v01-002 | ready |
-| [`v01-004`](tasks/v01-004-active-recall.md) | Active-only lifecycle-aware recall | v01-003 | ready |
-| [`v01-005`](tasks/v01-005-onboarding.md) | Init, config, process, doctor | v01-004 | ready |
-| [`v01-006`](tasks/v01-006-mcp.md) | Explicit MCP access | v01-005 | ready |
-| [`v01-007`](tasks/v01-007-hooks.md) | Post-session automatic capture | v01-006 | ready |
-| [`v01-008`](tasks/v01-008-evaluation-slimming.md) | Small evaluation surface and source gates | v01-007 | ready |
-| [`v01-009`](tasks/v01-009-packaging-learning.md) | Installable learner-facing package | v01-008 | ready |
-| [`v01-010`](tasks/v01-010-release-e2e.md) | One verified release candidate | v01-009 | ready |
+| [`v01-000a`](tasks/v01-000a-guardrails.md) | Early source gate and historical verifier boundary | v01-000 | ready |
+| [`v01-001`](tasks/v01-001-domain-slimming.md) | Four-type domain; no standalone verification operation | v01-000a | blocked |
+| [`v01-002`](tasks/v01-002-capture-pipeline.md) | Complete episode capture | v01-001 | blocked |
+| [`v01-003`](tasks/v01-003-evolution-ledger.md) | Supersession and restore | v01-002 | blocked |
+| [`v01-004`](tasks/v01-004-active-recall.md) | Active-only lifecycle-aware recall | v01-003 | planned |
+| [`v01-005`](tasks/v01-005-onboarding.md) | Init, config, process, doctor | v01-004 | planned |
+| [`v01-006`](tasks/v01-006-mcp.md) | Explicit MCP access | v01-005 | planned |
+| [`v01-007`](tasks/v01-007-hooks.md) | Post-session automatic capture | v01-006 | planned |
+| [`v01-008`](tasks/v01-008-evaluation-slimming.md) | Small evaluation surface and source gates | v01-007 | planned |
+| [`v01-009`](tasks/v01-009-packaging-learning.md) | Installable learner-facing package | v01-008 | planned |
+| [`v01-010`](tasks/v01-010-release-e2e.md) | One verified release candidate | v01-009 | planned |
 
-`ready` means the specification is ready. An agent starts a task only after
-every `depends-on` task is completed on its base branch.
+`ready` means an agent may implement the task from current `main`. `blocked`
+means a precise contract exists but an implementation dependency has not
+merged. `planned` means the task is specified and will be re-read against the
+completed dependency before its state changes to ready.
 
 ## Agent working contract
 
@@ -106,16 +112,18 @@ No task may:
 When documents conflict during implementation:
 
 1. [`../../CONTEXT.md`](../../CONTEXT.md) for domain language;
-2. [`../v0.1/memory-lifecycle.md`](../v0.1/memory-lifecycle.md) for durable
+2. [`../v0.1/schema-contract.md`](../v0.1/schema-contract.md) for exact wire,
+   storage, identity, and DTO schema;
+3. [`../v0.1/memory-lifecycle.md`](../v0.1/memory-lifecycle.md) for durable
    lifecycle;
-3. [`../architecture.md`](../architecture.md) for ownership and flows;
-4. [`../PRD.md`](../PRD.md) for release requirements;
-5. the current task file for implementation boundaries;
-6. historical plans and older ADRs for context only.
+4. [`../architecture.md`](../architecture.md) for ownership and flows;
+5. [`../PRD.md`](../PRD.md) for release requirements;
+6. the current task file for implementation boundaries;
+7. historical plans and older ADRs for context only.
 
 ## Completion
 
 Version 0.1 is not complete when the code merely compiles. It is complete when
 `v01-010` binds the installed product, lifecycle smoke, source budget, full
-LoCoMo result, coding A/B artifact, package inventory, and documentation to one
-clean commit.
+LoCoMo result, coding A/B artifact, package inventory, and documentation to the
+documented clean implementation/evidence SHA pair.

@@ -1,7 +1,7 @@
 ---
 id: v01-005
 scope: initialization, configuration, processing, and diagnostics
-status: ready
+status: planned
 depends-on: [v01-004]
 ---
 
@@ -34,12 +34,16 @@ domain parse TOML or environment variables.
 
 ## Required changes
 
-1. Implement stable Git repository discovery and `repo_key` derivation shared
-   by later MCP/hooks.
+1. Implement stable Git repository discovery and the exact explicit
+   flag/frozen config/selected remote/common-Git-dir `repo_key` precedence,
+   including SSH/HTTPS normalization, multiple remotes, linked worktrees, and
+   repository moves.
 2. Make `~/.codecairn` the default runtime root; repository-local state requires
    an explicit `--root`.
 3. Implement strict, versioned `codecairn.toml` with precedence:
    explicit CLI > environment > file > built-in.
+   The default binding path is `<git-common-dir>/codecairn.toml`; environment
+   never silently changes a frozen repo key.
 4. Keep secrets environment-only and reject unknown config keys.
 5. Implement idempotent `codecairn init` with the flags documented in
    `onboarding-and-operations.md`.
@@ -52,9 +56,15 @@ domain parse TOML or environment variables.
 8. Add `codecairn process` for bounded semantic/index queues and failed retry.
 9. Add `memory show`, `memory history`, `memory supersede`, and `memory restore`
    CLI presentation over existing service operations.
-10. Make human `doctor` show subsystem state and one executable remedy; retain
+10. Add CLI `remember` for Repository Knowledge, Repository Working Preference,
+    and Work State with stdin/file/text exclusivity and the Source Fact rules in
+    the schema contract. Reject direct Task Experience.
+11. Add namespace export and recoverable backup-first reset with dry-run and
+    explicit repo-key confirmation.
+12. Make human `doctor` show subsystem state, privacy/egress posture, recent
+    hook warning extension points, and one executable remedy; retain
     stable JSON and `--strict`.
-11. Split the current 2,648-line bootstrap composition so command parsing,
+13. Split the current 2,648-line bootstrap composition so command parsing,
     configuration, and object construction are readable. Do not create a
     generic dependency-injection framework.
 
@@ -74,6 +84,7 @@ uv run codecairn process --help
 uv run codecairn doctor --help
 make format
 make check
+make source-budget
 ```
 
 Add an installed-command-style test using a temporary Git repository:
@@ -83,8 +94,10 @@ init -> import fixture without repo-key -> process -> recall without repo-key
 ```
 
 Also cover subdirectory/worktree resolution, no remote, config/env precedence,
-unknown keys, no secret serialization, idempotent init, provider absence,
-stale index, failed semantic job, and pre-v0.1 root rejection.
+unknown keys, SSH/HTTPS equivalence, multi-remote ambiguity, repository move,
+no secret serialization, idempotent init, provider absence, privacy posture,
+stale index, failed semantic job, namespace export/reset, direct remember, and
+pre-v0.1 root rejection.
 
 Unit tests fake the embedding probe and assert vector shape. Record one optional
 credentialed live-smoke command for release; do not claim the live provider

@@ -1,4 +1,15 @@
-# GPT Pro Review Brief
+# GPT Pro Review Brief and Disposition
+
+Initial external verdict: **CONDITIONAL GO**. The review accepted the five-layer
+architecture, four memory types, independent memory-runtime subject, Fable
+baseline, and Raven deferral. It blocked autonomous implementation on exact
+schema, Episode closure, cross-store recovery, evolution/restore concurrency,
+and hook-to-recall freshness.
+
+This contract-hardening set addresses those findings. It does not claim an
+independent second review or implementation success. After it merges,
+`v01-000a` is the next executable guardrail task; `v01-001` remains blocked
+until that task merges.
 
 Review the CodeCairn version 0.1 pre-development package as a principal
 engineer and product architect. This is a design and execution-readiness review,
@@ -6,9 +17,11 @@ not a request to implement code.
 
 ## Repository state
 
-- Branch: local `main`
+- Branch: `main`
+- Contract baseline: `main@2c79b3f`
 - Fable baseline: `954f728`
-- Product: an independent local-first Memory OS for agents
+- Product: an auditable local long-term memory runtime for coding agents with
+  independent Memory OS authority
 - Version 0.1 client scope: Codex and Claude Code
 - Explicit exclusion: Raven integration is post-v0.1
 - Historical evidence: `evidence/benchmark-v3` reports 82.60% under its frozen
@@ -20,14 +33,15 @@ Read in this order:
 2. `docs/PRD.md`
 3. `docs/architecture.md`
 4. `docs/v0.1/README.md`
-5. `docs/v0.1/memory-lifecycle.md`
-6. `docs/v0.1/agent-integration.md`
-7. `docs/v0.1/onboarding-and-operations.md`
-8. `docs/v0.1/evaluation-and-release.md`
-9. `docs/plan/analysis/v0.1-delivery.md`
-10. `docs/plan/README.md`
-11. every file under `docs/plan/tasks/`
-12. ADRs 0043–0050
+5. `docs/v0.1/schema-contract.md`
+6. `docs/v0.1/memory-lifecycle.md`
+7. `docs/v0.1/agent-integration.md`
+8. `docs/v0.1/onboarding-and-operations.md`
+9. `docs/v0.1/evaluation-and-release.md`
+10. `docs/plan/analysis/v0.1-delivery.md`
+11. `docs/plan/README.md`
+12. every file under `docs/plan/tasks/`
+13. ADRs 0043–0051
 
 Use current source only to verify feasibility and implementation deltas. Treat
 `docs/runtime/operations.md` as current behavior and the version 0.1 documents
@@ -98,4 +112,4 @@ Return:
 8. a final list of document edits required before the first code task starts.
 
 Do not provide generic best practices. If there is no blocking issue, state
-that explicitly and identify `v01-001` as the next executable task.
+that explicitly and identify `v01-000a` as the next executable task.

@@ -5,7 +5,7 @@ version 0.1 lifecycle and distribution gates are not implemented.
 
 ## Baseline evidence
 
-At local `main@954f728` on 2026-07-27:
+At the clean pre-development planning baseline `2c79b3f` on 2026-07-27:
 
 ```text
 make format                                      pass
@@ -22,28 +22,32 @@ This proves the baseline checkout, not version 0.1 release readiness.
 | Area | Current | Release requirement | Owner |
 |---|---|---|---|
 | Fable P0/B0 baseline | pass | retained | v01-000 |
+| Contract hardening | documented | exact schema, Episode, recovery, evolution, freshness contracts retained | contract gate |
+| Early guardrails | absent | source counter/CI and historical verifier reader boundary | v01-000a |
 | Four-type capture | absent | one Task Experience per Episode plus optional Knowledge | v01-001/002 |
 | Memory evolution | absent | Supersession, active history, restore E2E | v01-003/004 |
 | Onboarding | manual | `init`, config, derived namespace, process, human doctor | v01-005 |
 | MCP | absent | seven tools and one resource from installed package | v01-006 |
 | Client hooks | absent | real Claude SessionEnd and Codex Stop smoke | v01-007/010 |
-| Evaluation commands | historical complex CLI | six documented Make targets | v01-008 |
+| Evaluation commands | historical complex CLI | eight documented Make targets | v01-008 |
 | Source budget | 17,250 core / 34,091 total | at most 10,000 / 15,000 | v01-001–008 |
 | Package metadata | partial | MIT, full metadata, curated artifacts | v01-009 |
 | Installed smoke | absent | CLI/MCP/hook lifecycle outside checkout | v01-009/010 |
 | Current evidence CI | stale bundle selection | selected release bundle verified | v01-008 |
 | Release benchmark | historical 82.60% only | new full run at candidate commit, at least 82.00% | v01-010 |
 | Governance | absent | changelog, security, contribution, conduct | v01-009 |
-| Tag/publication | absent | exact verified commit and artifact inventory | v01-010 |
+| Tag/publication | absent | verified implementation/evidence SHA pair and artifact inventory | v01-010 |
 
 ## Final gate
 
-One clean candidate must pass:
+A clean implementation/evidence SHA pair must pass:
 
 ```text
 make format
 make check
 make eval-smoke
+make eval-scale
+make eval-retrieval
 make source-budget
 make evidence-verify
 uv build
@@ -55,7 +59,12 @@ It must also own:
 - a full 1,540-question LoCoMo artifact at least 82.00%, target at least
   historical 82.60%;
 - a local release-protocol recall P95 no greater than four seconds;
-- a complete coding memory-off/on A/B artifact;
+- 100-query Recall@5 at least 90%, provenance coverage 100%, and zero stale
+  predecessor leakage;
+- a complete coding memory-off/on A/B artifact with zero memory-induced
+  regressions;
+- 1,000-session/100,000-event duplicate-free scale import and 100% recovery at
+  the eight Write Intent crash points;
 - real supported-client hook receipts;
 - curated wheel/sdist inventories and hashes;
 - documentation/link/command verification.

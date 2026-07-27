@@ -1,9 +1,10 @@
 # Runtime Operations
 
-This document describes the public behavior that exists on baseline
-`main@954f728`. It separates implemented behavior from the accepted version
-0.1 target so operators do not mistake future `init`, MCP, hook, capture, or
-evolution commands for available commands.
+This document describes the public behavior in implementation baseline
+`954f728`; the accepted pre-development planning baseline is `2c79b3f`. It
+separates implemented behavior from the accepted version 0.1 target so
+operators do not mistake future `init`, MCP, hook, capture, or evolution
+commands for available commands.
 
 Target operations are specified in
 [`../v0.1/onboarding-and-operations.md`](../v0.1/onboarding-and-operations.md)
@@ -23,7 +24,7 @@ and [`../v0.1/agent-integration.md`](../v0.1/agent-integration.md).
 | Evaluation run/report | `codecairn eval ...` | Evaluation run/report routes | Uses immutable explicit input/output roots |
 | Evidence build/verify | `codecairn evidence ...` | Not exposed | Builds or verifies public evidence bundles |
 
-## Product lifecycle on current main
+## Product lifecycle in the implemented baseline
 
 ```text
 codecairn import

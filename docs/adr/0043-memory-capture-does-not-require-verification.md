@@ -1,5 +1,6 @@
 ---
 status: accepted
+amended-by: 0051
 ---
 
 # Memory Capture Does Not Require Verification
