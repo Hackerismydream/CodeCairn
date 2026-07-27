@@ -121,11 +121,14 @@ event_index, fact_id)`.
 | `role` | enum or null | yes | `user`, `assistant`, `tool`, `system`, or null when not a message |
 | `value` | string | yes | Exact or deterministic bounded observation |
 | `attributes` | object | yes | Closed fact-kind-specific scalar map |
+| `fact_ordinal` | non-negative integer | yes | Deterministic zero-based ordinal within one normalized event |
 
 The system derives all fact fields from a normalized event. An LLM may select
 `fact_id` values but may not author or modify a fact.
 
-`attributes` has the following exact shape by `fact_kind`. An optional field
+`fact_ordinal` is stored because it participates in identity and must remain
+re-derivable after a Markdown or SQLite round trip. `attributes` has the
+following exact shape by `fact_kind`. An optional field
 must be omitted rather than encoded as `null`; no other key is accepted.
 
 | `fact_kind` | Required attributes | Optional attributes |
@@ -486,7 +489,7 @@ restore_predecessor_id: null
 source_order_key: {"event_index":4,"provider":"codex","session_id":"session-1","source_generation":1,"trusted_timestamp_ms":1785166800000}
 payload: {"claim":"Parser behavior is verified through tests/golden.","subject_key":"parser-tests"}
 evidence: [{"event_id":"event-4","event_index":4,"event_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","fact_id":"fact_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","provider":"codex","session_id":"session-1","source_generation":1,"source_path_sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}]
-facts: [{"attributes":{"change_kind":"update","path":"tests/golden"},"episode_id":"ep_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","fact_id":"fact_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","fact_kind":"file_change","reference":{"event_id":"event-4","event_index":4,"event_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","fact_id":"fact_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","provider":"codex","session_id":"session-1","source_generation":1,"source_path_sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},"repo_key":"acme/widgets","role":null,"schema_version":1,"value":"tests/golden"}]
+facts: [{"attributes":{"change_kind":"update","path":"tests/golden"},"episode_id":"ep_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","fact_id":"fact_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","fact_kind":"file_change","fact_ordinal":0,"reference":{"event_id":"event-4","event_index":4,"event_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","fact_id":"fact_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","provider":"codex","session_id":"session-1","source_generation":1,"source_path_sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},"repo_key":"acme/widgets","role":null,"schema_version":1,"value":"tests/golden"}]
 ---
 Parser behavior is verified through tests/golden.
 ```

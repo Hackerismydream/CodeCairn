@@ -1,7 +1,7 @@
 ---
 id: v01-002
 scope: source-to-memory capture and semantic processing
-status: blocked
+status: ready
 depends-on: [v01-001]
 ---
 

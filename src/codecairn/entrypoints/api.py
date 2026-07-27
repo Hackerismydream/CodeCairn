@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 from codecairn.memory.errors import TraceImportError
 from codecairn.memory.models import CodingMemory
+from codecairn.memory.schema import coding_memory_to_dict
 from codecairn.service.application import (
     CodeCairnApplication,
     EvaluationReportRequest,
@@ -416,27 +417,4 @@ def _error_response(
 
 
 def _memory_response(memory: CodingMemory) -> dict[str, Any]:
-    return {
-        "memory_id": memory.memory_id,
-        "repo_key": memory.repo_key,
-        "memory_type": memory.memory_type,
-        "title": memory.title,
-        "summary": memory.summary,
-        "episode_id": memory.episode_id,
-        "adjacency_group_id": memory.adjacency_group_id,
-        "adjacency_index": memory.adjacency_index,
-        "command": memory.command,
-        "exit_code": memory.exit_code,
-        "evidence": [
-            {
-                "provider": item.provider,
-                "session_id": item.session_id,
-                "raw_event_sha256": item.raw_event_sha256,
-                "raw_event_index": item.raw_event_index,
-                "raw_event_type": item.raw_event_type,
-                "call_id": item.call_id,
-            }
-            for item in memory.evidence
-        ],
-        "content_sha256": memory.content_sha256,
-    }
+    return coding_memory_to_dict(memory)

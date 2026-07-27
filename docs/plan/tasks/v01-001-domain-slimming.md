@@ -1,7 +1,7 @@
 ---
 id: v01-001
 scope: memory domain and obsolete write paths
-status: ready
+status: done
 depends-on: [v01-000a]
 ---
 
@@ -108,3 +108,21 @@ and must be isolated outside the product memory model.
 - all checks pass;
 - product core is at most 15,500 physical Python lines;
 - the commit reports product-core and total source-line deltas.
+
+## Implementation result
+
+Completed from `main@fcbb831` with the accepted four-type schema as the only
+product memory model. The implementation removed the six-type Gate domain,
+semantic projection compatibility stack, embedded storage metadata, and the
+evaluation executors coupled to those deleted contracts. The pure historical
+reader and `benchmark-v3` verifier remain available; new v0.1 evaluation
+execution is intentionally rebuilt by `v01-008`.
+
+Acceptance evidence before commit:
+
+- `make format` and `make check`: pass, 86 tests;
+- `codecairn evidence verify evidence/benchmark-v3`: 4,411 files verified;
+- Codex and Claude import fixtures: one Task Experience each;
+- repeated import: zero duplicate memories;
+- four Memory variants round-trip through Markdown and SQLite;
+- source budget: core 6,028 lines, package 8,941 lines.

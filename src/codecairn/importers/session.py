@@ -8,13 +8,14 @@ from codecairn.importers.codex import CodexImporter
 from codecairn.importers.jsonl import JsonlScan, read_jsonl
 from codecairn.memory.errors import TraceParseError
 from codecairn.memory.models import AgentTrace, ImportCheckpoint
+from codecairn.memory.schema import Provider
 
 _MAX_SESSION_BYTES = 64 * 1024 * 1024
 _MAX_RAW_EVENTS = 100_000
 
 
 class _JsonlAdapter(Protocol):
-    provider: str
+    provider: Provider
 
     def _from_scan(
         self,
@@ -55,7 +56,7 @@ class SessionImporter:
         return adapter._from_scan(scan, checkpoint=checkpoint)
 
 
-def _detect_provider(scan: JsonlScan) -> str:
+def _detect_provider(scan: JsonlScan) -> Provider:
     for record, _raw_event_sha256 in scan.records:
         if isinstance(record.get("sessionId"), str):
             return ClaudeImporter.provider

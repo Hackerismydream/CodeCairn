@@ -86,7 +86,7 @@ def test_appended_task_preserves_earlier_episode_identity_and_outcome(
     ]
     assert before[0].outcome == "success"
     assert after[0].outcome == "success"
-    assert after[1].outcome == "failed"
+    assert after[1].outcome == "failure"
 
 
 def test_unmatched_custom_output_does_not_steal_the_real_pair(tmp_path: Path) -> None:
@@ -289,7 +289,7 @@ def test_write_stdin_result_can_author_long_running_command_outcome(tmp_path: Pa
 
     assert trace.events[3].command is None
     assert trace.events[3].is_command_result
-    assert episode.outcome == "failed"
+    assert episode.outcome == "failure"
 
 
 def test_appending_a_result_extends_only_the_active_episode(tmp_path: Path) -> None:
@@ -303,7 +303,8 @@ def test_appending_a_result_extends_only_the_active_episode(tmp_path: Path) -> N
     after = segment_tasks(importer.read(source), repo_key="acme/widgets")
 
     assert len(before) == len(after) == 1
-    assert before[0].episode_id == after[0].episode_id
+    assert before[0].episode_id != after[0].episode_id
+    assert before[0].opening_event_id == after[0].opening_event_id
     assert before[0].outcome == "unknown"
     assert after[0].outcome == "success"
 

@@ -1,54 +1,26 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
+
+from codecairn.memory.schema import (
+    CodingMemory as CodingMemory,
+)
+from codecairn.memory.schema import (
+    EvidenceFact as EvidenceFact,
+)
+from codecairn.memory.schema import (
+    MemoryType as MemoryType,
+)
+from codecairn.memory.schema import (
+    Provider,
+)
 
 TraceEventKind = Literal["message", "tool_call", "tool_result", "metadata", "unknown"]
 FileChangeOperation = Literal["add", "update", "delete", "move"]
-MemoryType = Literal[
-    "conversation_episode",
-    "debug_episode",
-    "repository_convention",
-    "failed_command",
-    "verified_fix",
-    "user_preference",
-]
-EpisodeOutcome = Literal["success", "failed", "unknown"]
+TraceEpisodeOutcome = Literal["success", "failure", "unknown"]
 MemoryRepairReason = Literal["missing", "truncated", "hash_mismatch", "unparsable"]
-EvidenceFactKind = Literal[
-    "action",
-    "command_outcome",
-    "conversation_turn",
-    "episode_outcome",
-    "file_change",
-    "repository_rule",
-    "repeated_trace",
-    "task_prompt",
-    "user_quote",
-    "verification",
-]
-EvidenceFactStatus = Literal["success", "failed", "unknown"]
-GateDecisionReason = Literal[
-    "accepted",
-    "duplicate_fact_id",
-    "missing_fact",
-    "cross_repository_evidence",
-    "unsupported_memory_type",
-    "preference_requires_quote",
-    "preference_requires_user_role",
-    "quote_not_exact_source_substring",
-    "convention_requires_grounding",
-    "verified_fix_requires_change",
-    "verified_fix_requires_successful_verification",
-    "verification_must_follow_change",
-    "debug_episode_requires_task_prompt",
-    "debug_episode_requires_action",
-    "debug_episode_requires_observed_outcome",
-    "debug_episode_facts_are_disconnected",
-    "conversation_episode_requires_attributed_turns",
-    "conversation_episode_facts_are_disconnected",
-    "semantic_episode_invalid",
-]
 IndexOperation = Literal["upsert", "delete"]
 CandidateSource = Literal["lexical", "vector"]
 RecallDocumentKind = Literal["episode", "atomic_fact"]
@@ -70,7 +42,7 @@ RecallStageName = Literal["candidate_recall", "fusion", "rerank", "selection", "
 
 
 @dataclass(frozen=True, slots=True)
-class EvidenceReference:
+class TraceReference:
     provider: str
     session_id: str
     source_path: str
@@ -78,20 +50,6 @@ class EvidenceReference:
     raw_event_index: int
     raw_event_type: str
     call_id: str | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class EvidenceFact:
-    fact_id: str
-    repo_key: str
-    episode_id: str
-    kind: EvidenceFactKind
-    text: str
-    role: str | None
-    evidence: tuple[EvidenceReference, ...]
-    status: EvidenceFactStatus | None = None
-    actor: str | None = None
-    occurred_at: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -117,14 +75,14 @@ class FileChangeFact:
     operation: FileChangeOperation
     path: str
     destination_path: str | None
-    evidence: EvidenceReference
+    evidence: TraceReference
 
 
 @dataclass(frozen=True, slots=True)
 class TraceEvent:
     event_id: str
     kind: TraceEventKind
-    evidence: EvidenceReference
+    evidence: TraceReference
     role: str | None = None
     text: str | None = None
     tool_name: str | None = None
@@ -139,7 +97,7 @@ class TraceEvent:
 @dataclass(frozen=True, slots=True)
 class AgentTrace:
     trace_id: str
-    provider: str
+    provider: Provider
     session_id: str
     source_path: str
     source_sha256: str
@@ -153,32 +111,12 @@ class AgentTrace:
 
 
 @dataclass(frozen=True, slots=True)
-class TaskEpisode:
+class TraceEpisode:
     episode_id: str
     trace_id: str
     opening_event_id: str
     events: tuple[TraceEvent, ...]
-    outcome: EpisodeOutcome
-
-
-@dataclass(frozen=True, slots=True)
-class CodingMemory:
-    memory_id: str
-    repo_key: str
-    memory_type: MemoryType
-    title: str
-    summary: str
-    episode_id: str
-    command: str | None
-    exit_code: int | None
-    evidence: tuple[EvidenceReference, ...]
-    fact_ids: tuple[str, ...] = ()
-    markdown_path: str | None = None
-    content_sha256: str | None = None
-    facts: tuple[EvidenceFact, ...] = ()
-    semantic_episode: SemanticEpisode | None = None
-    adjacency_group_id: str | None = None
-    adjacency_index: int | None = None
+    outcome: TraceEpisodeOutcome
 
 
 @dataclass(frozen=True, slots=True)
@@ -208,49 +146,6 @@ class RecallDocumentFingerprint:
     parent_document_id: str
     fact_id: str
     document_sha256: str
-
-
-@dataclass(frozen=True, slots=True)
-class MemoryProposal:
-    proposal_id: str
-    repo_key: str
-    memory_type: MemoryType
-    title: str
-    summary: str
-    fact_ids: tuple[str, ...]
-    quote: str | None = None
-    quote_role: str | None = None
-    confidence: float | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class GateDecision:
-    proposal_id: str
-    repo_key: str
-    memory_type: MemoryType
-    accepted: bool
-    reason: GateDecisionReason
-    proposed_fact_ids: tuple[str, ...]
-    resolved_fact_ids: tuple[str, ...]
-    memory: CodingMemory | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class GateAudit:
-    audit_id: int
-    proposal_id: str
-    repo_key: str
-    memory_type: MemoryType
-    accepted: bool
-    reason: GateDecisionReason
-    proposal_title: str
-    proposal_summary: str
-    proposed_quote: str | None
-    proposed_quote_role: str | None
-    proposal_confidence: float | None
-    proposed_fact_ids: tuple[str, ...]
-    resolved_fact_ids: tuple[str, ...]
-    memory_id: str | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -294,6 +189,13 @@ class ImportResult:
 
 
 @dataclass(frozen=True, slots=True)
+class MemoryArtifact:
+    memory: CodingMemory
+    path: Path
+    content_sha256: str
+
+
+@dataclass(frozen=True, slots=True)
 class IndexJob:
     job_id: int
     repo_key: str
@@ -317,7 +219,6 @@ class OperationalCounts:
     import_count: int
     observed_event_count: int
     memory_count: int
-    gate_audit_count: int
     pending_recovery_count: int
 
 

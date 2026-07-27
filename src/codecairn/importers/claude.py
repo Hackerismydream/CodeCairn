@@ -11,12 +11,13 @@ from codecairn.importers.jsonl import JsonlScan, RawRecord, read_jsonl
 from codecairn.memory.errors import TraceParseError
 from codecairn.memory.models import (
     AgentTrace,
-    EvidenceReference,
     FileChangeFact,
     FileChangeOperation,
     ImportCheckpoint,
     TraceEvent,
+    TraceReference,
 )
+from codecairn.memory.schema import Provider
 from codecairn.memory.trace import stable_id
 
 _MAX_SESSION_BYTES = 64 * 1024 * 1024
@@ -45,7 +46,7 @@ class _NormalizeState:
 
 
 class ClaudeImporter:
-    provider = "claude"
+    provider: Provider = "claude"
 
     def read(
         self,
@@ -394,7 +395,7 @@ def _tool_result_event(
 def _file_changes(
     *,
     event_id: str,
-    evidence: EvidenceReference,
+    evidence: TraceReference,
     pending: _PendingCall | None,
     tool_use_result: object,
     is_error: bool,
@@ -470,8 +471,8 @@ def _evidence(
     raw_event_index: int,
     source_path: Path,
     session_id: str,
-) -> EvidenceReference:
-    return EvidenceReference(
+) -> TraceReference:
+    return TraceReference(
         provider=ClaudeImporter.provider,
         session_id=session_id,
         source_path=str(source_path),

@@ -12,12 +12,13 @@ from codecairn.importers.jsonl import JsonlScan, RawRecord, read_jsonl
 from codecairn.memory.errors import TraceParseError
 from codecairn.memory.models import (
     AgentTrace,
-    EvidenceReference,
     FileChangeFact,
     FileChangeOperation,
     ImportCheckpoint,
     TraceEvent,
+    TraceReference,
 )
+from codecairn.memory.schema import Provider
 from codecairn.memory.trace import stable_id
 
 _MAX_SESSION_BYTES = 64 * 1024 * 1024
@@ -48,7 +49,7 @@ class _NormalizeState:
 
 
 class CodexImporter:
-    provider = "codex"
+    provider: Provider = "codex"
 
     def read(
         self,
@@ -179,7 +180,7 @@ def _normalize(
     payload = raw_event.get("payload")
     payload_type = _string(payload.get("type")) if isinstance(payload, dict) else None
     call_id = _string(payload.get("call_id")) if isinstance(payload, dict) else None
-    evidence = EvidenceReference(
+    evidence = TraceReference(
         provider=CodexImporter.provider,
         session_id=session_id,
         source_path=str(source_path),
@@ -347,7 +348,7 @@ def _parse_apply_patch(
     patch: str,
     *,
     event_id: str,
-    evidence: EvidenceReference,
+    evidence: TraceReference,
     remaining_session_facts: int,
 ) -> tuple[FileChangeFact, ...]:
     if len(patch) > _MAX_PATCH_CHARS:
@@ -384,7 +385,7 @@ def _record_patch_line(
     *,
     changes: list[FileChangeFact],
     event_id: str,
-    evidence: EvidenceReference,
+    evidence: TraceReference,
     remaining_session_facts: int,
 ) -> None:
     file_match = _PATCH_FILE.fullmatch(line)

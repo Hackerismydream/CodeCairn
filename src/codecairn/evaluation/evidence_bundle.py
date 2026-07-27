@@ -15,6 +15,7 @@ from codecairn.evaluation.historical_reader import (
     CATEGORY_NAMES,
     read_historical_bundle,
     report_coding,
+    report_locomo_composite,
     report_recovery,
     report_retrieval,
 )
@@ -50,9 +51,12 @@ class EvidenceBundleArtifact:
 
 
 def _report_locomo(source: Path) -> dict[str, object]:
-    from codecairn.evaluation.locomo import report_locomo
-
-    return report_locomo(source)
+    if (source / "composite.json").is_file():
+        return report_locomo_composite(source)
+    saved = read_json(source / "summary.json")
+    if not isinstance(saved, dict):
+        raise ValueError("Legacy LoCoMo summary must be an object")
+    return cast(dict[str, object], saved)
 
 
 def _copy_locomo_composite_evidence(
@@ -61,9 +65,10 @@ def _copy_locomo_composite_evidence(
     *,
     repository_root: Path,
 ) -> None:
-    from codecairn.evaluation.locomo_bundle import copy_locomo_composite_evidence
-
-    copy_locomo_composite_evidence(source, target, repository_root=repository_root)
+    del source, target, repository_root
+    raise ValueError(
+        "Building a composite LoCoMo bundle is unavailable during v0.1 evaluation migration"
+    )
 
 
 def build_evidence_bundle(config: EvidenceBundleConfig) -> EvidenceBundleArtifact:

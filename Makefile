@@ -15,7 +15,7 @@ imports:
 	uv run lint-imports
 
 source-budget:
-	uv run python scripts/source_budget.py --stage v01-000a
+	uv run python scripts/source_budget.py --stage v01-001
 
 test:
 	uv run pytest --cov --cov-report=term-missing
