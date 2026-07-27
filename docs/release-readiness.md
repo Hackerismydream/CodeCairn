@@ -23,7 +23,7 @@ This proves the baseline checkout, not version 0.1 release readiness.
 |---|---|---|---|
 | Fable P0/B0 baseline | pass | retained | v01-000 |
 | Contract hardening | documented | exact schema, Episode, recovery, evolution, freshness contracts retained | contract gate |
-| Early guardrails | absent | source counter/CI and historical verifier reader boundary | v01-000a |
+| Early guardrails | pass: 16,783 core / 34,285 total; benchmark-v3 pure reader verifies 4,411 files | retained and tightened at each stage | v01-000a |
 | Four-type capture | absent | one Task Experience per Episode plus optional Knowledge | v01-001/002 |
 | Memory evolution | absent | Supersession, active history, restore E2E | v01-003/004 |
 | Onboarding | manual | `init`, config, derived namespace, process, human doctor | v01-005 |

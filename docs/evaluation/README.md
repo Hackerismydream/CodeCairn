@@ -175,24 +175,25 @@ bit-for-bit or score-identical reproduction.
 
 ## CI boundary
 
-Current CI runs `make check`, verifies the retained `benchmark-v1` bundle, and
-builds package artifacts. It does not yet verify `benchmark-v3`. Until CI is
-updated, release review must run:
+Current CI runs `make check`, verifies the current `benchmark-v3` bundle, and
+builds package artifacts. The historical `benchmark-v1` remains directly
+verifiable but is no longer the main-branch evidence gate:
 
 ```bash
 uv run codecairn evidence verify evidence/benchmark-v3
 ```
 
-Documentation must not describe the v3 bundle as CI-protected before that
-workflow changes.
+The v3 reducer is the pure historical-reader path; CI does not call providers.
 
 ## Version 0.1 target
 
-Task `v01-008` reduces the installable evaluation framework and exposes six
+Task `v01-008` reduces the installable evaluation framework and exposes eight
 authoritative targets:
 
 ```text
 make eval-smoke
+make eval-scale
+make eval-retrieval
 make eval-locomo-200
 make eval-locomo-full
 make eval-coding-ab

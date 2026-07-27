@@ -178,6 +178,13 @@ The evaluation worker lives under `src/codecairn/evaluation/` and is counted as
 evaluation. `src/codecairn/locomo_worker.py` is not a permitted second
 classification. CI and reports use this one definition.
 
+The `v01-000a` transition ceiling is 17,250 core / 34,300 total. It permits
+only the pure historical-reader boundary added by that task while moving the
+existing worker into the single evaluation classification. The immutable
+baseline remains 17,250 core / 16,841 evaluation / 34,091 total; current
+counts and baseline counts are always reported separately. `v01-001` tightens
+the core ceiling to 15,500 and does not inherit extra total headroom.
+
 It prints the commit, included paths, per-area totals, ceilings, and pass/fail.
 Tests, docs, generated artifacts, and caches are excluded. Installable code
 moved to a different package is included by policy. CI runs this target.

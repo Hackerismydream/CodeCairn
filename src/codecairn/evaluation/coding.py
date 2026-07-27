@@ -15,7 +15,6 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from statistics import mean
 from typing import Literal, Protocol, cast
 
 from codecairn.evaluation.artifacts import (
@@ -24,6 +23,7 @@ from codecairn.evaluation.artifacts import (
     read_json,
     write_json_exclusive,
 )
+from codecairn.evaluation.historical_reader import report_coding as _report_coding
 
 CodingArm = Literal["memory-on", "memory-off"]
 RunOutcome = Literal["passed", "failed", "infrastructure_failed"]
@@ -72,6 +72,10 @@ class TraceEvent:
     path: str | None = None
     command: str | None = None
     exit_code: int | None = None
+
+
+def report_coding_runs(run_dir: Path) -> dict[str, object]:
+    return _report_coding(run_dir)
 
 
 @dataclass(frozen=True, slots=True)
@@ -285,72 +289,6 @@ def run_coding_evaluation(
     summary = report_coding_runs(run_dir)
     write_json_exclusive(run_dir / "summary.json", summary)
     return CodingRunArtifact(run_dir=run_dir, summary=summary)
-
-
-def report_coding_runs(run_dir: Path) -> dict[str, object]:
-    experiment = _required_dict(read_json(run_dir / "experiment.json"), field="experiment")
-    results = [
-        _required_dict(read_json(path), field="coding result")
-        for path in sorted(run_dir.glob("*/result.json"))
-    ]
-    arms: dict[str, object] = {}
-    for arm in ("memory-off", "memory-on"):
-        selected = [result for result in results if result.get("arm") == arm]
-        completed = [result for result in selected if result.get("outcome") in {"passed", "failed"}]
-        passed = [result for result in completed if result.get("outcome") == "passed"]
-        task_failures = [result for result in completed if result.get("outcome") == "failed"]
-        infra = [result for result in selected if result.get("outcome") == "infrastructure_failed"]
-        token_values: list[int] = []
-        input_token_values: list[int] = []
-        cached_input_token_values: list[int] = []
-        output_token_values: list[int] = []
-        cost_values: list[float] = []
-        for result in completed:
-            input_tokens = result.get("input_tokens")
-            output_tokens = result.get("output_tokens")
-            cached_input_tokens = result.get("cached_input_tokens")
-            cost_usd = result.get("cost_usd")
-            if isinstance(input_tokens, int) and isinstance(output_tokens, int):
-                token_values.append(input_tokens + output_tokens)
-                input_token_values.append(input_tokens)
-                output_token_values.append(output_tokens)
-            if isinstance(cached_input_tokens, int):
-                cached_input_token_values.append(cached_input_tokens)
-            if isinstance(cost_usd, int | float):
-                cost_values.append(float(cost_usd))
-        arms[arm] = {
-            "planned_run_count": len(selected),
-            "completed_run_count": len(completed),
-            "passed_run_count": len(passed),
-            "task_failure_count": len(task_failures),
-            "infrastructure_failure_count": len(infra),
-            "pass_rate": None if not completed else len(passed) / len(completed),
-            "mean_repeated_file_reads": _numeric_mean(completed, "repeated_file_reads"),
-            "mean_repeated_failed_commands": _numeric_mean(completed, "repeated_failed_commands"),
-            "mean_steps_to_first_useful_action": _numeric_mean(
-                completed, "steps_to_first_useful_action"
-            ),
-            "total_tokens": sum(token_values),
-            "total_input_tokens": sum(input_token_values),
-            "total_cached_input_tokens": sum(cached_input_token_values),
-            "total_output_tokens": sum(output_token_values),
-            "token_observation_count": len(token_values),
-            "total_cost_usd": sum(cost_values) if cost_values else None,
-            "cost_observation_count": len(cost_values),
-        }
-    return {
-        "schema_version": 1,
-        "suite": "coding-memory-ab",
-        "experiment_id": _required_str(experiment, "experiment_id"),
-        "planned_run_count": _required_int(experiment, "planned_run_count"),
-        "completed_run_count": sum(
-            result.get("outcome") in {"passed", "failed"} for result in results
-        ),
-        "infrastructure_failure_count": sum(
-            result.get("outcome") == "infrastructure_failed" for result in results
-        ),
-        "arms": arms,
-    }
 
 
 def _run_one(
@@ -810,15 +748,6 @@ def _write_text_exclusive(path: Path, value: str) -> None:
     except Exception:
         path.unlink(missing_ok=True)
         raise
-
-
-def _numeric_mean(records: list[dict[str, object]], field: str) -> float | None:
-    values: list[float] = []
-    for record in records:
-        value = record.get(field)
-        if isinstance(value, int | float):
-            values.append(float(value))
-    return None if not values else mean(values)
 
 
 def _validate_safe_id(value: str, *, field: str) -> None:

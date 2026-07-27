@@ -1,4 +1,4 @@
-.PHONY: check format imports lint test typecheck
+.PHONY: check format imports lint source-budget test typecheck
 
 format:
 	uv run ruff check --fix .
@@ -14,7 +14,10 @@ typecheck:
 imports:
 	uv run lint-imports
 
+source-budget:
+	uv run python scripts/source_budget.py --stage v01-000a
+
 test:
 	uv run pytest --cov --cov-report=term-missing
 
-check: lint typecheck imports test
+check: lint typecheck imports source-budget test

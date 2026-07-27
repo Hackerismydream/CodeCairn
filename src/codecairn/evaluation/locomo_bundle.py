@@ -7,6 +7,9 @@ from pathlib import Path
 from typing import cast
 
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
+from codecairn.evaluation.historical_reader import (
+    report_locomo_composite as report_locomo_composite_evidence,
+)
 from codecairn.evaluation.locomo import CATEGORY_NAMES, report_locomo
 from codecairn.evaluation.locomo_repair import (
     LoCoMoRepairConfig,
@@ -198,126 +201,6 @@ def copy_locomo_composite_evidence(
     }
     write_json_exclusive(target / "manifest.json", release_manifest)
     write_json_exclusive(target / "summary.json", report_locomo_composite_evidence(target))
-
-
-def report_locomo_composite_evidence(source: Path) -> dict[str, object]:
-    """Recompute one public exact-repair score without private traces or providers."""
-    composite = _dict(read_json(source / "composite.json"), field="LoCoMo composite")
-    manifest = _dict(read_json(source / "manifest.json"), field="LoCoMo public manifest")
-    if (
-        manifest.get("suite") != "locomo-public-composite"
-        or manifest.get("contract") != LOCOMO_PUBLIC_COMPOSITE_CONTRACT
-        or composite.get("formal_score") is not True
-    ):
-        raise ValueError("LoCoMo public composite contract is invalid")
-
-    receipts = _dict(composite.get("sources"), field="LoCoMo source receipts")
-    source_reports: dict[str, dict[str, object]] = {}
-    source_outcomes: dict[str, dict[str, dict[str, object]]] = {}
-    for name in ("base", "repair"):
-        root = source / "sources" / name
-        receipt = _dict(receipts.get(name), field=f"LoCoMo {name} receipt")
-        public_manifest = _dict(
-            read_json(root / "manifest.json"),
-            field=f"LoCoMo {name} manifest",
-        )
-        public_report = _dict(
-            read_json(root / "report.json"),
-            field=f"LoCoMo {name} report",
-        )
-        if public_manifest.get("source_manifest_sha256") != receipt.get("manifest_sha256"):
-            raise ValueError(f"LoCoMo {name} manifest receipt does not match")
-        if public_report.get("source_report_sha256") != receipt.get("report_sha256"):
-            raise ValueError(f"LoCoMo {name} report receipt does not match")
-        outcomes = _load_outcomes(root / "questions")
-        _validate_source_report(public_report, outcomes=outcomes, field=name)
-        source_reports[name] = public_report
-        source_outcomes[name] = outcomes
-
-    target_definition = _dict(
-        read_json(source / "target-question-set.json"),
-        field="LoCoMo target question set",
-    )
-    repair_definition = _dict(
-        read_json(source / "repair-question-set.json"),
-        field="LoCoMo repair question set",
-    )
-    target_receipt = _dict(composite.get("target"), field="LoCoMo target")
-    repair_selection_receipt = _dict(
-        composite.get("repair_selection"),
-        field="LoCoMo repair selection",
-    )
-    if file_sha256(source / "target-question-set.json") != target_receipt.get(
-        "question_set_sha256"
-    ) or file_sha256(source / "repair-question-set.json") != repair_selection_receipt.get(
-        "question_set_sha256"
-    ):
-        raise ValueError("LoCoMo public question-set receipt does not match")
-    if target_definition.get("selection_id") != target_receipt.get("selection_id") or (
-        repair_definition.get("selection_id") != repair_selection_receipt.get("selection_id")
-    ):
-        raise ValueError("LoCoMo public question-set identity does not match")
-
-    base_outcomes = source_outcomes["base"]
-    repair_outcomes = source_outcomes["repair"]
-    failed_base_ids = {
-        question_id
-        for question_id, outcome in base_outcomes.items()
-        if outcome["outcome"] == "infrastructure_failed"
-    }
-    repair_ids = _string_set(
-        repair_definition.get("question_ids"),
-        field="repair question IDs",
-    )
-    if failed_base_ids != repair_ids or set(repair_outcomes) != repair_ids:
-        raise ValueError("LoCoMo public repair does not exactly replace base failures")
-
-    final_outcomes = _load_outcomes(source / "checkpoints" / "questions")
-    target_ids = set(base_outcomes)
-    if set(final_outcomes) != target_ids or any(
-        outcome["outcome"] == "infrastructure_failed" for outcome in final_outcomes.values()
-    ):
-        raise ValueError("LoCoMo public final outcomes do not cover the target")
-    for question_id, outcome in final_outcomes.items():
-        expected = (
-            repair_outcomes[question_id]
-            if question_id in repair_ids
-            else base_outcomes[question_id]
-        )
-        if {key: value for key, value in outcome.items() if key != "source"} != expected:
-            raise ValueError("LoCoMo public final outcome changes its source")
-
-    aggregate = _aggregate_outcomes(final_outcomes)
-    if (
-        aggregate["scored_question_count"] != composite.get("scored_question_count")
-        or aggregate["infrastructure_failed_count"] != composite.get("infrastructure_failed_count")
-        or aggregate["correct_count"] != composite.get("correct_count")
-        or aggregate["accuracy"] != composite.get("accuracy")
-        or aggregate["by_category"] != composite.get("by_category")
-    ):
-        raise ValueError("LoCoMo public outcomes do not reproduce the composite score")
-    usage = _merge_usage(source_reports["base"], source_reports["repair"])
-    if usage != composite.get("usage"):
-        raise ValueError("LoCoMo public source usage does not reproduce the composite")
-    question_count = _required_int(composite, "question_count")
-    return {
-        "schema_version": 1,
-        "suite": "locomo",
-        "run_id": _required_str(manifest, "run_id"),
-        "mode": "full",
-        "scored": True,
-        "question_artifact_count": question_count,
-        "completed_question_count": question_count,
-        "scored_question_count": question_count,
-        "infrastructure_failed_count": 0,
-        "correct_count": aggregate["correct_count"],
-        "accuracy": aggregate["accuracy"],
-        "by_category": aggregate["by_category"],
-        "usage": usage,
-        "judge_votes": _required_int(manifest, "judge_votes"),
-        "composite_contract": composite.get("contract"),
-        "model_output_scoring_contract": composite.get("model_output_scoring_contract"),
-    }
 
 
 def _write_public_source(

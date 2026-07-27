@@ -26,7 +26,7 @@ Primary:
 - `Makefile`
 - `scripts/source_budget.py` from `v01-000a`
 - `src/codecairn/evaluation/`
-- `src/codecairn/locomo_worker.py`
+- `src/codecairn/evaluation/locomo_worker.py`
 - `src/codecairn/entrypoints/cli.py`
 - `benchmarks/locomo/`
 - `benchmarks/coding/`
@@ -75,8 +75,8 @@ Only then remove superseded execution paths.
    it in evaluation code.
 9. Add package-area line totals and the 9,700/14,100 internal targets to the
    task report.
-10. Update CI to verify the current selected evidence bundle, not only
-    `benchmark-v1`.
+10. Retain CI verification of the current selected `benchmark-v3` evidence
+    bundle through the historical-reader boundary.
 11. Emit coding-native hook freshness, stale leakage, provenance coverage,
     continuation, selected-memory precision/latency, A/B outcome, and
     memory-induced regression metrics.

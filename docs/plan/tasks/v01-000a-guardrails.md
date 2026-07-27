@@ -1,7 +1,7 @@
 ---
 id: v01-000a
 scope: early source budget and historical verifier boundary
-status: ready
+status: done
 depends-on: [v01-000]
 ---
 
@@ -73,3 +73,15 @@ are reported separately from that immutable baseline.
 - historical verification depends only on the characterized reader boundary;
 - no product-memory compatibility alias or dual write is added;
 - all checks pass and the task is merged to `main`.
+
+## Completion evidence
+
+- `make source-budget`: pass at 16,783 core / 17,502 evaluation / 34,285
+  total against the 17,250 / 34,300 transition ceilings;
+- accepted `954f728` baseline reproduced as 17,250 core / 16,841 evaluation /
+  34,091 total;
+- benchmark-v3 verification recomputes 4,411 files through
+  `evaluation.historical_reader` without importing product runtime modules;
+- `make check`: 668 tests pass with all architecture, lint, format, type, and
+  source gates;
+- `uv build`: wheel and sdist pass.

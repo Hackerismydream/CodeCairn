@@ -19,9 +19,11 @@ jobs:
           enable-cache: true
       - name: Install locked dependencies
         run: uv sync --locked --all-groups
+      - name: Enforce the source budget
+        run: make source-budget
       - name: Run architecture, type, and test gates
         run: make check
       - name: Recompute the public evidence bundle
-        run: uv run codecairn evidence verify evidence/benchmark-v1
+        run: uv run codecairn evidence verify evidence/benchmark-v3
       - name: Build source and wheel artifacts
         run: uv build

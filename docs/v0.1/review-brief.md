@@ -6,10 +6,9 @@ baseline, and Raven deferral. It blocked autonomous implementation on exact
 schema, Episode closure, cross-store recovery, evolution/restore concurrency,
 and hook-to-recall freshness.
 
-This contract-hardening set addresses those findings. It does not claim an
-independent second review or implementation success. After it merges,
-`v01-000a` is the next executable guardrail task; `v01-001` remains blocked
-until that task merges.
+The contract-hardening set addresses those findings. It does not claim an
+independent second review. The `v01-000a` guardrail task is now implemented and
+verified; `v01-001` is the next executable task.
 
 Review the CodeCairn version 0.1 pre-development package as a principal
 engineer and product architect. This is a design and execution-readiness review,
@@ -112,4 +111,4 @@ Return:
 8. a final list of document edits required before the first code task starts.
 
 Do not provide generic best practices. If there is no blocking issue, state
-that explicitly and identify `v01-000a` as the next executable task.
+that explicitly and identify `v01-001` as the next executable task.

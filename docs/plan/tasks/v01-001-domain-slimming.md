@@ -1,7 +1,7 @@
 ---
 id: v01-001
 scope: memory domain and obsolete write paths
-status: blocked
+status: ready
 depends-on: [v01-000a]
 ---
 

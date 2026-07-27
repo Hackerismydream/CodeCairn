@@ -36,7 +36,7 @@ class _WorkerTermination(BaseException):
 
 def main() -> None:
     if len(sys.argv) != 2:
-        raise SystemExit("usage: python -m codecairn.locomo_worker SPEC.json")
+        raise SystemExit("usage: python -m codecairn.evaluation.locomo_worker SPEC.json")
     spec_path = Path(sys.argv[1]).resolve()
     raw = read_json(spec_path)
     if not isinstance(raw, dict) or raw.get("schema_version") != 2:

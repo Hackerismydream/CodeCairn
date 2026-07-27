@@ -11,13 +11,13 @@ from pathlib import Path
 from typing import cast
 
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
-from codecairn.evaluation.coding import report_coding_runs
-from codecairn.evaluation.locomo import CATEGORY_NAMES, report_locomo
-from codecairn.evaluation.locomo_bundle import (
-    copy_locomo_composite_evidence,
-    report_locomo_composite_evidence,
+from codecairn.evaluation.historical_reader import (
+    CATEGORY_NAMES,
+    read_historical_bundle,
+    report_coding,
+    report_recovery,
+    report_retrieval,
 )
-from codecairn.evaluation.retrieval import report_recovery, report_retrieval
 
 AGGREGATION_COMMAND = "uv run codecairn evidence verify {bundle_dir}"
 _LEGACY_LOCOMO_CATEGORY_NAMES = {
@@ -47,6 +47,23 @@ class EvidenceBundleConfig:
 class EvidenceBundleArtifact:
     bundle_dir: Path
     metrics: dict[str, object]
+
+
+def _report_locomo(source: Path) -> dict[str, object]:
+    from codecairn.evaluation.locomo import report_locomo
+
+    return report_locomo(source)
+
+
+def _copy_locomo_composite_evidence(
+    source: Path,
+    target: Path,
+    *,
+    repository_root: Path,
+) -> None:
+    from codecairn.evaluation.locomo_bundle import copy_locomo_composite_evidence
+
+    copy_locomo_composite_evidence(source, target, repository_root=repository_root)
 
 
 def build_evidence_bundle(config: EvidenceBundleConfig) -> EvidenceBundleArtifact:
@@ -116,7 +133,7 @@ def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
 
 def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> None:
     if config.locomo_run_dir.is_file():
-        copy_locomo_composite_evidence(
+        _copy_locomo_composite_evidence(
             config.locomo_run_dir,
             target / "raw" / "locomo",
             repository_root=config.repository_root,
@@ -161,7 +178,7 @@ def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> No
 def _copy_locomo_report(source: Path, target: Path) -> None:
     summary_path = source / "summary.json"
     saved = _required_dict(read_json(summary_path), field="source LoCoMo report")
-    recomputed = report_locomo(source)
+    recomputed = _report_locomo(source)
     if saved == recomputed:
         target.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(summary_path, target / "summary.json")
@@ -495,14 +512,17 @@ def _aggregate_bundle(
     recovery_dir = raw / "recovery"
     coding_dir = raw / "coding"
 
-    locomo = (
-        report_locomo_composite_evidence(locomo_dir)
-        if (locomo_dir / "composite.json").is_file()
-        else report_locomo(locomo_dir)
-    )
-    retrieval = report_retrieval(retrieval_dir)
-    recovery = report_recovery(recovery_dir)
-    coding = report_coding_runs(coding_dir)
+    if (locomo_dir / "composite.json").is_file():
+        reports = read_historical_bundle(raw)
+        locomo = reports.locomo
+        retrieval = reports.retrieval
+        recovery = reports.recovery
+        coding = reports.coding
+    else:
+        locomo = _report_locomo(locomo_dir)
+        retrieval = report_retrieval(retrieval_dir)
+        recovery = report_recovery(recovery_dir)
+        coding = report_coding(coding_dir)
     for directory, report, name in (
         (locomo_dir, locomo, "LoCoMo"),
         (retrieval_dir, retrieval, "retrieval"),
@@ -666,7 +686,7 @@ def _load_amendments(locomo_dir: Path) -> list[dict[str, object]]:
     source_summary = _required_dict(
         read_json(source_summary_path), field="LoCoMo amendment source summary"
     )
-    expected = _legacy_locomo_category_amendment(source_summary, report_locomo(locomo_dir))
+    expected = _legacy_locomo_category_amendment(source_summary, _report_locomo(locomo_dir))
     if expected is None:
         raise ValueError("LoCoMo amendment source summary is not a label-only correction")
     expected["source_summary_sha256"] = source_sha256

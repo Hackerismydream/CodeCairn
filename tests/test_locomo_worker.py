@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from codecairn.evaluation.artifacts import canonical_sha256
-from codecairn.locomo_worker import _validate_worker_paid_scoring_preflight
+from codecairn.evaluation.locomo_worker import _validate_worker_paid_scoring_preflight
 
 
 def test_worker_accepts_a_manifest_bound_paid_scoring_receipt() -> None:

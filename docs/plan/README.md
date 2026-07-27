@@ -1,8 +1,8 @@
 # CodeCairn v0.1 Delivery Plan
 
-Status: implementation contracts accepted. The source-budget and historical
-verifier guardrail is the only ready implementation task; later tasks become
-ready when their dependency merges.
+Status: implementation in progress. The source-budget and historical-verifier
+guardrail is complete; `v01-001` is the only ready implementation task. Later
+tasks become ready when their dependency merges.
 
 ## Baseline
 
@@ -66,8 +66,8 @@ parallel. Implementation merges only after every listed dependency is on
 | ID | Outcome | Depends on | State |
 |---|---|---|---|
 | [`v01-000`](tasks/v01-000-fable-baseline.md) | Fable baseline on `main` | none | done |
-| [`v01-000a`](tasks/v01-000a-guardrails.md) | Early source gate and historical verifier boundary | v01-000 | ready |
-| [`v01-001`](tasks/v01-001-domain-slimming.md) | Four-type domain; no standalone verification operation | v01-000a | blocked |
+| [`v01-000a`](tasks/v01-000a-guardrails.md) | Early source gate and historical verifier boundary | v01-000 | done |
+| [`v01-001`](tasks/v01-001-domain-slimming.md) | Four-type domain; no standalone verification operation | v01-000a | ready |
 | [`v01-002`](tasks/v01-002-capture-pipeline.md) | Complete episode capture | v01-001 | blocked |
 | [`v01-003`](tasks/v01-003-evolution-ledger.md) | Supersession and restore | v01-002 | blocked |
 | [`v01-004`](tasks/v01-004-active-recall.md) | Active-only lifecycle-aware recall | v01-003 | planned |

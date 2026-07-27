@@ -1322,7 +1322,7 @@ def _execute_locomo_worker_attempt(
         )
 
     process_result = run_monitored_worker(
-        (sys.executable, "-m", "codecairn.locomo_worker", str(spec_path)),
+        (sys.executable, "-m", "codecairn.evaluation.locomo_worker", str(spec_path)),
         progress_root=staged_question_dir,
         limits=limits,
         on_started=record_worker_identity,

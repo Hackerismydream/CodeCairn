@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import re
 import shutil
 from collections import defaultdict
@@ -11,9 +10,14 @@ from typing import cast
 
 from codecairn.bootstrap import create_cascade, create_retrieval_providers, create_runtime
 from codecairn.evaluation.artifacts import file_sha256, read_json, write_json_exclusive
+from codecairn.evaluation.historical_reader import (
+    report_recovery as _report_recovery,
+)
+from codecairn.evaluation.historical_reader import (
+    report_retrieval as _report_retrieval,
+)
 from codecairn.memory.evidence import collect_repository_rule_fact
 from codecairn.memory.models import MemoryProposal
-from codecairn.memory.retrieval import retrieval_config_sha256
 from codecairn.memory.trace import stable_id
 from codecairn.service.cascade import MiniCascade
 from codecairn.storage.lance import LanceMemoryIndex
@@ -51,6 +55,14 @@ class RecoveryRunConfig:
 class RecoveryRunArtifact:
     run_dir: Path
     summary: dict[str, object]
+
+
+def report_retrieval(run_dir: Path) -> dict[str, object]:
+    return _report_retrieval(run_dir)
+
+
+def report_recovery(run_dir: Path) -> dict[str, object]:
+    return _report_recovery(run_dir)
 
 
 @dataclass(frozen=True, slots=True)
@@ -190,96 +202,6 @@ def run_retrieval_evaluation(config: RetrievalRunConfig) -> RetrievalRunArtifact
     return RetrievalRunArtifact(run_dir=run_dir, summary=summary)
 
 
-def report_retrieval(run_dir: Path) -> dict[str, object]:
-    manifest = _required_dict(read_json(run_dir / "manifest.json"), field="manifest")
-    retrieval_contract = _report_retrieval_contract(manifest)
-    records = [
-        _required_dict(read_json(path), field="query artifact")
-        for path in sorted((run_dir / "queries").glob("*.json"))
-    ]
-    recall_at_1: list[float] = []
-    recall_at_5: list[float] = []
-    reciprocal_ranks: list[float] = []
-    irrelevant_rates: list[float] = []
-    latencies: list[float] = []
-    isolation_violations = 0
-    for record in records:
-        _validate_report_retrieval(record, contract=retrieval_contract)
-        relevant = _required_string_set(record.get("relevant_keys"), field="relevant_keys")
-        raw_rankings = record.get("rankings")
-        if not isinstance(raw_rankings, list):
-            raise ValueError("Query rankings must be an array")
-        ranked_keys = [
-            ranking.get("key")
-            for ranking in raw_rankings
-            if isinstance(ranking, dict) and isinstance(ranking.get("key"), str)
-        ]
-        recall_at_1.append(len(relevant.intersection(ranked_keys[:1])) / len(relevant))
-        recall_at_5.append(len(relevant.intersection(ranked_keys[:5])) / len(relevant))
-        first_relevant = next(
-            (rank for rank, key in enumerate(ranked_keys, start=1) if key in relevant),
-            None,
-        )
-        reciprocal_ranks.append(0.0 if first_relevant is None else 1.0 / first_relevant)
-        top_five = ranked_keys[:5]
-        irrelevant_rates.append(
-            0.0 if not top_five else sum(key not in relevant for key in top_five) / len(top_five)
-        )
-        latency = record.get("latency_ms")
-        if not isinstance(latency, int | float):
-            raise ValueError("Query latency must be numeric")
-        latencies.append(float(latency))
-        isolation_violations += int(record.get("repository_isolation_violation") is True)
-    return {
-        "schema_version": 1,
-        "suite": "retrieval",
-        "run_id": _required_str(manifest, "run_id"),
-        "query_count": len(records),
-        "recall_at_1": _mean(recall_at_1),
-        "recall_at_5": _mean(recall_at_5),
-        "mrr": _mean(reciprocal_ranks),
-        "irrelevant_at_5_rate": _mean(irrelevant_rates),
-        "p95_latency_ms": _percentile_nearest_rank(latencies, percentile=0.95),
-        "repository_isolation_violation_count": isolation_violations,
-    }
-
-
-def _report_retrieval_contract(
-    manifest: dict[str, object],
-) -> tuple[dict[str, object], int, str] | None:
-    raw = manifest.get("retrieval")
-    if not isinstance(raw, dict) or not all(
-        isinstance(raw.get(name), dict) for name in ("embedding", "reranker")
-    ):
-        return None
-    top_k = _required_int(manifest, "top_k")
-    return raw, top_k, retrieval_config_sha256(cast(dict[str, object], raw))
-
-
-def _validate_report_retrieval(
-    record: dict[str, object],
-    *,
-    contract: tuple[dict[str, object], int, str] | None,
-) -> None:
-    if contract is None:
-        return
-    retrieval_config, top_k, config_sha256 = contract
-    if record.get("limit") != top_k:
-        raise ValueError("Retrieval query limit does not match its manifest")
-    if record.get("retrieval_config_sha256") != config_sha256:
-        raise ValueError("Retrieval query configuration hash does not match its manifest")
-    for provider_name in ("embedding", "reranker"):
-        expected = _required_dict(
-            retrieval_config.get(provider_name),
-            field=f"retrieval {provider_name}",
-        )
-        for identity_field in ("model", "source", "revision"):
-            if record.get(f"{provider_name}_{identity_field}") != expected.get(identity_field):
-                raise ValueError(
-                    f"Retrieval {provider_name} {identity_field} does not match its manifest"
-                )
-
-
 def run_recovery_suite(config: RecoveryRunConfig) -> RecoveryRunArtifact:
     _validate_run_identity(config.run_id, repository_commit=config.repository_commit)
     run_dir = (config.output_root / config.run_id).resolve()
@@ -392,24 +314,6 @@ def run_recovery_suite(config: RecoveryRunConfig) -> RecoveryRunArtifact:
     return RecoveryRunArtifact(run_dir=run_dir, summary=summary)
 
 
-def report_recovery(run_dir: Path) -> dict[str, object]:
-    manifest = _required_dict(read_json(run_dir / "manifest.json"), field="manifest")
-    raw = _required_dict(read_json(run_dir / "checks.json"), field="recovery checks")
-    raw_checks = _required_dict(raw.get("checks"), field="check results")
-    if not raw_checks or not all(isinstance(value, bool) for value in raw_checks.values()):
-        raise ValueError("Recovery check results must be non-empty booleans")
-    checks = {key: cast(bool, value) for key, value in sorted(raw_checks.items())}
-    return {
-        "schema_version": 1,
-        "suite": "storage-recovery",
-        "run_id": _required_str(manifest, "run_id"),
-        "checks": checks,
-        "all_passed": all(checks.values()),
-        "index_rebuild_consistency": 1.0 if checks["index_rebuild_parity"] else 0.0,
-        "details": raw.get("details"),
-    }
-
-
 def _load_corpus(path: Path) -> tuple[_CorpusEntry, ...]:
     payload = read_json(path)
     if not isinstance(payload, list):
@@ -496,18 +400,6 @@ def _validate_relevance(
             raise ValueError(f"Query has invalid relevance labels: {query.query_id}")
         if any(entries[key].title.casefold() == query.text.casefold() for key in relevant):
             raise ValueError("Retrieval query must not copy its generated memory title")
-
-
-def _mean(values: list[float]) -> float | None:
-    return None if not values else round(sum(values) / len(values), 6)
-
-
-def _percentile_nearest_rank(values: list[float], *, percentile: float) -> float | None:
-    if not values:
-        return None
-    ordered = sorted(values)
-    index = max(0, math.ceil(percentile * len(ordered)) - 1)
-    return round(ordered[index], 3)
 
 
 def _validate_run_identity(run_id: str, *, repository_commit: str) -> None:

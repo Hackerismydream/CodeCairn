@@ -26,7 +26,10 @@ with isolated roots.
 ## Implemented baseline: `954f728`
 
 The accepted pre-development planning baseline is `2c79b3f`. Later
-documentation-only commits do not change the implemented behavior below.
+contract and guardrail commits do not change the product behavior below. The
+guardrail layer now enforces the source budget in `make check`, classifies the
+LoCoMo worker under `evaluation`, and verifies benchmark-v3 through a pure
+historical reader.
 
 ### Implemented
 

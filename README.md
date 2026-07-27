@@ -16,8 +16,9 @@ contain the complete Fable EverOS-alignment implementation and planning work,
 including public index maintenance, import-time drain, lazy retrieval
 providers, and corrected LoCoMo V24 measurement assets.
 
-The version 0.1 product design is accepted but not yet implemented. The
-distinction matters:
+The version 0.1 product design is accepted. Its early source-budget and
+historical-evidence guardrails are implemented; the four-type product runtime
+is not yet implemented. The distinction matters:
 
 | Area | Current implementation | Version 0.1 target |
 |---|---|---|

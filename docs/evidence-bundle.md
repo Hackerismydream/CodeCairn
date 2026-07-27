@@ -16,7 +16,7 @@ Earlier bundles remain immutable historical artifacts.
 
 | Bundle | LoCoMo status | Quality snapshot | Role |
 |---|---|---|---|
-| [`benchmark-v1`](../evidence/benchmark-v1/README.md) | 10-question unscored smoke; no accuracy claim | 148 tests; generated coverage label 83.50% | First public bundle and current CI smoke target |
+| [`benchmark-v1`](../evidence/benchmark-v1/README.md) | 10-question unscored smoke; no accuracy claim | 148 tests; generated coverage label 83.50% | First public bundle; retained historical smoke |
 | [`benchmark-v2`](../evidence/benchmark-v2/README.md) | First 1,540-question score: 47.73%; label-only category amendment | 171 tests; generated coverage label 83.53% | Historical full-run evidence; current verifier compatibility is broken |
 | [`benchmark-v3`](../evidence/benchmark-v3/README.md) | V23 exact-repair composite: 82.60% over 1,540 category 1-4 questions | 644 tests; combined line/branch coverage 81.53% | Current public evidence |
 
@@ -188,11 +188,10 @@ full experiment rerun.
 
 ## CI boundary
 
-Current CI runs `make check`, verifies `evidence/benchmark-v1`, and builds
-package artifacts. It does not verify `benchmark-v3`.
-
-Until the workflow changes, v3 may be described as locally offline-verified,
-but not as protected by the main-branch CI gate.
+Current CI runs `make check`, verifies `evidence/benchmark-v3` through the pure
+historical reader, and builds package artifacts. The verification recomputes
+public aggregates and inventory hashes without importing the product runtime
+or calling providers.
 
 ## Historical label-only amendment
 
