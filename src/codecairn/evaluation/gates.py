@@ -380,6 +380,7 @@ def run_paid_locomo(suite: str, *, dataset: Path, output_root: Path) -> dict[str
         run_id=run_id,
         implementation_sha=commit,
         spend_ceiling_usd=ceiling,
+        max_call_cost_usd=max_call_cost,
         environment=dict(os.environ),
     )
     print(json.dumps(result, sort_keys=True))

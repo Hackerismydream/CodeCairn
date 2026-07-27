@@ -6,7 +6,7 @@ import re
 import subprocess
 import xml.etree.ElementTree as ET
 from collections import Counter
-from math import ceil
+from math import ceil, isfinite
 from pathlib import Path
 from typing import Any, cast
 
@@ -154,6 +154,18 @@ def _locomo_run(root: Path, runs: dict[str, Any], name: str, implementation_sha:
     manifest = _dict(read_json(run / "manifest.json"), f"{name} manifest")
     if manifest.get("implementation_sha") != implementation_sha:
         raise ValueError(f"{name} run is not bound to the implementation SHA")
+    budget = _dict(manifest.get("budget"), f"{name} budget")
+    protocol = _dict(_dict(manifest.get("protocol"), f"{name} protocol").get("contract"), f"{name} protocol contract")
+    max_call_cost = budget.get("max_call_cost_usd")
+    if (
+        not isinstance(max_call_cost, int | float)
+        or not isfinite(max_call_cost)
+        or max_call_cost <= 0
+        or budget.get("max_completion_tokens") != 512
+        or budget.get("spend_ceiling_usd", 0) < expected * 8 * max_call_cost
+        or any(_dict(protocol.get(role), f"{name} {role} protocol").get("max_completion_tokens") != 512 for role in ("answer", "judge"))
+    ):
+        raise ValueError(f"{name} spend boundary is invalid")
     aggregate = _report_locomo(run)
     if (
         read_json(run / "aggregate.json") != aggregate

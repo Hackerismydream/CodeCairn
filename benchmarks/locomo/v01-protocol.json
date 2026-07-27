@@ -30,6 +30,7 @@
   "answer": {
     "adapter": "openai-compatible-chat-v1",
     "temperature": 0,
+    "max_completion_tokens": 512,
     "response_contract": "json-object-with-string-answer",
     "maximum_attempts": 2,
     "provider_identity": "recorded-in-run-manifest"
@@ -37,6 +38,7 @@
   "judge": {
     "adapter": "openai-compatible-chat-v1",
     "temperature": 0,
+    "max_completion_tokens": 512,
     "contract": "generous-semantic-equivalence-v1",
     "votes": 3,
     "maximum_attempts_per_vote": 2,

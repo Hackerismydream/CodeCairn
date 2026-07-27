@@ -43,8 +43,12 @@ def _locomo(root: Path, name: str, count: int, *, correct: int) -> str:
     manifest = {
         "schema_version": 1,
         "implementation_sha": IMPLEMENTATION_SHA,
-        "protocol": {"id": "codecairn-locomo-v01"},
+        "protocol": {
+            "id": "codecairn-locomo-v01",
+            "contract": {"answer": {"max_completion_tokens": 512}, "judge": {"max_completion_tokens": 512}},
+        },
         "question_set": {"question_count": count},
+        "budget": {"spend_ceiling_usd": count * 8 * 0.01, "max_call_cost_usd": 0.01, "max_completion_tokens": 512},
     }
     _write(target / "manifest.json", manifest)
     for index in range(count):

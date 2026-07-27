@@ -3,10 +3,13 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from typing import Any, cast
+
+import httpx
 
 from codecairn.evaluation.artifacts import file_sha256
 from codecairn.evaluation.gates import _synthetic_session, paid_plan, run_retrieval
-from codecairn.evaluation.locomo import _stable_id, compose_repair, load_selection, report_locomo, write_repair_selection
+from codecairn.evaluation.locomo import TextProvider, _stable_id, compose_repair, load_selection, report_locomo, write_repair_selection
 
 
 def _write_json(path: Path, value: object) -> None:
@@ -106,3 +109,34 @@ def test_paid_plans_expose_inputs_outputs_and_spend_boundary() -> None:
     assert len(locomo["inputs"]["protocol_sha256"]) == 64
     assert locomo["expected_output"] == "benchmark_results/locomo-full/<RUN_ID>"
     assert coding["expected_output"] == "benchmark_results/coding-ab/<RUN_ID>"
+
+
+def test_locomo_provider_caps_completion_output(monkeypatch: Any) -> None:
+    captured: dict[str, object] = {}
+
+    class Response:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict[str, object]:
+            return {"choices": [{"message": {"content": '{"answer":"Friday"}'}}], "usage": {}}
+
+    class Client:
+        def post(self, path: str, *, json: dict[str, object]) -> Response:
+            captured.update({"path": path, "json": json})
+            return Response()
+
+    monkeypatch.setattr(httpx, "Client", lambda **_kwargs: Client())
+    provider = TextProvider(
+        "ANSWER",
+        environment={
+            "CODECAIRN_ANSWER_MODEL": "model",
+            "CODECAIRN_ANSWER_BASE_URL": "https://provider.example/v1",
+            "CODECAIRN_ANSWER_API_KEY": "secret",
+        },
+    )
+    value, _usage = provider.complete(system="system", prompt="prompt")
+
+    assert value == {"answer": "Friday"}
+    assert captured["path"] == "chat/completions"
+    assert cast(dict[str, object], captured["json"])["max_completion_tokens"] == 512

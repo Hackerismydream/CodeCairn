@@ -33,7 +33,7 @@ This proves the baseline checkout, not version 0.1 release readiness.
 | MCP | installed wheel initializes with seven tools and one resource | real-client smoke | v01-006/009/010 |
 | Client hooks | both fixtures import idempotently; installer is atomic | real Claude SessionEnd and Codex Stop smoke | v01-007/010 |
 | Evaluation commands | eight Make targets; offline lifecycle/scale/retrieval and paid plans pass | candidate-bound paid results | v01-008/010 |
-| Source budget | 9,700 core / 13,737 total before candidate freeze | internal gate at most 9,700 / 14,100 | v01-001–010 |
+| Source budget | 9,700 core / 13,759 total before candidate freeze | internal gate at most 9,700 / 14,100 | v01-001–010 |
 | Package metadata | MIT, full metadata, curated 54-member wheel and 58-member sdist | retained | v01-009 |
 | Installed smoke | isolated `uv tool` CLI/MCP/import/recall/hook dry-run/evidence pass | real Claude/Codex UI and hook receipt | v01-009/010 |
 | Current evidence CI | benchmark-v3 verifier retained; v0.1 bundle builder/verifier implemented | selected candidate bundle verified | v01-008/010 |

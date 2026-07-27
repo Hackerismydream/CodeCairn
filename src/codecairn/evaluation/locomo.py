@@ -75,6 +75,7 @@ class TextProvider:
             json={
                 "model": self.model,
                 "temperature": 0,
+                "max_completion_tokens": 512,
                 "response_format": {"type": "json_object"},
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             },
@@ -99,6 +100,7 @@ def run_locomo(
     run_id: str,
     implementation_sha: str,
     spend_ceiling_usd: float,
+    max_call_cost_usd: float,
     environment: dict[str, str],
 ) -> dict[str, object]:
     protocol = _dict(read_json(protocol_path), field="protocol")
@@ -140,7 +142,14 @@ def run_locomo(
             "question_count": len(selection.questions),
         },
         "providers": {"answer": answer.identity, "judge": judge.identity, "retrieval": retrieval.public_config},
-        "budget": {"spend_ceiling_usd": spend_ceiling_usd, "answer_attempts": 2, "judge_votes": 3, "judge_attempts": 2},
+        "budget": {
+            "spend_ceiling_usd": spend_ceiling_usd,
+            "max_call_cost_usd": max_call_cost_usd,
+            "max_completion_tokens": 512,
+            "answer_attempts": 2,
+            "judge_votes": 3,
+            "judge_attempts": 2,
+        },
     }
     write_json_exclusive(run_dir / "manifest.json", manifest)
     runtime = create_runtime(run_dir / "runtime", retrieval=retrieval, environment=environment)
