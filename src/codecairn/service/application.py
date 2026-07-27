@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Literal, Protocol
 
 from codecairn.memory.episode import BoundaryKind
+from codecairn.memory.evolution import EvolutionProposer, EvolutionRecord, MemoryHistory
 from codecairn.memory.models import (
     CodingMemory,
     ImportResult,
@@ -213,6 +214,35 @@ class CodeCairnApplication:
 
     def recall(self, query: str, *, repo_key: str, limit: int = 5) -> RecallResult:
         return self._memory_runtime().recall(query, repo_key=repo_key, limit=limit)
+
+    def supersede(
+        self,
+        *,
+        repo_key: str,
+        predecessor_id: str,
+        successor_id: str,
+        reason: str,
+        proposer: EvolutionProposer,
+    ) -> EvolutionRecord:
+        return self._memory_runtime().supersede(
+            repo_key=repo_key,
+            predecessor_id=predecessor_id,
+            successor_id=successor_id,
+            reason=reason,
+            proposer=proposer,
+        )
+
+    def memory_history(self, *, repo_key: str, memory_id: str) -> MemoryHistory:
+        return self._memory_runtime().memory_history(
+            repo_key=repo_key,
+            memory_id=memory_id,
+        )
+
+    def restore(self, *, repo_key: str, memory_id: str) -> CodingMemory:
+        return self._memory_runtime().restore(
+            repo_key=repo_key,
+            memory_id=memory_id,
+        )
 
     def process_pending(
         self,

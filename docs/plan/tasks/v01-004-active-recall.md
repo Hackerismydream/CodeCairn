@@ -1,7 +1,7 @@
 ---
 id: v01-004
 scope: lifecycle-aware retrieval and context rendering
-status: planned
+status: ready
 depends-on: [v01-003]
 ---
 

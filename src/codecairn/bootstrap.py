@@ -52,7 +52,7 @@ class _LocalOperations(ApplicationOperations):
                 "degraded" if counts.conflicted_recovery_count or semantic["failed"] else "ok"
             ),
             "root": str(self._root),
-            "schema": "codecairn-v01-2",
+            "schema": "codecairn-v01-3",
             "imports": counts.import_count,
             "observed_events": counts.observed_event_count,
             "memories": counts.memory_count,

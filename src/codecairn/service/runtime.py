@@ -7,7 +7,7 @@ import re
 import time
 from collections.abc import Callable
 from pathlib import Path
-from typing import Protocol
+from typing import Protocol, cast
 
 from codecairn.memory.capture import (
     CaptureCheckpoint,
@@ -21,6 +21,20 @@ from codecairn.memory.episode import (
     is_episode_signal,
 )
 from codecairn.memory.evidence import collect_evidence_facts
+from codecairn.memory.evolution import (
+    EvolutionArtifact,
+    EvolutionProposal,
+    EvolutionProposer,
+    EvolutionRecord,
+    EvolutionRejected,
+    EvolutionRelation,
+    ExpectedEvolutionFile,
+    MemoryHistory,
+    MemoryStatus,
+    PreparedEvolutionCommit,
+    ProposalResolution,
+    evaluate_proposal,
+)
 from codecairn.memory.models import (
     AgentTrace,
     ImportCheckpoint,
@@ -32,6 +46,7 @@ from codecairn.memory.schema import (
     ActionFacet,
     CodingMemory,
     EvidenceFact,
+    EvidenceReference,
     IdentityConflict,
     SourceOrderKey,
     TaskEpisode,
@@ -72,6 +87,17 @@ class MemoryStore(Protocol):
     ) -> MemoryArtifact: ...
 
     def relative_path_for(self, memory: CodingMemory) -> str: ...
+
+    def prepare_evolution(self, record: EvolutionRecord) -> EvolutionArtifact: ...
+
+    def write_evolution(
+        self,
+        record: EvolutionRecord,
+        *,
+        on_stage: Callable[[str], None] | None = None,
+    ) -> EvolutionArtifact: ...
+
+    def relative_evolution_path_for(self, record: EvolutionRecord) -> str: ...
 
 
 class RuntimeState(Protocol):
@@ -125,6 +151,12 @@ class RuntimeState(Protocol):
 
     def open_workstream_keys(self, *, repo_key: str) -> tuple[str, ...]: ...
 
+    def active_workstream_heads(
+        self,
+        *,
+        repo_key: str,
+    ) -> tuple[tuple[str, str], ...]: ...
+
     def lease_semantic_jobs(
         self,
         *,
@@ -160,6 +192,38 @@ class RuntimeState(Protocol):
         *,
         on_stage: Callable[[str], None] | None = None,
     ) -> int: ...
+
+    def prepare_evolution(self, commit: PreparedEvolutionCommit) -> str: ...
+
+    def list_prepared_evolutions(self) -> tuple[PreparedEvolutionCommit, ...]: ...
+
+    def complete_evolution(
+        self,
+        commit: PreparedEvolutionCommit,
+        evolution_artifact: EvolutionArtifact,
+        memory_artifact: MemoryArtifact | None,
+        *,
+        on_stage: Callable[[str], None] | None = None,
+    ) -> bool: ...
+
+    def record_proposal_outcome(
+        self,
+        proposal: EvolutionProposal,
+        resolution: ProposalResolution,
+        *,
+        created_at_ms: int,
+    ) -> None: ...
+
+    def memory_status(self, *, repo_key: str, memory_id: str) -> str | None: ...
+
+    def memory_history(self, *, repo_key: str, memory_id: str) -> MemoryHistory: ...
+
+    def active_lineage_tips(
+        self,
+        *,
+        repo_key: str,
+        memory_id: str,
+    ) -> tuple[CodingMemory, ...]: ...
 
 
 class RecallService(Protocol):
@@ -350,6 +414,94 @@ class MemoryRuntime:
             raise RuntimeError("Recall is not configured for this runtime")
         return self._recall_engine.recall(query, repo_key=repo_key, limit=limit)
 
+    def supersede(
+        self,
+        *,
+        repo_key: str,
+        predecessor_id: str,
+        successor_id: str,
+        reason: str,
+        proposer: EvolutionProposer,
+    ) -> EvolutionRecord:
+        predecessor = self._required_memory(repo_key, predecessor_id)
+        successor = self._required_memory(repo_key, successor_id)
+        relation = {
+            "work_state": "work_state_update",
+            "user_preference": "preference_override",
+            "repository_knowledge": "knowledge_contradiction",
+        }.get(successor.memory_type)
+        if relation is None:
+            raise EvolutionRejected(
+                "append_only_experience",
+                "Task Experience cannot supersede another memory",
+            )
+        proposal = EvolutionProposal.create(
+            repo_key=repo_key,
+            decision="supersede",
+            relation_kind=cast(EvolutionRelation, relation),
+            predecessor_id=predecessor.memory_id,
+            successor_id=successor.memory_id,
+            supporting_fact_ids=tuple(sorted(fact.fact_id for fact in successor.facts)),
+            source_order_key=successor.source_order_key,
+            proposer=proposer,
+            reason=reason,
+        )
+        return self._apply_evolution(proposal, evidence=successor.evidence)
+
+    def memory_history(self, *, repo_key: str, memory_id: str) -> MemoryHistory:
+        return self._state.memory_history(repo_key=repo_key, memory_id=memory_id)
+
+    def restore(self, *, repo_key: str, memory_id: str) -> CodingMemory:
+        original = self._required_memory(repo_key, memory_id)
+        if original.memory_type == "task_experience":
+            raise EvolutionRejected(
+                "append_only_experience",
+                "Task Experience cannot be restored",
+            )
+        if self._state.memory_status(repo_key=repo_key, memory_id=memory_id) == "active":
+            raise EvolutionRejected("already_active", "Active memory cannot be restored")
+        tips = self._state.active_lineage_tips(repo_key=repo_key, memory_id=memory_id)
+        if len(tips) != 1:
+            raise EvolutionRejected(
+                "ambiguous_lineage",
+                "Restore requires one unique active lineage tip",
+            )
+        predecessor = tips[0]
+        restored = CodingMemory.create(
+            repo_key=original.repo_key,
+            memory_type=original.memory_type,
+            title=original.title,
+            content=original.content,
+            category=original.category,
+            tags=original.tags,
+            created_at_ms=time.time_ns() // 1_000_000,
+            episode_id=original.episode_id,
+            evidence=original.evidence,
+            facts=original.facts,
+            origin="restored",
+            restored_from=original.memory_id,
+            restore_predecessor_id=predecessor.memory_id,
+            source_order_key=original.source_order_key,
+            payload=original.payload,
+        )
+        proposal = EvolutionProposal.create(
+            repo_key=repo_key,
+            decision="supersede",
+            relation_kind="explicit_restore",
+            predecessor_id=predecessor.memory_id,
+            successor_id=restored.memory_id,
+            supporting_fact_ids=tuple(sorted(fact.fact_id for fact in restored.facts)),
+            source_order_key=restored.source_order_key,
+            proposer="user",
+            reason=f"Restore {original.memory_id}",
+        )
+        self._apply_evolution(
+            proposal,
+            evidence=restored.evidence,
+            new_memory=restored,
+        )
+        return restored
+
     def process_pending(
         self,
         *,
@@ -392,6 +544,7 @@ class MemoryRuntime:
                 failed += 1
                 continue
             workstream_keys = _workstream_candidates(task)
+            active_heads = self._state.active_workstream_heads(repo_key=task.repo_key)
             request = SemanticRequest(
                 task_experience=task,
                 allowed_workstream_keys=workstream_keys,
@@ -400,6 +553,9 @@ class MemoryRuntime:
                         set(workstream_keys)
                         & set(self._state.open_workstream_keys(repo_key=task.repo_key))
                     )
+                ),
+                active_work_state_heads=tuple(
+                    item for item in active_heads if item[0] in workstream_keys
                 ),
             )
             try:
@@ -425,6 +581,8 @@ class MemoryRuntime:
                 failed += 1
                 continue
             self._commit_semantic_batch(job, batch)
+            for proposal in batch.evolution:
+                self._apply_automatic_evolution(proposal)
             completed += 1
         counts = self._state.semantic_job_counts()
         return SemanticProcessReport(
@@ -449,6 +607,24 @@ class MemoryRuntime:
                 repaired += self._state.complete_semantic_commit(commit, artifacts)
             except IdentityConflict:
                 self._mark_conflicted(commit.operation_id)
+                raise
+        for evolution_commit in self._state.list_prepared_evolutions():
+            try:
+                memory_artifact = (
+                    None
+                    if evolution_commit.new_memory is None
+                    else self._markdown.write(evolution_commit.new_memory)
+                )
+                evolution_artifact = self._markdown.write_evolution(evolution_commit.record)
+                repaired += int(
+                    self._state.complete_evolution(
+                        evolution_commit,
+                        evolution_artifact,
+                        memory_artifact,
+                    )
+                )
+            except IdentityConflict:
+                self._mark_conflicted(evolution_commit.operation_id)
                 raise
         return repaired
 
@@ -502,6 +678,125 @@ class MemoryRuntime:
             operation_id=operation_id,
             error_code="identity_conflict",
         )
+
+    def _apply_automatic_evolution(self, proposal: EvolutionProposal) -> None:
+        predecessor = (
+            None
+            if proposal.predecessor_id is None
+            else self._state.get_memory(
+                repo_key=proposal.repo_key,
+                memory_id=proposal.predecessor_id,
+            )
+        )
+        successor = self._state.get_memory(
+            repo_key=proposal.repo_key,
+            memory_id=proposal.successor_id,
+        )
+        if successor is None:
+            resolution = ProposalResolution("rejected", "unknown_successor")
+        else:
+            resolution = evaluate_proposal(
+                proposal,
+                predecessor=predecessor,
+                successor=successor,
+                predecessor_status=(
+                    None
+                    if predecessor is None
+                    else cast(
+                        MemoryStatus | None,
+                        self._state.memory_status(
+                            repo_key=proposal.repo_key,
+                            memory_id=predecessor.memory_id,
+                        ),
+                    )
+                ),
+            )
+        if resolution.outcome != "applied":
+            self._state.record_proposal_outcome(
+                proposal,
+                resolution,
+                created_at_ms=time.time_ns() // 1_000_000,
+            )
+            return
+        try:
+            assert successor is not None
+            self._apply_evolution(proposal, evidence=successor.evidence)
+        except EvolutionRejected as error:
+            self._state.record_proposal_outcome(
+                proposal,
+                type(resolution)("rejected", error.code),
+                created_at_ms=time.time_ns() // 1_000_000,
+            )
+
+    def _apply_evolution(
+        self,
+        proposal: EvolutionProposal,
+        *,
+        evidence: tuple[EvidenceReference, ...],
+        new_memory: CodingMemory | None = None,
+    ) -> EvolutionRecord:
+        now_ms = time.time_ns() // 1_000_000
+        record = EvolutionRecord.from_proposal(
+            proposal,
+            evidence=evidence,
+            created_at_ms=now_ms,
+        )
+        prepared_evolution = self._markdown.prepare_evolution(record)
+        prepared_memory = None if new_memory is None else self._markdown.prepare(new_memory)
+        expected_memory_file = None
+        if new_memory is not None and prepared_memory is not None:
+            expected_memory_file = ExpectedMemoryFile(
+                relative_path=self._markdown.relative_path_for(new_memory),
+                content_sha256=prepared_memory.content_sha256,
+                memory_id=new_memory.memory_id,
+            )
+        commit = PreparedEvolutionCommit.create(
+            proposal=proposal,
+            record=record,
+            new_memory=new_memory,
+            expected_memory_file=expected_memory_file,
+            expected_evolution_file=ExpectedEvolutionFile(
+                relative_path=self._markdown.relative_evolution_path_for(record),
+                content_sha256=prepared_evolution.content_sha256,
+                evolution_id=record.evolution_id,
+            ),
+            created_at_ms=now_ms,
+        )
+        status = self._state.prepare_evolution(commit)
+        if status == "completed":
+            return record
+        self._stage("evolution_after_intent_prepared")
+        try:
+            memory_artifact = (
+                None
+                if new_memory is None
+                else self._markdown.write(
+                    new_memory,
+                    on_stage=self._fault_injector,
+                    stage_prefix="evolution_memory",
+                )
+            )
+            evolution_artifact = self._markdown.write_evolution(
+                record,
+                on_stage=self._fault_injector,
+            )
+            self._state.complete_evolution(
+                commit,
+                evolution_artifact,
+                memory_artifact,
+                on_stage=self._fault_injector,
+            )
+        except IdentityConflict:
+            self._mark_conflicted(commit.operation_id)
+            raise
+        self._stage("evolution_after_complete")
+        return record
+
+    def _required_memory(self, repo_key: str, memory_id: str) -> CodingMemory:
+        memory = self._state.get_memory(repo_key=repo_key, memory_id=memory_id)
+        if memory is None:
+            raise EvolutionRejected("unknown_memory", f"Unknown memory: {memory_id}")
+        return memory
 
     def _fail_semantic(
         self,

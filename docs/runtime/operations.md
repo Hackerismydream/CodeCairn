@@ -1,8 +1,9 @@
 # Runtime Operations
 
 This document describes behavior implemented on current `main` after
-`v01-002`. Target-only `init`, lifecycle history, MCP, hooks, hybrid retrieval,
-and release evaluation remain specified under [`../v0.1/`](../v0.1/).
+`v01-003`. Target-only lifecycle CLI presentation, `init`, MCP, hooks, hybrid
+retrieval, and release evaluation remain specified under
+[`../v0.1/`](../v0.1/).
 
 ## Current support matrix
 
@@ -10,6 +11,7 @@ and release evaluation remain specified under [`../v0.1/`](../v0.1/).
 |---|---|---|---|
 | Import session | `codecairn import` | `POST /api/v1/import` | Incrementally normalizes Codex or Claude JSONL, closes eligible Task Episodes, and commits one deterministic Task Experience per closed Episode |
 | Process semantic work | `codecairn process` | not exposed | Leases bounded semantic jobs when a semantic extractor is configured; the default composition leaves them visibly pending |
+| Evolve memory | service interface only | not exposed | Applies validated immutable Supersession, returns deterministic history, and creates forward-only restore revisions |
 | List memory | `codecairn list` | `GET /api/v1/memories` | Reads four-type durable memory in one explicit `repo_key` namespace |
 | Recall | `codecairn recall` | `POST /api/v1/recall` | Uses the temporary deterministic lexical baseline over SQLite memory state |
 | Diagnostics | `codecairn doctor` | `GET /api/v1/health` | Reports imports, memories, Write Intent recovery, semantic jobs, and queued index projections |
@@ -87,6 +89,7 @@ a watcher, queue worker, semantic provider, or background index worker.
 ## Durable state and queues
 
 Markdown under `memory/<repo-slug>/<memory-type>/` is durable memory truth.
+Markdown under `evolution/<repo-slug>/` is durable Supersession truth.
 SQLite contains:
 
 - import checkpoints and committed-prefix digests;
@@ -95,6 +98,8 @@ SQLite contains:
 - Coding Memory mirrors;
 - prepared/completed/conflicted Write Intents;
 - pending/leased/completed/failed semantic jobs and immutable output batches;
+- Evolution mirrors, proposal outcomes, predecessor claims, and the
+  rebuildable active/superseded projection;
 - pending index projection jobs.
 
 Capture enqueues index work but the current recall baseline reads committed
@@ -126,12 +131,13 @@ Implemented:
 - deterministic bounded Task Experience;
 - Write Intent recovery and eight capture fault boundaries;
 - retryable semantic proposal batches with source-role enforcement;
+- immutable Supersession, lifecycle status, history, and forward-only restore;
 - typed source rewrite failure;
 - lexical recall compatibility and historical evidence verification.
 
 Not yet implemented:
 
-- Supersession, active/superseded projection, history, and restore;
+- lifecycle CLI/MCP presentation;
 - production hybrid retrieval, reranking, token-budget compilation, and index
   draining;
 - `init`, config, namespace derivation, export/reset;

@@ -1,7 +1,7 @@
 ---
 id: v01-003
 scope: supersession, status projection, and restore
-status: ready
+status: done
 depends-on: [v01-002]
 ---
 
@@ -105,3 +105,21 @@ Required cases:
 - automatic and explicit failure semantics differ only in presentation;
 - rebuild and transaction tests pass;
 - all checks pass and line deltas are reported.
+
+## Completion evidence
+
+Verified before merge:
+
+- explicit and semantic Supersession use one validated domain policy;
+- Evolution Records are immutable Markdown truth with a SQLite mirror and
+  derived `active`/`superseded` status projection;
+- `BEGIN IMMEDIATE` predecessor claims make concurrent successors a
+  single-winner race, while identical retries are no-ops and conflicting
+  immutable content is rejected;
+- evolution and restore use recoverable multi-file Write Intents;
+- history is deterministic and restore creates a new forward-only revision;
+- Markdown-to-SQLite rebuild reproduces lifecycle status;
+- `make check`: 129 tests passed with 74% measured coverage;
+- source budget: 10,284 core and 13,197 total physical Python lines;
+- historical `benchmark-v3` verifier passed with 4,411 files;
+- `uv build` produced the wheel and source distribution.

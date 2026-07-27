@@ -11,6 +11,12 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
+from codecairn.memory.evolution import (
+    EvolutionArtifact,
+    EvolutionRecord,
+    evolution_from_dict,
+    evolution_to_dict,
+)
 from codecairn.memory.models import MemoryArtifact
 from codecairn.memory.schema import (
     CodingMemory,
@@ -42,6 +48,21 @@ _FRONTMATTER_KEYS = (
     "evidence",
     "facts",
 )
+_EVOLUTION_KEYS = (
+    "schema_version",
+    "record_kind",
+    "evolution_id",
+    "repo_key",
+    "relation_kind",
+    "predecessor_id",
+    "successor_id",
+    "proposal_id",
+    "supporting_fact_ids",
+    "source_order_key",
+    "proposer",
+    "evidence",
+    "created_at_ms",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +74,12 @@ class TruthIssue:
 @dataclass(frozen=True, slots=True)
 class TruthScan:
     memories: tuple[MemoryArtifact, ...]
+    issues: tuple[TruthIssue, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class EvolutionTruthScan:
+    evolutions: tuple[EvolutionArtifact, ...]
     issues: tuple[TruthIssue, ...]
 
 
@@ -145,6 +172,84 @@ class MarkdownMemoryStore:
     def relative_path_for(self, memory: CodingMemory) -> str:
         return self.path_for(memory).relative_to(self._root).as_posix()
 
+    def prepare_evolution(self, record: EvolutionRecord) -> EvolutionArtifact:
+        content = _render_evolution(record)
+        return EvolutionArtifact(
+            record=record,
+            path=self.evolution_path_for(record),
+            content_sha256=hashlib.sha256(content).hexdigest(),
+        )
+
+    def write_evolution(
+        self,
+        record: EvolutionRecord,
+        *,
+        on_stage: Callable[[str], None] | None = None,
+    ) -> EvolutionArtifact:
+        self._reject_legacy_root()
+        artifact = self.prepare_evolution(record)
+        content = _render_evolution(record)
+        artifact.path.parent.mkdir(parents=True, exist_ok=True)
+        existing = _read_bytes(artifact.path, missing_ok=True)
+        if existing is None:
+            _atomic_create(
+                artifact.path,
+                content,
+                on_stage=on_stage,
+                stage_prefix="evolution",
+            )
+            existing = _read_bytes(artifact.path)
+        assert existing is not None
+        if hashlib.sha256(existing).hexdigest() != artifact.content_sha256:
+            try:
+                stored = self.read_evolution(artifact.path)
+            except (OSError, UnicodeError, SchemaInvalid, ValueError) as exc:
+                raise IdentityConflict(
+                    f"Conflicting Evolution truth: {record.evolution_id}"
+                ) from exc
+            if evolution_to_dict(stored.record) != evolution_to_dict(record):
+                raise IdentityConflict(f"Conflicting immutable Evolution: {record.evolution_id}")
+            return stored
+        return artifact
+
+    def read_evolution(self, path: Path) -> EvolutionArtifact:
+        resolved = path.resolve(strict=True)
+        if not resolved.is_relative_to(self._root):
+            raise SchemaInvalid("Evolution Markdown source escapes the runtime root")
+        source = _read_bytes(resolved)
+        assert source is not None
+        record = _parse_evolution(source)
+        if resolved != self.evolution_path_for(record):
+            raise SchemaInvalid("Evolution Markdown is not at its canonical path")
+        return EvolutionArtifact(
+            record=record,
+            path=resolved,
+            content_sha256=hashlib.sha256(source).hexdigest(),
+        )
+
+    def scan_evolutions(self) -> EvolutionTruthScan:
+        evolutions: list[EvolutionArtifact] = []
+        issues: list[TruthIssue] = []
+        root = self._root / "evolution"
+        if not root.exists():
+            return EvolutionTruthScan(evolutions=(), issues=())
+        for path in sorted(root.glob("*/*.md")):
+            try:
+                evolutions.append(self.read_evolution(path))
+            except (OSError, UnicodeError, SchemaInvalid, ValueError) as exc:
+                issues.append(TruthIssue(path=path, error_code=_error_code(exc)))
+        return EvolutionTruthScan(evolutions=tuple(evolutions), issues=tuple(issues))
+
+    def evolution_path_for(self, record: EvolutionRecord) -> Path:
+        repo_slug = hashlib.sha256(record.repo_key.encode()).hexdigest()[:16]
+        path = (self._root / "evolution" / repo_slug / f"{record.evolution_id}.md").resolve()
+        if not path.is_relative_to(self._root):
+            raise SchemaInvalid("Evolution target escapes the runtime root")
+        return path
+
+    def relative_evolution_path_for(self, record: EvolutionRecord) -> str:
+        return self.evolution_path_for(record).relative_to(self._root).as_posix()
+
     def _reject_legacy_root(self) -> None:
         if (self._root / "repos").exists():
             raise LegacyRootUnsupported(
@@ -163,6 +268,20 @@ def _render(memory: CodingMemory) -> bytes:
     encoded = "\n".join(lines).encode("utf-8")
     if len(encoded) > _MAX_MARKDOWN_BYTES:
         raise SchemaInvalid("Memory Markdown exceeds its byte limit")
+    return encoded
+
+
+def _render_evolution(record: EvolutionRecord) -> bytes:
+    value = evolution_to_dict(record)
+    reason = value.pop("reason")
+    envelope = {"record_kind": "evolution", **value}
+    lines = ["---"]
+    for key in _EVOLUTION_KEYS:
+        lines.append(f"{key}: {canonical_json(envelope[key])}")
+    lines.extend(("---", str(reason), ""))
+    encoded = "\n".join(lines).encode()
+    if len(encoded) > _MAX_MARKDOWN_BYTES:
+        raise SchemaInvalid("Evolution Markdown exceeds its byte limit")
     return encoded
 
 
@@ -193,6 +312,34 @@ def _parse(source: bytes) -> CodingMemory:
         raise SchemaInvalid("Markdown record_kind is not coding_memory")
     record["content"] = body[:-1]
     return coding_memory_from_dict(record)
+
+
+def _parse_evolution(source: bytes) -> EvolutionRecord:
+    if not source or len(source) > _MAX_MARKDOWN_BYTES:
+        raise SchemaInvalid("Evolution Markdown is empty or exceeds its byte limit")
+    content = source.decode()
+    if not content.startswith("---\n") or not content.endswith("\n"):
+        raise SchemaInvalid("Evolution Markdown envelope is invalid")
+    frontmatter, separator, body = content[4:].partition("\n---\n")
+    if not separator:
+        raise SchemaInvalid("Evolution Markdown frontmatter is unterminated")
+    keys: list[str] = []
+    record: dict[str, object] = {}
+    for line in frontmatter.splitlines():
+        key, marker, raw_value = line.partition(": ")
+        if not marker or key in record:
+            raise SchemaInvalid("Evolution Markdown frontmatter line is invalid")
+        keys.append(key)
+        try:
+            record[key] = json.loads(raw_value)
+        except json.JSONDecodeError as exc:
+            raise SchemaInvalid("Evolution Markdown frontmatter JSON is invalid") from exc
+    if tuple(keys) != _EVOLUTION_KEYS:
+        raise SchemaInvalid("Evolution Markdown frontmatter fields or order are invalid")
+    if record.pop("record_kind") != "evolution":
+        raise SchemaInvalid("Markdown record_kind is not evolution")
+    record["reason"] = body[:-1]
+    return evolution_from_dict(record)
 
 
 def _atomic_create(

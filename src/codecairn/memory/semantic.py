@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Literal, Protocol, cast
 
 from codecairn.memory.capture import ExpectedMemoryFile
+from codecairn.memory.evolution import EvolutionProposal
 from codecairn.memory.schema import (
     CodingMemory,
     EvidenceFact,
@@ -142,6 +143,7 @@ class SemanticRequest:
     task_experience: CodingMemory
     allowed_workstream_keys: tuple[str, ...]
     closable_workstream_keys: tuple[str, ...] = ()
+    active_work_state_heads: tuple[tuple[str, str], ...] = ()
 
 
 class SemanticExtractor(Protocol):
@@ -170,6 +172,7 @@ class SemanticProcessReport:
 @dataclass(frozen=True, slots=True)
 class CompiledSemanticBatch:
     memories: tuple[CodingMemory, ...]
+    evolution: tuple[EvolutionProposal, ...]
     canonical_batch: dict[str, object]
     output_fingerprint: str
 
@@ -265,6 +268,41 @@ def compile_semantic_extraction(
         )
     for proposal in extraction.evolution:
         _select_facts(proposal.supporting_fact_ids, facts=facts)
+    compiled_evolution = [
+        EvolutionProposal.create(
+            repo_key=task.repo_key,
+            decision=item.decision,
+            relation_kind=item.relation_kind,
+            predecessor_id=item.predecessor_id,
+            successor_id=memories[item.successor_candidate_index].memory_id,
+            supporting_fact_ids=item.supporting_fact_ids,
+            source_order_key=memories[item.successor_candidate_index].source_order_key,
+            proposer="capture_model",
+            reason=item.reason,
+        )
+        for item in extraction.evolution
+    ]
+    proposed_successors = {item.successor_id for item in compiled_evolution}
+    active_heads = dict(request.active_work_state_heads)
+    for memory in memories:
+        if (
+            isinstance(memory.payload, WorkStatePayload)
+            and memory.memory_id not in proposed_successors
+            and (predecessor_id := active_heads.get(memory.payload.workstream_key)) is not None
+        ):
+            compiled_evolution.append(
+                EvolutionProposal.create(
+                    repo_key=task.repo_key,
+                    decision="supersede",
+                    relation_kind="work_state_update",
+                    predecessor_id=predecessor_id,
+                    successor_id=memory.memory_id,
+                    supporting_fact_ids=tuple(sorted(fact.fact_id for fact in memory.facts)),
+                    source_order_key=memory.source_order_key,
+                    proposer="system",
+                    reason="Advance the active Work State for this workstream.",
+                )
+            )
     batch = {
         "schema_version": 1,
         "extractor_id": extraction.extractor_id,
@@ -277,6 +315,7 @@ def compile_semantic_extraction(
     fingerprint = hashlib.sha256(canonical_json(batch).encode()).hexdigest()
     return CompiledSemanticBatch(
         memories=tuple(memories),
+        evolution=tuple(compiled_evolution),
         canonical_batch=batch,
         output_fingerprint=fingerprint,
     )

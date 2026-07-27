@@ -369,18 +369,25 @@ def test_later_episode_can_close_one_existing_issue_workstream(
         extractor=_IssueLifecycleExtractor(),
     ).process_pending(worker_id="test")
     work_states = [
-        memory.payload
+        memory
         for memory in SQLiteState(root / "state.sqlite3").list_memories(repo_key="acme/widgets")
         if isinstance(memory.payload, WorkStatePayload)
     ]
+    state = SQLiteState(root / "state.sqlite3")
 
     assert report.completed == 2
-    assert {state.workstream_state for state in work_states} == {"closed", "open"}
-    assert {state.workstream_key for state in work_states} == {"issue:acme/widgets#42"}
+    assert {memory.payload.workstream_state for memory in work_states} == {"closed", "open"}
+    assert {memory.payload.workstream_key for memory in work_states} == {"issue:acme/widgets#42"}
     assert (
-        next(state for state in work_states if state.workstream_state == "closed").terminal_outcome
+        next(
+            memory.payload for memory in work_states if memory.payload.workstream_state == "closed"
+        ).terminal_outcome
         == "completed"
     )
+    assert sorted(
+        state.memory_status(repo_key="acme/widgets", memory_id=memory.memory_id)
+        for memory in work_states
+    ) == ["active", "superseded"]
 
 
 @pytest.mark.parametrize(
