@@ -418,6 +418,9 @@ class MemoryRuntime:
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
         return self._state.list_memories(repo_key=repo_key)
 
+    def get_memory(self, *, repo_key: str, memory_id: str) -> CodingMemory | None:
+        return self._state.get_memory(repo_key=repo_key, memory_id=memory_id)
+
     def recall(
         self,
         query: str,

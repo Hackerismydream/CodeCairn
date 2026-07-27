@@ -19,3 +19,8 @@ class IndexNotReady(RuntimeError):
 
 class ProviderConfigurationError(ValueError):
     remediation = "Configure the explicit retrieval profile and retry."
+
+
+class ConfigurationError(ValueError):
+    code = "configuration_invalid"
+    remediation = "Run `codecairn init` in the target Git repository."

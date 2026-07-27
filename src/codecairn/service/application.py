@@ -45,82 +45,9 @@ class EvaluationRunRequest:
 
 
 @dataclass(frozen=True, slots=True)
-class LoCoMoCorpusBuildRequest:
-    input_path: Path
-    output_root: Path
-    corpus_id: str
-    repository_commit: str
-    resume: bool = False
-    expected_dataset_sha256: str | None = None
-    question_set_path: Path | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class LoCoMoQueryVectorBuildRequest:
-    input_path: Path
-    output_root: Path
-    vector_set_id: str
-    resume: bool = False
-    question_set_path: Path | None = None
-    expected_dataset_sha256: str | None = None
-
-
-@dataclass(frozen=True, slots=True)
 class EvaluationReportRequest:
     suite: EvaluationSuite
     run_dir: Path
-
-
-@dataclass(frozen=True, slots=True)
-class EvidenceBundleBuildRequest:
-    bundle_id: str
-    output_root: Path
-    locomo_run_dir: Path
-    retrieval_run_dir: Path
-    recovery_run_dir: Path
-    coding_run_dir: Path
-    quality_junit_path: Path
-    quality_coverage_path: Path
-    repository_root: Path
-    generator_commit: str
-
-
-@dataclass(frozen=True, slots=True)
-class LoCoMoAblationRequest:
-    question_set_path: Path
-    episode_only_run: Path
-    hierarchy_no_neighbors_run: Path
-    hierarchy_run: Path
-    output_path: Path
-    natural_weight_question_set_path: Path | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class LoCoMoPromotionRequest:
-    question_set_path: Path
-    selection_report_path: Path
-    episode_only_run: Path
-    hierarchy_no_neighbors_run: Path
-    hierarchy_run: Path
-    run_dir: Path
-    output_path: Path
-
-
-@dataclass(frozen=True, slots=True)
-class LoCoMoRepairRequest:
-    target_question_set_path: Path
-    repair_question_set_path: Path
-    base_run: Path
-    repair_run: Path
-    output_path: Path
-
-
-@dataclass(frozen=True, slots=True)
-class LoCoMoEvidenceCoverageRequest:
-    run_dir: Path
-    dataset_path: Path
-    output_path: Path | None = None
-    oracle_max_tokens: int = 4_000
 
 
 @dataclass(frozen=True, slots=True)
@@ -143,7 +70,7 @@ class ImportOutcome:
 
 
 class ApplicationOperations(Protocol):
-    def doctor(self) -> dict[str, object]: ...
+    def doctor(self, *, live: bool = False) -> dict[str, object]: ...
 
     def sync_index(self, *, worker_id: str, max_jobs: int | None = None) -> IndexHealth: ...
 
@@ -151,32 +78,20 @@ class ApplicationOperations(Protocol):
 
     def index_status(self) -> IndexHealth: ...
 
+    def export_namespace(self, output: Path) -> dict[str, object]: ...
+
+    def reset_namespace(
+        self,
+        *,
+        confirm: str | None,
+        dry_run: bool,
+    ) -> dict[str, object]: ...
+
     def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]: ...
 
     def report_evaluation(self, request: EvaluationReportRequest) -> dict[str, object]: ...
 
-    def build_evidence_bundle(self, request: EvidenceBundleBuildRequest) -> dict[str, object]: ...
-
     def verify_evidence_bundle(self, bundle_dir: Path) -> dict[str, object]: ...
-
-    def build_locomo_ablation_report(self, request: LoCoMoAblationRequest) -> dict[str, object]: ...
-
-    def build_locomo_promotion_report(
-        self, request: LoCoMoPromotionRequest
-    ) -> dict[str, object]: ...
-
-    def build_locomo_repair_report(self, request: LoCoMoRepairRequest) -> dict[str, object]: ...
-
-    def report_locomo_evidence_coverage(
-        self,
-        request: LoCoMoEvidenceCoverageRequest,
-    ) -> dict[str, object]: ...
-
-    def build_locomo_corpus(self, request: LoCoMoCorpusBuildRequest) -> dict[str, object]: ...
-
-    def build_locomo_query_vectors(
-        self, request: LoCoMoQueryVectorBuildRequest
-    ) -> dict[str, object]: ...
 
 
 class CodeCairnApplication:
@@ -211,6 +126,12 @@ class CodeCairnApplication:
 
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
         return self._memory_runtime().list_memories(repo_key=repo_key)
+
+    def show_memory(self, *, repo_key: str, memory_id: str) -> CodingMemory | None:
+        return self._memory_runtime().get_memory(repo_key=repo_key, memory_id=memory_id)
+
+    def remember(self, memory: CodingMemory) -> CodingMemory:
+        return self._memory_runtime().store_memory(memory)
 
     def recall(
         self,
@@ -271,8 +192,8 @@ class CodeCairnApplication:
             max_jobs=max_jobs,
         )
 
-    def doctor(self) -> dict[str, object]:
-        return self._operations.doctor()
+    def doctor(self, *, live: bool = False) -> dict[str, object]:
+        return self._operations.doctor(live=live)
 
     def sync_index(self, *, worker_id: str, max_jobs: int | None = None) -> IndexHealth:
         return self._operations.sync_index(worker_id=worker_id, max_jobs=max_jobs)
@@ -283,43 +204,25 @@ class CodeCairnApplication:
     def index_status(self) -> IndexHealth:
         return self._operations.index_status()
 
+    def export_namespace(self, output: Path) -> dict[str, object]:
+        return self._operations.export_namespace(output)
+
+    def reset_namespace(
+        self,
+        *,
+        confirm: str | None,
+        dry_run: bool,
+    ) -> dict[str, object]:
+        return self._operations.reset_namespace(confirm=confirm, dry_run=dry_run)
+
     def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]:
         return self._operations.run_evaluation(request)
 
     def report_evaluation(self, request: EvaluationReportRequest) -> dict[str, object]:
         return self._operations.report_evaluation(request)
 
-    def build_evidence_bundle(self, request: EvidenceBundleBuildRequest) -> dict[str, object]:
-        return self._operations.build_evidence_bundle(request)
-
     def verify_evidence_bundle(self, bundle_dir: Path) -> dict[str, object]:
         return self._operations.verify_evidence_bundle(bundle_dir)
-
-    def build_locomo_ablation_report(self, request: LoCoMoAblationRequest) -> dict[str, object]:
-        return self._operations.build_locomo_ablation_report(request)
-
-    def build_locomo_promotion_report(
-        self,
-        request: LoCoMoPromotionRequest,
-    ) -> dict[str, object]:
-        return self._operations.build_locomo_promotion_report(request)
-
-    def build_locomo_repair_report(self, request: LoCoMoRepairRequest) -> dict[str, object]:
-        return self._operations.build_locomo_repair_report(request)
-
-    def report_locomo_evidence_coverage(
-        self,
-        request: LoCoMoEvidenceCoverageRequest,
-    ) -> dict[str, object]:
-        return self._operations.report_locomo_evidence_coverage(request)
-
-    def build_locomo_corpus(self, request: LoCoMoCorpusBuildRequest) -> dict[str, object]:
-        return self._operations.build_locomo_corpus(request)
-
-    def build_locomo_query_vectors(
-        self, request: LoCoMoQueryVectorBuildRequest
-    ) -> dict[str, object]:
-        return self._operations.build_locomo_query_vectors(request)
 
     def _memory_runtime(self) -> MemoryRuntime:
         if self._runtime is None:

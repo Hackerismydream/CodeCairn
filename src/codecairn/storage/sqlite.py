@@ -1115,14 +1115,16 @@ class SQLiteState:
             conflicted_recovery_count=int(conflicts["count"]),
         )
 
-    def index_health(self) -> IndexHealth:
+    def index_health(self, *, repo_key: str | None = None) -> IndexHealth:
         with self._connect() as connection:
             rows = connection.execute(
-                """
+                f"""
                 SELECT status, COUNT(*) AS count
                 FROM index_jobs
+                {"WHERE repo_key = ?" if repo_key is not None else ""}
                 GROUP BY status
-                """
+                """,
+                (repo_key,) if repo_key is not None else (),
             ).fetchall()
         counts = {"pending": 0, "leased": 0, "indexed": 0, "failed": 0, "stale": 0}
         counts.update({str(row["status"]): int(row["count"]) for row in rows})
@@ -1359,6 +1361,22 @@ class SQLiteState:
             else "complete"
         )
         return source_cursor, index_cursor, semantic_state
+
+    def delete_namespace(self, *, repo_key: str) -> None:
+        """Remove one namespace after an operator-created durable backup."""
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            tables = connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ).fetchall()
+            for row in tables:
+                name = str(row["name"])
+                columns = {
+                    str(item["name"])
+                    for item in connection.execute(f'PRAGMA table_info("{name}")').fetchall()
+                }
+                if "repo_key" in columns:
+                    connection.execute(f'DELETE FROM "{name}" WHERE repo_key = ?', (repo_key,))
 
     def _initialize(self) -> None:
         with self._connect() as connection:

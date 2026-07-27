@@ -12,22 +12,22 @@ runner, IDE, hidden prompt injector, or cloud knowledge platform.
 
 The repository is pre-release. The version 0.1 product design, source-budget
 guardrail, historical-evidence boundary, four-type domain, complete capture
-pipeline, immutable evolution layer, and lifecycle-aware recall are
-implemented. Installed onboarding through release packaging remains in
-progress. The distinction between current
+pipeline, immutable evolution layer, lifecycle-aware recall, and installed
+repository onboarding are implemented. MCP, hooks, evaluation simplification,
+and release packaging remain in progress. The distinction between current
 behavior and the release target matters:
 
 | Area | Current implementation | Version 0.1 target |
 |---|---|---|
-| Import | Incremental Codex/Claude trace import with explicit Episode closure, stable continuation, and typed source rewrite failure | Add installed hooks and derived namespace |
-| Automatic capture | One deterministic Task Experience per closed Episode; optional semantic work is queued and retryable | Configure production semantic extraction through onboarding |
+| Import | Incremental Codex/Claude trace import with explicit Episode closure, stable continuation, derived namespace, and typed source rewrite failure | Add installed hooks |
+| Automatic capture | One deterministic Task Experience per closed Episode; optional semantic work is queued and retryable; semantic `none` is explicit | Add installed session-end hooks |
 | Memory model | Four durable types with system-owned provenance and derived lifecycle status | Same |
-| Evolution | Immutable Supersession, service-level history, and forward-only restore | Add CLI/MCP presentation |
-| Recall | Active-only hybrid recall with explicit history, bounded index preflight, pinned Work State, and attributed context | Add installed production retrieval profile |
+| Evolution | Immutable Supersession, CLI history/supersede, and forward-only restore | Add MCP presentation |
+| Recall | Active-only hybrid recall with explicit history, bounded index preflight, pinned Work State, attributed context, and installed production retrieval profiles | Same |
 | Product surfaces | CLI and loopback HTTP | CLI, MCP, and session-end hooks; HTTP compatibility |
-| Setup | Manual root, repo key, and provider environment | `codecairn init`, config file, derived repository identity |
+| Setup | `codecairn init`, strict repository binding, derived identity, explicit retrieval and semantic profiles | Same |
 | Distribution | Checkout build, no license/tag | MIT, curated persistent-tool/PyPI package |
-| Source size | 11,499 core / 14,412 total physical Python lines at `v01-004` | at most 10,000 core / 15,000 total |
+| Source size | 12,644 core / 15,557 total physical Python lines at `v01-005` | at most 10,000 core / 15,000 total |
 
 The implementation plan is
 [`docs/plan/README.md`](docs/plan/README.md). Do not treat commands marked as
@@ -42,41 +42,38 @@ uv sync --all-groups
 make check
 ```
 
-The current CLI requires an explicit runtime root and repository key:
+Initialize once from any directory inside the target Git repository:
 
 ```bash
-uv run codecairn import /path/to/session.jsonl \
-  --repo-key owner/repository \
-  --root .codecairn \
-  --finalize
-
-uv run codecairn process \
-  --root .codecairn
-
-uv run codecairn list \
-  --repo-key owner/repository \
-  --root .codecairn
-
-uv run codecairn recall "test command failed" \
-  --repo-key owner/repository \
-  --root .codecairn
+uv run codecairn init
+uv run codecairn import /path/to/session.jsonl --finalize
+uv run codecairn process
+uv run codecairn list
+uv run codecairn recall "test command failed"
 ```
+
+`init` stores a strict, non-secret binding in the Git common directory and
+defaults runtime data to `~/.codecairn`. It selects the pinned local FastEmbed
+profile unless a DashScope key is present or a profile is explicit. Provider
+selection is recorded; runtime failure never changes profiles silently.
+Semantic extraction is independently configured and defaults visibly to
+`none`.
 
 Without `--finalize`, manual EOF leaves the final task open; next-user
 boundaries still close prior tasks. Stop and SessionEnd callers use the same
 service with their explicit boundary kinds.
 
 Import commits through a recoverable Write Intent and enqueues semantic and
-index work. The current bootstrap has no implicit semantic or retrieval
-provider fallback, so `process` reports pending semantic work and normal recall
-returns `index_not_ready` until `v01-005` records an installed profile. The
-implemented recall path uses explicit providers, LanceDB lexical/vector
-candidates, deterministic reranking, lifecycle filtering, bounded context, and
-an attributed sidecar. Transitional diagnostics are available through:
+index work. `process` leaves semantic jobs pending while semantic extraction is
+disabled and drains the configured index queue. Recall uses the recorded
+provider, LanceDB lexical/vector candidates, a pinned reranker, lifecycle
+filtering, bounded context, and an attributed sidecar. Diagnostics and
+recoverable namespace operations are available through:
 
 ```bash
-uv run codecairn index status --root .codecairn
-uv run codecairn doctor --root .codecairn
+uv run codecairn doctor
+uv run codecairn memory history MEMORY_ID
+uv run codecairn namespace export
 ```
 
 The exact current surface is

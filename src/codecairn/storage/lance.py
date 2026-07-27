@@ -73,19 +73,23 @@ class LanceMemoryIndex:
             )
             self._ensure_fts(table)
 
-    def replace_all(self, documents: tuple[RecallDocument, ...]) -> None:
+    def replace_namespace(
+        self,
+        *,
+        repo_key: str,
+        documents: tuple[RecallDocument, ...],
+    ) -> None:
         vectors = self._embedder.embed_documents(tuple(document.content for document in documents))
         rows = [
             self._row(document, vector) for document, vector in zip(documents, vectors, strict=True)
         ]
         with self._lock:
-            connection = lancedb.connect(self._path)
-            table = connection.create_table(
-                _TABLE,
-                data=pa.Table.from_pylist(rows, schema=self._schema),
-                mode="overwrite",
-            )
+            table = self._table(create=bool(rows))
+            if table is None:
+                return
+            table.delete(f"repo_key = {_literal(repo_key)}")
             if rows:
+                table.add(pa.Table.from_pylist(rows, schema=self._schema))
                 self._ensure_fts(table)
 
     def lexical_candidates(
@@ -161,6 +165,12 @@ class LanceMemoryIndex:
             for row in rows
             if row["repo_key"] == repo_key
         }
+
+    def delete_namespace(self, *, repo_key: str) -> None:
+        with self._lock:
+            table = self._table(create=False)
+            if table is not None:
+                table.delete(f"repo_key = {_literal(repo_key)}")
 
     def _table(self, *, create: bool) -> LanceTable | None:
         connection = lancedb.connect(self._path)

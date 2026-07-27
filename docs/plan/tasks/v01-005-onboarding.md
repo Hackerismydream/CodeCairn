@@ -1,7 +1,7 @@
 ---
 id: v01-005
 scope: initialization, configuration, processing, and diagnostics
-status: ready
+status: done
 depends-on: [v01-004]
 ---
 
@@ -110,3 +110,32 @@ passed from a mock.
 - provider capabilities are independent and explicit;
 - bootstrap is materially smaller and has one composition path;
 - all checks pass and line deltas are reported.
+
+## Completion evidence
+
+Merged behavior includes strict common-Git-directory bindings, deterministic
+repository identity, explicit FastEmbed/DashScope retrieval composition,
+independent semantic configuration, bounded processing, direct memory and
+lifecycle CLI operations, backup-first namespace operations, and actionable
+doctor output.
+
+Verification on the completed tree:
+
+```text
+make format                                      pass
+make check                                       144 tests, 75% coverage
+codecairn evidence verify evidence/benchmark-v3  4,411 files verified
+uv build                                         wheel and sdist
+source-budget v01-005                            12,644 core / 15,557 total
+```
+
+An installed-command-style temporary Git test covers
+`init -> import -> process -> recall` without root or repo-key flags. A manual
+clean-repository smoke also completed `init` and JSON `doctor` with the pinned
+FastEmbed profile; no credentialed provider check or model prefetch is claimed.
+
+The `v01-005` ceiling is a transparent product-surface peak, not release
+headroom. `v01-007` must reduce core by at least 2,644 lines to the fixed
+10,000-line ceiling, and `v01-008` must reduce total package source by at least
+557 lines to the fixed 15,000-line ceiling. Those release gates remain
+non-negotiable.

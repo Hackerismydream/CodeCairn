@@ -22,7 +22,13 @@ def test_api_doctor_and_empty_memory_list(tmp_path: Path) -> None:
 
     doctor = client.get("/api/v1/health")
     assert doctor.status_code == 200
-    assert doctor.json()["status"] == "ok"
+    assert doctor.json()["status"] == "degraded"
+    assert doctor.json()["providers"]["retrieval_state"] == "missing"
+    assert all(
+        row["remediation"]
+        for row in doctor.json()["subsystems"].values()
+        if row["status"] == "degraded"
+    )
 
     memories = client.get("/api/v1/memories", params={"repo_key": "acme/widgets"})
     assert memories.status_code == 200

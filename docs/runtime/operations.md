@@ -1,20 +1,22 @@
 # Runtime Operations
 
 This document describes behavior implemented on current `main` after
-`v01-004`. Target-only lifecycle CLI presentation, installed retrieval
-configuration, `init`, MCP, hooks, and release evaluation remain specified under
-[`../v0.1/`](../v0.1/).
+`v01-005`. MCP, hooks, release packaging, and release evaluation remain
+specified under [`../v0.1/`](../v0.1/).
 
 ## Current support matrix
 
 | Capability | CLI | HTTP | Current behavior |
 |---|---|---|---|
 | Import session | `codecairn import` | `POST /api/v1/import` | Incrementally normalizes Codex or Claude JSONL, closes eligible Task Episodes, and commits one deterministic Task Experience per closed Episode |
-| Process semantic work | `codecairn process` | not exposed | Leases bounded semantic jobs when a semantic extractor is configured; the default composition leaves them visibly pending |
-| Evolve memory | service interface only | not exposed | Applies validated immutable Supersession, returns deterministic history, and creates forward-only restore revisions |
-| List memory | `codecairn list` | `GET /api/v1/memories` | Reads four-type durable memory in one explicit `repo_key` namespace |
+| Initialize repository | `codecairn init` | not exposed | Derives and freezes repository identity, writes strict non-secret config, and constructs an explicit retrieval profile |
+| Process queued work | `codecairn process` | not exposed | Leases bounded semantic and index jobs; disabled semantic extraction remains visibly pending |
+| Direct memory | `codecairn remember` | not exposed | Creates Repository Knowledge, Repository Working Preference, or Work State; direct Task Experience is rejected |
+| Evolve memory | `codecairn memory ...` | not exposed | Applies validated immutable Supersession, returns deterministic history, and creates forward-only restore revisions |
+| List memory | `codecairn list` | `GET /api/v1/memories` | Reads four-type durable memory in the resolved repository namespace |
 | Recall | `codecairn recall` | `POST /api/v1/recall` | Drains a bounded namespace index batch, then compiles active-only hybrid retrieval with optional explicit history |
 | Diagnostics | `codecairn doctor` | `GET /api/v1/health` | Reports imports, memories, Write Intent recovery, semantic jobs, and queued index projections |
+| Namespace operations | `codecairn namespace ...` | not exposed | Creates a consistent export or performs a confirmation-gated, backup-first reset |
 | Index commands | `codecairn index ...` | index routes | Transitional CLI presentation remains; the lifecycle-aware LanceDB cascade and parity service are implemented |
 | Historical evidence | `codecairn evidence verify` | not exposed | Verifies frozen evidence without loading the live runtime |
 
@@ -45,27 +47,45 @@ cursor.
 ## CLI
 
 ```text
-codecairn import SOURCE --repo-key REPO --root ROOT [--finalize] [--no-index]
-codecairn process --root ROOT [--worker-id ID] [--max-jobs N]
-codecairn list --repo-key REPO --root ROOT
-codecairn recall TASK --repo-key REPO --root ROOT [--limit N]
+codecairn init [--root ROOT] [--repo-key REPO]
+  [--retrieval-profile dashscope|fastembed] [--semantic-profile PROFILE]
+  [--prefetch] [--check-provider] [--force]
+codecairn import SOURCE [--finalize] [--no-index]
+codecairn process [--semantic/--no-semantic] [--index/--no-index]
+  [--worker-id ID] [--max-jobs N] [--retry-failed]
+codecairn list
+codecairn recall TASK [--limit N]
   [--include-superseded] [--workstream-key KEY] [--token-budget N]
-codecairn doctor --root ROOT
-codecairn index status --root ROOT
-codecairn index sync --root ROOT
-codecairn index rebuild --root ROOT
+codecairn remember TYPE [TEXT|--file FILE|--stdin] [type-specific fields]
+codecairn memory show MEMORY_ID
+codecairn memory history MEMORY_ID
+codecairn memory supersede PREDECESSOR_ID SUCCESSOR_ID --reason TEXT
+codecairn memory restore MEMORY_ID
+codecairn namespace export --output DIR
+codecairn namespace reset [--dry-run] --confirm REPO
+codecairn doctor [--live] [--strict] [--format human|json]
+codecairn index status
+codecairn index sync
+codecairn index rebuild
 codecairn evidence verify BUNDLE_DIR
 ```
+
+Normal commands discover `<git-common-dir>/codecairn.toml`; `--config`,
+`--root`, and `--repo-key` remain explicit automation overrides. The frozen
+repo key wins over environment configuration. Linked worktrees share one
+binding. Secrets are environment-only and unknown config keys fail startup.
 
 `process` does not invent a provider fallback. With no configured semantic
 extractor it reports pending jobs and leaves the deterministic Task Experience
 intact. Provider or schema failures are bounded, retryable jobs; completed jobs
 reuse their immutable output fingerprint and never call the provider again.
 
-The current bootstrap does not yet construct production semantic or retrieval
-providers. Tests inject explicit test adapters. Provider configuration and the
-installed-operation workflow belong to `v01-005`; normal composition returns
-`index_not_ready` rather than silently selecting a fallback.
+Production composition constructs the recorded retrieval provider. `init`
+defaults to the pinned 384-dimension FastEmbed profile, or recommends the
+1,024-dimension DashScope profile when `DASHSCOPE_API_KEY` exists. Hashing and
+score fusion adapters are test-only. `init --check-provider` and
+`doctor --live` perform an explicit live embedding check; an unchecked profile
+is only `configured`, never reported as live verified.
 
 ## HTTP
 
@@ -116,15 +136,17 @@ fallback.
 
 `doctor` returns:
 
-- `status`: `ok` unless a Write Intent is conflicted or a semantic job failed;
+- `status`: `ok` or `degraded`;
 - import, observed-event, and memory counts;
 - pending and conflicted recovery counts;
-- semantic job counts by status.
+- semantic and index job counts by status;
+- one status/remediation row for config, import, semantic, Markdown, SQLite,
+  index queue, LanceDB, hooks, and privacy;
+- provider verification state and the local/network egress posture.
 
 Pending semantic work is expected when no provider is configured and does not
 make deterministic capture unhealthy. Failed semantic or index jobs are
-visible and bounded. Installed provider selection and actionable remedies land
-in onboarding.
+visible and bounded. `--strict` makes degraded state fail automation.
 
 ## Current boundary
 
@@ -143,10 +165,11 @@ Implemented:
   attributed sidecar;
 - status-aware LanceDB parent/child projections, bounded preflight, rebuild
   parity, and historical evidence verification.
+- stable Git/common-directory repository binding and namespace derivation;
+- explicit pinned FastEmbed and DashScope retrieval composition;
+- independent semantic-provider configuration;
+- lifecycle/direct-memory/namespace CLI presentation;
+- actionable human and stable JSON diagnostics.
 
-Not yet implemented:
-
-- lifecycle CLI/MCP presentation;
-- installed production retrieval configuration;
-- `init`, config, namespace derivation, export/reset;
-- MCP, Codex/Claude hooks, persistent install, and release evaluation.
+Not yet implemented: MCP, Codex/Claude hooks, persistent release installation,
+one-command evaluation gates, and release-candidate evidence.

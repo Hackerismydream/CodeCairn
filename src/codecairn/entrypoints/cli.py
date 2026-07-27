@@ -1,31 +1,47 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Callable
+import sys
+import time
 from dataclasses import asdict
 from pathlib import Path
-from typing import Annotated, Any, Literal, cast
+from typing import Annotated, Any, Literal, Protocol, cast
 
 import typer
 from typer.core import TyperGroup
 
-from codecairn.memory.errors import ProviderConfigurationError
+from codecairn.configuration import initialize_repository, resolve_runtime_config
+from codecairn.memory.config import RetrievalConfig, RuntimeConfig, SemanticConfig
+from codecairn.memory.errors import (
+    ConfigurationError,
+    IndexNotReady,
+    ProviderConfigurationError,
+)
+from codecairn.memory.schema import (
+    CodingMemory,
+    MemoryPayload,
+    RepositoryKnowledgePayload,
+    UserPreferencePayload,
+    WorkStatePayload,
+    normalize_machine_key,
+    normalize_tag,
+)
 from codecairn.service.application import (
     CodeCairnApplication,
-    EvaluationReportRequest,
-    EvaluationRunRequest,
-    EvaluationSuite,
-    EvidenceBundleBuildRequest,
-    LoCoMoAblationRequest,
-    LoCoMoCorpusBuildRequest,
-    LoCoMoEvidenceCoverageRequest,
-    LoCoMoPromotionRequest,
-    LoCoMoQueryVectorBuildRequest,
-    LoCoMoRepairRequest,
     import_response,
 )
 
-ApplicationFactory = Callable[[Path], CodeCairnApplication]
+
+class ApplicationFactory(Protocol):
+    def __call__(
+        self,
+        root: Path,
+        *,
+        repo_key: str | None = None,
+        retrieval: RetrievalConfig | None = None,
+        semantic: SemanticConfig | None = None,
+    ) -> CodeCairnApplication: ...
+
 
 PROVIDER_CONFIGURATION_EXIT_CODE = 2
 
@@ -37,9 +53,10 @@ class _FailClosedGroup(TyperGroup):
     def invoke(self, ctx: Any) -> Any:
         try:
             return super().invoke(ctx)
-        except ProviderConfigurationError as error:
+        except (ConfigurationError, IndexNotReady, ProviderConfigurationError) as error:
             typer.echo(f"codecairn: {error}", err=True)
-            typer.echo(f"hint: {error.remediation}", err=True)
+            remediation = getattr(error, "remediation", "Run `codecairn doctor`.")
+            typer.echo(f"hint: {remediation}", err=True)
             raise typer.Exit(code=PROVIDER_CONFIGURATION_EXIT_CODE) from None
 
 
@@ -51,12 +68,62 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         help="Auditable long-term memory runtime for coding agents.",
         no_args_is_help=True,
     )
-    evaluation_app = typer.Typer(help="Run or report immutable evaluation artifacts.")
     evidence_app = typer.Typer(help="Build or verify a public benchmark evidence bundle.")
     index_app = typer.Typer(help="Operate the rebuildable search index.")
-    app.add_typer(evaluation_app, name="eval")
+    memory_app = typer.Typer(help="Inspect and evolve durable memory.")
+    namespace_app = typer.Typer(help="Export or reset one memory namespace.")
     app.add_typer(evidence_app, name="evidence")
     app.add_typer(index_app, name="index")
+    app.add_typer(memory_app, name="memory")
+    app.add_typer(namespace_app, name="namespace")
+
+    @app.command("init")
+    def init_command(
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        remote: Annotated[str | None, typer.Option("--remote")] = None,
+        retrieval_profile: Annotated[
+            Literal["dashscope", "fastembed"] | None,
+            typer.Option("--retrieval-profile"),
+        ] = None,
+        semantic_profile: Annotated[str | None, typer.Option("--semantic-profile")] = None,
+        prefetch: Annotated[bool, typer.Option("--prefetch")] = False,
+        check_provider: Annotated[bool, typer.Option("--check-provider")] = False,
+        force: Annotated[bool, typer.Option("--force")] = False,
+    ) -> None:
+        """Initialize one repository binding and validate its runtime."""
+        resolved = initialize_repository(
+            start=Path.cwd(),
+            config_path=config,
+            root=root,
+            repo_key=repo_key,
+            remote=remote,
+            retrieval_profile=retrieval_profile,
+            semantic_profile=semantic_profile,
+            force=force,
+        )
+        application = _application(application_factory, resolved)
+        live = check_provider or (prefetch and resolved.retrieval.profile == "fastembed")
+        result = {
+            "status": "initialized",
+            "config": str(resolved.binding_path),
+            "root": str(resolved.runtime_root),
+            "repo_key": resolved.repo_key,
+            "retrieval": resolved.retrieval.public_config,
+            "semantic": resolved.semantic.profile,
+            "provider_state": application.doctor(live=live)["providers"],
+            "commands": {
+                "import": "codecairn import <owned-session.jsonl>",
+                "recall": 'codecairn recall "<task>"',
+                "doctor": "codecairn doctor",
+            },
+            "agent_docs": {
+                "AGENTS.md": "Use `codecairn recall` before repository work.",
+                "CLAUDE.md": "Use `codecairn recall` before repository work.",
+            },
+        }
+        typer.echo(json.dumps(result, sort_keys=True))
 
     @app.command("import")
     def import_session_command(
@@ -64,15 +131,22 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
             Path,
             typer.Argument(exists=True, dir_okay=False, readable=True),
         ],
-        repo_key: Annotated[str, typer.Option("--repo-key")],
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
         index: Annotated[bool, typer.Option("--index/--no-index")] = True,
         finalize: Annotated[bool, typer.Option("--finalize")] = False,
     ) -> None:
         """Import one supported agent session and persist evidence-backed memories."""
-        outcome = application_factory(root).import_session(
-            source,
+        application, resolved = _resolve_application(
+            application_factory,
+            config=config,
+            root=root,
             repo_key=repo_key,
+        )
+        outcome = application.import_session(
+            source,
+            repo_key=resolved.repo_key,
             index=index,
             boundary_kind="manual_finalize" if finalize else None,
         )
@@ -80,18 +154,23 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
 
     @app.command("list")
     def list_memories_command(
-        repo_key: Annotated[str, typer.Option("--repo-key")],
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
         """List durable memories in one repository namespace."""
-        memories = application_factory(root).list_memories(repo_key=repo_key)
+        application, resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
+        )
+        memories = application.list_memories(repo_key=resolved.repo_key)
         typer.echo(json.dumps([asdict(memory) for memory in memories], sort_keys=True))
 
     @app.command("recall")
     def recall_command(
         task: Annotated[str, typer.Argument(help="Current coding task")],
-        repo_key: Annotated[str, typer.Option("--repo-key")],
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
         limit: Annotated[int, typer.Option("--limit", min=1, max=100)] = 20,
         workstream_key: Annotated[str | None, typer.Option("--workstream-key")] = None,
         include_superseded: Annotated[bool, typer.Option("--include-superseded")] = False,
@@ -99,9 +178,12 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         output_format: Annotated[str, typer.Option("--format")] = "json",
     ) -> None:
         """Generate task-shaped Recall Context from hybrid candidates."""
-        result = application_factory(root).recall(
+        application, resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
+        )
+        result = application.recall(
             task,
-            repo_key=repo_key,
+            repo_key=resolved.repo_key,
             limit=limit,
             include_superseded=include_superseded,
             workstream_key=workstream_key,
@@ -116,400 +198,170 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
 
     @app.command("process")
     def process_pending_command(
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
         worker_id: Annotated[str, typer.Option("--worker-id")] = "cli",
         max_jobs: Annotated[int, typer.Option("--max-jobs", min=1)] = 8,
+        semantic: Annotated[bool, typer.Option("--semantic/--no-semantic")] = True,
+        index: Annotated[bool, typer.Option("--index/--no-index")] = True,
+        retry_failed: Annotated[bool, typer.Option("--retry-failed")] = False,
     ) -> None:
-        """Process pending semantic enrichment jobs."""
-        report = application_factory(root).process_pending(
-            worker_id=worker_id,
-            max_jobs=max_jobs,
+        """Process bounded semantic and index queues."""
+        del retry_failed
+        application, _resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
         )
-        typer.echo(json.dumps(asdict(report), sort_keys=True))
+        report: dict[str, object] = {}
+        if semantic:
+            report["semantic"] = asdict(
+                application.process_pending(worker_id=worker_id, max_jobs=max_jobs)
+            )
+        if index:
+            report["index"] = asdict(application.sync_index(worker_id=worker_id, max_jobs=max_jobs))
+        typer.echo(json.dumps(report, sort_keys=True))
 
-    @evaluation_app.command("run")
-    def evaluation_run_command(
-        suite: Annotated[str, typer.Argument(help="locomo, retrieval, recovery, or coding")],
-        input_path: Annotated[
-            Path,
-            typer.Argument(exists=True, readable=True),
-        ],
-        run_id: Annotated[str, typer.Option("--run-id")],
-        repository_commit: Annotated[str, typer.Option("--repository-commit")],
-        output_root: Annotated[Path, typer.Option("--output-root")] = Path("artifacts"),
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
-        mode: Annotated[str, typer.Option("--mode")] = "full",
-        model: Annotated[str | None, typer.Option("--model")] = None,
-        judge_model: Annotated[str | None, typer.Option("--judge-model")] = None,
-        max_workers: Annotated[int, typer.Option("--max-workers", min=1)] = 1,
-        resume: Annotated[bool, typer.Option("--resume")] = False,
-        execution_phase: Annotated[str, typer.Option("--execution-phase")] = "all",
-        question_set: Annotated[
-            Path | None,
-            typer.Option("--question-set", exists=True, dir_okay=False, readable=True),
-        ] = None,
-        corpus: Annotated[
-            Path | None,
-            typer.Option("--corpus", exists=True, file_okay=False, readable=True),
-        ] = None,
-        query_vectors: Annotated[
-            Path | None,
-            typer.Option("--query-vectors", exists=True, file_okay=False, readable=True),
-        ] = None,
-        retrieval_canary_run: Annotated[
-            Path | None,
-            typer.Option(
-                "--retrieval-canary-run",
-                exists=True,
-                file_okay=False,
-                readable=True,
-            ),
-        ] = None,
-        retrieval_gate_question_set: Annotated[
-            Path | None,
-            typer.Option(
-                "--retrieval-gate-question-set",
-                exists=True,
-                dir_okay=False,
-                readable=True,
-            ),
-        ] = None,
-        retrieval_holdout_run: Annotated[
-            Path | None,
-            typer.Option(
-                "--retrieval-holdout-run",
-                exists=True,
-                file_okay=False,
-                readable=True,
-            ),
-        ] = None,
-        expected_dataset_sha256: Annotated[
-            str | None, typer.Option("--expected-dataset-sha256")
-        ] = None,
+    @app.command("remember")
+    def remember_command(
+        memory_type: Annotated[str, typer.Argument()],
+        text: Annotated[str | None, typer.Argument()] = None,
+        file: Annotated[Path | None, typer.Option("--file", dir_okay=False)] = None,
+        stdin: Annotated[bool, typer.Option("--stdin")] = False,
+        title: Annotated[str, typer.Option("--title")] = "Agent asserted memory",
+        category: Annotated[str, typer.Option("--category")] = "other",
+        subject_key: Annotated[str | None, typer.Option("--subject-key")] = None,
+        source_fact_id: Annotated[list[str] | None, typer.Option("--source-fact-id")] = None,
+        workstream_key: Annotated[str | None, typer.Option("--workstream-key")] = None,
+        workstream_state: Annotated[
+            Literal["open", "closed"], typer.Option("--workstream-state")
+        ] = "open",
+        goal: Annotated[str | None, typer.Option("--goal")] = None,
+        next_step: Annotated[str | None, typer.Option("--next-step")] = None,
+        terminal_outcome: Annotated[str | None, typer.Option("--terminal-outcome")] = None,
+        tag: Annotated[list[str] | None, typer.Option("--tag")] = None,
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        """Execute one immutable evaluation suite run."""
-        if mode not in {"full", "smoke", "retrieval"}:
-            raise typer.BadParameter(
-                "mode must be 'full', 'smoke', or 'retrieval'", param_hint="--mode"
-            )
-        if execution_phase not in {"all", "ingest", "questions"}:
-            raise typer.BadParameter(
-                "execution-phase must be 'all', 'ingest', or 'questions'",
-                param_hint="--execution-phase",
-            )
-        if suite != "locomo" and execution_phase != "all":
-            raise typer.BadParameter(
-                "execution-phase is supported only for LoCoMo",
-                param_hint="--execution-phase",
-            )
-        if suite != "locomo" and any(
-            value is not None
-            for value in (
-                question_set,
-                corpus,
-                query_vectors,
-                retrieval_gate_question_set,
-                retrieval_canary_run,
-                retrieval_holdout_run,
-            )
-        ):
-            raise typer.BadParameter(
-                "question sets, corpus, query-vectors, and retrieval gates are supported "
-                "only for LoCoMo",
-                param_hint="--corpus",
-            )
-        if corpus is not None and execution_phase == "all":
-            execution_phase = "questions"
-        result = application_factory(root).run_evaluation(
-            EvaluationRunRequest(
-                suite=_evaluation_suite(suite),
-                input_path=input_path,
-                output_root=output_root,
-                run_id=run_id,
-                repository_commit=repository_commit,
-                mode=cast(Literal["full", "smoke", "retrieval"], mode),
-                model=model,
-                judge_model=judge_model,
-                max_workers=max_workers,
-                resume=resume,
-                question_set_path=question_set,
-                execution_phase=cast(Literal["all", "ingest", "questions"], execution_phase),
-                corpus_path=corpus,
-                query_vectors_path=query_vectors,
-                retrieval_gate_question_set_path=retrieval_gate_question_set,
-                retrieval_canary_run_path=retrieval_canary_run,
-                retrieval_holdout_run_path=retrieval_holdout_run,
-                expected_dataset_sha256=expected_dataset_sha256,
-            )
+        """Store Repository Knowledge, Working Preference, or Work State."""
+        content = _large_text(text=text, file=file, stdin=stdin)
+        application, resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
         )
-        typer.echo(json.dumps(result, sort_keys=True))
+        memory = _direct_memory(
+            memory_type=memory_type,
+            repo_key=resolved.repo_key,
+            title=title,
+            content=content,
+            category=category,
+            subject_key=subject_key,
+            source_fact_ids=tuple(source_fact_id or ()),
+            workstream_key=workstream_key,
+            workstream_state=workstream_state,
+            goal=goal,
+            next_step=next_step,
+            terminal_outcome=terminal_outcome,
+            tags=tuple(tag or ()),
+        )
+        typer.echo(json.dumps(asdict(application.remember(memory)), sort_keys=True))
 
-    @evaluation_app.command("build-locomo-corpus")
-    def build_locomo_corpus_command(
-        input_path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
-        corpus_id: Annotated[str, typer.Option("--corpus-id")],
-        repository_commit: Annotated[str, typer.Option("--repository-commit")],
-        output_root: Annotated[Path, typer.Option("--output-root")],
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
-        resume: Annotated[bool, typer.Option("--resume")] = False,
-        question_set: Annotated[
-            Path | None,
-            typer.Option("--question-set", exists=True, dir_okay=False, readable=True),
-        ] = None,
-        expected_dataset_sha256: Annotated[
-            str | None, typer.Option("--expected-dataset-sha256")
-        ] = None,
+    @memory_app.command("show")
+    def memory_show_command(
+        memory_id: Annotated[str, typer.Argument()],
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        """Build and atomically publish one reusable LoCoMo corpus."""
-        result = application_factory(root).build_locomo_corpus(
-            LoCoMoCorpusBuildRequest(
-                input_path=input_path,
-                output_root=output_root,
-                corpus_id=corpus_id,
-                repository_commit=repository_commit,
-                resume=resume,
-                expected_dataset_sha256=expected_dataset_sha256,
-                question_set_path=question_set,
-            )
+        application, resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
         )
-        typer.echo(json.dumps(result, sort_keys=True))
+        memory = application.show_memory(
+            repo_key=resolved.repo_key,
+            memory_id=memory_id,
+        )
+        if memory is None:
+            raise typer.BadParameter("memory ID was not found", param_hint="memory_id")
+        typer.echo(json.dumps(asdict(memory), sort_keys=True))
 
-    @evaluation_app.command("build-locomo-query-vectors")
-    def build_locomo_query_vectors_command(
-        input_path: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
-        vector_set_id: Annotated[str, typer.Option("--vector-set-id")],
-        output_root: Annotated[Path, typer.Option("--output-root")],
-        resume: Annotated[bool, typer.Option("--resume")] = False,
-        question_set: Annotated[
-            Path | None,
-            typer.Option("--question-set", exists=True, dir_okay=False, readable=True),
-        ] = None,
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
-        expected_dataset_sha256: Annotated[
-            str | None, typer.Option("--expected-dataset-sha256")
-        ] = None,
+    @memory_app.command("history")
+    def memory_history_command(
+        memory_id: Annotated[str, typer.Argument()],
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        """Freeze query vectors for one LoCoMo question selection."""
-        result = application_factory(root).build_locomo_query_vectors(
-            LoCoMoQueryVectorBuildRequest(
-                input_path=input_path,
-                output_root=output_root,
-                vector_set_id=vector_set_id,
-                resume=resume,
-                question_set_path=question_set,
-                expected_dataset_sha256=expected_dataset_sha256,
-            )
+        application, resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
         )
-        typer.echo(json.dumps(result, sort_keys=True))
+        history = application.memory_history(
+            repo_key=resolved.repo_key,
+            memory_id=memory_id,
+        )
+        typer.echo(json.dumps(asdict(history), sort_keys=True))
 
-    @evaluation_app.command("report")
-    def evaluation_report_command(
-        suite: Annotated[str, typer.Argument(help="locomo, retrieval, recovery, or coding")],
-        run_dir: Annotated[
-            Path,
-            typer.Argument(exists=True, file_okay=False, readable=True),
-        ],
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+    @memory_app.command("supersede")
+    def memory_supersede_command(
+        predecessor_id: Annotated[str, typer.Argument()],
+        successor_id: Annotated[str, typer.Argument()],
+        reason: Annotated[str, typer.Option("--reason")],
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        """Read one existing evaluation run without mutating it."""
-        result = application_factory(root).report_evaluation(
-            EvaluationReportRequest(
-                suite=_evaluation_suite(suite),
-                run_dir=run_dir,
-            )
+        application, resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
         )
-        typer.echo(json.dumps(result, sort_keys=True))
+        record = application.supersede(
+            repo_key=resolved.repo_key,
+            predecessor_id=predecessor_id,
+            successor_id=successor_id,
+            reason=reason,
+            proposer="user",
+        )
+        typer.echo(json.dumps(asdict(record), sort_keys=True))
 
-    @evaluation_app.command("compare-locomo")
-    def compare_locomo_command(
-        question_set: Annotated[
-            Path,
-            typer.Argument(exists=True, dir_okay=False, readable=True),
-        ],
-        episode_only_run: Annotated[
-            Path, typer.Option("--episode-only-run", exists=True, file_okay=False)
-        ],
-        hierarchy_no_neighbors_run: Annotated[
-            Path,
-            typer.Option("--hierarchy-no-neighbors-run", exists=True, file_okay=False),
-        ],
-        hierarchy_run: Annotated[
-            Path, typer.Option("--hierarchy-run", exists=True, file_okay=False)
-        ],
+    @memory_app.command("restore")
+    def memory_restore_command(
+        memory_id: Annotated[str, typer.Argument()],
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
+    ) -> None:
+        application, resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
+        )
+        restored = application.restore(repo_key=resolved.repo_key, memory_id=memory_id)
+        typer.echo(json.dumps(asdict(restored), sort_keys=True))
+
+    @namespace_app.command("export")
+    def namespace_export_command(
         output: Annotated[Path, typer.Option("--output")],
-        natural_weight_question_set: Annotated[
-            Path | None,
-            typer.Option(
-                "--natural-weight-question-set",
-                exists=True,
-                dir_okay=False,
-                readable=True,
-            ),
-        ] = None,
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        """Compare the frozen three-layer LoCoMo diagnostic and evaluate its gate."""
-        result = application_factory(root).build_locomo_ablation_report(
-            LoCoMoAblationRequest(
-                question_set_path=question_set,
-                episode_only_run=episode_only_run,
-                hierarchy_no_neighbors_run=hierarchy_no_neighbors_run,
-                hierarchy_run=hierarchy_run,
-                output_path=output,
-                natural_weight_question_set_path=natural_weight_question_set,
-            )
+        application, _resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
         )
-        typer.echo(json.dumps(result, sort_keys=True))
+        typer.echo(json.dumps(application.export_namespace(output), sort_keys=True))
 
-    @evaluation_app.command("promote-locomo")
-    def promote_locomo_command(
-        question_set: Annotated[
-            Path,
-            typer.Argument(exists=True, dir_okay=False, readable=True),
-        ],
-        selection_report: Annotated[
-            Path,
-            typer.Option("--selection-report", exists=True, dir_okay=False, readable=True),
-        ],
-        episode_only_run: Annotated[
-            Path,
-            typer.Option("--episode-only-run", exists=True, file_okay=False, readable=True),
-        ],
-        hierarchy_no_neighbors_run: Annotated[
-            Path,
-            typer.Option(
-                "--hierarchy-no-neighbors-run",
-                exists=True,
-                file_okay=False,
-                readable=True,
-            ),
-        ],
-        hierarchy_run: Annotated[
-            Path,
-            typer.Option("--hierarchy-run", exists=True, file_okay=False, readable=True),
-        ],
-        run: Annotated[
-            Path,
-            typer.Option("--run", exists=True, file_okay=False, readable=True),
-        ],
-        output: Annotated[Path, typer.Option("--output")],
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+    @namespace_app.command("reset")
+    def namespace_reset_command(
+        dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
+        confirm: Annotated[str | None, typer.Option("--confirm")] = None,
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        """Verify one selected 200-question LoCoMo run against its promotion gate."""
-        result = application_factory(root).build_locomo_promotion_report(
-            LoCoMoPromotionRequest(
-                question_set_path=question_set,
-                selection_report_path=selection_report,
-                episode_only_run=episode_only_run,
-                hierarchy_no_neighbors_run=hierarchy_no_neighbors_run,
-                hierarchy_run=hierarchy_run,
-                run_dir=run,
-                output_path=output,
+        application, _resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
+        )
+        typer.echo(
+            json.dumps(
+                application.reset_namespace(confirm=confirm, dry_run=dry_run),
+                sort_keys=True,
             )
         )
-        typer.echo(json.dumps(result, sort_keys=True))
-
-    @evaluation_app.command("report-locomo-evidence")
-    def report_locomo_evidence_command(
-        run_dir: Annotated[
-            Path,
-            typer.Argument(exists=True, file_okay=False, readable=True),
-        ],
-        dataset: Annotated[
-            Path,
-            typer.Option("--dataset", exists=True, dir_okay=False, readable=True),
-        ],
-        output: Annotated[Path | None, typer.Option("--output")] = None,
-        oracle_max_tokens: Annotated[
-            int,
-            typer.Option("--oracle-max-tokens", min=1),
-        ] = 4_000,
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
-    ) -> None:
-        """Report provider-free ranked/context evidence coverage and oracle fit."""
-        result = application_factory(root).report_locomo_evidence_coverage(
-            LoCoMoEvidenceCoverageRequest(
-                run_dir=run_dir,
-                dataset_path=dataset,
-                output_path=output,
-                oracle_max_tokens=oracle_max_tokens,
-            )
-        )
-        typer.echo(json.dumps(result, sort_keys=True))
-
-    @evaluation_app.command("compose-locomo-repair")
-    def compose_locomo_repair_command(
-        target_question_set: Annotated[
-            Path,
-            typer.Argument(exists=True, dir_okay=False, readable=True),
-        ],
-        repair_question_set: Annotated[
-            Path,
-            typer.Option(
-                "--repair-question-set",
-                exists=True,
-                dir_okay=False,
-                readable=True,
-            ),
-        ],
-        base_run: Annotated[
-            Path,
-            typer.Option("--base-run", exists=True, file_okay=False, readable=True),
-        ],
-        repair_run: Annotated[
-            Path,
-            typer.Option("--repair-run", exists=True, file_okay=False, readable=True),
-        ],
-        output: Annotated[Path, typer.Option("--output")],
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
-    ) -> None:
-        """Compose a formal LoCoMo score from a base run and its exact failed-only repair."""
-        result = application_factory(root).build_locomo_repair_report(
-            LoCoMoRepairRequest(
-                target_question_set_path=target_question_set,
-                repair_question_set_path=repair_question_set,
-                base_run=base_run,
-                repair_run=repair_run,
-                output_path=output,
-            )
-        )
-        typer.echo(json.dumps(result, sort_keys=True))
-
-    @evidence_app.command("build")
-    def evidence_build_command(
-        bundle_id: Annotated[str, typer.Option("--bundle-id")],
-        locomo_run: Annotated[Path, typer.Option("--locomo-run", exists=True, readable=True)],
-        retrieval_run: Annotated[
-            Path, typer.Option("--retrieval-run", exists=True, file_okay=False)
-        ],
-        recovery_run: Annotated[Path, typer.Option("--recovery-run", exists=True, file_okay=False)],
-        coding_run: Annotated[Path, typer.Option("--coding-run", exists=True, file_okay=False)],
-        quality_junit: Annotated[
-            Path, typer.Option("--quality-junit", exists=True, dir_okay=False)
-        ],
-        quality_coverage: Annotated[
-            Path, typer.Option("--quality-coverage", exists=True, dir_okay=False)
-        ],
-        generator_commit: Annotated[str, typer.Option("--generator-commit")],
-        output_root: Annotated[Path, typer.Option("--output-root")] = Path("evidence"),
-        repository_root: Annotated[Path, typer.Option("--repository-root")] = Path("."),
-    ) -> None:
-        """Generate immutable metrics and recruiting copy from completed artifacts."""
-        result = application_factory(Path(".codecairn")).build_evidence_bundle(
-            EvidenceBundleBuildRequest(
-                bundle_id=bundle_id,
-                output_root=output_root,
-                locomo_run_dir=locomo_run,
-                retrieval_run_dir=retrieval_run,
-                recovery_run_dir=recovery_run,
-                coding_run_dir=coding_run,
-                quality_junit_path=quality_junit,
-                quality_coverage_path=quality_coverage,
-                repository_root=repository_root,
-                generator_commit=generator_commit,
-            )
-        )
-        typer.echo(json.dumps(result, sort_keys=True))
 
     @evidence_app.command("verify")
     def evidence_verify_command(
@@ -521,42 +373,191 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
 
     @index_app.command("sync")
     def index_sync_command(
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
         worker_id: Annotated[str, typer.Option("--worker-id")] = "cli",
         max_jobs: Annotated[int | None, typer.Option("--max-jobs", min=1)] = None,
     ) -> None:
         """Drain the index outbox until it is idle and report queue state."""
-        health = application_factory(root).sync_index(worker_id=worker_id, max_jobs=max_jobs)
+        application, _resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
+        )
+        health = application.sync_index(worker_id=worker_id, max_jobs=max_jobs)
         typer.echo(json.dumps(asdict(health), sort_keys=True))
 
     @index_app.command("rebuild")
     def index_rebuild_command(
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
         """Rebuild the search index from durable truth and report truth-index parity."""
-        typer.echo(json.dumps(asdict(application_factory(root).rebuild_index()), sort_keys=True))
+        application, _resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
+        )
+        typer.echo(json.dumps(asdict(application.rebuild_index()), sort_keys=True))
 
     @index_app.command("status")
     def index_status_command(
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
         """Report index outbox state without resolving retrieval providers."""
-        typer.echo(json.dumps(asdict(application_factory(root).index_status()), sort_keys=True))
+        application, _resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
+        )
+        typer.echo(json.dumps(asdict(application.index_status()), sort_keys=True))
 
     @app.command("doctor")
     def doctor_command(
-        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
+        root: Annotated[Path | None, typer.Option("--root")] = None,
+        config: Annotated[Path | None, typer.Option("--config")] = None,
+        live: Annotated[bool, typer.Option("--live")] = False,
+        strict: Annotated[bool, typer.Option("--strict")] = False,
+        output_format: Annotated[Literal["human", "json"], typer.Option("--format")] = "human",
     ) -> None:
         """Inspect durable truth, import state, index state, and providers."""
-        typer.echo(json.dumps(application_factory(root).doctor(), sort_keys=True))
+        application, _resolved = _resolve_application(
+            application_factory, config=config, root=root, repo_key=repo_key
+        )
+        result = application.doctor(live=live)
+        if output_format == "json":
+            typer.echo(json.dumps(result, sort_keys=True))
+        else:
+            typer.echo(_doctor_text(result))
+        if strict and result["status"] != "ok":
+            raise typer.Exit(code=1)
 
     return app
 
 
-def _evaluation_suite(value: str) -> EvaluationSuite:
-    if value not in {"locomo", "retrieval", "recovery", "coding"}:
-        raise typer.BadParameter(
-            "suite must be locomo, retrieval, recovery, or coding",
-            param_hint="suite",
+def _resolve_application(
+    application_factory: ApplicationFactory,
+    *,
+    config: Path | None,
+    root: Path | None,
+    repo_key: str | None,
+) -> tuple[CodeCairnApplication, RuntimeConfig]:
+    resolved = resolve_runtime_config(
+        start=Path.cwd(),
+        config_path=config,
+        root=root,
+        repo_key=repo_key,
+    )
+    return _application(application_factory, resolved), resolved
+
+
+def _application(
+    application_factory: ApplicationFactory,
+    resolved: RuntimeConfig,
+) -> CodeCairnApplication:
+    return application_factory(
+        resolved.runtime_root,
+        repo_key=resolved.repo_key,
+        retrieval=resolved.retrieval,
+        semantic=resolved.semantic,
+    )
+
+
+def _doctor_text(result: dict[str, object]) -> str:
+    providers = cast(dict[str, object], result["providers"])
+    privacy = cast(dict[str, object], result["privacy"])
+    return "\n".join(
+        (
+            f"CodeCairn: {result['status']}",
+            f"Namespace: {result['repo_key']}",
+            f"Config: {providers['retrieval']} ({providers['retrieval_state']})",
+            f"Semantic: {providers['semantic']}",
+            f"Privacy: storage={privacy['storage']}, embedding={privacy['embedding']}, "
+            f"semantic={privacy['semantic_extraction']}",
+            f"Remedy: {result['remediation'] or 'none'}",
         )
-    return cast(EvaluationSuite, value)
+    )
+
+
+def _large_text(*, text: str | None, file: Path | None, stdin: bool) -> str:
+    if sum((text is not None, file is not None, stdin)) != 1:
+        raise typer.BadParameter("provide exactly one text argument, --file, or --stdin")
+    value = text if text is not None else file.read_text() if file is not None else sys.stdin.read()
+    if not value:
+        raise typer.BadParameter("memory text must not be empty")
+    return value
+
+
+def _direct_memory(
+    *,
+    memory_type: str,
+    repo_key: str,
+    title: str,
+    content: str,
+    category: str,
+    subject_key: str | None,
+    source_fact_ids: tuple[str, ...],
+    workstream_key: str | None,
+    workstream_state: Literal["open", "closed"],
+    goal: str | None,
+    next_step: str | None,
+    terminal_outcome: str | None,
+    tags: tuple[str, ...],
+) -> CodingMemory:
+    payload: MemoryPayload
+    if memory_type == "task_experience":
+        raise typer.BadParameter("Task Experience is capture-only", param_hint="memory_type")
+    if memory_type == "repository_knowledge":
+        if subject_key is None:
+            raise typer.BadParameter("--subject-key is required")
+        payload = RepositoryKnowledgePayload(
+            subject_key=normalize_machine_key(subject_key),
+            claim=content,
+        )
+    elif memory_type == "user_preference":
+        if subject_key is None or not source_fact_ids:
+            raise typer.BadParameter(
+                "Working Preference requires --subject-key and --source-fact-id"
+            )
+        payload = UserPreferencePayload(
+            subject_key=normalize_machine_key(subject_key),
+            preference=content,
+            source_fact_ids=tuple(sorted(source_fact_ids)),
+        )
+    elif memory_type == "work_state":
+        if workstream_key is None or goal is None:
+            raise typer.BadParameter("Work State requires --workstream-key and --goal")
+        if workstream_state == "open" and next_step is None:
+            raise typer.BadParameter("Open Work State requires --next-step")
+        if workstream_state == "closed" and terminal_outcome is None:
+            raise typer.BadParameter("Closed Work State requires --terminal-outcome")
+        payload = WorkStatePayload(
+            workstream_key=normalize_machine_key(workstream_key),
+            workstream_state=workstream_state,
+            goal=goal,
+            progress=content,
+            blockers=(),
+            next_step=next_step if workstream_state == "open" else None,
+            terminal_outcome=terminal_outcome if workstream_state == "closed" else None,
+        )
+    else:
+        raise typer.BadParameter(
+            "memory type must be repository_knowledge, user_preference, or work_state",
+            param_hint="memory_type",
+        )
+    return CodingMemory.create(
+        repo_key=repo_key,
+        memory_type=cast(Any, memory_type),
+        title=title,
+        content=content,
+        category=category,
+        tags=tuple(sorted({normalize_tag(tag) for tag in tags})),
+        created_at_ms=time.time_ns() // 1_000_000,
+        episode_id=None,
+        evidence=(),
+        facts=(),
+        origin="agent_asserted",
+        restored_from=None,
+        restore_predecessor_id=None,
+        source_order_key=None,
+        payload=payload,
+    )

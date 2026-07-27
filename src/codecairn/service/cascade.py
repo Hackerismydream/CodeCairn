@@ -65,7 +65,12 @@ class CascadeIndex(Protocol):
 
     def upsert(self, documents: tuple[RecallDocument, ...]) -> None: ...
 
-    def replace_all(self, documents: tuple[RecallDocument, ...]) -> None: ...
+    def replace_namespace(
+        self,
+        *,
+        repo_key: str,
+        documents: tuple[RecallDocument, ...],
+    ) -> None: ...
 
     def fingerprints(self, *, repo_key: str) -> set[tuple[str, str, str, str]]: ...
 
@@ -145,7 +150,7 @@ class MiniCascade:
             for memory, status in self._state.recall_documents(repo_key=repo_key)
             for document in project_memory(memory, status=status)
         )
-        self._index.replace_all(documents)
+        self._index.replace_namespace(repo_key=repo_key, documents=documents)
         expected = {
             (item.memory_id, item.document_id, item.status, item.content_sha256)
             for item in documents
