@@ -1,5 +1,12 @@
 # Evidence Fields Are Derived, Not Generated
 
+## Status
+
+Accepted and amended by ADR 0043 and ADR 0047. Source provenance and
+deterministic observations remain system-authored, but evidence verification
+no longer gates durable memory and the former gate-specific memory types are
+not the version 0.1 taxonomy.
+
 Deterministic collectors derive role, quote, command, exit status, changed file,
 and verification facts from Agent Trace events. An LLM may propose a type,
 summary, guidance, and relationships between supplied fact identifiers.

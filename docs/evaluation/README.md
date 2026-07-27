@@ -1,5 +1,11 @@
 # Evaluation Scope
 
+This document describes evaluation implemented on `main@954f728` and the
+checked-in historical evidence. The smaller version 0.1 command and release
+contract is specified in
+[`../v0.1/evaluation-and-release.md`](../v0.1/evaluation-and-release.md) and is
+not implemented yet.
+
 CodeCairn evaluation establishes whether extraction is grounded, retrieval is
 useful, storage is recoverable, and memory changes coding-task outcomes. It
 does not turn controlled benchmark results into production-traffic claims.
@@ -30,8 +36,9 @@ offline verifier
 ```
 
 Evaluation may compose Mini Cascade directly to create a complete indexed
-corpus. That proves the service component and benchmark path; it does not prove
-that the public CLI/server owns the same lifecycle.
+corpus. Current CLI/HTTP import and index operations now own the same
+queue-to-index lifecycle, but benchmark composition still does not prove the
+future four-type capture, MCP, hook, evolution, or installed-package path.
 
 ## Suites
 
@@ -56,8 +63,9 @@ substitutes for the others.
 | CodingMemoryBench | Checked-in pre-retrieved context -> isolated Codex task -> hidden verifier | Import, indexing, or retrieval |
 | LoCoMo | Attributed Episode -> `write_episode` -> current retrieval -> answer/judge | Codex/Claude JSONL importer and public application facade |
 
-No checked-in bundle currently proves the complete public
-`Codex/Claude import -> index lifecycle -> recall` path.
+No checked-in bundle currently proves the complete version 0.1
+`Codex/Claude hook -> four-type capture -> evolution -> active recall -> MCP`
+path.
 
 ## Artifact contract
 
@@ -177,6 +185,26 @@ uv run codecairn evidence verify evidence/benchmark-v3
 
 Documentation must not describe the v3 bundle as CI-protected before that
 workflow changes.
+
+## Version 0.1 target
+
+Task `v01-008` reduces the installable evaluation framework and exposes six
+authoritative targets:
+
+```text
+make eval-smoke
+make eval-locomo-200
+make eval-locomo-full
+make eval-coding-ab
+make evidence-verify
+make source-budget
+```
+
+The offline smoke proves the product lifecycle without publishing a score. A
+new full LoCoMo run must be bound to the release candidate before the
+historical 82.60% can be compared with or replaced by a version 0.1 result.
+The current execution code and v3 verifier remain authoritative until that
+task passes.
 
 ## Ownership
 

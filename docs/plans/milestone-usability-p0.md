@@ -1,5 +1,8 @@
 # Milestone: Usability P0 — make the shipped product work
 
+Status: completed by Fable and merged in `main@954f728`. ADR 0040 and current
+runtime operations own the implemented result.
+
 Parent plan: `everos-alignment-roadmap.md` (product program, step P0).
 
 ## Problem, with verified evidence

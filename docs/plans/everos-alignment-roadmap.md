@@ -1,7 +1,10 @@
 # EverOS Alignment Roadmap
 
-Status: accepted 2026-07-26. This document is the umbrella plan; each milestone
-has its own specification under `docs/plans/`.
+Status: historical and partially completed. Fable's B0/P0 work was merged into
+`main@954f728`. The remaining product program was absorbed and superseded by
+the accepted version 0.1 PRD, architecture, and agent-ready tasks under
+`docs/v0.1/` and `docs/plan/`. This file preserves the reasoning that produced
+the baseline; it is no longer the delivery authority.
 
 CodeCairn's reference project is EverOS (`EverMind-AI/EverOS`, local checkout
 expected at `~/code/EverOS`). "Alignment" means two separate programs that share
@@ -56,6 +59,9 @@ questions. If ever attempted, they must be gated on a category-5 regression
 run.
 
 ## Product program
+
+Historical table below. P0 is complete. P1–P6 were re-scoped into v01-001
+through v01-010; P4 dashboard and the watcher portion of P3 are deferred.
 
 | Step | Content | Spec |
 |---|---|---|

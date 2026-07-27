@@ -1,9 +1,13 @@
 # Runtime Operations
 
-This document describes the public behavior that exists on the current main
-branch. It separates implemented service components from entrypoint lifecycle
-wiring so operators do not mistake queued durable memory for a searchable
-index.
+This document describes the public behavior that exists on baseline
+`main@954f728`. It separates implemented behavior from the accepted version
+0.1 target so operators do not mistake future `init`, MCP, hook, capture, or
+evolution commands for available commands.
+
+Target operations are specified in
+[`../v0.1/onboarding-and-operations.md`](../v0.1/onboarding-and-operations.md)
+and [`../v0.1/agent-integration.md`](../v0.1/agent-integration.md).
 
 ## Current support matrix
 

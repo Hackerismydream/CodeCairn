@@ -1,213 +1,216 @@
-# CodeCairn Version 1
+# CodeCairn v0.1 Product Requirements
 
-## Problem Statement
+Status: accepted for implementation on 2026-07-27.
 
-Coding agents repeatedly rediscover repository conventions, rerun known-bad
-commands, reread the same files, and forget previously verified fixes. Existing
-chat histories contain useful evidence, but they are provider-specific, large,
-hard to search, and unsafe to treat as trusted summaries. A developer needs a
-local runtime that converts those histories into small, inspectable, source-
-linked memories and can prove whether those memories improve later coding work.
+## Product statement
 
-## Solution
+CodeCairn is a local-first Memory OS that agents use but do not own. Version
+0.1 ships one complete Coding Profile: it converts Codex and Claude Code work
+into inspectable memory, evolves stale memory through supersession, and returns
+bounded context to the next coding task.
 
-CodeCairn explicitly imports completed Codex and Claude Code sessions into one
-Agent Trace contract. It segments traces into stable Task Episodes and derives
-Evidence Facts from raw events. The current public import path automatically
-persists deterministic Failed Command memories.
+The release is both a usable product and a readable learning project. A feature
+that works only through an internal Python seam, a benchmark-only adapter, or a
+future roadmap does not count as shipped.
 
-The domain and service layers also implement five gate-managed types: User
-Preference, Repository Convention, Verified Fix, Debug Episode, and
-Conversation Episode. An LLM may propose bounded summaries or grounded
-semantic projections, while a type-specific Evidence Gate decides whether
-those service-level writes become durable Markdown truth. Those five producers
-are not currently exposed by ordinary CLI or HTTP import.
+## Current baseline
 
-SQLite records import, audit, recovery, and indexing state; LanceDB is a
-rebuildable hybrid index. The runtime can emit task-shaped Recall Context
-through shared CLI and HTTP interfaces, but the public product currently lacks
-the cascade lifecycle required to make newly imported truth searchable.
+The implementation baseline is Fable's `954f728` code plus this accepted
+pre-development documentation on its `main` descendant:
 
-CodeCairn ships its proof alongside the product: LoCoMo end-to-end question
-answering, a labeled retrieval set, and isolated memory-on/off coding tasks.
-Reports are generated from immutable artifacts rather than hand-entered claims.
+| Area | Baseline reality |
+|---|---|
+| Import | Codex and Claude JSONL normalize into Agent Trace and Task Episode |
+| Durable state | Markdown, SQLite Import Ledger, transactional Index Queue |
+| Search | LanceDB parent/child projection and hierarchical recall |
+| Index lifecycle | Import drains by default; CLI/HTTP sync, rebuild, and status exist |
+| Provider startup | Retrieval providers are lazy and configuration failures are typed |
+| Memory production | Ordinary import still produces deterministic Failed Command only |
+| Taxonomy | Six historical types and Evidence Gate paths remain in code |
+| Agent integration | No MCP server or installed session-end hooks |
+| Onboarding | No `init`, config file, automatic repository identity, or PyPI release |
+| Published benchmark | Historical `benchmark-v3` records 82.60% on 1,540 LoCoMo questions |
+| Source size | 34,091 physical Python lines: 16,841 evaluation and 17,250 other source |
 
-## Current Delivery Status
+The historical benchmark remains valid for its frozen commit and protocol. It
+is not evidence for the version 0.1 architecture until a new run is bound to
+the release candidate.
 
-| Capability | Status on main | Release implication |
-|---|---|---|
-| Codex and Claude Code Agent Trace import | Delivered | Public import is post-hoc and explicitly triggered |
-| Failed Command extraction | Delivered on public import | Only automatically produced public memory type |
-| Four proposal-gated types | Service contract only | No public compression/producer path |
-| Conversation Episode | Service/evaluation contract only | Used by LoCoMo, not ordinary trace import |
-| Markdown, SQLite ledger/audits, and outbox | Delivered | Durable import succeeds independently of indexing |
-| Mini Cascade and rebuild parity | Service component delivered | No public CLI/server lifecycle |
-| Hierarchical recall and attributed context | Delivered against an existing index | Fresh import-to-recall loop remains incomplete |
-| Four evaluation suites and evidence bundle | Delivered | Suite boundaries do not prove the public product loop |
-| Package build | Delivered | Release metadata, governance, curated sdist, and tag are missing |
+## Release outcome
 
-The next release-critical slice is not another benchmark feature. It is a
-black-box product path that imports a supported trace, drains the index through
-a supported owner, reaches healthy parity, and recalls the imported evidence.
+A new user can install CodeCairn, initialize it in a repository, connect Codex
+or Claude Code, finish one task, and then ask a later session what happened.
+The agent receives active memory with source links. If later work makes prior
+knowledge stale, the new memory takes over normal recall while history remains
+inspectable and restorable.
 
-## User Stories
-
-1. As a Codex user, I want to import a session JSONL file, so that prior coding work can become reusable memory.
-2. As a Claude Code user, I want the same import behavior, so that memory is independent of my coding-agent provider.
-3. As a developer, I want malformed JSONL to fail with its source line, so that I can repair or exclude bad input.
-4. As an auditor, I want every normalized event to retain its raw location, so that I can inspect the original evidence.
-5. As a developer, I want tool calls paired with their results, so that command outcomes are not separated from their actions.
-6. As a Codex user, I want `custom_tool_call` and `apply_patch` changes preserved, so that file edits are not silently lost.
-7. As a developer, I want sessions segmented by task episodes, so that an unrelated failure does not poison a whole session.
-8. As a developer, I want committed episode identities to survive later appends, so that incremental import does not rename existing memories.
-9. As a developer, I want imports to continue from a committed cursor, so that a restart does not recompute the whole session.
-10. As a developer, I want a failed durable write to leave the cursor unchanged, so that retry cannot skip data.
-11. As a developer, I want repeat import to be idempotent, so that I can safely automate ingestion.
-12. As a developer, I want repository namespaces included in durable identities, so that identical traces in two repositories remain isolated.
-13. As an auditor, I want user quotes to be exact source substrings, so that inferred preferences cannot masquerade as evidence.
-14. As an auditor, I want command status derived from tool results, so that an LLM cannot relabel failure as success.
-15. As a developer, I want Failed Command memories to cite failed events, so that I avoid repeating verified waste.
-16. As a developer, I want Verified Fix memories to require a change and successful verification, so that speculative patches are not recalled as solutions.
-17. As a repository maintainer, I want Repository Convention memories grounded in user text or repository rules, so that architectural guidance is defensible.
-18. As a developer, I want Debug Episodes to connect task, actions, and outcome, so that future debugging starts from a useful path.
-19. As a user, I want stable preferences remembered only from my own words, so that the agent does not invent collaboration rules.
-20. As an auditor, I want rejected memory proposals recorded with reasons, so that extraction precision can be measured.
-21. As a developer, I want one readable Markdown file per active memory, so that I can inspect and version durable truth.
-22. As a developer, I want Markdown writes to be atomic, so that process interruption cannot leave a truncated truth file.
-23. As an operator, I want SQLite to expose import cursors and queue state, so that I can diagnose progress without parsing logs.
-24. As an operator, I want index workers to claim work atomically, so that concurrent workers do not duplicate embeddings.
-25. As an operator, I want unchanged successful content hashes to be no-ops, so that periodic scans do not rebuild everything.
-26. As a developer, I want to delete LanceDB and rebuild it from Markdown, so that the search index is never a second source of truth.
-27. As a developer, I want lexical and vector candidate sets unioned before ranking, so that exact repository terms are not hidden by vector recall.
-28. As an auditor, I want a JSON retrieval sidecar containing candidate sources and scores, so that ranking metrics are reproducible.
-29. As a coding-agent user, I want concise Markdown Recall Context for a task, so that I can attach useful memory without dumping the corpus.
-30. As a CLI user, I want import, list, recall, eval, doctor, and an explicit index lifecycle, so that the full local loop is scriptable.
-31. As a backend reviewer, I want HTTP import, list, recall, evaluation, and health routes, so that the same use cases demonstrate route contracts and error handling.
-32. As a maintainer, I want CLI and HTTP to call the same interfaces, so that behavior cannot drift between entrypoints.
-33. As an evaluator, I want LoCoMo ingestion to preserve sessions and speakers, so that published QA accuracy follows the dataset structure.
-34. As an evaluator, I want repeated LLM-judge votes recorded individually, so that answer accuracy does not hide judge variance.
-35. As an evaluator, I want a labeled retrieval set, so that Recall@5 and MRR are measured against independent relevance judgments.
-36. As an evaluator, I want 20 coding tasks run with memory on and off three times each, so that usefulness is based on 120 isolated runs.
-37. As an evaluator, I want every run to record seed, model, commit, snapshots, tokens, commands, and verifier output, so that results can be reproduced.
-38. As an evaluator, I want memory-off runs physically isolated from memory state, so that the comparison cannot be contaminated.
-39. As a recruiter, I want reports generated from checked-in manifests and aggregate inputs, so that resume numbers are verifiable.
-40. As a maintainer, I want tests for corruption repair, worker interruption, queue replay, concurrent import, and repository isolation, so that recovery claims survive failure injection.
-41. As an auditor, I want rebuild parity to cover Recall Episode parents and AtomicFact children, so that a missing child cannot hide behind a matching memory count.
-42. As a coding-agent user, I want exact AtomicFact matches lifted to their parent memory, so that a compressed summary cannot hide the detail I asked for.
-43. As an auditor, I want query route, hierarchy-level candidates, and matched facts in the sidecar, so that a recall decision can be replayed.
-44. As a user, I want bounded chronological neighbors from the same episode, so that a recalled detail retains its immediate context without leaking another repository or task.
-45. As a coding-agent user, I want supported producers for gate-managed memory types, so that the six-type domain is reachable without internal Python calls.
-46. As an auditor, I want an explicit policy for edits to existing Markdown, so that offline changes cannot bypass the Evidence Gate.
-47. As an installer, I want a tagged, licensed, deterministic package whose installed-wheel smoke passes, so that build success is not confused with release readiness.
-
-## Implementation Decisions
-
-- Python 3.12 is the only supported runtime for version 1.
-- The project uses a `src` layout and inward dependency rules enforced by
-  import-linter.
-- The main import seam is `import_session(source, repo_key) -> ImportResult`.
-- Public trace import automatically writes Failed Command memories only. The
-  proposal and Conversation Episode seams are internal service contracts until
-  a public producer is added.
-- Provider Importers retain raw indices and call identifiers and emit one Agent
-  Trace contract.
-- Task Episode identity uses repository namespace, provider, session, and stable
-  opening evidence. It never includes the current session end offset.
-- The Import Ledger commits a cursor only after the corresponding Markdown and
-  SQLite state are durable.
-- The six Coding Memory types are Debug Episode, Conversation Episode,
-  Repository Convention, Failed Command, Verified Fix, and User Preference. A
-  Conversation Episode keeps exact attributed turns as Evidence Facts and a
-  separately marked semantic retrieval projection grounded in those facts.
-- Evidence Facts are derived by code. The LLM may reference fact identifiers and
-  author summaries, but cannot author provenance fields.
-- Markdown truth uses same-directory temporary files, flush, fsync, atomic
-  create-if-absent, and containment checks. Audited repair may replace only the
-  exact committed representation. Each file stores complete deterministic fact
-  snapshots with its Coding Memory.
-- SQLite owns import state, audit rows, memory metadata, and a transactional
-  index outbox whose uniqueness includes repository namespace.
-- LanceDB is mandatory for searchable version-one behavior but is never
-  authoritative.
-  It projects each Coding Memory into one Recall Episode parent plus its
-  AtomicFact children.
-- Hybrid retrieval searches Episode and AtomicFact projections independently
-  across vector, lexical, entity, and temporal lanes, lifts child hits to their
-  parents, fuses the resulting rankings, expands bounded postings, reranks
-  parents, selects core/coverage results, expands bounded neighbors, and then
-  reranks authoritative facts before context compilation. A deterministic soft
-  route changes pool sizes but never hard-disables the secondary level. Logical
-  model aliases, artifact repositories, immutable commit revisions, dimensions,
-  and Adapter versions are recorded in index rows and evaluation artifacts;
-  hashing is a test-only Adapter.
-- Recall Context is Markdown first with a structured JSON sidecar.
-- CLI and HTTP are presentation adapters over shared use-case interfaces.
-- Evaluation uses immutable suite, task, and run manifests. Report generation is
-  pure and cannot rebuild or overwrite a runtime index.
-- Public fixtures are synthetic. Private real traces remain outside Git history
-  and are referenced by hash-only manifests.
-
-## Release Acceptance
-
-Version-one component milestones and version-one product acceptance are
-separate:
+The release demo is:
 
 ```text
-component complete
-  = import/evidence/storage/cascade/recall/evaluation implementations exist
-
-product complete
-  = installed public entrypoints own the complete durable-to-search lifecycle
+uvx codecairn init
+  -> register MCP and one session-end hook
+  -> finish a coding task
+  -> hook imports and processes the trace
+  -> next session calls recall
+  -> agent receives active Work State, Knowledge, Preference, and Experience
+  -> memory history shows any superseded predecessor
 ```
 
-Before the first tag:
+## Users
 
-1. ordinary import capability and all six type producers must be described
-   exactly as implemented;
-2. a supported cascade owner or sync command must close the import-to-recall
-   loop;
-3. `doctor` must reach healthy parity in an installed-wheel smoke;
-4. the Markdown offline-edit authority conflict must be resolved;
-5. current evidence must be verified in CI without reattributing historical
-   retrieval results;
-6. license, package metadata, curated sdist, release notes, security policy,
-   and contribution policy must exist.
+### Coding-agent user
 
-## Testing Decisions
+Wants memory to work across sessions and across Codex or Claude Code without
+manually maintaining a knowledge file.
 
-- Tests exercise behavior through use-case interfaces, CLI invocations, or HTTP
-  routes rather than private helpers.
-- Each tracer bullet is implemented as one failing contract test followed by the
-  minimum implementation and refactoring while green.
-- Import tests use literal synthetic JSONL records and independently specified
-  expected events, identities, and evidence facts.
-- Failure injection covers malformed input, append-after-import, mid-write
-  interruption, corrupt Markdown, duplicate import, cross-repository import,
-  lease contention, and index deletion.
-- Evidence Gate tests include adversarial proposals with invented quotes,
-  changed roles, mismatched commands, and failed verification.
-- Retrieval evaluation uses fixed relevance labels, not titles copied from the
-  expected memory and not repository membership as a relevance shortcut.
-- Coding-task verifiers execute commands inside isolated workspaces; manually
-  supplied verifier JSON is not accepted as proof.
-- The authoritative local gate is formatting, lint, strict type checking,
-  dependency contracts, tests, and coverage reporting.
+### Learner
 
-## Out of Scope
+Wants to understand an end-to-end Memory OS by following a small number of
+modules, one walkthrough, and reproducible evaluation commands.
 
-- Running or wrapping Codex and Claude Code during ordinary product use.
-- Live hooks and hidden prompt injection.
-- Authentication, multi-user cloud service, billing, or organization tenancy.
-- Dashboard and memory editing UI.
-- General document ingestion, multimodal memory, profile evolution, and agent
-  skill synthesis.
-- Distributed workers and cross-host queue leases.
-- Publishing benchmark targets before real runs complete.
+### Maintainer
 
-## Further Notes
+Wants every release claim bound to a clean commit and a checked-in artifact,
+without preserving historical framework code that no longer serves the
+product.
 
-The intended resume artifact is the generated evidence bundle, not a prose
-claim: session and event counts, extraction labels, retrieval query results,
-privacy-safe LoCoMo scored outcomes and source receipts, 120 coding-run
-manifests, recovery checks, coverage, and the exact commands required to
-reproduce aggregates.
+## Product requirements
+
+### Memory capture
+
+- **FR-01**: Codex and Claude Code sources normalize into the existing Agent
+  Trace and stable Task Episode contracts.
+- **FR-02**: Every Task Episode creates exactly one Task Experience, including
+  failed, partial, interrupted, and unknown outcomes.
+- **FR-03**: One Task Episode may create zero or more Repository Knowledge and
+  User Preference items and at most one Work State when it leaves unresolved
+  work or closes a previously open Workstream.
+- **FR-04**: Coding Memory has exactly four public types: Task Experience,
+  Repository Knowledge, User Preference, and Work State.
+- **FR-05**: Storage does not require evidence verification. The system, not a
+  model, authors namespace, source references, roles, command outcomes, file
+  changes, exact quotes, and verification state.
+- **FR-06**: User Preference candidates come only from user-authored source
+  content. Model paraphrase is allowed and retains its source references.
+- **FR-07**: A missing semantic model never discards source import or the
+  deterministic Task Experience. Optional semantic work remains pending and
+  visible through diagnostics.
+
+### Memory evolution
+
+- **FR-08**: Task Experience is append-only.
+- **FR-09**: An open or terminal Work State supersedes the prior active state
+  for the same Workstream.
+- **FR-10**: A newer explicit User Preference may supersede the previous
+  preference on the same subject.
+- **FR-11**: Repository Knowledge supersedes only a same-subject item proposed
+  as obsolete or contradictory; otherwise both remain active.
+- **FR-12**: Supersession is automatic after structural validation and does not
+  require evidence verification or human approval.
+- **FR-13**: Every supersession is an immutable Evolution Record. It never
+  deletes or rewrites a memory.
+- **FR-14**: Restore creates a new memory revision from historical content and
+  may supersede the current revision.
+
+### Recall
+
+- **FR-15**: Default recall searches only active memory.
+- **FR-16**: A matching open Work State is pinned first. Closed Work State and
+  the remaining Repository Knowledge, User Preference, and Task Experience are
+  ranked under a total context budget and per-type caps.
+- **FR-17**: Recall returns Markdown for the agent and a JSON sidecar containing
+  memory identity, type, status, ranking, provenance, provider identity, and
+  omissions.
+- **FR-18**: Historical recall is explicit through `include_superseded` and
+  `memory history`.
+
+### Product surfaces
+
+- **FR-19**: CLI, MCP, and session-end hooks call the same service use cases.
+- **FR-20**: MCP exposes `recall`, `remember`, `list_memories`, `get_memory`,
+  `memory_history`, `import_session`, and `doctor`, plus
+  `codecairn://memory/{id}`.
+- **FR-21**: Claude Code uses `SessionEnd`. Codex uses its `Stop` hook and relies
+  on import idempotency because Stop may fire per turn.
+- **FR-22**: Hook execution durably imports source, queues remaining processing,
+  never blocks agent shutdown, emits no protocol-breaking stdout, and exposes
+  failures through `doctor`.
+- **FR-23**: `codecairn init` derives repository identity, writes
+  `codecairn.toml`, records an explicit retrieval profile, and prints working
+  import, recall, MCP, and hook commands.
+- **FR-24**: CLI and MCP are the required version 0.1 interfaces. Existing HTTP
+  method/path/error envelopes remain compatible and return version 0.1 memory
+  records, but HTTP does not require feature-for-feature expansion.
+
+### Evaluation and release
+
+- **FR-25**: The repository exposes one-command smoke, LoCoMo-200,
+  LoCoMo-1540, coding A/B, and evidence-verification targets.
+- **FR-26**: The offline smoke covers import, four-type capture, supersession,
+  active recall, history, restore, MCP, and hook ingestion.
+- **FR-27**: A release score comes only from a frozen manifest and raw
+  aggregates generated at the release commit.
+- **FR-28**: The shipped product core is at most 10,000 physical Python lines
+  and all `src/codecairn` source is at most 15,000.
+- **FR-29**: The package ships under MIT with curated wheel/sdist contents and
+  supports `uvx codecairn init`.
+- **FR-30**: The release includes a five-minute quickstart, five-layer
+  architecture map, end-to-end trace walkthrough, code-reading path, ADR index,
+  and evaluation guide.
+
+## Operational requirements
+
+- Markdown is authoritative for Coding Memories and Evolution Records.
+- SQLite owns transactional cursors, work queues, active projections, and
+  diagnostics.
+- LanceDB is disposable and rebuildable from Markdown plus Evolution Records.
+- A committed source cursor advances only after its complete durable write set.
+- A supersession never crosses a Memory Namespace, references itself, or forms
+  a cycle.
+- Index identity cannot mix embedding provider, model, revision, adapter, or
+  dimension.
+- Evaluation reports are pure readers and memory-off runs remain physically
+  isolated.
+- No provider error is converted into a successful empty result unless the
+  relevant contract explicitly defines an optional pending state.
+
+## Release acceptance
+
+Version 0.1 is releasable only when all of these pass on one clean commit:
+
+1. `make format` and `make check`.
+2. Installed-wheel CLI import-to-recall smoke.
+3. In-process MCP tool/resource smoke.
+4. Real Claude Code SessionEnd and Codex Stop hook smoke, with manual import as
+   the documented fallback for client hook defects.
+5. Supersession, history, and restore end-to-end tests.
+6. `make eval-smoke`.
+7. A frozen full 1,540-question LoCoMo run scoring at least 82.00%, with a target
+   no lower than the historical 82.60%.
+8. Local recall P95 at or below four seconds under the release protocol.
+9. `make evidence-verify` against the new release bundle.
+10. Source-budget verification at or below 10,000 core and 15,000 total lines.
+11. Clean wheel and sdist installation through `uvx`.
+12. Documentation link, command, and terminology checks.
+
+## Out of scope
+
+- Raven integration.
+- Dynamic or user-selected profiles.
+- Agent Skill synthesis, clustering, or general background Reflection.
+- Hidden prompt injection or a resident watcher daemon.
+- Dashboard or memory-editing UI.
+- Cloud hosting, authentication, organizations, billing, or multi-user tenancy.
+- Global cross-repository memory.
+- General document or multimodal ingestion.
+- A formal same-harness EverOS comparison.
+- Compatibility migration for pre-release runtime roots. Historical evidence
+  bundles remain independently verifiable; users re-import owned traces into a
+  version 0.1 root.
+
+## Design and delivery references
+
+- [`v0.1/README.md`](v0.1/README.md) — accepted product and scope design.
+- [`architecture.md`](architecture.md) — target architecture and current delta.
+- [`plan/README.md`](plan/README.md) — delivery order and task state.
+- [`release-readiness.md`](release-readiness.md) — release evidence checklist.

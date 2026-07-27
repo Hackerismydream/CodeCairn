@@ -7,8 +7,10 @@ ADR chain to understand the decisions behind it.
 
 ## Status rules
 
-- `Accepted` means the decision is part of the implemented design unless a
-  later ADR supersedes it.
+- `Accepted` means the decision is part of the maintained current or target
+  design unless a later ADR supersedes it. It does not by itself prove that an
+  implementation task has merged; maintained architecture and operations
+  documents state that boundary.
 - `Accepted and amended` means the core decision remains, but implementation
   changed a stated count, boundary, or lifecycle detail.
 - `Superseded` means later ADRs own current behavior; the older record remains
@@ -72,6 +74,27 @@ construction, then ADRs 0041-0042 for the calibrated V24 context budget and the
 natural-weighted ablation gate. ADR 0041 amends the 4,000-token ceiling of ADRs
 0023 and 0026; ADR 0042 amends how the ADR 0031 gate compares accuracy. The V23
 protocol files and every published V23 result keep their frozen contracts.
+
+### Version 0.1 product and simplification
+
+ADRs 0043–0050 define the accepted version 0.1 target:
+
+- ADR 0043 removes mandatory verification from memory storage while retaining
+  system-owned provenance;
+- ADR 0044 positions CodeCairn as an agent-independent Memory OS with one
+  implicit Coding Profile;
+- ADR 0045 defines Source, Experience, Knowledge, Evolution, and Recall;
+- ADR 0046 makes Supersession and Restore append-only;
+- ADR 0047 reduces the product to four Coding Memory types;
+- ADR 0048 selects CLI, MCP, and hooks as product surfaces while retaining
+  HTTP compatibility;
+- ADR 0049 makes 10,000 core / 15,000 total Python lines release gates;
+- ADR 0050 amends ADR 0015's target initialization profile.
+
+These decisions are specified for implementation under
+[`../plan/tasks/`](../plan/tasks/). Current shipped behavior remains
+[`../runtime/operations.md`](../runtime/operations.md) until the relevant task
+merges.
 
 ## Adding a decision
 

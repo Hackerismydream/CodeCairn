@@ -1,94 +1,150 @@
 # CodeCairn
 
-CodeCairn is an auditable local memory runtime that helps coding agents reuse
-repository knowledge without trusting opaque summaries.
+CodeCairn is a local-first Memory OS for agents. It owns durable memory
+independently from any agent runtime; version 0.1 delivers one complete Coding
+Profile for repository-scoped work.
 
-## Domain language
+## Product language
 
-**Agent Trace**: A provider-independent sequence of normalized coding-session
-events. It contains user and assistant messages, tool calls and results, file
-changes, command outcomes, and final answers.
+**Memory OS**:
+The independent local system that captures, stores, evolves, and recalls memory
+for agent clients.
+_Avoid_: Agent runner, coding-agent wrapper
 
-**Evidence Reference**: An immutable pointer to the provider, session, source
-record, call identifier, and raw event index that supports a fact.
+**Coding Profile**:
+The version 0.1 interpretation of coding sessions and repository-scoped work.
+It is implicit product behavior, not a user-selected mode.
+_Avoid_: Coding mode, plugin profile
 
-**Evidence Fact**: A statement derived deterministically from normalized events,
-such as a user-authored quote, command exit status, or changed file. LLM output
-is never an Evidence Fact.
+**Memory Namespace**:
+The durable isolation boundary for memory identity and recall. The Coding
+Profile uses one repository identity as its Memory Namespace.
+_Avoid_: Tenant, account
 
-**Task Episode**: A stable extraction unit bounded by a user task and its related
-actions and outcome. Appending a later episode must not change earlier episode
-identities.
+**Coding Memory**:
+One durable Task Experience, Repository Knowledge, User Preference, or Work
+State produced by the Coding Profile.
+_Avoid_: Summary blob, context cache
 
-**Coding Memory**: An evidence-backed reusable item of one of six types: Debug
-Episode, Conversation Episode, Repository Convention, Failed Command, Verified
-Fix, or User Preference. A Conversation Episode preserves attributed source
-turns plus a grounded, derived retrieval projection; the source turns remain
-the evidence authority.
+## Source Layer
 
-**Evidence Gate**: Type-specific validation for gate-managed proposals and
-Conversation Episodes. It validates claims against Evidence Facts, not against
-LLM-provided labels. Deterministic Failed Command extraction is a separate
-durable-write path and does not call this gate.
+**Source Layer**:
+Imported material and system-derived observations that preserve what happened
+and where it came from without model-authored interpretation.
 
-**Import Ledger**: SQLite state recording source fingerprints, committed raw
-event cursors, stable episode identities, and memory identities. Gate failures,
-recovery failures, and index failures belong to their dedicated SQLite audit
-or queue state.
+**Agent Trace**:
+A provider-independent sequence of normalized coding-session events with stable
+source locations.
 
-**Markdown Truth**: One atomic, parseable Markdown artifact per Coding Memory.
-It contains the complete deterministic Evidence Fact snapshot and is the
-authoritative recoverable representation.
+**Evidence Reference**:
+An immutable pointer from a derived record to its supporting source event.
 
-**Recall Episode**: The rebuildable parent search document projected from one
-Coding Memory. It is not a second durable Task Episode or another source of
-truth.
+**Evidence Fact**:
+A statement derived deterministically from normalized events, such as a message
+role, exact quote, command result, or changed file. Model output is never an
+Evidence Fact.
 
-**Atomic Fact Document**: A rebuildable child search document projected from a
-grounded Semantic Atomic Fact inside Markdown truth or from an authoritative
-Evidence Fact. Every source fact keeps its own raw child even when a semantic
-child cites it, because citation does not prove complete semantic coverage. A
-child may cite one or more authoritative Evidence Facts, and its parent is the
-Recall Episode for that Coding Memory. These lossless source-fact documents
-remain disposable index data; Markdown is still the evidence authority.
+## Experience Layer
 
-**Index Queue**: SQLite-backed outbox of Markdown revisions waiting to be
-indexed. Claims use atomic leases and a successful unchanged content hash is a
-no-op.
+**Experience Layer**:
+Bounded, source-linked accounts of tasks or interactions.
 
-**Index Readiness**: The operational state in which the LanceDB memory and
-document fingerprints match Markdown truth and the Index Queue has no pending,
-leased, failed, or stale jobs. Durable import and index readiness are separate
-states.
+**Task Episode**:
+A stable extraction boundary formed by one user task and its related actions and
+outcome. It closes at the next user task or an explicit Stop, SessionEnd, or
+manual-import boundary. Appending later source events does not rename a
+committed Episode; a continuation becomes a new linked Episode.
 
-**Recall Context**: A budgeted task-shaped Markdown artifact plus JSON sidecar,
-containing ranked Coding Memories, complete source-fact excerpts, provenance,
-and an auditable record of evidence omitted by the compiler.
+**Task Experience**:
+The durable account of one Task Episode, including its goal, relevant actions,
+outcome, and source references. Debugging, failed commands, and verified results
+are facets of the experience, not separate memory types.
+_Avoid_: Debug Episode, Failed Command memory, Verified Fix memory
 
-**Retrieval Providers**: One manifest-recorded embedding and reranker
-configuration shared by indexing and recall. Production uses the configured
-DashScope embedding endpoint plus a learned local reranker; deterministic
-hashing and fusion-score ranking are test Adapters.
+**Experience Outcome**:
+The observed result of a Task Experience: `success`, `failure`, `partial`, or
+`unknown`.
 
-**Evaluation Run**: One immutable suite execution with an explicit run
-identifier, inputs, output directory, and suite-appropriate manifest. Applicable
-identity may include commit, selection, provider, seed, repeat, workspace,
-memory, corpus, and resource fields; not every suite has every field.
+## Knowledge Layer
 
-## Non-negotiable invariants
+**Knowledge Layer**:
+Reusable, source-linked knowledge derived from one or more experiences.
 
-1. Repository namespace participates in every durable identity and unique key.
-2. Committed cursors advance only after their complete durable write set commits.
-3. Quotes must be exact source substrings; roles and outcomes come from events.
-4. Verified Fix requires both change evidence and successful verification.
-5. An index can be deleted and structurally rebuilt from Markdown truth, with
-   both memory-level and parent-child document parity. A provider-managed
-   embedding alias does not promise bit-for-bit identical vectors across
-   provider-side model changes.
-6. Evaluation reports are pure readers and never mutate runtime state.
-7. Memory-off runs cannot read from or write to memory-on state.
-8. An index cannot mix vectors from different embedding model identities or
-   dimensions.
-9. Recall never scans Markdown as a silent fallback. If the index is absent or
-   behind truth, diagnostics expose that state and recall may report no
-   candidates.
+**Repository Knowledge**:
+A reusable repository-specific statement about architecture, conventions,
+commands, constraints, or solutions.
+_Avoid_: Repository Convention as a top-level memory type
+
+**User Preference**:
+A reusable working or output preference derived from user-authored source
+content.
+
+**Workstream**:
+One independently progressing unit of work inside a Memory Namespace, identified
+by an issue, branch, task, or session-derived key.
+
+**Work State**:
+The latest known goal, progress, blockers, and next step or terminal outcome
+for one Workstream. Its workstream state is `open` or `closed`; this is
+separate from the Coding Memory's active/superseded lifecycle status.
+
+## Evolution Layer
+
+**Evolution Layer**:
+Cross-memory decisions that change which durable memories are active without
+rewriting their content or deleting their history.
+
+**Supersession**:
+A directed relation in which a newer memory replaces an older active memory for
+default recall.
+
+**Evolution Record**:
+The immutable record of one Supersession, including predecessor, successor,
+reason, proposer, and source lineage.
+
+**Memory Status**:
+The recall lifecycle state derived from Evolution Records. Version 0.1 uses
+`active` and `superseded`.
+
+**Restore**:
+The act of creating a new memory from a historical memory and making that new
+revision active. Restore never mutates the historical memory or reverses an
+existing Evolution Record.
+
+## Recall Layer
+
+**Recall Layer**:
+Task-shaped selection and compilation of memory for an agent client. It is a
+derived view, not another durable source of truth.
+
+**Recall Context**:
+The bounded Markdown context returned to an agent together with a structured
+sidecar describing selected memories, provenance, status, ranking, and omitted
+candidates.
+
+## Durable and operational state
+
+**Markdown Truth**:
+The authoritative, human-readable representation of Coding Memories and
+Evolution Records. “Truth” describes storage authority, not factual
+verification.
+
+**Memory Verification**:
+An optional operation that checks a Coding Memory against Evidence Facts.
+Verification never decides whether the memory may be stored.
+
+**Import Ledger**:
+Operational state that records source fingerprints, committed cursors, stable
+episode identities, memory identities, and processing failures.
+
+**Index Queue**:
+The transactional outbox of durable revisions waiting to enter the disposable
+search projection.
+
+**Index Readiness**:
+The state in which the search projection matches Markdown Truth and no index
+work is pending, leased, failed, or stale.
+
+**Evaluation Run**:
+One immutable benchmark or acceptance execution bound to explicit inputs,
+configuration, repository state, and generated artifacts.

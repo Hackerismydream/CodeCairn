@@ -1,5 +1,8 @@
 # Milestone: LoCoMo measurement correctness (protocol v24 prep)
 
+Status: completed by Fable and merged in `main@954f728`. ADRs 0041–0042 and
+the frozen V24 protocol assets own the result. No paid V24 score is claimed.
+
 Parent plan: `everos-alignment-roadmap.md` (benchmark program, phase B0).
 
 This milestone changes no retrieval semantics and spends no provider money.

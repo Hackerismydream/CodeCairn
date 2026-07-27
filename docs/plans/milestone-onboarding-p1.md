@@ -1,5 +1,9 @@
 # Milestone: Onboarding P1 — from eight exports to two commands
 
+Status: historical proposal, superseded by
+`docs/v0.1/onboarding-and-operations.md` and task `v01-005`. It was not
+implemented in Fable's baseline.
+
 Parent plan: `everos-alignment-roadmap.md` (product program, step P1).
 Depends on: usability P0 (index surface, lazy providers) — merged on this branch.
 

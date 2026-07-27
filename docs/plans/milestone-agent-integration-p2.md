@@ -1,5 +1,10 @@
 # Milestone: Agent integration P2 — MCP server and session-end hooks
 
+Status: historical proposal, absorbed by
+`docs/v0.1/agent-integration.md` and tasks `v01-006`–`v01-007`. It was not
+implemented in Fable's baseline. ADR numbering and tool scope in this file are
+superseded by ADR 0048 and the maintained version 0.1 contract.
+
 Parent plan: `everos-alignment-roadmap.md` (product program, steps P2 + P3).
 Depends on: usability P0 and onboarding P1 (repo-key derivation, config file).
 

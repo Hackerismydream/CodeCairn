@@ -1,39 +1,38 @@
 # CodeCairn
 
-CodeCairn is an auditable long-term memory runtime for coding agents. It turns
-Codex and Claude Code sessions into evidence-backed Coding Memories, stores
-human-readable Markdown as the source of truth, and builds task-shaped Recall
-Context for later coding work.
+CodeCairn is a local-first Memory OS for agents. It turns owned Codex and
+Claude Code sessions into inspectable long-term memory, keeps human-readable
+Markdown as durable truth, and compiles bounded Recall Context for later work.
 
-The project is intentionally narrow: it is a memory runtime, not an agent
-runner, IDE, or cloud knowledge platform.
+CodeCairn owns memory; the coding agent owns execution. It is not an agent
+runner, IDE, hidden prompt injector, or cloud knowledge platform.
 
 ## Status
 
-CodeCairn has completed the core runtime and evaluation components planned for
-its three V1 milestones. It is still a pre-release project: import commits
-Markdown and SQLite state and then drains the index outbox in process, and
-`codecairn index sync|rebuild|status` operates the projection, but neither
-entrypoint runs a background worker.
+The repository is pre-release. Local `main@954f728` contains the complete Fable
+EverOS-alignment baseline, including public index maintenance, import-time
+drain, lazy retrieval providers, and corrected LoCoMo V24 measurement assets.
 
-| Area | Current main status |
-|---|---|
-| Agent Trace, resumable import, Evidence Gate service seams, Markdown truth, SQLite state | Delivered and covered by contract tests |
-| Public automatic memory extraction | Partial: ordinary import emits Failed Command only |
-| LanceDB projection, Mini Cascade, hierarchical recall, Recall Context | Implemented and exercised through service/evaluation seams |
-| Public import -> index -> recall lifecycle | Delivered: import drains by default, `codecairn index` operates the projection |
-| Evaluation and public evidence | Delivered; `benchmark-v3` verifies offline |
-| Package release | Pre-release: no tagged release or open-source license yet |
+The version 0.1 product design is accepted but not yet implemented. The
+distinction matters:
 
-The current checked-in evidence reports 82.60% on all 1,540 official LoCoMo
-category 1-4 questions with zero infrastructure failures, 100.00% index rebuild
-consistency on a synthetic recovery fixture, and a CodingMemoryBench pass-rate
-change from 85% memory-off to 100% memory-on. It also retains a historical
-100-query HashingEmbedder/RRF run with 96.00% Recall@5; that number does not
-measure the current DashScope/CrossEncoder production composition. These are
-evaluation results rather than production-traffic claims.
+| Area | Current implementation | Version 0.1 target |
+|---|---|---|
+| Import | Codex/Claude JSONL to Agent Trace and Task Episode | Same source layer |
+| Automatic capture | Deterministic Failed Command only | One Task Experience per Episode plus optional Knowledge |
+| Memory model | Six historical types and Evidence Gate service paths | Four types; storage does not require verification |
+| Evolution | None | Immutable Supersession, active status, history, restore |
+| Recall | Hierarchical indexed recall | Active-only typed recall with pinned Work State |
+| Product surfaces | CLI and loopback HTTP | CLI, MCP, and session-end hooks; HTTP compatibility |
+| Setup | Manual root, repo key, and provider environment | `codecairn init`, config file, derived repository identity |
+| Distribution | Checkout build, no license/tag | MIT, curated PyPI/`uvx` package |
+| Source size | 34,091 physical Python lines | at most 10,000 core / 15,000 total |
 
-## Development
+The implementation plan is
+[`docs/plan/README.md`](docs/plan/README.md). Do not treat commands marked as
+version 0.1 targets in design documents as available on current `main`.
+
+## Current development path
 
 CodeCairn requires Python 3.12 and `uv`.
 
@@ -42,174 +41,129 @@ uv sync --all-groups
 make check
 ```
 
-The public import path auto-detects Codex and Claude Code JSONL, emits one shared
-Agent Trace, derives deterministic Evidence Facts, and automatically persists
-evidence-backed Failed Command memories. Repeated imports validate the
-committed prefix, resume from the active Task Episode, and repair committed
-Markdown through an audited recovery path:
+The current CLI requires an explicit runtime root and repository key:
 
 ```bash
 uv run codecairn import /path/to/session.jsonl \
   --repo-key owner/repository \
   --root .codecairn
-uv run codecairn list --repo-key owner/repository --root .codecairn
-uv run codecairn recall "test command failed" \
-  --repo-key owner/repository --root .codecairn
-```
 
-`import` drains the index outbox after its commit, so `recall` searches the
-memory it just imported. `--no-index` skips the drain; the outbox commit is the
-durability boundary either way, and a failed drain is reported as `index` state
-in the import output rather than failing the import. `codecairn index sync`
-completes a skipped or failed drain, `codecairn index rebuild` reprojects from
-Markdown truth, and `codecairn index status` and `doctor` report queue and
-parity state. The full surface is documented in
-[runtime operations](docs/runtime/operations.md).
-
-The domain and service layers also implement gated User Preference, Repository
-Convention, Verified Fix, Debug Episode, and Conversation Episode writes.
-Those seams are covered by service/evaluation tests, but no ordinary CLI or
-HTTP producer currently turns an imported trace into those five memory types.
-Conversation Episode ingestion is used by the LoCoMo adapter rather than the
-Codex/Claude import command. This distinction is tracked in the
-[runtime scope](docs/runtime/README.md).
-
-Production recall uses Alibaba Cloud Model Studio's OpenAI-compatible embedding
-API with `text-embedding-v4` at 1,024 dimensions. CrossEncoder reranking
-remains local through the pinned `Xenova/ms-marco-MiniLM-L-6-v2` ONNX artifact.
-Configure a DashScope key before indexing or recall; offline commands such as
-evidence verification do not require provider credentials. A workspace-specific
-base URL can replace the public endpoint without changing durable Markdown truth:
-
-```bash
-export DASHSCOPE_API_KEY="<your-api-key>"
-export CODECAIRN_EMBEDDING_MODEL="text-embedding-v4"
-export CODECAIRN_EMBEDDING_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-export CODECAIRN_EMBEDDING_DIMENSION="1024"
-
-export CODECAIRN_MODEL_CACHE="$HOME/.cache/codecairn/models"
-export CODECAIRN_RERANKER_MODEL="Xenova/ms-marco-MiniLM-L-6-v2"
-export CODECAIRN_RERANKER_SOURCE="Xenova/ms-marco-MiniLM-L-6-v2"
-export CODECAIRN_RERANKER_REVISION="a09144355adeed5f58c8ed011d209bf8ee5a1fec"
-```
-
-The API key is never written to index rows, recall sidecars, or evaluation
-manifests. Changing the endpoint, model, declared provider revision, dimension,
-or Adapter version re-embeds the disposable LanceDB projection under an
-inter-process lock. The provider alias is recorded as `provider-managed`
-because DashScope does not expose an immutable artifact commit for it.
-
-For explicit offline operation, set `CODECAIRN_RETRIEVAL_PROFILE=fastembed` and
-configure the pinned local embedding artifact variables from ADR 0013. The
-deterministic hashing profile is test-only. Neither profile is a silent fallback
-when DashScope is unavailable or unconfigured.
-
-Runtime state is ignored by Git because it can contain source paths, commands,
-and evidence text.
-
-## Local CLI and HTTP
-
-Install the package from a checkout, or run the same commands through `uv`:
-
-```bash
-uv tool install .
-codecairn --help
-# Recall requires an already synchronized index.
-codecairn recall "pytest command failed" \
+uv run codecairn list \
   --repo-key owner/repository \
   --root .codecairn
-codecairn doctor --root .codecairn
+
+uv run codecairn recall "test command failed" \
+  --repo-key owner/repository \
+  --root .codecairn
 ```
 
-The evaluation command dispatches four independent suites—LoCoMo, retrieval,
-recovery, and coding—through the same application interface used by HTTP.
-Inputs and output roots are explicit; every run identifier is immutable.
+Import commits Markdown and SQLite first, then drains the index outbox unless
+`--no-index` is supplied. A drain failure does not erase durable memory; the
+import payload and `doctor` report degraded index state. Operators can use:
 
 ```bash
-codecairn eval run retrieval benchmarks/retrieval \
-  --run-id retrieval-<commit> \
-  --repository-commit <commit> \
-  --output-root artifacts
-codecairn eval report retrieval artifacts/retrieval/retrieval-<commit>
+uv run codecairn index status --root .codecairn
+uv run codecairn index sync --root .codecairn
+uv run codecairn index rebuild --root .codecairn
+uv run codecairn doctor --root .codecairn
 ```
 
-Completed evaluation artifacts can be reduced to a public, immutable evidence
-bundle without copying private runtime state. The build command generates the
-metrics, English and Chinese resume copy, and a SHA-256 inventory. Verification
-recomputes every report and generated document without provider credentials:
+The exact current surface is
+[`docs/runtime/operations.md`](docs/runtime/operations.md).
+
+## Version 0.1 outcome
+
+The accepted release outcome is:
+
+```text
+install
+  -> initialize one repository Memory Namespace
+  -> connect Codex or Claude Code through MCP and a session-end hook
+  -> finish a task
+  -> capture Task Experience and optional Knowledge
+  -> evolve stale memory through immutable Supersession
+  -> recall active, attributed context in the next task
+  -> inspect or restore history
+```
+
+Version 0.1 has five layers:
+
+1. Source — normalized traces and system-derived observations.
+2. Experience — one Task Experience per Task Episode.
+3. Knowledge — Repository Knowledge, User Preference, and Work State.
+4. Evolution — immutable Supersession and derived status.
+5. Recall — bounded task-shaped context.
+
+It exposes four durable Coding Memory types: Task Experience, Repository
+Knowledge, User Preference, and Work State. Debugging, failed commands, and
+verified results are Task Experience facets rather than separate top-level
+types.
+
+Raven integration is intentionally deferred until after version 0.1.
+
+## Evaluation and evidence
+
+The current checked-in evidence bundle is
+[`evidence/benchmark-v3`](evidence/benchmark-v3/README.md). Its offline verifier
+recomputes the published aggregates and SHA-256 inventory:
 
 ```bash
-codecairn evidence verify evidence/benchmark-v3
+uv run codecairn evidence verify evidence/benchmark-v3
 ```
 
-The full artifact selection and benchmark interpretation rules are documented
-in [docs/evidence-bundle.md](docs/evidence-bundle.md).
+The historical bundle reports 82.60% on 1,540 LoCoMo category 1–4 questions.
+That result belongs to its frozen commit, architecture, and protocol. It is not
+a version 0.1 result until a new release-candidate run is checked in.
 
-The HTTP server binds only to trusted loopback by default. It refuses a remote
-bind and accepts import or evaluation inputs only below configured source
-roots. Configure it without putting secrets on the command line:
+Version 0.1 will provide:
 
-```bash
-export CODECAIRN_RUNTIME_ROOT="$PWD/.codecairn"
-export CODECAIRN_ARTIFACT_ROOT="$PWD/artifacts"
-export CODECAIRN_SOURCE_ROOTS="$PWD"
-uv run codecairn-server
+```text
+make eval-smoke
+make eval-locomo-200
+make eval-locomo-full
+make eval-coding-ab
+make evidence-verify
+make source-budget
 ```
 
-LoCoMo runs can use the legacy shared `CODECAIRN_OPENAI_*` settings or
-independent `CODECAIRN_ANSWER_*` and `CODECAIRN_JUDGE_*` settings. For the
-official DeepSeek endpoint, exporting only `DEEPSEEK_API_KEY` defaults both
-roles to `deepseek-v4-pro` with thinking enabled; role-level model, endpoint,
-key, profile, and reasoning-effort variables remain available for controlled
-overrides. Health reports configuration state only and never emits credentials.
-DeepSeek supplies LoCoMo answers and judge votes; DashScope
-`text-embedding-v4` supplies embeddings and a pinned local model supplies
-CrossEncoder reranking. Run manifests record all configurations separately.
+These targets are specified, not yet implemented. Their exact artifact and
+release contract is
+[`docs/v0.1/evaluation-and-release.md`](docs/v0.1/evaluation-and-release.md).
 
-Hierarchical recall defaults to `CODECAIRN_RECALL_MODE=hierarchy`. Reproducible
-ablations may select `episode-only` or `hierarchy-no-neighbors`; the effective
-mode and deterministic router contract are included in the retrieval manifest
-and every query sidecar.
+## Documentation
 
-Resource-sensitive LoCoMo runs reuse one content-addressed corpus and one frozen
-query-vector artifact, bound their retrieval work per question, and isolate
-conversations in worker processes. The V23 protocol freezes the standard 1,540
-answerable questions and records its corpus, query vectors, embedding,
-reranker, answer contract, judge contract, concurrency, and resource limits in
-immutable manifests.
+Start with:
 
-Transient provider failures are repaired only through an explicit failed-ID
-selection. The original run remains immutable; a formal composite is accepted
-only when the repair IDs exactly equal the base failure set and all
-artifact-facing contracts match. The public evidence bundle publishes
-privacy-safe source and final outcomes, then recomputes the 82.60% score
-offline. [ADR 0037](docs/adr/0037-locomo-provider-failures-use-exact-repair-runs.md)
-defines exact repair, while
-[ADR 0039](docs/adr/0039-public-evidence-publishes-exact-repair-outcomes.md)
-defines its public verification contract. Operational commands and spend gates
-live in [benchmarks/locomo/README.md](benchmarks/locomo/README.md).
+1. [`CONTEXT.md`](CONTEXT.md) — canonical domain language.
+2. [`docs/PRD.md`](docs/PRD.md) — accepted version 0.1 product requirements.
+3. [`docs/architecture.md`](docs/architecture.md) — target ownership and flows.
+4. [`docs/v0.1/walkthrough.md`](docs/v0.1/walkthrough.md) — one trace through
+   the system.
+5. [`docs/plan/README.md`](docs/plan/README.md) — implementation order and
+   agent-ready tasks.
+6. [`docs/runtime/operations.md`](docs/runtime/operations.md) — behavior that
+   exists on current `main`.
 
-The six versioned routes cover import, memory list, recall, evaluation run,
-evaluation report, and health. Every error response has the same shape and an
-`x-request-id` response header:
+The full maintained index is [`docs/INDEX.md`](docs/INDEX.md).
 
-```json
-{
-  "error": {"code": "validation_error", "message": "Request validation failed"},
-  "request_id": "..."
-}
+## Architecture rule
+
+Dependencies point inward:
+
+```text
+entrypoints -> service -> memory
+                 ^          ^
+                 |          |
+             importers   storage adapters
 ```
 
-`doctor` and `/api/v1/health` report Markdown truth, Import Ledger counts,
-queue lag, index parity/readiness, and provider configuration separately. They
-never return provider credentials.
-
-Project contracts live in [CONTEXT.md](CONTEXT.md),
-[docs/architecture.md](docs/architecture.md), and [docs/adr/](docs/adr/).
-Use the [documentation index](docs/INDEX.md) to find runtime, operations,
-evaluation, evidence, release-readiness, and decision records.
+Markdown is durable truth. SQLite is operational state. LanceDB is a
+rebuildable search projection. External model output may propose
+interpretations, but only normalized source events may author provenance,
+roles, exact quotes, command outcomes, file changes, and verification state.
 
 ## License
 
-The repository will receive an explicit open-source license before its first
-tagged release. Until then, no license is granted by default.
+The accepted version 0.1 license is MIT. The license file and release metadata
+are part of task `v01-009`; until that task merges and the first tag is cut, no
+license is granted by default.

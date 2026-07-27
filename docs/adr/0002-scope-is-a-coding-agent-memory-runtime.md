@@ -2,9 +2,9 @@
 
 ## Status
 
-Accepted and amended by implementation. The domain now contains six Coding
-Memory types. Ordinary public trace import automatically produces Failed
-Command only; the other five types exist behind service or evaluation seams.
+Superseded by ADR 0044 and ADR 0047. Coding agents remain the first complete
+product profile, but CodeCairn is an independent Memory OS and version 0.1 has
+four Coding Memory types.
 
 Version 1 includes passive Codex and Claude Code import, Agent Trace
 normalization, task-shaped segmentation, six Coding Memory types, Markdown

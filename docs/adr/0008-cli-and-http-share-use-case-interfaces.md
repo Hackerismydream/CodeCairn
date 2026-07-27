@@ -3,9 +3,9 @@
 ## Status
 
 Accepted and amended. ADR 0040 adds shared index sync, rebuild, and status use
-cases, so the facade now exposes cascade lifecycle control on both entrypoints.
-`doctor` and health still report queue and index status, and neither entrypoint
-starts a background cascade.
+cases. ADR 0048 makes CLI, MCP, and session-end hooks the version 0.1 product
+surfaces; HTTP remains a compatibility adapter over shared use cases rather
+than a parity requirement for every new lifecycle operation.
 
 The CLI exposes import, memory list, recall, eval, and doctor. The HTTP surface
 exposes import, memory list, recall, evaluation run/report, and health.

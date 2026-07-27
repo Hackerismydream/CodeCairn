@@ -1,73 +1,80 @@
 # Release Readiness
 
-CodeCairn can build a wheel and source distribution, but current main is not a
-formal open-source release.
+Status: not release-ready. The baseline builds and tests, but the accepted
+version 0.1 lifecycle and distribution gates are not implemented.
 
-## Current status
+## Baseline evidence
 
-| Area | Status | Evidence or gap |
-|---|---|---|
-| Package metadata | Partial | Name, version, description, README, Python range, and dependencies exist |
-| Wheel build | Passes | `uv build` creates a wheel with `py.typed` |
-| Source distribution | Builds but is not curated | Default inclusion captures tests, docs, benchmarks, evidence, and local cache files |
-| Test/type/architecture CI | Present | `make check` |
-| Current public evidence CI | Missing | CI verifies historical `benchmark-v1`, not current `benchmark-v3` |
-| Coverage policy | Missing | Coverage is reported; no fail-under gate |
-| License | Missing | README explicitly grants no license before first tag |
-| Release history | Missing | No tags, changelog, or release workflow |
-| Security and contribution policy | Missing | No SECURITY, CONTRIBUTING, or code-of-conduct files |
-| Artifact publication | Missing | CI builds but does not upload/sign/prove artifacts |
-| Install-to-recall smoke | Fails product acceptance | Public index lifecycle is absent |
+At local `main@954f728` on 2026-07-27:
 
-`uv build` success proves package construction only. It does not prove that the
-archive has the intended contents, that users receive a complete product
-lifecycle, or that the project is ready to publish.
+```text
+make format                                      pass
+make check                                       pass: 661 tests, 82% rounded coverage
+uv run codecairn evidence verify evidence/benchmark-v3
+                                                  pass: 4,411 verified files
+uv build                                          pass: wheel and sdist built
+```
 
-## Packaging gaps
+This proves the baseline checkout, not version 0.1 release readiness.
 
-`pyproject.toml` currently lacks:
+## Current matrix
 
-- license metadata;
-- authors/maintainers;
-- project URLs;
-- classifiers and keywords;
-- an explicit source-distribution include/exclude policy.
+| Area | Current | Release requirement | Owner |
+|---|---|---|---|
+| Fable P0/B0 baseline | pass | retained | v01-000 |
+| Four-type capture | absent | one Task Experience per Episode plus optional Knowledge | v01-001/002 |
+| Memory evolution | absent | Supersession, active history, restore E2E | v01-003/004 |
+| Onboarding | manual | `init`, config, derived namespace, process, human doctor | v01-005 |
+| MCP | absent | seven tools and one resource from installed package | v01-006 |
+| Client hooks | absent | real Claude SessionEnd and Codex Stop smoke | v01-007/010 |
+| Evaluation commands | historical complex CLI | six documented Make targets | v01-008 |
+| Source budget | 17,250 core / 34,091 total | at most 10,000 / 15,000 | v01-001–008 |
+| Package metadata | partial | MIT, full metadata, curated artifacts | v01-009 |
+| Installed smoke | absent | CLI/MCP/hook lifecycle outside checkout | v01-009/010 |
+| Current evidence CI | stale bundle selection | selected release bundle verified | v01-008 |
+| Release benchmark | historical 82.60% only | new full run at candidate commit, at least 82.00% | v01-010 |
+| Governance | absent | changelog, security, contribution, conduct | v01-009 |
+| Tag/publication | absent | exact verified commit and artifact inventory | v01-010 |
 
-The current source distribution contains thousands of generated evidence files
-and can include an untracked `.import_linter_cache`. Build output therefore
-depends on workspace residue. Before release, the project must choose whether
-public evidence belongs in the sdist, then use an allowlist or explicit
-exclusions so a clean checkout and a dirty developer checkout produce the same
-file inventory.
+## Final gate
 
-## Required release gate
+One clean candidate must pass:
 
-A first tagged release must satisfy all of the following:
+```text
+make format
+make check
+make eval-smoke
+make source-budget
+make evidence-verify
+uv build
+fresh-environment installed-artifact smoke
+```
 
-1. The public `import -> supported index lifecycle -> doctor healthy -> recall`
-   smoke passes from an installed wheel.
-2. Ordinary import capabilities are described accurately; five gate-managed
-   memory types are not advertised as automatically extracted until wired.
-3. The current public evidence bundle is verified in CI.
-4. Package metadata, license, changelog, security policy, contribution policy,
-   and code of conduct are present.
-5. Wheel and sdist contents are allowlisted or otherwise deterministic.
-6. Tests include the installed artifact rather than only the source checkout.
-7. A coverage threshold is selected and enforced independently of the evidence
-   snapshot.
-8. CI uploads immutable artifacts and records checksums; signing/provenance is
-   explicitly selected or explicitly deferred.
-9. A clean tagged commit is bound to the release notes and artifact inventory.
+It must also own:
 
-## Evidence and release separation
+- a full 1,540-question LoCoMo artifact at least 82.00%, target at least
+  historical 82.60%;
+- a local release-protocol recall P95 no greater than four seconds;
+- a complete coding memory-off/on A/B artifact;
+- real supported-client hook receipts;
+- curated wheel/sdist inventories and hashes;
+- documentation/link/command verification.
+
+The authoritative procedure is
+[`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md); the
+agent-executable final task is
+[`plan/tasks/v01-010-release-e2e.md`](plan/tasks/v01-010-release-e2e.md).
+
+## Evidence separation
 
 Benchmark bundles and package releases have different lifecycles:
 
-- evidence bundles preserve observed experiments and remain immutable;
-- package releases describe installable software at a tagged commit;
-- a historical bundle may remain valid after the package changes;
-- a new package release must not silently reattribute historical retrieval
-  numbers to a new model/provider composition.
+- an evidence bundle preserves an observed experiment at its own commit;
+- a package release describes software at a tag;
+- historical `benchmark-v3` remains verifiable after architecture changes;
+- it cannot be relabeled as a version 0.1 result;
+- build success does not prove artifact contents, installation, client
+  integration, or benchmark completion.
 
-`benchmark-v3` is the current public evidence, but it is not a release
-identifier and does not make package version `0.1.0` production-ready.
+No release language may replace a skipped, provider-blocked, fixture-only, or
+historical gate with “pass.”

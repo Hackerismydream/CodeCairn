@@ -2,7 +2,10 @@
 
 ## Status
 
-Accepted and implemented. The default `text-embedding-v4` composition enforces
+Accepted and implemented for the pre-v0.1 baseline; amended by ADR 0050 for
+the version 0.1 initialization default. Current `main@954f728` still uses
+`text-embedding-v4`; the target `codecairn init` profile records
+`qwen3.7-text-embedding` at 1,024 dimensions. The historical default enforces
 the provider's ten-input batch limit. The generic Adapter can defensively
 support explicitly configured custom models with batch sizes up to twenty.
 

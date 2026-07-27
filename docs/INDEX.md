@@ -1,93 +1,92 @@
 # CodeCairn Documentation
 
-This is the entry point for CodeCairn's maintained design and operations
-documentation. Generated evidence bundles remain self-describing artifacts and
-are not design-document sources of truth.
+This index distinguishes maintained target design, current implementation
+truth, historical decisions, and generated evidence.
 
-## Current status
+## Read first
 
-CodeCairn is an evidence-native memory runtime for coding agents. The core
-import, evidence, storage, retrieval, and evaluation components are
-implemented. The project is still pre-release because the public CLI and HTTP
-server do not yet own the lifecycle that drains the SQLite index outbox into
-LanceDB.
+1. [`../CONTEXT.md`](../CONTEXT.md) — canonical version 0.1 domain language.
+2. [`PRD.md`](PRD.md) — accepted product requirements and release outcome.
+3. [`architecture.md`](architecture.md) — target ownership, flows, and
+   current-to-target delta.
+4. [`v0.1/walkthrough.md`](v0.1/walkthrough.md) — one concrete trace through
+   capture, evolution, and recall.
+5. [`plan/README.md`](plan/README.md) — delivery order and agent-ready tasks.
+6. [`runtime/operations.md`](runtime/operations.md) — public behavior that
+   exists on current `main`.
 
-Read these first:
+## Authority
 
-1. [`../CONTEXT.md`](../CONTEXT.md) — domain language and non-negotiable
-   invariants.
-2. [`architecture.md`](architecture.md) — system boundaries, state ownership,
-   and cross-module flows.
-3. [`runtime/README.md`](runtime/README.md) — runtime scope and module
-   contracts.
-4. [`runtime/operations.md`](runtime/operations.md) — current CLI/API behavior,
-   index readiness, diagnostics, and the known product gap.
-5. [`PRD.md`](PRD.md) — product problem, delivery state, and acceptance targets.
-
-## Document authority
-
-| Question | Authoritative document |
+| Question | Source |
 |---|---|
-| What does a domain term mean? | [`../CONTEXT.md`](../CONTEXT.md) |
-| Which module owns a state transition? | [`architecture.md`](architecture.md) |
-| What can the public CLI or HTTP surface do today? | [`runtime/operations.md`](runtime/operations.md) |
-| What is required before the product is release-ready? | [`PRD.md`](PRD.md) |
-| Why was an architectural choice made? | [`adr/README.md`](adr/README.md) |
-| What is the current recall contract? | [`architecture.md`](architecture.md), [`../CONTEXT.md`](../CONTEXT.md), and accepted ADRs |
-| Where is the historical Recall v2 proposal? | [`recall-v2-design.md`](recall-v2-design.md) |
-| How are benchmark claims built and verified? | [`evidence-bundle.md`](evidence-bundle.md) |
-| What numbers are currently published? | [`../evidence/benchmark-v3/README.md`](../evidence/benchmark-v3/README.md) |
+| What does a term mean? | [`../CONTEXT.md`](../CONTEXT.md) |
+| What product are we building? | [`PRD.md`](PRD.md) |
+| Which component owns a target behavior? | [`architecture.md`](architecture.md) |
+| What is the durable record/lifecycle contract? | [`v0.1/memory-lifecycle.md`](v0.1/memory-lifecycle.md) |
+| What commands work on current `main`? | [`runtime/operations.md`](runtime/operations.md) |
+| What should an implementation agent do next? | [`plan/README.md`](plan/README.md) and [`plan/tasks/`](plan/tasks/) |
+| Why did a design change? | [`adr/README.md`](adr/README.md) |
+| What does current public evidence prove? | [`evaluation/README.md`](evaluation/README.md) and [`evidence-bundle.md`](evidence-bundle.md) |
 
-When two documents conflict, prefer the more specific document in this table
-and repair the stale document in the same change.
+When target and current documents differ, that is an implementation delta, not
+permission to advertise target behavior as shipped.
 
-## Runtime
+## Version 0.1 design
 
 | Document | Purpose |
 |---|---|
-| [`runtime/README.md`](runtime/README.md) | Runtime purpose, boundaries, module ownership, lifecycle, errors, and extension points |
-| [`runtime/operations.md`](runtime/operations.md) | Supported entrypoints, configuration, index readiness, diagnostics, and current limitations |
-| [`architecture.md`](architecture.md) | Whole-system topology and cross-scope flows |
+| [`v0.1/README.md`](v0.1/README.md) | Scope and product boundary |
+| [`v0.1/memory-lifecycle.md`](v0.1/memory-lifecycle.md) | Four records, capture cardinality, evolution, storage, migration |
+| [`v0.1/agent-integration.md`](v0.1/agent-integration.md) | CLI, seven MCP tools, resource, Claude/Codex hooks |
+| [`v0.1/onboarding-and-operations.md`](v0.1/onboarding-and-operations.md) | Init, config, providers, queues, doctor |
+| [`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md) | One-command evaluation, source budget, release gates |
+| [`v0.1/walkthrough.md`](v0.1/walkthrough.md) | Trace-to-recall narrative |
+| [`v0.1/learning-path.md`](v0.1/learning-path.md) | Outside-in code-reading path |
+| [`v0.1/review-brief.md`](v0.1/review-brief.md) | External architecture review prompt |
+
+## Implementation plan
+
+| Document | Purpose |
+|---|---|
+| [`plan/README.md`](plan/README.md) | Baseline, dependency graph, task status |
+| [`plan/analysis/v0.1-delivery.md`](plan/analysis/v0.1-delivery.md) | Hotspots, deletion strategy, risk and source envelope |
+| [`plan/backlog.md`](plan/backlog.md) | Compact task index |
+| [`plan/tasks/`](plan/tasks/) | Eleven independently verifiable task specifications |
+
+These files are the accepted local delivery plan. GitHub Issues remain the
+external tracker when tasks are published or assigned.
+
+## Runtime and operations
+
+| Document | Purpose |
+|---|---|
+| [`runtime/README.md`](runtime/README.md) | Implemented baseline versus target runtime |
+| [`runtime/operations.md`](runtime/operations.md) | Exact current CLI/HTTP commands and failure posture |
+| [`release-readiness.md`](release-readiness.md) | Current blockers and final release matrix |
 | [`reference-boundaries.md`](reference-boundaries.md) | Clean-room and external-reference boundaries |
-| [`release-readiness.md`](release-readiness.md) | Packaging, governance, CI, and first-release acceptance gate |
 
 ## Evaluation and evidence
 
 | Document | Purpose |
 |---|---|
-| [`evaluation/README.md`](evaluation/README.md) | Suite ownership, immutable artifacts, verification boundaries, and current evidence |
-| [`evidence-bundle.md`](evidence-bundle.md) | Public bundle build and offline verification contract |
-| [`recall-v2-design.md`](recall-v2-design.md) | Historical proposal and diagnosis; not the current contract |
-| [`../benchmarks/retrieval/README.md`](../benchmarks/retrieval/README.md) | Retrieval benchmark inputs and execution |
-| [`../benchmarks/coding/README.md`](../benchmarks/coding/README.md) | CodingMemoryBench tasks and verifier contract |
-| [`../benchmarks/locomo/README.md`](../benchmarks/locomo/README.md) | LoCoMo operational protocol |
+| [`evaluation/README.md`](evaluation/README.md) | Current suites, artifact truth, known limitations |
+| [`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md) | Target release commands and thresholds |
+| [`evidence-bundle.md`](evidence-bundle.md) | Reducer and offline-verifier contract |
+| [`../evidence/benchmark-v3/README.md`](../evidence/benchmark-v3/README.md) | Current generated historical evidence |
+| [`../benchmarks/locomo/README.md`](../benchmarks/locomo/README.md) | Current LoCoMo execution protocol |
+| [`../benchmarks/coding/README.md`](../benchmarks/coding/README.md) | Coding A/B task and verifier contract |
+| [`../benchmarks/retrieval/README.md`](../benchmarks/retrieval/README.md) | Historical retrieval suite |
 
-The generated `evidence/benchmark-v3` bundle is the current published evidence.
-Earlier bundles are retained as historical artifacts.
+`recall-v2-design.md` is a historical proposal, not the version 0.1 recall
+contract.
 
-## Architecture decision records
-
-The ADR sequence is append-oriented. Earlier ADRs remain useful history even
-when a later ADR supersedes a provider, retrieval, or evaluation contract.
+## ADR reading ranges
 
 | Range | Area |
 |---|---|
-| [`ADR guide`](adr/README.md) | Status rules, supersession, and recommended reading paths |
-| [`0001`](adr/0001-new-public-repository-with-selective-reimplementation.md)–[`0010`](adr/0010-version-one-ships-in-three-milestones.md) | Repository boundary, V1 scope, trace, evidence, storage, entrypoints, evaluation |
-| [`0011`](adr/0011-import-resume-replays-only-the-active-suffix.md)–[`0016`](adr/0016-recall-enrichment-is-budgeted-after-ranking.md) | Import recovery, hierarchical recall, provider identity, routing, enrichment |
-| [`0017`](adr/0017-locomo-evaluation-reuses-a-verified-immutable-corpus.md)–[`0027`](adr/0027-semantic-projection-rejects-foreign-citations-per-clause.md) | Grounded semantic projection and recall protocol evolution |
-| [`0028`](adr/0028-embedding-transport-policy-is-artifact-identity.md)–[`0039`](adr/0039-public-evidence-publishes-exact-repair-outcomes.md) | Spend safety, frozen evaluation protocols, exact repair, public evidence |
+| [`0001`](adr/0001-new-public-repository-with-selective-reimplementation.md)–[`0011`](adr/0011-import-resume-replays-only-the-active-suffix.md) | Foundation, evidence, storage, entrypoints, resume |
+| [`0012`](adr/0012-hierarchical-recall-is-a-rebuildable-projection.md)–[`0027`](adr/0027-semantic-projection-rejects-foreign-citations-per-clause.md) | Retrieval and grounded projection |
+| [`0028`](adr/0028-embedding-transport-policy-is-artifact-identity.md)–[`0042`](adr/0042-ablation-gates-evaluate-natural-weighted-accuracy.md) | Evaluation protocols, exact repair, Fable baseline |
+| [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0050`](adr/0050-version-0-1-records-an-explicit-retrieval-profile.md) | Version 0.1 product, lifecycle, surfaces, source budget |
 
-## Product and contributor process
-
-| Document | Purpose |
-|---|---|
-| [`PRD.md`](PRD.md) | Product requirements and delivery traceability |
-| [`release-readiness.md`](release-readiness.md) | Release blockers and package acceptance |
-| [`agents/domain.md`](agents/domain.md) | Domain-document discipline for agents |
-| [`agents/issue-tracker.md`](agents/issue-tracker.md) | GitHub Issues as the task and PRD tracker |
-| [`agents/triage-labels.md`](agents/triage-labels.md) | Canonical triage labels |
-
-Tasks and non-blocking follow-up work belong in GitHub Issues for
-`Hackerismydream/CodeCairn`; this repository does not maintain a second
-file-based issue backlog.
+Use [`adr/README.md`](adr/README.md) for status and supersession rules.

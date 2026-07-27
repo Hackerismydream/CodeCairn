@@ -1,456 +1,338 @@
 # Architecture
 
-CodeCairn is a local, evidence-native memory runtime for coding agents. Its
-architecture separates durable truth, operational state, disposable search
-projection, product entrypoints, and evaluation artifacts.
+Status: accepted version 0.1 target. The implementation delta is tracked under
+[`plan/`](plan/); this document must not be read as a claim that every target
+surface already exists on `main`.
 
-The runtime is intentionally narrower than a general agent platform. It imports
-completed Codex and Claude Code sessions; it does not execute an agent, inject
-hidden prompts, ingest a general knowledge base, or provide cloud tenancy.
+## Product boundary
+
+CodeCairn is a local-first Memory OS for agents. It owns durable memory
+independently from Codex, Claude Code, Raven, or another agent runtime. Version
+0.1 ships one implicit Coding Profile for repository-scoped work.
+
+CodeCairn does not execute an agent, inject hidden prompts, ingest arbitrary
+documents, run a cloud service, or provide a memory-editing UI. Raven
+integration is deliberately deferred until after version 0.1.
 
 ## System context
 
 ```text
-Codex / Claude Code JSONL
-            |
-            v
-      CodeCairn runtime
-       |      |      |
-       |      |      +--> Recall Context + audit sidecar
-       |      |
-       |      +---------> local CLI / loopback HTTP
-       |
-       +----------------> immutable evaluation artifacts
+                         explicit recall / remember
+Codex -------------------------------+
+  |                                  |
+  | Stop hook                        v
+  +---------------------------> MCP / CLI
+                                      |
+Claude Code --------------------------+
+  |                                  |
+  | SessionEnd hook                  v
+  +--------------------------> service use cases
+                                      |
+       +------------------------------+-----------------------------+
+       |                              |                             |
+       v                              v                             v
+ Source + Experience            Knowledge + Evolution              Recall
+       |                              |                             |
+       +------------------------------+-----------------------------+
+                                      |
+                    Markdown <----> SQLite ----> LanceDB
+                    durable truth     operations   rebuildable index
+                                      |
+                                      v
+                              evaluation adapters
+                                      |
+                                      v
+                              immutable artifacts
 ```
 
-External model providers may supply embeddings, semantic projections, answers,
-or judge votes. Their output is untrusted data. Only normalized events and
-deterministic derivations can author provenance, role, command outcome, file
-change, quote, or verification state.
+Provider traces are untrusted input. Model output is an untrusted
+interpretation. The system derives namespace, source locations, roles, exact
+quotes, command outcomes, file changes, and verification status from normalized
+events. A model may propose memory text and supersession but cannot author those
+fields.
 
-## Package boundaries
+## Five-layer memory model
+
+| Layer | Owns | Does not own |
+|---|---|---|
+| Source | Agent Trace, source locations, Evidence Facts | Model-authored meaning |
+| Experience | One Task Experience per Task Episode | Cross-task consolidation |
+| Knowledge | Repository Knowledge, User Preference, Work State | Source provenance |
+| Evolution | Immutable Supersession decisions and derived status | In-place edits |
+| Recall | Active-memory selection and bounded context | Durable truth |
+
+The layer names describe authority and lifecycle, not Python packages. The
+canonical terms and invariants live in [`../CONTEXT.md`](../CONTEXT.md).
+
+## Dependency direction
 
 ```text
-entrypoints ───────> service ───────> memory
-                         ^               ^
-                         |               |
-                    importers         storage
-
-bootstrap ── composes concrete adapters at the process boundary
-evaluation ─ calls service contracts and owns benchmark artifacts
+entrypoints -> service -> memory
+                 ^          ^
+                 |          |
+             importers   storage adapters
 ```
 
-The enforced dependency contracts are:
+`bootstrap` composes concrete adapters at the process boundary. `evaluation`
+calls the same service or public contracts with isolated roots.
 
-1. `entrypoints -> service -> memory`;
+The import-linter contracts remain:
+
+1. entrypoints depend on service, and service depends on memory;
 2. importers and storage adapters do not depend on entrypoints;
-3. service depends on ports, not concrete importer or storage adapters;
+3. service depends on ports, not concrete importers or storage;
 4. entrypoints do not reach through service to concrete adapters.
 
-### Responsibility map
+### Target responsibility map
 
-| Package | Responsibility | Must not own |
+| Package | Version 0.1 responsibility | Excluded responsibility |
 |---|---|---|
-| `memory` | Domain records, stable identities, evidence rules, projection, planner and provider contracts | Filesystem, SQLite, HTTP, CLI |
-| `service` | Import, gate, repair, cascade, recall, and application orchestration | Provider JSONL branches or concrete persistence |
-| `importers` | Provider detection and JSONL-to-Agent-Trace adaptation | Memory acceptance or persistence |
-| `storage` | Markdown, SQLite, LanceDB, and projection-cache adapters | Product workflow decisions |
-| `entrypoints` | CLI/HTTP validation and presentation | Alternative domain behavior |
-| `bootstrap` | Concrete adapter/provider composition | Durable domain rules |
-| `evaluation` | Isolated suite execution, immutable artifacts, reports, and public reducers | Product truth or hidden mutations |
+| `memory` | Four memory records, Source records, lifecycle invariants, provider ports, recall value objects | Filesystem, SQL, HTTP, CLI |
+| `service` | Capture, evolution, import, process, index, recall, inspection, diagnostics | Provider JSONL branches or presentation |
+| `importers` | Codex/Claude source discovery and JSONL normalization | Capture policy or persistence |
+| `storage` | Markdown, SQLite, and LanceDB adapters | Product workflow decisions |
+| `entrypoints` | CLI, MCP, hook, and compatibility HTTP presentation | Alternative domain behavior |
+| `bootstrap` | Config loading and concrete composition | Durable rules |
+| `evaluation` | Thin suite adapters, immutable runs, reducers, verifier | Product-only duplicate runtime |
 
-Detailed runtime module ownership lives in
-[`runtime/README.md`](runtime/README.md).
+## Durable records
 
-## Durable-write paths
-
-CodeCairn currently has three distinct write paths. They share domain and
-storage contracts but are not one public import pipeline.
-
-### Public trace import
+The complete version 0.1 durable model is:
 
 ```text
-Provider JSONL
-      |
-      v
-SessionImporter selects Codex or Claude adapter
-      |
-      v
-Agent Trace -> Task Episodes -> deterministic Evidence Facts
-      |
-      v
-deterministic Failed Command extraction
-      |
-      v
-atomic Markdown + SQLite import transaction + Index Queue
-      |
-      v
-ImportResult
+Agent Trace
+  -> Task Episode
+       -> exactly 1 Task Experience
+       -> 0..N Repository Knowledge
+       -> 0..N User Preference
+       -> 0..1 Work State when work remains or a prior Workstream closes
+
+new Coding Memory
+  + active same-subject memory
+  -> keep both OR immutable Evolution Record
+  -> derived active/superseded status
 ```
 
-This is the only durable-write path exposed by `CodeCairnApplication`, CLI, and
-HTTP import. It does not call Semantic Compression or Evidence Gate.
+There are four public Coding Memory types:
 
-### Gate-managed proposal
+- Task Experience;
+- Repository Knowledge;
+- User Preference;
+- Work State.
+
+Debugging, failed commands, and verified results are facets of Task Experience.
+Repository Convention is a Repository Knowledge category. Conversation Episode
+is retained only as a source/experience adapter where an evaluation needs it.
+
+The complete field and transition contract is
+[`v0.1/memory-lifecycle.md`](v0.1/memory-lifecycle.md).
+
+## Capture flow
 
 ```text
-MemoryProposal + supplied deterministic Evidence Facts
-      |
-      v
-evaluate_proposal -> Evidence Gate
-      |
-      +--> accepted: Markdown + SQLite gate audit + Index Queue
-      |
-      +--> rejected: SQLite gate audit only
+owned provider transcript
+  -> provider detection
+  -> strict normalized events
+  -> stable Task Episodes closed by next-task, Stop, SessionEnd, or manual EOF
+  -> deterministic Task Experience
+  -> optional semantic proposals
+  -> system validates source roles and cardinality
+  -> automatic supersession proposal validation
+  -> atomic Markdown + SQLite transaction
+  -> semantic/index jobs
 ```
 
-This service seam supports User Preference, Repository Convention, Verified
-Fix, and Debug Episode. It is implemented and tested but has no public
-producer.
+Source import and deterministic Task Experience do not require a semantic
+model. If no semantic model is configured, the transaction still commits and
+records optional Knowledge/evolution work as pending. A later
+`codecairn process` completes that work without rewriting Task Experience.
 
-### Attributed Conversation Episode
+An unclosed source suffix may advance source observation state but does not
+produce memory. Once a boundary commits an Episode, later appended source
+records form a linked continuation Episode rather than editing its immutable
+Task Experience.
+
+Manual `remember` enters at the Coding Memory boundary. Its origin is
+`agent_asserted`; Repository Knowledge and Work State may have no Evidence
+References and cannot claim source-derived facts they did not observe. A
+direct User Preference still requires references to user-authored source.
+
+## Evolution flow
 
 ```text
-AttributedEpisode -> exact source-turn facts -> Evidence Gate
-      |
-      v
-grounded EpisodeSemanticizer
-      |
-      v
-Markdown + SQLite gate audit + Index Queue
+successor memory + proposed predecessor
+  -> same namespace?
+  -> eligible types and same subject/workstream?
+  -> predecessor active?
+  -> no self-edge or cycle?
+  -> append Evolution Record
+  -> derive statuses
+  -> enqueue predecessor and successor projections
 ```
 
-`write_episode` owns this path. LoCoMo evaluation uses it directly; ordinary
-Codex/Claude import does not. A grounded semantic clause may improve retrieval
-text, but it must cite existing source facts and cannot replace their lossless
-child projections.
+The model selects only `keep_both` or `supersede`. CodeCairn owns validation.
+Task Experience never supersedes. Restore copies historical content into a new
+memory revision and applies the normal forward-only evolution rules.
 
-### Asynchronous index boundary
-
-All accepted write paths may enqueue an index revision:
+## Recall flow
 
 ```text
-Markdown + SQLite Index Queue
-              |
-              | asynchronous outbox boundary
-              | no public owner on current main
-              v
-         Mini Cascade
-              |
-              v
-LanceDB Recall Episode + Atomic Fact Documents
-              |
-              v
-Recall Context Markdown + JSON sidecar
+task query
+  -> resolve Memory Namespace
+  -> active-only candidate search
+  -> pin matching open Work State
+  -> rank Knowledge, Preference, Experience
+  -> apply total token budget and per-type caps
+  -> render attributed Markdown
+  -> emit structured JSON sidecar
 ```
 
-## Import and evidence
+Normal recall never silently includes superseded memory. `include_superseded`
+and `memory history` are explicit historical operations. Recall Context is a
+derived view and is not written back as memory.
 
-The public import seam is:
-
-```text
-import_session(source_path, repo_key, source_root?) -> ImportResult
-```
-
-It hides:
-
-- single-pass provider detection;
-- strict JSONL parsing and raw record hashing;
-- tool call/result pairing;
-- stable Task Episode identity;
-- deterministic evidence collection;
-- deterministic Failed Command extraction;
-- atomic Markdown creation;
-- SQLite transaction and index-outbox enqueue;
-- resume checkpoint update;
-- pre-import repair of committed Markdown.
-
-The Import Ledger advances its committed cursor only after the complete durable
-write set succeeds. The resume checkpoint hashes the stable prefix and retains
-call IDs and file-change counts needed to validate an appended source without
-re-decoding committed records.
-
-### Evidence authority
-
-| Field or claim | Authority |
-|---|---|
-| Provider, session, source, raw index, call ID | Importer from raw record |
-| Message role and exact quote | Normalized source event |
-| Command and exit status | Paired call/result event |
-| File change | Successful structured tool result or recorded patch call |
-| Verification success | Deterministic command classification plus later success |
-| Summary and semantic grouping | Optional untrusted model proposal |
-| Failed Command durable acceptance | Deterministic extractor over failed command facts |
-| Other Coding Memory durable acceptance | Evidence Gate resolving proposal fact IDs |
-
-Accepted and rejected gate-managed proposals both produce auditable SQLite
-decisions. Accepted memories persist the complete deterministic fact snapshot
-in Markdown and SQLite. Conversation Episodes preserve attributed source turns
-as authority and store semantic text only as a marked retrieval projection.
-
-## Storage and consistency
+## Storage authority
 
 ```text
-                authoritative       operational        disposable
-                    truth              state              search
-                 Markdown  <------>  SQLite  --------->  LanceDB
-                    ^                  |
-                    |                  +--> Index Queue
-                    +------------------------ Mini Cascade re-read
+                       authoritative     operational       disposable
+                          truth             state             search
+Coding Memories ------> Markdown <------> SQLite ---------> LanceDB
+Evolution Records ---->    ^                |
+                            |                +--> source/semantic/index queues
+                            +--------------------- rebuild reads
 ```
 
 ### Markdown
 
-- One canonical file per Coding Memory.
-- Same-directory temporary file, flush, fsync, and atomic create-if-absent.
-- Runtime write paths are create-only for an existing memory identity and
-  reject conflicting content.
-- Safe path, file type, size, schema, and content hash are validated on read.
-- Repair is allowed only when committed state renders the exact expected hash;
-  repair attempts are audited and resumable.
+- one immutable file per Coding Memory;
+- one immutable file per Evolution Record;
+- bounded system-derived Evidence Fact snapshots inside capture-derived
+  memories;
+- closed, versioned frontmatter and bounded bodies;
+- safe-path, type, size, schema, and digest validation;
+- atomic create and exact-content idempotency.
+
+Markdown authority means it is the durable representation. It does not mean
+model-authored content is factually verified.
 
 ### SQLite
 
-SQLite owns:
+SQLite owns transactions and operational projections:
 
-- observed import sources and resume checkpoints;
-- memory metadata and deterministic fact mirrors;
-- proposal reservations and gate audits;
-- Markdown recovery audits;
-- fact postings used by bounded expansion;
-- the transactional index outbox, leases, retry state, and fingerprints.
+- source fingerprints, committed cursors, and episode identities;
+- memory and Evolution Record mirrors;
+- derived active status;
+- pending, leased, failed, and retryable processing jobs;
+- index outbox and readiness diagnostics.
 
-SQLite mirrors support transactions and recovery. They are not an independently
-editable content source.
-
-The current reconcile path also accepts a structurally valid offline Markdown
-modification or deletion, updates SQLite, and requeues the index. For a
-gate-managed memory it checks that an accepted audit exists but does not
-re-evaluate the edited payload against the original proposal. This conflicts
-with the runtime's create-only evidence contract. Direct editing is therefore
-not a supported product promise until an ADR chooses either immutable existing
-IDs or explicitly editable fields with provenance revalidation.
+SQLite content mirrors are rebuildable from Markdown except for operational
+source cursors and queues. They are not an independent editing surface.
 
 ### LanceDB
 
-LanceDB owns lexical/vector search rows only. Each Coding Memory projects to:
+LanceDB contains searchable parent and atomic child documents only. Index rows
+include memory status and retrieval-profile identity. Rebuild replays Markdown
+and Evolution Records and verifies the complete projected document set.
 
-- one parent Recall Episode; and
-- zero or more semantic and authoritative Atomic Fact Documents.
+Recall does not scan Markdown as a hidden fallback. A stale or missing index is
+an explicit degraded state with a remediation command.
 
-Parent/child IDs and content digests are deterministic. Rebuild parity compares
-both memory fingerprints and the complete document set, so a missing,
-reparented, or changed child fails parity even when memory counts match.
+## Consistency boundaries
 
-### Consistency contract
+The source-import transaction commits normalized identity, Markdown memory,
+SQLite mirrors, and queue records before advancing the source cursor. Search and
+semantic enrichment are eventually consistent.
 
-Import is strongly durable for Markdown plus the SQLite transaction. Search is
-eventually consistent because indexing is a separate outbox consumer. Recall
-does not scan Markdown as a degraded fallback.
+| Failure | Durable result | User-visible result |
+|---|---|---|
+| Semantic provider absent | Source and Task Experience committed | Pending semantic job |
+| Semantic provider fails | Source and Task Experience committed | Failed retryable job |
+| Index drain fails | Markdown and SQLite committed | Degraded index with remediation |
+| Hook input invalid | No partial memory | Hook failure visible in `doctor` |
+| Supersession invalid | Successor may remain active; no edge applied | Failed processing job or typed command error |
+| LanceDB lost | No truth lost | Rebuild required |
 
-Import drives that consumer in process after its commit, and both entrypoints
-expose sync, rebuild, and status for it. Neither runs a background worker, so a
-root imported with `--no-index`, or one whose drain failed, commits truth and
-stays index-degraded until the next sync. `doctor` reports that state, and the
-surface is documented in
-[`runtime/operations.md`](runtime/operations.md).
+## Product surfaces
 
-## Mini Cascade
+CLI, MCP, and hooks are the version 0.1 product interfaces. Each calls the same
+service use cases:
 
-`MiniCascade` is the single search-projection writer at the service level.
+| Use case | CLI | MCP | Hook |
+|---|---:|---:|---:|
+| Initialize/configure | yes | no | installer only |
+| Import session | yes | yes | yes |
+| Capture direct memory | yes | yes | no |
+| Process pending work | yes | no | queues only |
+| Recall | yes | yes | no |
+| List/show/history | yes | yes | no |
+| Supersede/restore | yes | history/remember workflow | no |
+| Doctor | yes | yes | failure writer only |
+| Evaluate/verify | yes/Make | no | no |
 
-| Operation | Contract |
-|---|---|
-| `reconcile` | Compare Markdown scan with SQLite and enqueue required changes |
-| `run_once` | Lease and apply one upsert/delete job |
-| `run_until_idle` | Bound repeated claims to a configured maximum |
-| `health` | Report pending, leased, indexed, failed, and stale counts |
-| `retry_failed` | Requeue failed jobs through SQLite policy |
-| `rebuild` | Replace all index rows from Markdown and verify full parity |
+The existing HTTP adapter remains compatible for existing routes. New v0.1
+lifecycle operations do not require HTTP parity. Exact integration contracts
+are in [`v0.1/agent-integration.md`](v0.1/agent-integration.md).
 
-Upserts re-read committed Markdown rather than trusting the SQLite mirror to
-author child documents. Jobs are content-addressed, atomically leased, and
-idempotent for an unchanged successful revision.
+## Configuration and provider boundary
 
-Import, `codecairn index sync|rebuild|status`, and the three `/api/v1/index`
-routes drive Mini Cascade through the shared application facade. Tests and
-evaluation still compose it directly. There is one index writer, and no
-entrypoint introduces a second one.
-
-## Retrieval
-
-Recall receives a task, repository namespace, and result limit.
-
-```text
-query validation
-      |
-      v
-deterministic query sketch + soft route
-      |
-      +--> Episode base vector/lexical candidates
-      +--> AtomicFact base vector/lexical candidates
-      +--> Episode entity/temporal lexical candidates
-      +--> AtomicFact entity/temporal lexical candidates
-      |
-      v
-lift child hits to parents + reciprocal-rank fusion
-      |
-      v
-entity/provenance posting expansion
-      |
-      v
-parent snippets + parent CrossEncoder reranking
-      |
-      v
-core/coverage top-k selection
-      |
-      v
-bounded chronological neighbor expansion
-      |
-      v
-selected-parent authoritative-fact EvidenceSelector/CrossEncoder
-      |
-      v
-budgeted exact-source context compiler
-```
-
-The route changes bounded candidate budgets; it never hard-disables the
-secondary hierarchy level. Query-time recall makes no LLM call. Candidate
-fan-out, reranking work, expansion hops, fact counts, context tokens, and
-neighbor snippets are bounded and represented in versioned planner
-configuration.
-
-The result contains:
-
-- Markdown intended for a later coding task;
-- ranked memories and candidate sources;
-- provider and planner identities;
-- stage input/output counts;
-- selected and omitted evidence IDs;
-- context token/character counts;
-- degraded stages and coverage requirements;
-- latency observations.
-
-Current constraints are frozen by code, manifests, and accepted ADRs 0012–0036.
-[`recall-v2-design.md`](recall-v2-design.md) is retained as historical design
-and diagnosis, not as the current contract.
-
-## Retrieval provider identity
-
-Production composition defaults to DashScope `text-embedding-v4` at 1,024
-dimensions and a pinned local CrossEncoder reranker. The explicit `fastembed`
-profile provides offline local embeddings; `hashing-test` is deterministic test
-infrastructure only.
-
-Index identity binds endpoint, model alias, declared revision, dimension, and
-adapter version. The local reranker also binds artifact source and immutable
-revision. Changing an identity component makes existing rows incompatible and
-requires the rebuildable projection migration under an inter-process lock.
-
-Provider aliases such as `provider-managed` are declarations, not immutable
-model commits. Manifests and sidecars record that limitation without recording
-credentials.
-
-## Public entrypoints
-
-`CodeCairnApplication` is the shared facade for CLI and HTTP:
+`codecairn init` writes non-secret configuration to `codecairn.toml`. Runtime
+precedence is:
 
 ```text
-CLI ------------------\
-                       > CodeCairnApplication -> MemoryRuntime / operations
-HTTP -----------------/
+explicit CLI option > environment secret/override > codecairn.toml > default
 ```
 
-HTTP adds:
+Retrieval and semantic extraction are independent capabilities. Retrieval uses
+an explicitly selected profile:
 
-- loopback-only binding;
-- source/artifact root authorization;
-- request validation;
-- `x-request-id`;
-- stable error envelopes.
+- recommended DashScope `qwen3.7-text-embedding`, 1,024 dimensions; or
+- explicit pinned local FastEmbed.
 
-It does not add a cascade worker or alternative import, recall, evaluation, or
-health implementation. The current command and route matrix lives in
-[`runtime/operations.md`](runtime/operations.md).
+There is no silent network-to-local fallback. Hashing is test-only. A retrieval
+profile change invalidates the disposable index; a missing semantic model only
+defers semantic capture.
 
-`evaluate_proposal` and `write_episode` remain `MemoryRuntime` service seams and
-are not methods on this public facade.
+## Evaluation boundary
 
-## Evaluation architecture
+Evaluation is a consumer of product contracts, not a second product runtime.
+Version 0.1 retains four user-facing evaluation paths:
 
-Evaluation is a separate composition plane around the runtime:
+1. offline lifecycle smoke;
+2. LoCoMo diagnostic and full runs;
+3. coding memory-off/on A/B;
+4. immutable evidence verification.
 
-```text
-frozen inputs -> isolated execution -> immutable artifacts
-                                      |
-                                      v
-                               pure report reducers
-                                      |
-                                      v
-                            public evidence reducer
-                                      |
-                                      v
-                              offline verification
-```
+Historical evidence remains independently verifiable. A historical result is
+never relabeled as a result from the version 0.1 architecture. The exact command
+and release contract is
+[`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md).
 
-Retrieval, recovery, CodingMemoryBench, and LoCoMo answer different questions.
-Manifests bind input digests, repository state, models, seeds, concurrency,
-resource limits, and workspace/memory isolation. Resume is missing-only.
-Reports cannot mutate runtime state.
+## Readability budget
 
-Evaluation code sometimes composes `bootstrap` and concrete storage adapters
-directly to build isolated corpora and indexes. It is therefore not completely
-inside the product `entrypoints -> service -> memory` dependency chain, and the
-current import-linter contracts do not claim otherwise. `locomo_worker.py` is a
-separate process execution boundary.
+At `main@954f728`, `src/codecairn` has 34,091 physical Python lines: 17,250
+outside `evaluation` and 16,841 inside it. Version 0.1 accepts at most:
 
-The evidence reducer treats saved summaries as assertions and recomputes them
-from raw aggregate inputs. Exact repair preserves the negative source run and
-proves the repaired ID set. Public artifacts redact licensed/private content
-while retaining enough outcomes and receipts for offline recomputation.
+- 10,000 physical Python lines in product core excluding `evaluation`;
+- 15,000 physical Python lines in all of `src/codecairn`.
 
-Detailed suite ownership and current evidence live in
-[`evaluation/README.md`](evaluation/README.md).
+The budget is checked by a deterministic repository script. Generated code,
+vendored code, or moving implementation into another installable package does
+not evade it.
 
-## Failure and security boundaries
+## Current-to-target delta
 
-- Provider traces are untrusted input and are parsed as data.
-- Patch contents and paths are never executed by importers.
-- Raw path strings are evidence, not filesystem authorities.
-- Remote model output cannot author evidence fields.
-- Unsafe or corrupt Markdown fails closed.
-- Custom provider/model identities cannot silently reuse incompatible vectors.
-- Test adapters never become silent production fallbacks.
-- HTTP import and evaluation paths remain under configured roots.
-- Runtime secrets never enter Markdown, index rows, sidecars, or manifests.
-- Benchmark provider/config reachability is not a successful scored result.
+| Current `main@954f728` | Version 0.1 target | Task |
+|---|---|---|
+| Six types plus Evidence Gate paths | Four types; optional verification | `v01-001` |
+| Import emits Failed Command only | Complete cardinality and pending semantic jobs | `v01-002` |
+| No durable evolution | Evolution Records, status, restore | `v01-003` |
+| Recall has no lifecycle filter | Active-only recall and history | `v01-004` |
+| Manual environment/repo key setup | `init`, config, derived namespace | `v01-005` |
+| CLI/HTTP only | MCP tool/resource server | `v01-006` |
+| No automatic client ingestion | Claude/Codex session-end hooks | `v01-007` |
+| Large historical evaluation framework | Four thin commands and source gates | `v01-008` |
+| Checkout-only, no license | MIT, curated package, learner docs | `v01-009` |
+| No release-candidate proof | Installed E2E and new evidence bundle | `v01-010` |
 
-## Current architectural gaps
-
-The following are not implemented product capabilities:
-
-1. A public producer for five gate-managed Coding Memory types.
-2. A background index worker; the queue-to-index transition is driven by
-   import or an explicit `index` operation.
-3. A resolved policy for offline edits to gate-managed Markdown.
-4. A thin Codex/Claude Code integration that invokes recall and later imports
-   sessions during ordinary use.
-5. Versioned user-facing configuration files and initialization.
-6. Metrics for queue lag, recall latency, and provider failures.
-7. Memory supersession, conflict, or repository-revision validity.
-8. Tagged release, explicit license, and release-governance files.
-
-Broad knowledge management, multimodal ingestion, cloud multi-tenancy, and a
-general OME-style evolution engine remain out of scope unless the product
-direction changes.
-
-## Reference policy
-
-Pythia remains a private prototype and regression corpus. EverOS is consulted
-for mechanism-level invariants such as atomic Markdown, rebuildable indexes,
-queue observability, and evaluation orchestration. CodeCairn independently owns
-its Agent Trace, evidence model, gates, coding-memory taxonomy, Recall Context,
-and evaluation contracts.
-
-See [`reference-boundaries.md`](reference-boundaries.md) for the clean-room and
-attribution rules.
+The task files under [`plan/tasks/`](plan/tasks/) are the agent-executable
+delivery contract.
