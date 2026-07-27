@@ -96,6 +96,67 @@ Offline. It recomputes aggregates, generated copy, exact-repair membership,
 source consistency, and the SHA-256 inventory for the selected checked-in
 bundle. It proves artifact integrity, not provider replay or semantic truth.
 
+### Version 0.1 release bundle
+
+The release candidate uses the repository-only
+`scripts/build_release_bundle.py` reducer. It copies only public outcome fields:
+LoCoMo provider attempts/runtime state, Coding workspaces/raw agent logs,
+credentials, and owned transcripts are excluded. The installed
+`codecairn evidence verify` command detects the
+`codecairn-v01-release-evidence-v1` contract while retaining the historical
+bundle reader. Coding traces retain only step, event kind, exit status, and
+command/path hashes; the verifier recomputes the three trace metrics from those
+redacted events. Installed and real-client smoke wheel hashes must match both
+clean reproducible builds.
+
+After freezing `implementation_sha`, generate each offline run with an explicit
+`RUN_ID`, save the recovery JUnit report, package reports, and real-client
+report, then build:
+
+```bash
+uv run python scripts/build_release_bundle.py \
+  --bundle-id v0.1-rc1 \
+  --implementation-sha "$IMPLEMENTATION_SHA" \
+  --smoke "$SMOKE_RUN" \
+  --scale "$SCALE_RUN" \
+  --retrieval "$RETRIEVAL_RUN" \
+  --locomo-200 "$LOCOMO_200_RUN" \
+  --locomo-full "$LOCOMO_FULL_RUN" \
+  --coding "$CODING_RUN" \
+  --recovery-junit "$RECOVERY_JUNIT" \
+  --real-clients "$REAL_CLIENT_REPORT" \
+  --installed-smoke "$INSTALLED_SMOKE_REPORT" \
+  --artifact-repro "$ARTIFACT_REPRO_REPORT" \
+  --source-budget "$SOURCE_BUDGET_REPORT" \
+  --quality "$QUALITY_REPORT" \
+  --release-notes "$RELEASE_NOTES"
+EVIDENCE_BUNDLE=evidence/v0.1-rc1 make evidence-verify
+```
+
+`scripts/real_client_smoke.py` installs the candidate wheel into an isolated
+tool directory, exercises real Codex and Claude processes, verifies native hook
+receipts, repeats the exact boundaries, recalls the captured memories, and
+restores the isolated config bytes. Claude accepts an isolated provider route
+through the names of three environment variables; without those options it uses
+the existing authenticated identity and an explicit project/local
+setting-source allowlist. Both paths delete only the UUID-owned smoke transcript
+after verification:
+
+```bash
+uv run python scripts/real_client_smoke.py \
+  --wheel dist/codecairn-0.1.0-py3-none-any.whl \
+  --implementation-sha "$IMPLEMENTATION_SHA" \
+  --output benchmark_results/release/real-clients.json \
+  --claude-api-key-env ANTHROPIC_API_KEY \
+  --claude-base-url-env ANTHROPIC_BASE_URL \
+  --claude-model-env ANTHROPIC_MODEL
+```
+
+The builder may verify an uncommitted bundle while `HEAD` still equals
+`implementation_sha`. Release acceptance requires a clean evidence-only direct
+descendant; the final verifier then reports `evidence_binding.status=bound` and
+`direct_descendant=true`.
+
 ## Artifact contract
 
 Every scored run records:

@@ -128,7 +128,7 @@ class _LocalOperations(ApplicationOperations):
         return {
             "status": "degraded" if degraded else "ok",
             "root": str(self._root),
-            "schema": "codecairn-v01-4",
+            "schema": "codecairn-v01-5",
             "repo_key": self._repo_key,
             "imports": counts.import_count,
             "observed_events": counts.observed_event_count,

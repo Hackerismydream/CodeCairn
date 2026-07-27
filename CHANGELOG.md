@@ -14,6 +14,11 @@ This project follows semantic versioning after the first public release.
   Claude/Codex session-end hooks.
 - Adds deterministic package, documentation, lifecycle, retrieval, scale, and
   evidence verification gates.
+- Routes direct `remember` writes through the same recoverable cross-store
+  Memory Commit protocol as transcript capture.
+- Adds a redacted version 0.1 release-bundle builder and a pure verifier that
+  binds lifecycle, recovery, retrieval, LoCoMo, Coding A/B, real-client,
+  package, quality, and source-budget evidence to one implementation SHA.
 - Fixes the production FastEmbed adapter to accept its native NumPy `float32`
   vectors while retaining finite-dimension validation.
 

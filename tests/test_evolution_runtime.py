@@ -50,6 +50,30 @@ def _runtime(root: Path, *, fault: str | None = None) -> MemoryRuntime:
     )
 
 
+@pytest.mark.parametrize(
+    "fault",
+    (
+        "direct_memory_after_intent_prepared",
+        "direct_memory_after_atomic_create",
+        "direct_memory_after_directory_fsync",
+        "direct_memory_transaction_b_start",
+        "direct_memory_before_commit",
+        "direct_memory_after_complete",
+    ),
+)
+def test_direct_memory_recovers_at_each_durable_boundary(tmp_path: Path, fault: str) -> None:
+    root = tmp_path / "runtime"
+    memory = _knowledge(claim="Run make check.")
+    with pytest.raises(RuntimeError, match=fault):
+        _runtime(root, fault=fault).store_memory(memory)
+
+    assert _runtime(root).store_memory(memory) == memory
+    state = SQLiteState(root / "state.sqlite3")
+    assert state.list_memories(repo_key=memory.repo_key) == (memory,)
+    assert state.list_prepared_memory_commits() == ()
+    assert state.operational_counts().pending_recovery_count == 0
+
+
 def test_supersession_is_immutable_idempotent_and_restorable(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     runtime = create_runtime(root)
@@ -169,14 +193,15 @@ def test_restore_rejects_task_experience_and_ambiguous_lineage(tmp_path: Path) -
     assert ambiguous.value.code == "ambiguous_lineage"
 
 
-def test_prepared_evolution_recovers_after_process_restart(tmp_path: Path) -> None:
+@pytest.mark.parametrize("fault", ("evolution_after_intent_prepared", "evolution_before_commit"))
+def test_prepared_evolution_recovers_after_process_restart(tmp_path: Path, fault: str) -> None:
     root = tmp_path / "runtime"
     runtime = _runtime(root)
     old = runtime.store_memory(_knowledge(claim="Run make test."))
     new = runtime.store_memory(_knowledge(claim="Run make check."))
 
-    with pytest.raises(RuntimeError, match="evolution_after_intent_prepared"):
-        _runtime(root, fault="evolution_after_intent_prepared").supersede(
+    with pytest.raises(RuntimeError, match=fault):
+        _runtime(root, fault=fault).supersede(
             repo_key=old.repo_key,
             predecessor_id=old.memory_id,
             successor_id=new.memory_id,
@@ -187,6 +212,26 @@ def test_prepared_evolution_recovers_after_process_restart(tmp_path: Path) -> No
     _runtime(root).process_pending(worker_id="recovery")
     state = SQLiteState(root / "state.sqlite3")
     assert state.memory_status(repo_key=old.repo_key, memory_id=old.memory_id) == "superseded"
+    assert state.operational_counts().pending_recovery_count == 0
+
+
+@pytest.mark.parametrize("fault", ("evolution_after_intent_prepared", "evolution_before_commit"))
+def test_prepared_restore_recovers_after_process_restart(tmp_path: Path, fault: str) -> None:
+    root = tmp_path / "runtime"
+    runtime = _runtime(root)
+    old = runtime.store_memory(_knowledge(claim="Run make test."))
+    new = runtime.store_memory(_knowledge(claim="Run make check."))
+    runtime.supersede(
+        repo_key=old.repo_key, predecessor_id=old.memory_id, successor_id=new.memory_id, reason="The command changed.", proposer="user"
+    )
+    with pytest.raises(RuntimeError, match=fault):
+        _runtime(root, fault=fault).restore(repo_key=old.repo_key, memory_id=old.memory_id)
+
+    _runtime(root).process_pending(worker_id="recovery")
+    state = SQLiteState(root / "state.sqlite3")
+    history = state.memory_history(repo_key=old.repo_key, memory_id=old.memory_id)
+    assert len(history.evolutions) == 2
+    assert sum(status == "active" for _memory_id, status in history.statuses) == 1
     assert state.operational_counts().pending_recovery_count == 0
 
 

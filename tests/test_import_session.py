@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from codecairn.importers import SessionImporter, SourceRewritten
-from codecairn.memory.capture import PreparedCapture
+from codecairn.memory.capture import PreparedMemoryCommit
 from codecairn.memory.schema import IdentityConflict, LegacyRootUnsupported, TaskExperiencePayload
 from codecairn.service.runtime import MemoryRuntime
 from codecairn.storage.markdown import MarkdownMemoryStore
@@ -267,7 +267,7 @@ def test_recovery_marks_conflicting_markdown_intent_conflicted(tmp_path: Path) -
             FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize"
         )
     state = SQLiteState(root / "state.sqlite3")
-    capture = state.list_prepared_captures()[0]
+    capture = state.list_prepared_memory_commits()[0]
     conflicting = MarkdownMemoryStore(root).path_for(capture.memories[0])
     conflicting.parent.mkdir(parents=True, exist_ok=True)
     conflicting.write_text("conflicting immutable bytes\n", encoding="utf-8")
@@ -275,7 +275,7 @@ def test_recovery_marks_conflicting_markdown_intent_conflicted(tmp_path: Path) -
     with pytest.raises(IdentityConflict):
         _runtime(root).import_session(FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize")
 
-    assert state.list_prepared_captures() == ()
+    assert state.list_prepared_memory_commits() == ()
     assert state.operational_counts().pending_recovery_count == 0
     assert state.operational_counts().conflicted_recovery_count == 1
     assert state.list_memories(repo_key="acme/widgets") == ()
@@ -293,9 +293,9 @@ def test_write_intent_reserves_episode_closure_before_markdown(tmp_path: Path) -
             FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize"
         )
     state = SQLiteState(root / "state.sqlite3")
-    winner = state.list_prepared_captures()[0]
+    winner = state.list_prepared_memory_commits()[0]
     losing_episode = replace(winner.episodes[0], prefix_sha256="0" * 64)
-    loser = PreparedCapture.create(
+    loser = PreparedMemoryCommit.create(
         repo_key=winner.repo_key,
         episodes=(losing_episode,),
         facts=winner.facts,
@@ -305,8 +305,8 @@ def test_write_intent_reserves_episode_closure_before_markdown(tmp_path: Path) -
         created_at_ms=winner.created_at_ms,
     )
 
-    assert state.prepare_capture(loser) == "closure_lost"
-    assert state.list_prepared_captures() == (winner,)
+    assert state.prepare_memory_commit(loser) == "closure_lost"
+    assert state.list_prepared_memory_commits() == (winner,)
 
 
 def test_legacy_sqlite_root_is_rejected_before_mutation(tmp_path: Path) -> None:

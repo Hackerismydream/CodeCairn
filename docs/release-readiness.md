@@ -1,8 +1,10 @@
 # Release Readiness
 
-Status: not release-ready. Product lifecycle, curated distribution, installed
-artifact smoke, learner documentation, and offline evaluation gates are
-implemented. Real-client smoke, paid release runs, and release evidence remain.
+Status: release-candidate verification in progress. Product lifecycle, direct
+Memory Write Intent recovery, curated distribution, installed-artifact smoke,
+learner documentation, offline evaluation gates, and the version 0.1 evidence
+verifier are implemented. Candidate-bound real-client evidence, paid release
+runs, and the evidence commit remain.
 
 ## Baseline evidence
 
@@ -31,10 +33,10 @@ This proves the baseline checkout, not version 0.1 release readiness.
 | MCP | installed wheel initializes with seven tools and one resource | real-client smoke | v01-006/009/010 |
 | Client hooks | both fixtures import idempotently; installer is atomic | real Claude SessionEnd and Codex Stop smoke | v01-007/010 |
 | Evaluation commands | eight Make targets; offline lifecycle/scale/retrieval and paid plans pass | candidate-bound paid results | v01-008/010 |
-| Source budget | 9,682 core / 13,315 total at v01-009 | internal gate at most 9,700 / 14,100 | v01-001–009 |
+| Source budget | 9,700 core / 13,737 total before candidate freeze | internal gate at most 9,700 / 14,100 | v01-001–010 |
 | Package metadata | MIT, full metadata, curated 54-member wheel and 58-member sdist | retained | v01-009 |
 | Installed smoke | isolated `uv tool` CLI/MCP/import/recall/hook dry-run/evidence pass | real Claude/Codex UI and hook receipt | v01-009/010 |
-| Current evidence CI | benchmark-v3 verifies through immutable reader | selected release bundle verified | v01-008/010 |
+| Current evidence CI | benchmark-v3 verifier retained; v0.1 bundle builder/verifier implemented | selected candidate bundle verified | v01-008/010 |
 | Release benchmark | historical 82.60% only | new full run at candidate commit, at least 82.00% | v01-010 |
 | Governance | changelog, security, contribution, and conduct files present | retained | v01-009 |
 | Tag/publication | absent | verified implementation/evidence SHA pair and artifact inventory | v01-010 |

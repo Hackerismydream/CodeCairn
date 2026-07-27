@@ -1,7 +1,7 @@
 ---
 id: v01-010
 scope: version 0.1 release-candidate evidence
-status: planned
+status: in-progress
 depends-on: [v01-009]
 ---
 
@@ -12,6 +12,12 @@ depends-on: [v01-009]
 Prove the installable memory runtime, agent integrations, source budget,
 benchmark, and public evidence on one clean implementation/evidence SHA pair.
 This task produces evidence; it does not add product scope.
+
+Pre-freeze inspection found that the documented `direct_memory` Write Intent
+kind was not used by direct `remember`. The candidate hardening therefore
+unifies transcript capture and direct memory under `PreparedMemoryCommit`
+before the implementation SHA is frozen. This closes an accepted contract; it
+does not add a new public feature.
 
 ## Preconditions
 

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -121,6 +122,7 @@ def installed_smoke(*, wheel: Path, evidence: Path) -> dict[str, object]:
     return {
         "schema_version": 1,
         "wheel": wheel.name,
+        "wheel_sha256": hashlib.sha256(wheel.read_bytes()).hexdigest(),
         "manual_path_seconds": manual_path_seconds,
         "one_client_path_seconds": one_client_path_seconds,
         "total_seconds": time.perf_counter() - started,

@@ -12,10 +12,10 @@ from typing import cast
 
 from codecairn.memory.capture import (
     CaptureCheckpoint,
-    PreparedCapture,
+    PreparedMemoryCommit,
     capture_input_fingerprint,
-    prepared_capture_from_payload,
-    prepared_capture_payload,
+    memory_commit_from_payload,
+    memory_commit_payload,
 )
 from codecairn.memory.evolution import (
     EvolutionArtifact,
@@ -61,7 +61,7 @@ from codecairn.memory.semantic import (
     semantic_commit_payload,
 )
 
-_SCHEMA_REVISION = "codecairn-v01-4"
+_SCHEMA_REVISION = "codecairn-v01-5"
 
 
 class SQLiteState:
@@ -113,39 +113,43 @@ class SQLiteState:
             connection.execute("BEGIN IMMEDIATE")
             return _insert_episode(connection, episode)
 
-    def prepare_capture(self, capture: PreparedCapture) -> str:
-        payload = prepared_capture_payload(capture)
-        checkpoint = capture.checkpoint
+    def prepare_memory_commit(self, commit: PreparedMemoryCommit) -> str:
+        payload = memory_commit_payload(commit)
+        checkpoint = commit.checkpoint
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
-            for episode in capture.episodes:
-                committed = _insert_episode(connection, episode)
-                if committed.boundary_kind != episode.boundary_kind or not _same_episode_except_boundary(committed, episode):
-                    return "closure_lost"
+            if checkpoint is not None:
+                for episode in commit.episodes:
+                    committed = _insert_episode(connection, episode)
+                    if committed.boundary_kind != episode.boundary_kind or not _same_episode_except_boundary(committed, episode):
+                        return "closure_lost"
             return _prepare_intent(
                 connection,
-                operation_id=capture.operation_id,
-                repo_key=capture.repo_key,
-                operation_kind="capture",
+                operation_id=commit.operation_id,
+                repo_key=commit.repo_key,
+                operation_kind=str(payload["operation_kind"]),
                 payload=payload,
                 expected_files=payload["expected_files"],
-                memory_ids=tuple(memory.memory_id for memory in capture.memories),
-                created_at_ms=capture.created_at_ms,
-                cursors=(checkpoint.prior_source_cursor, checkpoint.committed_raw_event_index),
+                memory_ids=tuple(memory.memory_id for memory in commit.memories),
+                created_at_ms=commit.created_at_ms,
+                cursors=(
+                    (None, None) if checkpoint is None else (checkpoint.prior_source_cursor, checkpoint.committed_raw_event_index)
+                ),
             )
 
-    def list_prepared_captures(self) -> tuple[PreparedCapture, ...]:
+    def list_prepared_memory_commits(self) -> tuple[PreparedMemoryCommit, ...]:
         with self._connect() as connection:
             rows = connection.execute(
                 """
                 SELECT operation_id, prepared_payload_json, created_at_ms
                 FROM write_intents
-                WHERE operation_kind = 'capture' AND status = 'prepared'
+                WHERE operation_kind IN ('capture', 'direct_memory')
+                  AND status = 'prepared'
                 ORDER BY created_at_ms, operation_id
                 """
             ).fetchall()
         return tuple(
-            prepared_capture_from_payload(
+            memory_commit_from_payload(
                 json.loads(row["prepared_payload_json"]), operation_id=row["operation_id"], created_at_ms=row["created_at_ms"]
             )
             for row in rows
@@ -166,34 +170,30 @@ class SQLiteState:
             if row is None or row["status"] != "conflicted" or row["error_code"] != error_code:
                 raise IdentityConflict("Write Intent cannot be marked conflicted")
 
-    def complete_capture(
-        self, capture: PreparedCapture, artifacts: tuple[MemoryArtifact, ...], *, on_stage: Callable[[str], None] | None = None
+    def complete_memory_commit(
+        self, commit: PreparedMemoryCommit, artifacts: tuple[MemoryArtifact, ...], *, on_stage: Callable[[str], None] | None = None
     ) -> int:
-        _validate_capture_artifacts(capture, artifacts)
-        checkpoint = capture.checkpoint
+        _validate_memory_artifacts(commit, artifacts)
+        checkpoint = commit.checkpoint
+        stage = "capture" if checkpoint is not None else "direct_memory"
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
-            status = _intent_status(connection, capture.operation_id, prepared_capture_payload(capture))
+            status = _intent_status(connection, commit.operation_id, memory_commit_payload(commit))
             if status == "completed":
                 return 0
-            _stage(on_stage, "capture_transaction_b_start")
-            for episode in capture.episodes:
-                committed = _insert_episode(connection, episode)
-                if committed.episode_id != episode.episode_id:
+            _stage(on_stage, f"{stage}_transaction_b_start")
+            for episode in commit.episodes:
+                if _insert_episode(connection, episode).episode_id != episode.episode_id:
                     raise IdentityConflict("Episode closure cursor already names a different source span")
-            _stage(on_stage, "capture_after_episodes")
-            _insert_source_facts(connection, capture.facts)
-            _stage(on_stage, "capture_after_facts")
+            _insert_source_facts(connection, commit.facts)
             created = sum(int(_insert_memory(connection, artifact)) for artifact in artifacts)
-            _stage(on_stage, "capture_after_memories")
-            for memory in capture.memories:
+            for memory in commit.memories:
                 if memory.memory_type == "task_experience":
-                    _insert_semantic_job(connection, memory=memory, created_at_ms=capture.created_at_ms)
-            _stage(on_stage, "capture_after_semantic_jobs")
-            _commit_capture_checkpoint(connection, checkpoint)
-            _stage(on_stage, "capture_after_checkpoint")
-            _complete_intent(connection, capture.operation_id, capture.created_at_ms)
-            _stage(on_stage, "capture_before_commit")
+                    _insert_semantic_job(connection, memory=memory, created_at_ms=commit.created_at_ms)
+            if checkpoint is not None:
+                _commit_capture_checkpoint(connection, checkpoint)
+            _complete_intent(connection, commit.operation_id, commit.created_at_ms)
+            _stage(on_stage, f"{stage}_before_commit")
         return created
 
     def lease_semantic_jobs(
@@ -659,11 +659,6 @@ class SQLiteState:
             raise KeyError(f"Unknown Source Fact IDs: {', '.join(missing)}")
         return tuple(by_id[fact_id] for fact_id in fact_ids)
 
-    def store_memory(self, artifact: MemoryArtifact) -> bool:
-        with self._connect() as connection:
-            connection.execute("BEGIN IMMEDIATE")
-            return _insert_memory(connection, artifact)
-
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
         with self._connect() as connection:
             rows = connection.execute(
@@ -999,7 +994,8 @@ class SQLiteState:
                     repo_key TEXT NOT NULL,
                     operation_kind TEXT NOT NULL CHECK (
                         operation_kind IN (
-                            'capture', 'semantic_commit', 'evolution', 'restore'
+                            'capture', 'semantic_commit', 'evolution', 'restore',
+                            'direct_memory'
                         )
                     ),
                     status TEXT NOT NULL CHECK (
@@ -1562,17 +1558,17 @@ def _subject_key(memory: CodingMemory) -> str:
     raise ValueError("Task Experience has no subject key")
 
 
-def _validate_capture_artifacts(capture: PreparedCapture, artifacts: tuple[MemoryArtifact, ...]) -> None:
-    if len(artifacts) != len(capture.expected_files):
-        raise IdentityConflict("Capture artifact count does not match Write Intent")
-    for expected, memory, artifact in zip(capture.expected_files, capture.memories, artifacts, strict=True):
+def _validate_memory_artifacts(commit: PreparedMemoryCommit, artifacts: tuple[MemoryArtifact, ...]) -> None:
+    if len(artifacts) != len(commit.expected_files):
+        raise IdentityConflict("Memory artifact count does not match Write Intent")
+    for expected, memory, artifact in zip(commit.expected_files, commit.memories, artifacts, strict=True):
         if (
             artifact.memory != memory
             or artifact.memory.memory_id != expected.memory_id
             or artifact.content_sha256 != expected.content_sha256
             or artifact.path.as_posix().endswith(expected.relative_path) is False
         ):
-            raise IdentityConflict(f"Capture artifact conflicts with Write Intent: {expected.memory_id}")
+            raise IdentityConflict(f"Memory artifact conflicts with Write Intent: {expected.memory_id}")
 
 
 def _validate_semantic_artifacts(commit: PreparedSemanticCommit, artifacts: tuple[MemoryArtifact, ...]) -> None:

@@ -86,6 +86,11 @@ def build_evidence_bundle(config: EvidenceBundleConfig) -> EvidenceBundleArtifac
 def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
     """Verify hashes, saved reports, aggregate counts, and generated documents."""
     root = bundle_dir.resolve()
+    manifest_value = read_json(root / "bundle-manifest.json")
+    if isinstance(manifest_value, dict) and manifest_value.get("contract") == "codecairn-v01-release-evidence-v1":
+        from codecairn.evaluation.release_bundle import verify_release_bundle
+
+        return verify_release_bundle(root)
     inventory = _required_dict(read_json(root / "inventory.json"), field="inventory")
     files = _required_dict(inventory.get("files"), field="inventory files")
     actual_paths = {path.relative_to(root).as_posix() for path in root.rglob("*") if path.is_file() and path.name != "inventory.json"}

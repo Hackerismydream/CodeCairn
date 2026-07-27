@@ -80,6 +80,17 @@ The manual five-minute and one-client ten-minute timings are separate results.
 An automated artifact smoke reports both lower-bound durations, but it does not
 replace the real client/trust timing owned by the release-candidate task.
 
+The repository release harness uses isolated hook settings and runtime state.
+Codex non-interactive execution passes its explicit hook-trust bypass only
+against the freshly generated, reviewed isolated hook file. Claude print mode
+uses either three explicitly named provider environment variables in the
+isolated home or the existing authenticated user identity. The latter excludes
+user settings through an explicit setting-source allowlist. Both load only the
+isolated hook settings and remove the exact UUID-owned smoke transcript
+afterward. Those automation modes are recorded as limitations and do not change
+the normal product path above: users review/trust Codex hooks and select their
+Claude settings scope normally.
+
 ## Privacy before live use
 
 Run `codecairn doctor` and inspect its privacy row. The FastEmbed profile keeps

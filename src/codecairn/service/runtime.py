@@ -9,7 +9,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Protocol, cast
 
-from codecairn.memory.capture import CaptureCheckpoint, ExpectedMemoryFile, PreparedCapture
+from codecairn.memory.capture import CaptureCheckpoint, ExpectedMemoryFile, PreparedMemoryCommit
 from codecairn.memory.episode import BoundaryKind, ClosedEpisode, close_trace_episodes, is_episode_signal
 from codecairn.memory.evidence import collect_evidence_facts
 from codecairn.memory.evolution import (
@@ -77,17 +77,15 @@ class RuntimeState(Protocol):
         self, *, repo_key: str, provider: str, session_id: str, source_generation: int = 1
     ) -> tuple[TaskEpisode, ...]: ...
 
-    def prepare_capture(self, capture: PreparedCapture) -> str: ...
+    def prepare_memory_commit(self, commit: PreparedMemoryCommit) -> str: ...
 
-    def list_prepared_captures(self) -> tuple[PreparedCapture, ...]: ...
+    def list_prepared_memory_commits(self) -> tuple[PreparedMemoryCommit, ...]: ...
 
-    def complete_capture(
-        self, capture: PreparedCapture, artifacts: tuple[MemoryArtifact, ...], *, on_stage: Callable[[str], None] | None = None
+    def complete_memory_commit(
+        self, commit: PreparedMemoryCommit, artifacts: tuple[MemoryArtifact, ...], *, on_stage: Callable[[str], None] | None = None
     ) -> int: ...
 
     def conflict_write_intent(self, *, operation_id: str, error_code: str) -> None: ...
-
-    def store_memory(self, artifact: MemoryArtifact) -> bool: ...
 
     def resolve_source_facts(self, *, repo_key: str, fact_ids: tuple[str, ...]) -> tuple[EvidenceFact, ...]: ...
 
@@ -216,7 +214,7 @@ class MemoryRuntime:
             prior_source_cursor=(checkpoint.committed_raw_event_index if checkpoint is not None else -1),
         )
         prepared_artifacts = tuple(self._markdown.prepare(memory) for memory in memories)
-        capture = PreparedCapture.create(
+        capture = PreparedMemoryCommit.create(
             repo_key=repo_key,
             episodes=tuple(episode.record for episode in episodes),
             facts=facts,
@@ -232,7 +230,7 @@ class MemoryRuntime:
             checkpoint=capture_checkpoint,
             created_at_ms=time.time_ns() // 1_000_000,
         )
-        status = self._state.prepare_capture(capture)
+        status = self._state.prepare_memory_commit(capture)
         if status == "closure_lost":
             return ImportResult(
                 provider=trace.provider,
@@ -253,7 +251,7 @@ class MemoryRuntime:
             try:
                 artifacts = tuple(self._write_capture_memories(capture))
                 self._stage("capture_after_markdown_files")
-                created = self._state.complete_capture(capture, artifacts, on_stage=self._fault_injector)
+                created = self._state.complete_memory_commit(capture, artifacts, on_stage=self._fault_injector)
             except IdentityConflict:
                 self._mark_conflicted(capture.operation_id)
                 raise
@@ -272,6 +270,7 @@ class MemoryRuntime:
         )
 
     def store_memory(self, memory: CodingMemory) -> CodingMemory:
+        self._recover_prepared_operations()
         if memory.memory_type == "task_experience":
             raise ValueError("Task Experience is capture-only")
         if isinstance(memory.payload, UserPreferencePayload):
@@ -279,8 +278,32 @@ class MemoryRuntime:
             resolved = self._state.resolve_source_facts(repo_key=memory.repo_key, fact_ids=source_fact_ids)
             if any(fact.role != "user" for fact in resolved):
                 raise ValueError("User Preference requires user-authored Source Facts")
-        artifact = self._markdown.write(memory)
-        self._state.store_memory(artifact)
+        prepared = self._markdown.prepare(memory)
+        commit = PreparedMemoryCommit.create(
+            repo_key=memory.repo_key,
+            episodes=(),
+            facts=(),
+            memories=(memory,),
+            expected_files=(
+                ExpectedMemoryFile(
+                    relative_path=self._markdown.relative_path_for(memory),
+                    content_sha256=prepared.content_sha256,
+                    memory_id=memory.memory_id,
+                ),
+            ),
+            checkpoint=None,
+            created_at_ms=time.time_ns() // 1_000_000,
+        )
+        status = self._state.prepare_memory_commit(commit)
+        self._stage("direct_memory_after_intent_prepared")
+        if status != "completed":
+            try:
+                artifact = self._markdown.write(memory, on_stage=self._fault_injector, stage_prefix="direct_memory")
+                self._state.complete_memory_commit(commit, (artifact,), on_stage=self._fault_injector)
+            except IdentityConflict:
+                self._mark_conflicted(commit.operation_id)
+                raise
+            self._stage("direct_memory_after_complete")
         return memory
 
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
@@ -434,10 +457,10 @@ class MemoryRuntime:
 
     def _recover_prepared_operations(self) -> int:
         repaired = 0
-        for capture in self._state.list_prepared_captures():
+        for capture in self._state.list_prepared_memory_commits():
             try:
-                artifacts = tuple(self._write_capture_memories(capture))
-                repaired += self._state.complete_capture(capture, artifacts)
+                artifacts = tuple(self._markdown.write(memory) for memory in capture.memories)
+                repaired += self._state.complete_memory_commit(capture, artifacts)
             except IdentityConflict:
                 self._mark_conflicted(capture.operation_id)
                 raise
@@ -585,7 +608,7 @@ class MemoryRuntime:
             now_ms=time.time_ns() // 1_000_000,
         )
 
-    def _write_capture_memories(self, capture: PreparedCapture) -> tuple[MemoryArtifact, ...]:
+    def _write_capture_memories(self, capture: PreparedMemoryCommit) -> tuple[MemoryArtifact, ...]:
         artifacts: list[MemoryArtifact] = []
         for memory in capture.memories:
             artifacts.append(self._markdown.write(memory, on_stage=self._fault_injector))
