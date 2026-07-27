@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Literal, Protocol
 
+from codecairn.memory.episode import BoundaryKind
 from codecairn.memory.models import (
     CodingMemory,
     ImportResult,
@@ -12,6 +13,7 @@ from codecairn.memory.models import (
     RebuildReport,
     RecallResult,
 )
+from codecairn.memory.semantic import SemanticProcessReport
 from codecairn.service.runtime import MemoryRuntime
 
 EvaluationSuite = Literal["locomo", "retrieval", "recovery", "coding"]
@@ -196,11 +198,13 @@ class CodeCairnApplication:
         repo_key: str,
         source_root: Path | None = None,
         index: bool = True,
+        boundary_kind: BoundaryKind | None = None,
     ) -> ImportOutcome:
         result = self._memory_runtime().import_session(
             source_path,
             repo_key=repo_key,
             source_root=source_root,
+            boundary_kind=boundary_kind,
         )
         return ImportOutcome(result=result, index=self._drain_index(requested=index))
 
@@ -209,6 +213,17 @@ class CodeCairnApplication:
 
     def recall(self, query: str, *, repo_key: str, limit: int = 5) -> RecallResult:
         return self._memory_runtime().recall(query, repo_key=repo_key, limit=limit)
+
+    def process_pending(
+        self,
+        *,
+        worker_id: str,
+        max_jobs: int = 8,
+    ) -> SemanticProcessReport:
+        return self._memory_runtime().process_pending(
+            worker_id=worker_id,
+            max_jobs=max_jobs,
+        )
 
     def doctor(self) -> dict[str, object]:
         return self._operations.doctor()
@@ -278,7 +293,16 @@ class CodeCairnApplication:
                 error_type=type(error).__name__,
                 error=str(error),
             )
-        return IndexSyncReport(requested=True, synced=True, health=health)
+        return IndexSyncReport(
+            requested=True,
+            synced=(
+                health.pending == 0
+                and health.leased == 0
+                and health.failed == 0
+                and health.stale == 0
+            ),
+            health=health,
+        )
 
 
 def import_response(outcome: ImportOutcome) -> dict[str, object]:

@@ -7,6 +7,7 @@ import json
 import os
 import stat
 import tempfile
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -69,14 +70,25 @@ class MarkdownMemoryStore:
             content_sha256=hashlib.sha256(content).hexdigest(),
         )
 
-    def write(self, memory: CodingMemory) -> MemoryArtifact:
+    def write(
+        self,
+        memory: CodingMemory,
+        *,
+        on_stage: Callable[[str], None] | None = None,
+        stage_prefix: str = "capture",
+    ) -> MemoryArtifact:
         self._reject_legacy_root()
         artifact = self.prepare(memory)
         content = _render(memory)
         artifact.path.parent.mkdir(parents=True, exist_ok=True)
         existing = _read_bytes(artifact.path, missing_ok=True)
         if existing is None:
-            _atomic_create(artifact.path, content)
+            _atomic_create(
+                artifact.path,
+                content,
+                on_stage=on_stage,
+                stage_prefix=stage_prefix,
+            )
             existing = _read_bytes(artifact.path)
         assert existing is not None
         if hashlib.sha256(existing).hexdigest() != artifact.content_sha256:
@@ -130,6 +142,9 @@ class MarkdownMemoryStore:
             raise SchemaInvalid("Markdown target escapes the runtime root")
         return path
 
+    def relative_path_for(self, memory: CodingMemory) -> str:
+        return self.path_for(memory).relative_to(self._root).as_posix()
+
     def _reject_legacy_root(self) -> None:
         if (self._root / "repos").exists():
             raise LegacyRootUnsupported(
@@ -180,19 +195,30 @@ def _parse(source: bytes) -> CodingMemory:
     return coding_memory_from_dict(record)
 
 
-def _atomic_create(path: Path, content: bytes) -> None:
+def _atomic_create(
+    path: Path,
+    content: bytes,
+    *,
+    on_stage: Callable[[str], None] | None = None,
+    stage_prefix: str,
+) -> None:
     descriptor: int | None = None
     temporary: Path | None = None
+    created = False
     try:
         descriptor, name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
         temporary = Path(name)
         with os.fdopen(descriptor, "wb") as handle:
             descriptor = None
             handle.write(content)
+            _stage(on_stage, f"{stage_prefix}_after_temp_write")
             handle.flush()
             os.fsync(handle.fileno())
+            _stage(on_stage, f"{stage_prefix}_after_file_fsync")
         try:
             os.link(temporary, path)
+            created = True
+            _stage(on_stage, f"{stage_prefix}_after_atomic_create")
         except FileExistsError:
             return
     finally:
@@ -200,6 +226,22 @@ def _atomic_create(path: Path, content: bytes) -> None:
             os.close(descriptor)
         if temporary is not None:
             temporary.unlink(missing_ok=True)
+    if created:
+        _fsync_directory(path.parent)
+        _stage(on_stage, f"{stage_prefix}_after_directory_fsync")
+
+
+def _fsync_directory(path: Path) -> None:
+    descriptor = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def _stage(callback: Callable[[str], None] | None, stage: str) -> None:
+    if callback is not None:
+        callback(stage)
 
 
 def _read_bytes(path: Path, *, missing_ok: bool = False) -> bytes | None:

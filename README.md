@@ -10,27 +10,23 @@ runner, IDE, hidden prompt injector, or cloud knowledge platform.
 
 ## Status
 
-The repository is pre-release. The implementation code baseline is `954f728`;
-the accepted pre-development planning baseline is `2c79b3f`. Together they
-contain the complete Fable EverOS-alignment implementation and planning work,
-including public index maintenance, import-time drain, lazy retrieval
-providers, and corrected LoCoMo V24 measurement assets.
-
-The version 0.1 product design is accepted. Its early source-budget and
-historical-evidence guardrails are implemented; the four-type product runtime
-is not yet implemented. The distinction matters:
+The repository is pre-release. The version 0.1 product design, source-budget
+guardrail, historical-evidence boundary, four-type domain, and complete
+source-to-memory capture pipeline are implemented. Supersession through release
+packaging remains in progress. The distinction between current behavior and the
+release target matters:
 
 | Area | Current implementation | Version 0.1 target |
 |---|---|---|
-| Import | Codex/Claude JSONL to Agent Trace and Task Episode | Same source layer |
-| Automatic capture | Deterministic Failed Command only | One Task Experience per Episode plus optional Knowledge |
-| Memory model | Six historical types and Evidence Gate service paths | Four types; storage does not require verification |
+| Import | Incremental Codex/Claude trace import with explicit Episode closure, stable continuation, and typed source rewrite failure | Add installed hooks and derived namespace |
+| Automatic capture | One deterministic Task Experience per closed Episode; optional semantic work is queued and retryable | Configure production semantic extraction through onboarding |
+| Memory model | Four durable types with system-owned provenance | Same model plus lifecycle status |
 | Evolution | None | Immutable Supersession, active status, history, restore |
-| Recall | Hierarchical indexed recall | Active-only typed recall with pinned Work State |
+| Recall | Small deterministic lexical compatibility baseline | Active-only hybrid recall with pinned Work State |
 | Product surfaces | CLI and loopback HTTP | CLI, MCP, and session-end hooks; HTTP compatibility |
 | Setup | Manual root, repo key, and provider environment | `codecairn init`, config file, derived repository identity |
 | Distribution | Checkout build, no license/tag | MIT, curated persistent-tool/PyPI package |
-| Source size | 34,091 physical Python lines | at most 10,000 core / 15,000 total |
+| Source size | About 8,200 core / 11,100 total physical Python lines at `v01-002` | at most 10,000 core / 15,000 total |
 
 The implementation plan is
 [`docs/plan/README.md`](docs/plan/README.md). Do not treat commands marked as
@@ -50,6 +46,10 @@ The current CLI requires an explicit runtime root and repository key:
 ```bash
 uv run codecairn import /path/to/session.jsonl \
   --repo-key owner/repository \
+  --root .codecairn \
+  --finalize
+
+uv run codecairn process \
   --root .codecairn
 
 uv run codecairn list \
@@ -61,14 +61,19 @@ uv run codecairn recall "test command failed" \
   --root .codecairn
 ```
 
-Import commits Markdown and SQLite first, then drains the index outbox unless
-`--no-index` is supplied. A drain failure does not erase durable memory; the
-import payload and `doctor` report degraded index state. Operators can use:
+Without `--finalize`, manual EOF leaves the final task open; next-user
+boundaries still close prior tasks. Stop and SessionEnd callers use the same
+service with their explicit boundary kinds.
+
+Import commits through a recoverable Write Intent and enqueues semantic and
+index work. The current bootstrap has no implicit semantic-provider fallback,
+so `process` reports pending semantic work until `v01-005` configures one.
+Current recall is the small SQLite lexical baseline; the queued hybrid index
+becomes operational in the active-recall/onboarding tasks. Transitional
+diagnostics are available through:
 
 ```bash
 uv run codecairn index status --root .codecairn
-uv run codecairn index sync --root .codecairn
-uv run codecairn index rebuild --root .codecairn
 uv run codecairn doctor --root .codecairn
 ```
 

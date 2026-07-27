@@ -7,7 +7,8 @@ import shlex
 from pathlib import PurePath
 from typing import cast
 
-from codecairn.memory.models import TraceEpisode, TraceEvent
+from codecairn.memory.episode import ClosedEpisode
+from codecairn.memory.models import TraceEvent
 from codecairn.memory.schema import (
     EvidenceFact,
     FactAttributes,
@@ -19,7 +20,7 @@ from codecairn.memory.schema import (
 
 
 def collect_evidence_facts(
-    episodes: tuple[TraceEpisode, ...],
+    episodes: tuple[ClosedEpisode, ...],
     *,
     repo_key: str,
 ) -> tuple[EvidenceFact, ...]:
@@ -32,7 +33,7 @@ def collect_evidence_facts(
             event_facts = _event_facts(
                 event,
                 repo_key=repo_key,
-                episode_id=episode.episode_id,
+                episode_id=episode.record.episode_id,
                 command_fact_by_call=command_fact_by_call,
                 tool_fact_by_call=tool_fact_by_call,
             )
@@ -135,6 +136,8 @@ def _event_facts(
                         },
                     )
                 )
+        if tool_fact_id is None and command_fact_id is None and event.text:
+            specifications.append(("message", "tool", event.text, {}))
     return tuple(
         EvidenceFact.create(
             repo_key=repo_key,

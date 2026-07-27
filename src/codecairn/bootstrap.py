@@ -46,14 +46,19 @@ class _LocalOperations(ApplicationOperations):
     def doctor(self) -> dict[str, object]:
         state = SQLiteState(self._root / "state.sqlite3")
         counts = state.operational_counts()
+        semantic = state.semantic_job_counts()
         return {
-            "status": "ok",
+            "status": (
+                "degraded" if counts.conflicted_recovery_count or semantic["failed"] else "ok"
+            ),
             "root": str(self._root),
-            "schema": "codecairn-v01-1",
+            "schema": "codecairn-v01-2",
             "imports": counts.import_count,
             "observed_events": counts.observed_event_count,
             "memories": counts.memory_count,
             "pending_recovery": counts.pending_recovery_count,
+            "conflicted_recovery": counts.conflicted_recovery_count,
+            "semantic_jobs": semantic,
         }
 
     def sync_index(self, *, worker_id: str, max_jobs: int | None = None) -> IndexHealth:
@@ -72,8 +77,7 @@ class _LocalOperations(ApplicationOperations):
         )
 
     def index_status(self) -> IndexHealth:
-        count = SQLiteState(self._root / "state.sqlite3").operational_counts().memory_count
-        return IndexHealth(pending=0, leased=0, indexed=count, failed=0, stale=0)
+        return SQLiteState(self._root / "state.sqlite3").index_health()
 
     def run_evaluation(self, request: EvaluationRunRequest) -> dict[str, object]:
         raise NotImplementedError(

@@ -1,7 +1,7 @@
 ---
 id: v01-003
 scope: supersession, status projection, and restore
-status: blocked
+status: ready
 depends-on: [v01-002]
 ---
 

@@ -1,7 +1,7 @@
 ---
 id: v01-002
 scope: source-to-memory capture and semantic processing
-status: ready
+status: done
 depends-on: [v01-001]
 ---
 
@@ -109,3 +109,13 @@ Add acceptance cases for:
 - provider absence/failure is visible and retryable;
 - no test depends on a real provider;
 - all checks pass and line deltas are reported.
+
+## Completion evidence
+
+Verified before merge:
+
+- `make check`: 122 tests passed with 74% measured coverage;
+- source budget: 8,221 core and 11,134 total physical Python lines;
+- all eight documented capture Write Intent fault boundaries recovered;
+- historical `benchmark-v3` verifier passed with 4,411 files;
+- no semantic test called a network provider.

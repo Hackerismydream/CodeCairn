@@ -16,7 +16,10 @@ def test_cli_import_list_recall_and_doctor(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     common = ["--repo-key", "acme/widgets", "--root", str(root)]
 
-    imported = runner.invoke(app, ["import", str(FIXTURE), *common, "--no-index"])
+    imported = runner.invoke(
+        app,
+        ["import", str(FIXTURE), *common, "--no-index", "--finalize"],
+    )
     assert imported.exit_code == 0, imported.output
     assert json.loads(imported.output)["created_memory_count"] == 1
 
@@ -24,6 +27,13 @@ def test_cli_import_list_recall_and_doctor(tmp_path: Path) -> None:
     assert listed.exit_code == 0, listed.output
     memories = json.loads(listed.output)
     assert memories[0]["memory_type"] == "task_experience"
+
+    processed = runner.invoke(
+        app,
+        ["process", "--root", str(root), "--worker-id", "test"],
+    )
+    assert processed.exit_code == 0, processed.output
+    assert json.loads(processed.output)["pending"] == 1
 
     recalled = runner.invoke(app, ["recall", "pytest failure", *common])
     assert recalled.exit_code == 0, recalled.output

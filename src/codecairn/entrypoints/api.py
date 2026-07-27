@@ -32,6 +32,7 @@ class ImportRequest(BaseModel):
     source_path: Path
     repo_key: str = Field(min_length=1)
     index: bool = True
+    finalize: bool = False
 
 
 class IndexSyncRequest(BaseModel):
@@ -162,9 +163,21 @@ def create_app(
             message=str(error),
         )
 
-    @app.exception_handler(ValueError)
     @app.exception_handler(TraceImportError)
-    async def invalid_input(request: Request, error: Exception) -> JSONResponse:
+    async def trace_import_error(
+        request: Request,
+        error: TraceImportError,
+    ) -> JSONResponse:
+        code = getattr(error, "code", "trace_invalid")
+        return _error_response(
+            request_id=_request_id(request),
+            status_code=422,
+            code=code,
+            message=str(error),
+        )
+
+    @app.exception_handler(ValueError)
+    async def invalid_input(request: Request, error: ValueError) -> JSONResponse:
         return _error_response(
             request_id=_request_id(request),
             status_code=422,
@@ -200,6 +213,7 @@ def create_app(
             repo_key=request.repo_key,
             source_root=source_root,
             index=request.index,
+            boundary_kind="manual_finalize" if request.finalize else None,
         )
         return import_response(outcome)
 

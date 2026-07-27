@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from codecairn.importers.jsonl import JsonlScan, RawRecord, read_jsonl
-from codecairn.memory.errors import TraceParseError
+from codecairn.memory.errors import SourceRewritten, TraceParseError
 from codecairn.memory.models import (
     AgentTrace,
     FileChangeFact,
@@ -78,14 +78,14 @@ class CodexImporter:
             _validate_checkpoint(checkpoint)
         resumed_from = checkpoint.resume_raw_event_index if checkpoint is not None else 0
         if checkpoint is not None and scan.prefix_sha256 != checkpoint.resume_prefix_sha256:
-            raise TraceParseError(
+            raise SourceRewritten(
                 f"Codex source changed before committed checkpoint: {scan.source_path}"
             )
         if (
             checkpoint is not None
             and scan.raw_event_count - 1 < checkpoint.committed_raw_event_index
         ):
-            raise TraceParseError(
+            raise SourceRewritten(
                 f"Codex source is truncated before committed cursor: {scan.source_path}"
             )
         session_id = (

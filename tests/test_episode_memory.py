@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,7 @@ from codecairn.memory.schema import (
     TaskExperiencePayload,
     UserPreferencePayload,
     WorkStatePayload,
+    canonical_json,
     coding_memory_from_dict,
     coding_memory_to_dict,
     typed_id,
@@ -166,3 +168,47 @@ def test_unknown_memory_type_and_field_are_rejected() -> None:
     encoded["provider_attempt_id"] = "untrusted"
     with pytest.raises(SchemaInvalid, match="unknown"):
         coding_memory_from_dict(encoded)
+
+
+def test_v01_1_memory_state_adds_episode_projection_column(tmp_path: Path) -> None:
+    database = tmp_path / "state.sqlite3"
+    memory = _memories()[1]
+    with sqlite3.connect(database) as connection:
+        connection.executescript(
+            """
+            CREATE TABLE codecairn_meta (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );
+            INSERT INTO codecairn_meta VALUES ('schema_revision', 'codecairn-v01-1');
+            CREATE TABLE memories (
+                repo_key TEXT NOT NULL,
+                memory_id TEXT NOT NULL,
+                memory_type TEXT NOT NULL,
+                canonical_memory_json TEXT NOT NULL,
+                markdown_path TEXT NOT NULL,
+                content_sha256 TEXT NOT NULL,
+                PRIMARY KEY (repo_key, memory_id)
+            );
+            """
+        )
+        connection.execute(
+            """
+            INSERT INTO memories VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                memory.repo_key,
+                memory.memory_id,
+                memory.memory_type,
+                canonical_json(coding_memory_to_dict(memory)),
+                "/old/memory.md",
+                "0" * 64,
+            ),
+        )
+
+    state = SQLiteState(database)
+
+    assert state.list_memories(repo_key="acme/widgets") == (memory,)
+    with sqlite3.connect(database) as connection:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(memories)")}
+    assert "episode_id" in columns

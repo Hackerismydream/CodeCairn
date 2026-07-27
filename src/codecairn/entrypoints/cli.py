@@ -67,9 +67,15 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         repo_key: Annotated[str, typer.Option("--repo-key")],
         root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
         index: Annotated[bool, typer.Option("--index/--no-index")] = True,
+        finalize: Annotated[bool, typer.Option("--finalize")] = False,
     ) -> None:
         """Import one supported agent session and persist evidence-backed memories."""
-        outcome = application_factory(root).import_session(source, repo_key=repo_key, index=index)
+        outcome = application_factory(root).import_session(
+            source,
+            repo_key=repo_key,
+            index=index,
+            boundary_kind="manual_finalize" if finalize else None,
+        )
         typer.echo(json.dumps(import_response(outcome), sort_keys=True))
 
     @app.command("list")
@@ -97,6 +103,19 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         if output_format != "json":
             raise typer.BadParameter("format must be 'json' or 'markdown'", param_hint="--format")
         typer.echo(json.dumps(asdict(result), sort_keys=True))
+
+    @app.command("process")
+    def process_pending_command(
+        root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
+        worker_id: Annotated[str, typer.Option("--worker-id")] = "cli",
+        max_jobs: Annotated[int, typer.Option("--max-jobs", min=1)] = 8,
+    ) -> None:
+        """Process pending semantic enrichment jobs."""
+        report = application_factory(root).process_pending(
+            worker_id=worker_id,
+            max_jobs=max_jobs,
+        )
+        typer.echo(json.dumps(asdict(report), sort_keys=True))
 
     @evaluation_app.command("run")
     def evaluation_run_command(

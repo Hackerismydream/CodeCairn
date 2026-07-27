@@ -1,8 +1,8 @@
 # CodeCairn v0.1 Delivery Plan
 
-Status: implementation in progress. The source-budget guardrail and four-type
-domain migration are complete; `v01-002` is the only ready implementation
-task. Later tasks become ready when their dependency merges.
+Status: implementation in progress. The source-budget guardrail, four-type
+domain migration, and complete capture pipeline are merged through `v01-002`;
+`v01-003` is the only ready implementation task.
 
 ## Baseline
 
@@ -68,8 +68,8 @@ parallel. Implementation merges only after every listed dependency is on
 | [`v01-000`](tasks/v01-000-fable-baseline.md) | Fable baseline on `main` | none | done |
 | [`v01-000a`](tasks/v01-000a-guardrails.md) | Early source gate and historical verifier boundary | v01-000 | done |
 | [`v01-001`](tasks/v01-001-domain-slimming.md) | Four-type domain; no standalone verification operation | v01-000a | done |
-| [`v01-002`](tasks/v01-002-capture-pipeline.md) | Complete episode capture | v01-001 | ready |
-| [`v01-003`](tasks/v01-003-evolution-ledger.md) | Supersession and restore | v01-002 | blocked |
+| [`v01-002`](tasks/v01-002-capture-pipeline.md) | Complete episode capture | v01-001 | done |
+| [`v01-003`](tasks/v01-003-evolution-ledger.md) | Supersession and restore | v01-002 | ready |
 | [`v01-004`](tasks/v01-004-active-recall.md) | Active-only lifecycle-aware recall | v01-003 | planned |
 | [`v01-005`](tasks/v01-005-onboarding.md) | Init, config, process, doctor | v01-004 | planned |
 | [`v01-006`](tasks/v01-006-mcp.md) | Explicit MCP access | v01-005 | planned |

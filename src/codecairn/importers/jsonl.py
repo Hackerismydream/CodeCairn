@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from codecairn.memory.errors import TraceParseError
+from codecairn.memory.errors import SourceRewritten, TraceParseError
 from codecairn.memory.trace import EMPTY_RAW_PREFIX_SHA256, extend_raw_prefix_sha256
 
 RawRecord = tuple[dict[str, Any], str]
@@ -179,7 +179,7 @@ def _scan_records(
         records.append((value, raw_event_sha256))
         raw_event_count += 1
     if raw_event_count < start_raw_event_index:
-        raise TraceParseError(
+        raise SourceRewritten(
             f"Trace source is truncated before committed checkpoint: {source_path}"
         )
     return tuple(records), raw_event_count, prefix_sha256
