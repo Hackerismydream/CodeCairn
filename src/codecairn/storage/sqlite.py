@@ -36,6 +36,7 @@ from codecairn.memory.evolution import (
 from codecairn.memory.models import (
     ImportCheckpoint,
     IndexHealth,
+    IndexJob,
     MemoryArtifact,
     OperationalCounts,
 )
@@ -65,7 +66,7 @@ from codecairn.memory.semantic import (
     semantic_commit_payload,
 )
 
-_SCHEMA_REVISION = "codecairn-v01-3"
+_SCHEMA_REVISION = "codecairn-v01-4"
 
 
 class SQLiteState:
@@ -1127,6 +1128,238 @@ class SQLiteState:
         counts.update({str(row["status"]): int(row["count"]) for row in rows})
         return IndexHealth(**counts)
 
+    def claim_index_jobs(
+        self,
+        *,
+        repo_key: str,
+        worker_id: str,
+        max_jobs: int,
+        now_ms: int,
+        lease_ms: int,
+    ) -> tuple[IndexJob, ...]:
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            rows = connection.execute(
+                """
+                SELECT job_id
+                FROM index_jobs
+                WHERE repo_key = ? AND attempt_count < 3
+                  AND (
+                    status IN ('pending', 'failed', 'stale')
+                    OR (
+                        status = 'leased'
+                        AND lease_expires_at_ms IS NOT NULL
+                        AND lease_expires_at_ms <= ?
+                    )
+                  )
+                ORDER BY created_at_ms, job_id
+                LIMIT ?
+                """,
+                (repo_key, now_ms, max_jobs),
+            ).fetchall()
+            jobs: list[IndexJob] = []
+            for row in rows:
+                connection.execute(
+                    """
+                    UPDATE index_jobs
+                    SET status = 'leased', attempt_count = attempt_count + 1,
+                        lease_owner = ?, lease_expires_at_ms = ?,
+                        error_code = NULL
+                    WHERE job_id = ?
+                    """,
+                    (worker_id, now_ms + lease_ms, row["job_id"]),
+                )
+                job = connection.execute(
+                    """
+                    SELECT job_id, repo_key, memory_id, target_status,
+                           attempt_count
+                    FROM index_jobs
+                    WHERE job_id = ?
+                    """,
+                    (row["job_id"],),
+                ).fetchone()
+                assert job is not None
+                jobs.append(
+                    IndexJob(
+                        job_id=job["job_id"],
+                        repo_key=job["repo_key"],
+                        memory_id=job["memory_id"],
+                        target_status=cast(MemoryStatus, job["target_status"]),
+                        attempt_count=job["attempt_count"],
+                    )
+                )
+        return tuple(jobs)
+
+    def complete_index_job(
+        self,
+        job: IndexJob,
+        *,
+        worker_id: str,
+        profile_identity: str,
+    ) -> None:
+        with self._connect() as connection:
+            updated = connection.execute(
+                """
+                UPDATE index_jobs
+                SET status = 'indexed', indexed_profile = ?,
+                    lease_owner = NULL, lease_expires_at_ms = NULL,
+                    error_code = NULL
+                WHERE job_id = ? AND status = 'leased' AND lease_owner = ?
+                """,
+                (profile_identity, job.job_id, worker_id),
+            )
+            if updated.rowcount != 1:
+                raise IdentityConflict("Index job lease is not owned by this worker")
+
+    def fail_index_job(
+        self,
+        job: IndexJob,
+        *,
+        worker_id: str,
+        error_code: str,
+    ) -> None:
+        with self._connect() as connection:
+            updated = connection.execute(
+                """
+                UPDATE index_jobs
+                SET status = 'failed', lease_owner = NULL,
+                    lease_expires_at_ms = NULL, error_code = ?
+                WHERE job_id = ? AND status = 'leased' AND lease_owner = ?
+                """,
+                (error_code[:128], job.job_id, worker_id),
+            )
+            if updated.rowcount != 1:
+                raise IdentityConflict("Index job lease is not owned by this worker")
+
+    def requeue_profile(self, *, repo_key: str, profile_identity: str) -> int:
+        with self._connect() as connection:
+            updated = connection.execute(
+                """
+                UPDATE index_jobs
+                SET status = 'pending', attempt_count = 0,
+                    lease_owner = NULL, lease_expires_at_ms = NULL,
+                    error_code = NULL
+                WHERE repo_key = ? AND status = 'indexed'
+                  AND indexed_profile != ?
+                """,
+                (repo_key, profile_identity),
+            )
+        return updated.rowcount
+
+    def requeue_indexed_namespace(self, *, repo_key: str) -> int:
+        with self._connect() as connection:
+            updated = connection.execute(
+                """
+                UPDATE index_jobs
+                SET status = 'pending', attempt_count = 0,
+                    lease_owner = NULL, lease_expires_at_ms = NULL
+                WHERE repo_key = ? AND status = 'indexed'
+                """,
+                (repo_key,),
+            )
+        return updated.rowcount
+
+    def requeue_index_revisions(
+        self,
+        *,
+        repo_key: str,
+        memory_ids: tuple[str, ...],
+    ) -> int:
+        if not memory_ids:
+            return 0
+        placeholders = ",".join("?" for _item in memory_ids)
+        with self._connect() as connection:
+            updated = connection.execute(
+                f"""
+                UPDATE index_jobs
+                SET status = 'pending', attempt_count = 0,
+                    lease_owner = NULL, lease_expires_at_ms = NULL
+                WHERE repo_key = ? AND status = 'indexed'
+                  AND memory_id IN ({placeholders})
+                """,
+                (repo_key, *memory_ids),
+            )
+        return updated.rowcount
+
+    def namespace_index_counts(self, *, repo_key: str) -> dict[str, int]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT status, COUNT(*) AS count
+                FROM index_jobs
+                WHERE repo_key = ?
+                GROUP BY status
+                """,
+                (repo_key,),
+            ).fetchall()
+        counts = {"pending": 0, "leased": 0, "indexed": 0, "failed": 0, "stale": 0}
+        counts.update({str(row["status"]): int(row["count"]) for row in rows})
+        return counts
+
+    def recall_documents(
+        self,
+        *,
+        repo_key: str,
+    ) -> tuple[tuple[CodingMemory, MemoryStatus], ...]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT m.canonical_memory_json, s.status
+                FROM memories m
+                JOIN memory_status s
+                  ON s.repo_key = m.repo_key AND s.memory_id = m.memory_id
+                WHERE m.repo_key = ?
+                ORDER BY m.memory_id
+                """,
+                (repo_key,),
+            ).fetchall()
+        return tuple(
+            (
+                coding_memory_from_dict(json.loads(row["canonical_memory_json"])),
+                cast(MemoryStatus, row["status"]),
+            )
+            for row in rows
+        )
+
+    def recall_cursors(self, *, repo_key: str) -> tuple[int, int, str]:
+        with self._connect() as connection:
+            source = connection.execute(
+                """
+                SELECT COALESCE(MAX(committed_raw_event_index), -1) AS cursor
+                FROM imports
+                WHERE repo_key = ?
+                """,
+                (repo_key,),
+            ).fetchone()
+            pending = connection.execute(
+                """
+                SELECT COUNT(*) AS count
+                FROM index_jobs
+                WHERE repo_key = ? AND status != 'indexed'
+                """,
+                (repo_key,),
+            ).fetchone()
+            semantic = connection.execute(
+                """
+                SELECT status, COUNT(*) AS count
+                FROM semantic_jobs
+                WHERE repo_key = ?
+                GROUP BY status
+                """,
+                (repo_key,),
+            ).fetchall()
+        source_cursor = int(source["cursor"])
+        index_cursor = source_cursor if int(pending["count"]) == 0 else -1
+        states = {str(row["status"]): int(row["count"]) for row in semantic}
+        semantic_state = (
+            "failed"
+            if states.get("failed", 0)
+            else "pending"
+            if states.get("pending", 0) or states.get("leased", 0)
+            else "complete"
+        )
+        return source_cursor, index_cursor, semantic_state
+
     def _initialize(self) -> None:
         with self._connect() as connection:
             existing = {
@@ -1271,6 +1504,11 @@ class SQLiteState:
                     status TEXT NOT NULL CHECK (
                         status IN ('pending', 'leased', 'indexed', 'failed', 'stale')
                     ),
+                    indexed_profile TEXT,
+                    attempt_count INTEGER NOT NULL DEFAULT 0,
+                    lease_owner TEXT,
+                    lease_expires_at_ms INTEGER,
+                    error_code TEXT,
                     created_at_ms INTEGER NOT NULL,
                     UNIQUE (repo_key, memory_id, operation)
                 );
@@ -1317,15 +1555,15 @@ class SQLiteState:
             )
             _ensure_write_intent_evolution_kind(connection)
             _ensure_index_target_status(connection)
+            _ensure_index_lifecycle_columns(connection)
             _backfill_memory_status(connection)
             row = connection.execute(
                 "SELECT value FROM codecairn_meta WHERE key = 'schema_revision'"
             ).fetchone()
-            if row is not None and row["value"] not in {
-                "codecairn-v01-1",
-                "codecairn-v01-2",
+            if row is not None and row["value"] not in (
                 _SCHEMA_REVISION,
-            }:
+                *(f"codecairn-v01-{number}" for number in range(1, 4)),
+            ):
                 raise LegacyRootUnsupported(
                     "Unsupported SQLite schema; use a fresh root and re-import"
                 )
@@ -1445,6 +1683,22 @@ def _ensure_index_target_status(connection: sqlite3.Connection) -> None:
             ADD COLUMN target_status TEXT NOT NULL DEFAULT 'active'
             """
         )
+
+
+def _ensure_index_lifecycle_columns(connection: sqlite3.Connection) -> None:
+    columns = {
+        row["name"] for row in connection.execute("PRAGMA table_info(index_jobs)").fetchall()
+    }
+    additions = {
+        "indexed_profile": "TEXT",
+        "attempt_count": "INTEGER NOT NULL DEFAULT 0",
+        "lease_owner": "TEXT",
+        "lease_expires_at_ms": "INTEGER",
+        "error_code": "TEXT",
+    }
+    for name, declaration in additions.items():
+        if name not in columns:
+            connection.execute(f"ALTER TABLE index_jobs ADD COLUMN {name} {declaration}")
 
 
 def _backfill_memory_status(connection: sqlite3.Connection) -> None:
@@ -1750,8 +2004,12 @@ def _insert_index_job(
         """
         INSERT INTO index_jobs (
             job_id, repo_key, memory_id, operation, target_status, status,
-            created_at_ms
-        ) VALUES (?, ?, ?, 'upsert', 'active', 'pending', ?)
+            indexed_profile, attempt_count, lease_owner,
+            lease_expires_at_ms, error_code, created_at_ms
+        ) VALUES (
+            ?, ?, ?, 'upsert', 'active', 'pending',
+            NULL, 0, NULL, NULL, NULL, ?
+        )
         ON CONFLICT(repo_key, memory_id, operation) DO NOTHING
         """,
         (job_id, memory.repo_key, memory.memory_id, memory.created_at_ms),
@@ -1770,7 +2028,9 @@ def _requeue_index_job(
     connection.execute(
         """
         UPDATE index_jobs
-        SET status = 'pending', target_status = ?, created_at_ms = ?
+        SET status = 'pending', target_status = ?, indexed_profile = NULL,
+            attempt_count = 0, lease_owner = NULL,
+            lease_expires_at_ms = NULL, error_code = NULL, created_at_ms = ?
         WHERE repo_key = ? AND memory_id = ? AND operation = 'upsert'
         """,
         (status, memory.created_at_ms, memory.repo_key, memory.memory_id),

@@ -27,7 +27,7 @@ def _knowledge(*, subject: str, content: str, created_at_ms: int) -> CodingMemor
 
 
 def test_recall_returns_ranked_context_with_source_uri(tmp_path: Path) -> None:
-    runtime = create_runtime(tmp_path / "runtime")
+    runtime = create_runtime(tmp_path / "runtime", test_retrieval=True)
     runtime.store_memory(
         _knowledge(
             subject="repository-checks",
@@ -46,13 +46,13 @@ def test_recall_returns_ranked_context_with_source_uri(tmp_path: Path) -> None:
     result = runtime.recall("How do I run repository checks?", repo_key="acme/widgets")
 
     assert result.sidecar.ranked[0].title == "Repository Checks"
-    assert result.sidecar.ranked[0].candidate_sources == ("lexical",)
+    assert result.sidecar.ranked[0].candidate_sources == ("lexical", "vector")
     assert result.sidecar.ranked[0].source_uri.startswith("codecairn://memory/mem_")
     assert "Run make check" in result.markdown
 
 
 def test_recall_is_namespace_scoped_and_validates_limits(tmp_path: Path) -> None:
-    runtime = create_runtime(tmp_path / "runtime")
+    runtime = create_runtime(tmp_path / "runtime", test_retrieval=True)
     runtime.store_memory(_knowledge(subject="checks", content="Run make check.", created_at_ms=1))
 
     assert runtime.recall("checks", repo_key="acme/other").sidecar.ranked == ()

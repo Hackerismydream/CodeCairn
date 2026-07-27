@@ -1,7 +1,7 @@
 ---
 id: v01-004
 scope: lifecycle-aware retrieval and context rendering
-status: ready
+status: done
 depends-on: [v01-003]
 ---
 
@@ -105,3 +105,28 @@ Required cases:
 - `service/recall.py` plus planner shrink materially;
 - all checks pass and line deltas are reported.
 - product core is at most 11,500 physical Python lines.
+
+## Completion evidence
+
+Verified before merge:
+
+- recall prefilters by namespace and lifecycle status, with superseded memory
+  available only through the explicit historical flag;
+- one bounded preflight reconciles deterministic parent and Source Fact child
+  projections, drains index jobs, and returns typed `index_not_ready` instead
+  of reading Markdown as a fallback;
+- LanceDB stores status-aware lexical and vector documents while the retained
+  reranker produces one deterministic selection path;
+- at most one matching active open Work State is pinned; closed or ambiguous
+  Work State is ranked normally;
+- one total token budget and versioned per-type caps compile whole attributed
+  memory sections without truncating provenance;
+- the sidecar records retrieval identity, ranks, selection and omission
+  reasons, budget, source/index cursors, semantic state, and freshness;
+- rebuild parity covers active and superseded parent/child documents;
+- production composition has no implicit test embedding fallback; `v01-005`
+  owns the explicit installed retrieval profile;
+- `make check`: 136 tests passed with 75% measured coverage;
+- source budget: 11,499 core and 14,412 total physical Python lines;
+- historical `benchmark-v3` verifier passed with 4,411 files;
+- `uv build` produced the wheel and source distribution.

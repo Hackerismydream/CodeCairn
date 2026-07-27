@@ -227,7 +227,16 @@ class RuntimeState(Protocol):
 
 
 class RecallService(Protocol):
-    def recall(self, query: str, *, repo_key: str, limit: int) -> RecallResult: ...
+    def recall(
+        self,
+        query: str,
+        *,
+        repo_key: str,
+        limit: int,
+        include_superseded: bool = False,
+        workstream_key: str | None = None,
+        token_budget: int = 8_192,
+    ) -> RecallResult: ...
 
 
 class MemoryRuntime:
@@ -409,10 +418,26 @@ class MemoryRuntime:
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
         return self._state.list_memories(repo_key=repo_key)
 
-    def recall(self, query: str, *, repo_key: str, limit: int = 5) -> RecallResult:
+    def recall(
+        self,
+        query: str,
+        *,
+        repo_key: str,
+        limit: int = 20,
+        include_superseded: bool = False,
+        workstream_key: str | None = None,
+        token_budget: int = 8_192,
+    ) -> RecallResult:
         if self._recall_engine is None:
             raise RuntimeError("Recall is not configured for this runtime")
-        return self._recall_engine.recall(query, repo_key=repo_key, limit=limit)
+        return self._recall_engine.recall(
+            query,
+            repo_key=repo_key,
+            limit=limit,
+            include_superseded=include_superseded,
+            workstream_key=workstream_key,
+            token_budget=token_budget,
+        )
 
     def supersede(
         self,

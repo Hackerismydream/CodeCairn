@@ -21,6 +21,7 @@ TraceEventKind = Literal["message", "tool_call", "tool_result", "metadata", "unk
 FileChangeOperation = Literal["add", "update", "delete", "move"]
 TraceEpisodeOutcome = Literal["success", "failure", "partial", "unknown"]
 CandidateSource = Literal["lexical", "vector"]
+MemoryStatus = Literal["active", "superseded"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -145,6 +146,37 @@ class RebuildReport:
 
 
 @dataclass(frozen=True, slots=True)
+class IndexJob:
+    job_id: str
+    repo_key: str
+    memory_id: str
+    target_status: MemoryStatus
+    attempt_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class RecallDocument:
+    document_id: str
+    document_kind: Literal["memory", "fact"]
+    repo_key: str
+    memory_id: str
+    memory_type: MemoryType
+    status: MemoryStatus
+    title: str
+    content: str
+    content_sha256: str
+    created_at_ms: int
+    workstream_key: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class IndexCandidate:
+    memory_id: str
+    source: CandidateSource
+    score: float
+
+
+@dataclass(frozen=True, slots=True)
 class RecallEvidence:
     provider: str
     session_id: str
@@ -170,6 +202,9 @@ class RankedRecall:
     lexical_rank: int | None
     final_score: float
     evidence: tuple[RecallEvidence, ...]
+    status: MemoryStatus = "active"
+    selection_reason: str = "ranked"
+    pinned: bool = False
     episode_text: str = ""
     episode_fact_ids: tuple[str, ...] = ()
 
@@ -182,6 +217,22 @@ class RecallContextTrace:
     rendered_fact_ids: tuple[str, ...]
     omitted_memory_ids: tuple[str, ...]
     omitted_snippet_count: int
+    tokenizer: str = "codecairn/utf8-two-byte-upper-bound-v1"
+    token_count: int = 0
+    token_limit: int = 8_192
+
+
+@dataclass(frozen=True, slots=True)
+class RecallOmission:
+    memory_id: str
+    reason: Literal["historical_filter", "type_cap", "limit", "token_budget"]
+
+
+@dataclass(frozen=True, slots=True)
+class RecallBudget:
+    token_limit: int
+    token_count: int
+    type_caps: tuple[tuple[MemoryType, int], ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -196,6 +247,15 @@ class RecallSidecar:
     completion: Literal["complete", "partial"] = "complete"
     degraded_stages: tuple[str, ...] = ()
     context_trace: RecallContextTrace | None = None
+    retrieval_profile: str = "unconfigured"
+    include_superseded: bool = False
+    workstream_key: str | None = None
+    omissions: tuple[RecallOmission, ...] = ()
+    budget: RecallBudget | None = None
+    source_cursor: int = -1
+    index_cursor: int = -1
+    semantic_state: str = "complete"
+    freshness: Literal["fresh", "semantic_pending"] = "fresh"
 
 
 @dataclass(frozen=True, slots=True)

@@ -12,8 +12,9 @@ runner, IDE, hidden prompt injector, or cloud knowledge platform.
 
 The repository is pre-release. The version 0.1 product design, source-budget
 guardrail, historical-evidence boundary, four-type domain, complete capture
-pipeline, and immutable evolution layer are implemented. Lifecycle-aware recall
-through release packaging remains in progress. The distinction between current
+pipeline, immutable evolution layer, and lifecycle-aware recall are
+implemented. Installed onboarding through release packaging remains in
+progress. The distinction between current
 behavior and the release target matters:
 
 | Area | Current implementation | Version 0.1 target |
@@ -22,11 +23,11 @@ behavior and the release target matters:
 | Automatic capture | One deterministic Task Experience per closed Episode; optional semantic work is queued and retryable | Configure production semantic extraction through onboarding |
 | Memory model | Four durable types with system-owned provenance and derived lifecycle status | Same |
 | Evolution | Immutable Supersession, service-level history, and forward-only restore | Add CLI/MCP presentation |
-| Recall | Small deterministic lexical compatibility baseline | Active-only hybrid recall with pinned Work State |
+| Recall | Active-only hybrid recall with explicit history, bounded index preflight, pinned Work State, and attributed context | Add installed production retrieval profile |
 | Product surfaces | CLI and loopback HTTP | CLI, MCP, and session-end hooks; HTTP compatibility |
 | Setup | Manual root, repo key, and provider environment | `codecairn init`, config file, derived repository identity |
 | Distribution | Checkout build, no license/tag | MIT, curated persistent-tool/PyPI package |
-| Source size | About 10,300 core / 13,200 total physical Python lines at `v01-003` | at most 10,000 core / 15,000 total |
+| Source size | 11,499 core / 14,412 total physical Python lines at `v01-004` | at most 10,000 core / 15,000 total |
 
 The implementation plan is
 [`docs/plan/README.md`](docs/plan/README.md). Do not treat commands marked as
@@ -66,11 +67,12 @@ boundaries still close prior tasks. Stop and SessionEnd callers use the same
 service with their explicit boundary kinds.
 
 Import commits through a recoverable Write Intent and enqueues semantic and
-index work. The current bootstrap has no implicit semantic-provider fallback,
-so `process` reports pending semantic work until `v01-005` configures one.
-Current recall is the small SQLite lexical baseline; the queued hybrid index
-becomes operational in the active-recall/onboarding tasks. Transitional
-diagnostics are available through:
+index work. The current bootstrap has no implicit semantic or retrieval
+provider fallback, so `process` reports pending semantic work and normal recall
+returns `index_not_ready` until `v01-005` records an installed profile. The
+implemented recall path uses explicit providers, LanceDB lexical/vector
+candidates, deterministic reranking, lifecycle filtering, bounded context, and
+an attributed sidecar. Transitional diagnostics are available through:
 
 ```bash
 uv run codecairn index status --root .codecairn

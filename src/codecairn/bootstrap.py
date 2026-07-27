@@ -8,6 +8,7 @@ from pathlib import Path
 from codecairn.entrypoints.cli import build_app
 from codecairn.importers.session import SessionImporter
 from codecairn.memory.models import IndexHealth, RebuildReport
+from codecairn.memory.retrieval import FusionReranker, HashingEmbedder
 from codecairn.service.application import (
     ApplicationOperations,
     CodeCairnApplication,
@@ -21,21 +22,34 @@ from codecairn.service.application import (
     LoCoMoQueryVectorBuildRequest,
     LoCoMoRepairRequest,
 )
+from codecairn.service.cascade import MiniCascade
 from codecairn.service.recall import RecallEngine
 from codecairn.service.runtime import MemoryRuntime
+from codecairn.storage.lance import LanceMemoryIndex
 from codecairn.storage.markdown import MarkdownMemoryStore
 from codecairn.storage.sqlite import SQLiteState
 
 
-def create_runtime(root: Path) -> MemoryRuntime:
+def create_runtime(root: Path, *, test_retrieval: bool = False) -> MemoryRuntime:
     """Build the local Markdown plus SQLite runtime behind service ports."""
     resolved = root.resolve()
     state = SQLiteState(resolved / "state.sqlite3")
+    recall = RecallEngine(state=state)
+    if test_retrieval:
+        embedder = HashingEmbedder()
+        index = LanceMemoryIndex(resolved / "index.lance", embedder=embedder)
+        recall = RecallEngine(
+            state=state,
+            index=index,
+            embedder=embedder,
+            reranker=FusionReranker(),
+            preflight=MiniCascade(state=state, index=index),
+        )
     return MemoryRuntime(
         importer=SessionImporter(),
         memory_store=MarkdownMemoryStore(resolved),
         state=state,
-        recall_engine=RecallEngine(state=state),
+        recall_engine=recall,
     )
 
 
@@ -52,7 +66,7 @@ class _LocalOperations(ApplicationOperations):
                 "degraded" if counts.conflicted_recovery_count or semantic["failed"] else "ok"
             ),
             "root": str(self._root),
-            "schema": "codecairn-v01-3",
+            "schema": "codecairn-v01-4",
             "imports": counts.import_count,
             "observed_events": counts.observed_event_count,
             "memories": counts.memory_count,
@@ -141,10 +155,17 @@ class _LocalOperations(ApplicationOperations):
         raise NotImplementedError("LoCoMo vector execution is deferred to v01-008")
 
 
-def create_application(root: Path) -> CodeCairnApplication:
+def create_application(
+    root: Path,
+    *,
+    test_retrieval: bool = False,
+) -> CodeCairnApplication:
     resolved = root.resolve()
     return CodeCairnApplication(
-        runtime_factory=lambda: create_runtime(resolved),
+        runtime_factory=lambda: create_runtime(
+            resolved,
+            test_retrieval=test_retrieval,
+        ),
         operations=_LocalOperations(resolved),
     )
 

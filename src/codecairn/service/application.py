@@ -212,8 +212,24 @@ class CodeCairnApplication:
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
         return self._memory_runtime().list_memories(repo_key=repo_key)
 
-    def recall(self, query: str, *, repo_key: str, limit: int = 5) -> RecallResult:
-        return self._memory_runtime().recall(query, repo_key=repo_key, limit=limit)
+    def recall(
+        self,
+        query: str,
+        *,
+        repo_key: str,
+        limit: int = 20,
+        include_superseded: bool = False,
+        workstream_key: str | None = None,
+        token_budget: int = 8_192,
+    ) -> RecallResult:
+        return self._memory_runtime().recall(
+            query,
+            repo_key=repo_key,
+            limit=limit,
+            include_superseded=include_superseded,
+            workstream_key=workstream_key,
+            token_budget=token_budget,
+        )
 
     def supersede(
         self,

@@ -41,9 +41,12 @@ class IndexSyncRequest(BaseModel):
 
 
 class RecallRequest(BaseModel):
-    task: str = Field(min_length=1, max_length=8_000)
+    task: str = Field(min_length=1, max_length=8_192)
     repo_key: str = Field(min_length=1)
-    limit: int = Field(default=5, ge=1, le=20)
+    limit: int = Field(default=20, ge=1, le=100)
+    include_superseded: bool = False
+    workstream_key: str | None = Field(default=None, min_length=1, max_length=512)
+    token_budget: int = Field(default=8_192, ge=256, le=32_768)
 
 
 class EvaluationRequest(BaseModel):
@@ -230,6 +233,9 @@ def create_app(
                 request.task,
                 repo_key=request.repo_key,
                 limit=request.limit,
+                include_superseded=request.include_superseded,
+                workstream_key=request.workstream_key,
+                token_budget=request.token_budget,
             )
         )
 

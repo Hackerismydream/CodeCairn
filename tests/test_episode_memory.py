@@ -212,3 +212,20 @@ def test_v01_1_memory_state_adds_episode_projection_column(tmp_path: Path) -> No
     with sqlite3.connect(database) as connection:
         columns = {row[1] for row in connection.execute("PRAGMA table_info(memories)")}
     assert "episode_id" in columns
+
+
+def test_v01_3_state_upgrades_to_current_schema(tmp_path: Path) -> None:
+    database = tmp_path / "state.sqlite3"
+    SQLiteState(database)
+    with sqlite3.connect(database) as connection:
+        connection.execute(
+            "UPDATE codecairn_meta SET value = 'codecairn-v01-3' WHERE key = 'schema_revision'"
+        )
+
+    SQLiteState(database)
+
+    with sqlite3.connect(database) as connection:
+        revision = connection.execute(
+            "SELECT value FROM codecairn_meta WHERE key = 'schema_revision'"
+        ).fetchone()
+    assert revision == ("codecairn-v01-4",)

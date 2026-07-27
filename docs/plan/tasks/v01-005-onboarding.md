@@ -1,7 +1,7 @@
 ---
 id: v01-005
 scope: initialization, configuration, processing, and diagnostics
-status: planned
+status: ready
 depends-on: [v01-004]
 ---
 
@@ -20,7 +20,7 @@ Primary:
 - `src/codecairn/entrypoints/cli.py`
 - `src/codecairn/service/application.py`
 - `src/codecairn/service/runtime.py`
-- `src/codecairn/memory/provider_config.py`
+- a focused retrieval/provider configuration module under `memory`
 - `pyproject.toml`
 - `tests/test_cli.py`
 - `tests/test_api.py`

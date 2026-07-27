@@ -9,7 +9,7 @@ from typing import Annotated, Any, Literal, cast
 import typer
 from typer.core import TyperGroup
 
-from codecairn.memory.provider_config import ProviderConfigurationError
+from codecairn.memory.errors import ProviderConfigurationError
 from codecairn.service.application import (
     CodeCairnApplication,
     EvaluationReportRequest,
@@ -92,11 +92,21 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         task: Annotated[str, typer.Argument(help="Current coding task")],
         repo_key: Annotated[str, typer.Option("--repo-key")],
         root: Annotated[Path, typer.Option("--root")] = Path(".codecairn"),
-        limit: Annotated[int, typer.Option("--limit", min=1, max=20)] = 5,
+        limit: Annotated[int, typer.Option("--limit", min=1, max=100)] = 20,
+        workstream_key: Annotated[str | None, typer.Option("--workstream-key")] = None,
+        include_superseded: Annotated[bool, typer.Option("--include-superseded")] = False,
+        token_budget: Annotated[int, typer.Option("--token-budget", min=256, max=32_768)] = 8_192,
         output_format: Annotated[str, typer.Option("--format")] = "json",
     ) -> None:
         """Generate task-shaped Recall Context from hybrid candidates."""
-        result = application_factory(root).recall(task, repo_key=repo_key, limit=limit)
+        result = application_factory(root).recall(
+            task,
+            repo_key=repo_key,
+            limit=limit,
+            include_superseded=include_superseded,
+            workstream_key=workstream_key,
+            token_budget=token_budget,
+        )
         if output_format == "markdown":
             typer.echo(result.markdown, nl=False)
             return

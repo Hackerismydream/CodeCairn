@@ -1,8 +1,8 @@
 # Runtime Operations
 
 This document describes behavior implemented on current `main` after
-`v01-003`. Target-only lifecycle CLI presentation, `init`, MCP, hooks, hybrid
-retrieval, and release evaluation remain specified under
+`v01-004`. Target-only lifecycle CLI presentation, installed retrieval
+configuration, `init`, MCP, hooks, and release evaluation remain specified under
 [`../v0.1/`](../v0.1/).
 
 ## Current support matrix
@@ -13,9 +13,9 @@ retrieval, and release evaluation remain specified under
 | Process semantic work | `codecairn process` | not exposed | Leases bounded semantic jobs when a semantic extractor is configured; the default composition leaves them visibly pending |
 | Evolve memory | service interface only | not exposed | Applies validated immutable Supersession, returns deterministic history, and creates forward-only restore revisions |
 | List memory | `codecairn list` | `GET /api/v1/memories` | Reads four-type durable memory in one explicit `repo_key` namespace |
-| Recall | `codecairn recall` | `POST /api/v1/recall` | Uses the temporary deterministic lexical baseline over SQLite memory state |
+| Recall | `codecairn recall` | `POST /api/v1/recall` | Drains a bounded namespace index batch, then compiles active-only hybrid retrieval with optional explicit history |
 | Diagnostics | `codecairn doctor` | `GET /api/v1/health` | Reports imports, memories, Write Intent recovery, semantic jobs, and queued index projections |
-| Index commands | `codecairn index ...` | index routes | Expose transitional queue/status surfaces; hybrid index processing and parity land in `v01-004`/`v01-005` |
+| Index commands | `codecairn index ...` | index routes | Transitional CLI presentation remains; the lifecycle-aware LanceDB cascade and parity service are implemented |
 | Historical evidence | `codecairn evidence verify` | not exposed | Verifies frozen evidence without loading the live runtime |
 
 ## Capture lifecycle
@@ -49,6 +49,7 @@ codecairn import SOURCE --repo-key REPO --root ROOT [--finalize] [--no-index]
 codecairn process --root ROOT [--worker-id ID] [--max-jobs N]
 codecairn list --repo-key REPO --root ROOT
 codecairn recall TASK --repo-key REPO --root ROOT [--limit N]
+  [--include-superseded] [--workstream-key KEY] [--token-budget N]
 codecairn doctor --root ROOT
 codecairn index status --root ROOT
 codecairn index sync --root ROOT
@@ -61,9 +62,10 @@ extractor it reports pending jobs and leaves the deterministic Task Experience
 intact. Provider or schema failures are bounded, retryable jobs; completed jobs
 reuse their immutable output fingerprint and never call the provider again.
 
-The current bootstrap does not yet construct a production semantic extractor.
-Tests inject the port directly. Provider configuration and installed-operation
-workflow belong to `v01-005`.
+The current bootstrap does not yet construct production semantic or retrieval
+providers. Tests inject explicit test adapters. Provider configuration and the
+installed-operation workflow belong to `v01-005`; normal composition returns
+`index_not_ready` rather than silently selecting a fallback.
 
 ## HTTP
 
@@ -100,12 +102,15 @@ SQLite contains:
 - pending/leased/completed/failed semantic jobs and immutable output batches;
 - Evolution mirrors, proposal outcomes, predecessor claims, and the
   rebuildable active/superseded projection;
-- pending index projection jobs.
+- lifecycle-aware index projection jobs with target status, profile identity,
+  bounded leases, retries, and failure detail.
 
-Capture enqueues index work but the current recall baseline reads committed
-SQLite memory directly. An import response therefore reports `index.synced`
-false while projection jobs remain pending. Do not describe the current
-transitional index commands as LanceDB parity or retrieval readiness.
+Capture and evolution enqueue deterministic parent/Source Fact child
+projections. Before recall, a bounded namespace cascade reconciles expected
+fingerprints, drains work to the source cursor, and verifies LanceDB parity.
+If the cap is exhausted or the configured retrieval identity differs from the
+index identity, recall returns `index_not_ready`; it never scans Markdown as a
+fallback.
 
 ## Diagnostics
 
@@ -117,9 +122,9 @@ transitional index commands as LanceDB parity or retrieval readiness.
 - semantic job counts by status.
 
 Pending semantic work is expected when no provider is configured and does not
-make deterministic capture unhealthy. A failed semantic job is visible and
-retryable. Pending index projections remain a known transitional state until
-the active-recall/onboarding tasks implement the production index lifecycle.
+make deterministic capture unhealthy. Failed semantic or index jobs are
+visible and bounded. Installed provider selection and actionable remedies land
+in onboarding.
 
 ## Current boundary
 
@@ -133,12 +138,15 @@ Implemented:
 - retryable semantic proposal batches with source-role enforcement;
 - immutable Supersession, lifecycle status, history, and forward-only restore;
 - typed source rewrite failure;
-- lexical recall compatibility and historical evidence verification.
+- active-only lexical/vector/reranker recall with explicit historical access;
+- pinned open Work State selection, per-type caps, total token budget, and an
+  attributed sidecar;
+- status-aware LanceDB parent/child projections, bounded preflight, rebuild
+  parity, and historical evidence verification.
 
 Not yet implemented:
 
 - lifecycle CLI/MCP presentation;
-- production hybrid retrieval, reranking, token-budget compilation, and index
-  draining;
+- installed production retrieval configuration;
 - `init`, config, namespace derivation, export/reset;
 - MCP, Codex/Claude hooks, persistent install, and release evaluation.
