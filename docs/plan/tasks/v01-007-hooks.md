@@ -1,7 +1,7 @@
 ---
 id: v01-007
 scope: Claude Code and Codex session-end import hooks
-status: ready
+status: done
 depends-on: [v01-006]
 ---
 
@@ -113,3 +113,30 @@ fixtures alone do not satisfy v01-010.
 - failures are non-blocking but operationally visible;
 - all checks pass and line deltas are reported.
 - product core is at most 10,000 physical Python lines.
+
+## Completion
+
+Implemented on `main` after `v01-006`:
+
+- Claude Code `SessionEnd` and Codex `Stop` normalize to one owned-source
+  descriptor; the Codex nullable-transcript fallback is explicit and bounded;
+- `hook run` is provider-free, stdout-clean, exit-zero, receipt-backed, and
+  reuses incremental import identity;
+- `hook install` merges one absolute five-second command atomically, preserves
+  unrelated settings and mode, verifies readback, and is byte-idempotent;
+- both fixtures repeat 100 times without duplicate Episodes or Memories, and
+  hook capture is recallable without an explicit process command;
+- production-only test retrieval paths and duplicate serialization/import
+  code were removed while compact formatting kept the learning surface within
+  the accepted budget.
+
+Verification at the completed worktree:
+
+```text
+hook/import/CLI/MCP/lifecycle tests              pass
+mypy + import-linter                             pass
+source-budget v01-007                            9,998 core / 12,594 total
+```
+
+Real installed-client smoke remains a release-candidate gate in `v01-010`; it
+is not claimed by fixture acceptance here.

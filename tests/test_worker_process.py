@@ -14,16 +14,9 @@ from codecairn.evaluation.worker_process import WorkerProcessLimits, run_monitor
 
 
 @pytest.mark.parametrize("non_finite", [float("nan"), float("inf"), float("-inf")])
-@pytest.mark.parametrize(
-    "field",
-    ["stall_timeout_seconds", "poll_interval_seconds", "rss_poll_interval_seconds"],
-)
+@pytest.mark.parametrize("field", ["stall_timeout_seconds", "poll_interval_seconds", "rss_poll_interval_seconds"])
 def test_worker_process_limits_reject_non_finite_durations(field: str, non_finite: float) -> None:
-    durations = {
-        "stall_timeout_seconds": 1.0,
-        "poll_interval_seconds": 0.1,
-        "rss_poll_interval_seconds": 0.1,
-    }
+    durations = {"stall_timeout_seconds": 1.0, "poll_interval_seconds": 0.1, "rss_poll_interval_seconds": 0.1}
     durations[field] = non_finite
 
     with pytest.raises(ValueError, match="must be positive"):
@@ -42,18 +35,10 @@ def test_monitored_worker_records_process_rss_and_progress(tmp_path: Path) -> No
         (
             sys.executable,
             "-c",
-            (
-                "import pathlib,time; "
-                f"pathlib.Path({str(progress_root / 'done.json')!r}).write_text('{{}}'); "
-                "time.sleep(0.1)"
-            ),
+            (f"import pathlib,time; pathlib.Path({str(progress_root / 'done.json')!r}).write_text('{{}}'); time.sleep(0.1)"),
         ),
         progress_root=progress_root,
-        limits=WorkerProcessLimits(
-            max_rss_bytes=1024 * 1024 * 1024,
-            stall_timeout_seconds=2,
-            poll_interval_seconds=0.02,
-        ),
+        limits=WorkerProcessLimits(max_rss_bytes=1024 * 1024 * 1024, stall_timeout_seconds=2, poll_interval_seconds=0.02),
     )
 
     assert result.returncode == 0
@@ -63,17 +48,9 @@ def test_monitored_worker_records_process_rss_and_progress(tmp_path: Path) -> No
 
 def test_monitored_worker_terminates_on_rss_limit(tmp_path: Path) -> None:
     result = run_monitored_worker(
-        (
-            sys.executable,
-            "-c",
-            "import time; payload = bytearray(64 * 1024 * 1024); time.sleep(5)",
-        ),
+        (sys.executable, "-c", "import time; payload = bytearray(64 * 1024 * 1024); time.sleep(5)"),
         progress_root=tmp_path / "progress",
-        limits=WorkerProcessLimits(
-            max_rss_bytes=32 * 1024 * 1024,
-            stall_timeout_seconds=2,
-            poll_interval_seconds=0.02,
-        ),
+        limits=WorkerProcessLimits(max_rss_bytes=32 * 1024 * 1024, stall_timeout_seconds=2, poll_interval_seconds=0.02),
     )
 
     assert result.returncode != 0
@@ -85,20 +62,14 @@ def test_monitored_worker_terminates_when_no_checkpoint_progress_is_made(tmp_pat
     result = run_monitored_worker(
         (sys.executable, "-c", "import time; time.sleep(5)"),
         progress_root=tmp_path / "progress",
-        limits=WorkerProcessLimits(
-            max_rss_bytes=1024 * 1024 * 1024,
-            stall_timeout_seconds=0.1,
-            poll_interval_seconds=0.02,
-        ),
+        limits=WorkerProcessLimits(max_rss_bytes=1024 * 1024 * 1024, stall_timeout_seconds=0.1, poll_interval_seconds=0.02),
     )
 
     assert result.returncode != 0
     assert result.termination_reason == "stalled"
 
 
-def test_monitored_worker_reaps_child_when_rss_sampler_fails(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_monitored_worker_reaps_child_when_rss_sampler_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     pid_path = tmp_path / "worker.pid"
     observed_pid: int | None = None
 
@@ -118,18 +89,10 @@ def test_monitored_worker_reaps_child_when_rss_sampler_fails(
             (
                 sys.executable,
                 "-c",
-                (
-                    "import os,pathlib,time; "
-                    f"pathlib.Path({str(pid_path)!r}).write_text(str(os.getpid())); "
-                    "time.sleep(30)"
-                ),
+                (f"import os,pathlib,time; pathlib.Path({str(pid_path)!r}).write_text(str(os.getpid())); time.sleep(30)"),
             ),
             progress_root=tmp_path / "progress",
-            limits=WorkerProcessLimits(
-                max_rss_bytes=1024 * 1024 * 1024,
-                stall_timeout_seconds=5,
-                poll_interval_seconds=0.02,
-            ),
+            limits=WorkerProcessLimits(max_rss_bytes=1024 * 1024 * 1024, stall_timeout_seconds=5, poll_interval_seconds=0.02),
         )
 
         assert observed_pid is not None

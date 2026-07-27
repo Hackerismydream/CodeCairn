@@ -19,18 +19,12 @@ def _repository(path: Path, *, remote: str | None = None) -> Path:
     path.mkdir()
     subprocess.run(("git", "init", str(path)), check=True, capture_output=True)
     if remote is not None:
-        subprocess.run(
-            ("git", "-C", str(path), "remote", "add", "origin", remote),
-            check=True,
-        )
+        subprocess.run(("git", "-C", str(path), "remote", "add", "origin", remote), check=True)
     return path
 
 
 def test_init_is_idempotent_and_resolves_from_subdirectory(tmp_path: Path) -> None:
-    repository = _repository(
-        tmp_path / "repo",
-        remote="git@GitHub.com:Acme/Widgets.git",
-    )
+    repository = _repository(tmp_path / "repo", remote="git@GitHub.com:Acme/Widgets.git")
     nested = repository / "src" / "package"
     nested.mkdir(parents=True)
     root = tmp_path / "runtime"
@@ -48,11 +42,7 @@ def test_init_is_idempotent_and_resolves_from_subdirectory(tmp_path: Path) -> No
 def test_frozen_repo_key_wins_and_environment_overrides_provider(tmp_path: Path) -> None:
     repository = _repository(tmp_path / "repo")
     initialized = initialize_repository(
-        start=repository,
-        root=tmp_path / "runtime",
-        repo_key="acme/widgets",
-        retrieval_profile="fastembed",
-        environment={},
+        start=repository, root=tmp_path / "runtime", repo_key="acme/widgets", retrieval_profile="fastembed", environment={}
     )
     resolved = resolve_runtime_config(
         start=repository,
@@ -71,23 +61,10 @@ def test_frozen_repo_key_wins_and_environment_overrides_provider(tmp_path: Path)
 
 
 def test_remote_normalization_and_ambiguity(tmp_path: Path) -> None:
-    assert normalize_remote("git@github.com:Acme/Widgets.git") == (
-        normalize_remote("https://github.com/Acme/Widgets.git")
-    )
+    assert normalize_remote("git@github.com:Acme/Widgets.git") == (normalize_remote("https://github.com/Acme/Widgets.git"))
     repository = _repository(tmp_path / "repo")
     for name in ("upstream", "fork"):
-        subprocess.run(
-            (
-                "git",
-                "-C",
-                str(repository),
-                "remote",
-                "add",
-                name,
-                f"https://github.com/Acme/{name}.git",
-            ),
-            check=True,
-        )
+        subprocess.run(("git", "-C", str(repository), "remote", "add", name, f"https://github.com/Acme/{name}.git"), check=True)
     with pytest.raises(ConfigurationError, match="Multiple Git remotes"):
         initialize_repository(start=repository, environment={})
 
@@ -95,10 +72,7 @@ def test_remote_normalization_and_ambiguity(tmp_path: Path) -> None:
 def test_binding_rejects_unknown_keys_and_never_serializes_secret(tmp_path: Path) -> None:
     repository = _repository(tmp_path / "repo")
     config = initialize_repository(
-        start=repository,
-        root=tmp_path / "runtime",
-        repo_key="acme/widgets",
-        environment={"DASHSCOPE_API_KEY": "top-secret"},
+        start=repository, root=tmp_path / "runtime", repo_key="acme/widgets", environment={"DASHSCOPE_API_KEY": "top-secret"}
     )
     assert b"top-secret" not in config.binding_path.read_bytes()
     with config.binding_path.open("a") as target:
@@ -123,26 +97,10 @@ def test_linked_worktree_uses_common_binding(tmp_path: Path) -> None:
     )
     worktree = tmp_path / "worktree"
     subprocess.run(
-        (
-            "git",
-            "-C",
-            str(repository),
-            "worktree",
-            "add",
-            "-b",
-            "linked",
-            str(worktree),
-        ),
-        check=True,
-        capture_output=True,
+        ("git", "-C", str(repository), "worktree", "add", "-b", "linked", str(worktree)), check=True, capture_output=True
     )
 
-    initialized = initialize_repository(
-        start=worktree,
-        root=tmp_path / "runtime",
-        repo_key="acme/widgets",
-        environment={},
-    )
+    initialized = initialize_repository(start=worktree, root=tmp_path / "runtime", repo_key="acme/widgets", environment={})
 
     assert initialized.binding_path == repository / ".git" / "codecairn.toml"
     assert resolve_runtime_config(start=repository, environment={}).repo_key == ("acme/widgets")

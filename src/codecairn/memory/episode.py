@@ -9,12 +9,7 @@ from codecairn.memory.models import AgentTrace, TraceEpisodeOutcome, TraceEvent
 from codecairn.memory.schema import SourceOrderKey, TaskEpisode
 from codecairn.memory.trace import extend_raw_prefix_sha256
 
-BoundaryKind = Literal[
-    "next_user",
-    "codex_stop",
-    "claude_session_end",
-    "manual_finalize",
-]
+BoundaryKind = Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,20 +20,12 @@ class ClosedEpisode:
 
 
 def close_trace_episodes(
-    trace: AgentTrace,
-    *,
-    repo_key: str,
-    existing: tuple[TaskEpisode, ...] = (),
-    final_boundary: BoundaryKind | None = None,
+    trace: AgentTrace, *, repo_key: str, existing: tuple[TaskEpisode, ...] = (), final_boundary: BoundaryKind | None = None
 ) -> tuple[ClosedEpisode, ...]:
     """Close only next-user spans and one explicit final boundary."""
     last = max(existing, key=lambda item: item.end_event_index_exclusive, default=None)
-    start_cursor = (
-        last.end_event_index_exclusive if last is not None else trace.resumed_from_raw_event_index
-    )
-    events = tuple(
-        event for event in trace.events if event.evidence.raw_event_index >= start_cursor
-    )
+    start_cursor = last.end_event_index_exclusive if last is not None else trace.resumed_from_raw_event_index
+    events = tuple(event for event in trace.events if event.evidence.raw_event_index >= start_cursor)
     if not events:
         return ()
     closed: list[ClosedEpisode] = []
@@ -84,10 +71,7 @@ def is_episode_signal(event: TraceEvent) -> bool:
     return bool(
         (event.kind == "message" and event.text)
         or (event.kind == "tool_call" and event.tool_name and event.call_id)
-        or (
-            event.kind == "tool_result"
-            and (event.text or event.tool_status or event.exit_code is not None)
-        )
+        or (event.kind == "tool_result" and (event.text or event.tool_status or event.exit_code is not None))
         or event.file_changes
     )
 
@@ -122,18 +106,13 @@ def _close(
         ),
         prefix_sha256=_prefix_at(trace, end_cursor),
     )
-    selected = tuple(
-        event for event in events if start_cursor <= event.evidence.raw_event_index < end_cursor
-    )
+    selected = tuple(event for event in events if start_cursor <= event.evidence.raw_event_index < end_cursor)
     return ClosedEpisode(record=record, events=selected, outcome=_outcome(selected))
 
 
 def _prefix_at(trace: AgentTrace, cursor: int) -> str:
     prefix = trace.raw_prefix_sha256
-    for index, digest in enumerate(
-        trace.raw_suffix_event_sha256s,
-        start=trace.resumed_from_raw_event_index,
-    ):
+    for index, digest in enumerate(trace.raw_suffix_event_sha256s, start=trace.resumed_from_raw_event_index):
         if index >= cursor:
             break
         prefix = extend_raw_prefix_sha256(prefix, digest)

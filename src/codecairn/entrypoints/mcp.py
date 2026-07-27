@@ -14,22 +14,11 @@ from pydantic import Field, TypeAdapter
 
 from codecairn.configuration import resolve_runtime_config
 from codecairn.memory.config import RetrievalConfig, SemanticConfig
-from codecairn.memory.errors import (
-    ConfigurationError,
-    IndexNotReady,
-    ProviderConfigurationError,
-    TraceImportError,
-)
+from codecairn.memory.errors import ConfigurationError, IndexNotReady, ProviderConfigurationError, TraceImportError
 from codecairn.memory.evolution import MemoryHistory
 from codecairn.memory.models import CodingMemory, RecallResult
 from codecairn.memory.schema import MemoryType, SchemaInvalid
-from codecairn.service.application import (
-    CodeCairnApplication,
-    ImportOutcome,
-    MemoryDetail,
-    MemoryPage,
-    RememberRequest,
-)
+from codecairn.service.application import CodeCairnApplication, ImportOutcome, MemoryDetail, MemoryPage, RememberRequest
 
 _MEMORY_ID = re.compile(r"mem_[0-9a-f]{64}")
 
@@ -45,27 +34,18 @@ class ApplicationFactory(Protocol):
     ) -> CodeCairnApplication: ...
 
 
-def build_server(
-    application_factory: ApplicationFactory,
-    *,
-    working_directory: Path | None = None,
-) -> FastMCP:
+def build_server(application_factory: ApplicationFactory, *, working_directory: Path | None = None) -> FastMCP:
     """Build the seven-tool, one-resource version 0.1 MCP server."""
     cwd = (working_directory or Path.cwd()).resolve()
     server = FastMCP(
-        "CodeCairn",
-        instructions="Explicit, auditable repository memory. Tools never execute coding work.",
-        log_level="ERROR",
+        "CodeCairn", instructions="Explicit, auditable repository memory. Tools never execute coding work.", log_level="ERROR"
     )
 
     def application(repo_key: str | None) -> tuple[CodeCairnApplication, str]:
         resolved = resolve_runtime_config(start=cwd, repo_key=repo_key)
         return (
             application_factory(
-                resolved.runtime_root,
-                repo_key=resolved.repo_key,
-                retrieval=resolved.retrieval,
-                semantic=resolved.semantic,
+                resolved.runtime_root, repo_key=resolved.repo_key, retrieval=resolved.retrieval, semantic=resolved.semantic
             ),
             resolved.repo_key,
         )
@@ -84,11 +64,7 @@ def build_server(
             app, resolved_key = application(repo_key)
             return asdict(
                 app.recall(
-                    task,
-                    repo_key=resolved_key,
-                    workstream_key=workstream_key,
-                    limit=limit,
-                    include_superseded=include_superseded,
+                    task, repo_key=resolved_key, workstream_key=workstream_key, limit=limit, include_superseded=include_superseded
                 )
             )
         except Exception as error:
@@ -112,11 +88,7 @@ def build_server(
     ) -> dict[str, object]:
         """Create direct Knowledge, Working Preference, or Work State memory."""
         try:
-            for name, value, maximum in (
-                ("title", title, 256),
-                ("content", content, 32_768),
-                ("category", category, 64),
-            ):
+            for name, value, maximum in (("title", title, 256), ("content", content, 32_768), ("category", category, 64)):
                 _bounded(value, maximum, name)
             app, resolved_key = application(repo_key)
             return asdict(
@@ -153,13 +125,7 @@ def build_server(
         try:
             app, resolved_key = application(repo_key)
             return asdict(
-                app.list_memory_page(
-                    repo_key=resolved_key,
-                    memory_type=memory_type,
-                    status=status,
-                    limit=limit,
-                    cursor=cursor,
-                )
+                app.list_memory_page(repo_key=resolved_key, memory_type=memory_type, status=status, limit=limit, cursor=cursor)
             )
         except Exception as error:
             raise _tool_error(error) from None
@@ -202,20 +168,12 @@ def build_server(
             if not source.is_file():
                 raise FileNotFoundError(source)
             app, resolved_key = application(repo_key)
-            return asdict(
-                app.import_session(
-                    source,
-                    repo_key=resolved_key,
-                    boundary_kind="manual_finalize",
-                )
-            )
+            return asdict(app.import_session(source, repo_key=resolved_key, boundary_kind="manual_finalize"))
         except Exception as error:
             raise _tool_error(error) from None
 
     @server.tool(structured_output=True)
-    def doctor(
-        repo_key: Annotated[str | None, Field(min_length=1, max_length=512)] = None,
-    ) -> dict[str, object]:
+    def doctor(repo_key: Annotated[str | None, Field(min_length=1, max_length=512)] = None) -> dict[str, object]:
         """Return structured subsystem health and executable remedies."""
         try:
             app, _resolved_key = application(repo_key)
@@ -223,11 +181,7 @@ def build_server(
         except Exception as error:
             raise _tool_error(error) from None
 
-    @server.resource(
-        "codecairn://memory/{memory_id}",
-        name="CodeCairn memory",
-        mime_type="text/markdown",
-    )
+    @server.resource("codecairn://memory/{memory_id}", name="CodeCairn memory", mime_type="text/markdown")
     def memory_resource(memory_id: str) -> str:
         """Read canonical durable Markdown for one memory in the current namespace."""
         try:
@@ -247,22 +201,8 @@ async def schema_snapshot(server: FastMCP) -> dict[str, object]:
     resources = sorted(await server.list_resource_templates(), key=lambda item: item.uriTemplate)
     return {
         "schema_version": 1,
-        "tools": [
-            {
-                "name": item.name,
-                "input_schema": item.inputSchema,
-                "output_schema": item.outputSchema,
-            }
-            for item in tools
-        ],
-        "resources": [
-            {
-                "name": item.name,
-                "uri_template": item.uriTemplate,
-                "mime_type": item.mimeType,
-            }
-            for item in resources
-        ],
+        "tools": [{"name": item.name, "input_schema": item.inputSchema, "output_schema": item.outputSchema} for item in tools],
+        "resources": [{"name": item.name, "uri_template": item.uriTemplate, "mime_type": item.mimeType} for item in resources],
     }
 
 
@@ -340,12 +280,7 @@ def _error_json(error: Exception) -> str:
     elif code == "memory_not_found":
         remediation = "List memories in the resolved repository namespace."
     return json.dumps(
-        {
-            "code": code,
-            "message": message,
-            "remediation": remediation,
-            "retryable": retryable,
-        },
+        {"code": code, "message": message, "remediation": remediation, "retryable": retryable},
         ensure_ascii=False,
         separators=(",", ":"),
         sort_keys=True,

@@ -34,15 +34,9 @@ def test_historical_reader_recomputes_v3_reports_without_mutation() -> None:
 
 def test_historical_reader_has_only_evaluation_artifact_dependency() -> None:
     tree = ast.parse(READER.read_text(encoding="utf-8"))
-    imports = {
-        node.module
-        for node in ast.walk(tree)
-        if isinstance(node, ast.ImportFrom) and node.module is not None
-    }
+    imports = {node.module for node in ast.walk(tree) if isinstance(node, ast.ImportFrom) and node.module is not None}
 
-    assert {name for name in imports if name.startswith("codecairn.")} == {
-        "codecairn.evaluation.artifacts"
-    }
+    assert {name for name in imports if name.startswith("codecairn.")} == {"codecairn.evaluation.artifacts"}
 
 
 def test_v3_verification_does_not_import_product_runtime() -> None:
@@ -63,13 +57,7 @@ blocked = sorted(
 )
 print(json.dumps({"result": result, "blocked": blocked}, sort_keys=True))
 """
-    completed = subprocess.run(
-        (sys.executable, "-c", program),
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    completed = subprocess.run((sys.executable, "-c", program), cwd=ROOT, check=True, capture_output=True, text=True)
     payload = json.loads(completed.stdout)
 
     assert payload["result"]["verified"] is True

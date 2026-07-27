@@ -1,0 +1,6 @@
+{
+  "session_id": "session-test-001",
+  "transcript_path": null,
+  "cwd": "__REPOSITORY_PATH__",
+  "hook_event_name": "Stop"
+}

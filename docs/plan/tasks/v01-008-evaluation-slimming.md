@@ -1,7 +1,7 @@
 ---
 id: v01-008
 scope: evaluation surface, historical verifier, and source budget
-status: planned
+status: ready
 depends-on: [v01-007]
 ---
 

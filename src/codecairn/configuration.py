@@ -15,12 +15,7 @@ from pathlib import Path
 from typing import cast
 from urllib.parse import urlparse
 
-from codecairn.memory.config import (
-    RetrievalConfig,
-    RetrievalProfile,
-    RuntimeConfig,
-    SemanticConfig,
-)
+from codecairn.memory.config import RetrievalConfig, RetrievalProfile, RuntimeConfig, SemanticConfig
 from codecairn.memory.errors import ConfigurationError
 
 _ROOT_KEYS = {"schema_version", "runtime_root", "repo_key", "retrieval", "semantic"}
@@ -75,11 +70,7 @@ def resolve_runtime_config(
     retrieval = _retrieval(data["retrieval"], environment=env)
     semantic = _semantic(data["semantic"], environment=env)
     return RuntimeConfig(
-        runtime_root=root_value.resolve(),
-        repo_key=resolved_key,
-        binding_path=binding_path,
-        retrieval=retrieval,
-        semantic=semantic,
+        runtime_root=root_value.resolve(), repo_key=resolved_key, binding_path=binding_path, retrieval=retrieval, semantic=semantic
     )
 
 
@@ -105,9 +96,7 @@ def initialize_repository(
     if selected_root is None and existing is not None:
         selected_root = _runtime_path(_string(existing, "runtime_root"))
     selected_root = (selected_root or Path.home() / ".codecairn").resolve()
-    existing_retrieval = (
-        cast(dict[str, object], existing["retrieval"]) if existing is not None else None
-    )
+    existing_retrieval = cast(dict[str, object], existing["retrieval"]) if existing is not None else None
     selected_profile = cast(
         RetrievalProfile,
         retrieval_profile
@@ -122,9 +111,7 @@ def initialize_repository(
         environment=env,
         explicit_profile=selected_profile,
     )
-    existing_semantic = (
-        cast(dict[str, object], existing["semantic"]) if existing is not None else None
-    )
+    existing_semantic = cast(dict[str, object], existing["semantic"]) if existing is not None else None
     selected_semantic = (
         semantic_profile
         or env.get("CODECAIRN_SEMANTIC_PROFILE")
@@ -138,17 +125,11 @@ def initialize_repository(
         explicit_profile=selected_semantic,
     )
     config = RuntimeConfig(
-        runtime_root=selected_root,
-        repo_key=selected_key,
-        binding_path=binding_path,
-        retrieval=retrieval,
-        semantic=semantic,
+        runtime_root=selected_root, repo_key=selected_key, binding_path=binding_path, retrieval=retrieval, semantic=semantic
     )
     encoded = _render_binding(config, portable_default=root is None)
     if binding_path.exists() and binding_path.read_text() != encoded and not force:
-        raise ConfigurationError(
-            f"Binding differs from requested configuration: {binding_path}; use --force"
-        )
+        raise ConfigurationError(f"Binding differs from requested configuration: {binding_path}; use --force")
     if not binding_path.exists() or binding_path.read_text() != encoded:
         _atomic_write(binding_path, encoded)
     selected_root.mkdir(parents=True, exist_ok=True)
@@ -199,69 +180,43 @@ def _read_binding(path: Path) -> dict[str, object]:
     return {**data, "retrieval": retrieval, "semantic": semantic}
 
 
-def _retrieval(
-    value: object,
-    *,
-    environment: Mapping[str, str],
-    explicit_profile: str | None = None,
-) -> RetrievalConfig:
+def _retrieval(value: object, *, environment: Mapping[str, str], explicit_profile: str | None = None) -> RetrievalConfig:
     data = cast(dict[str, object], value)
-    profile = cast(
-        RetrievalProfile,
-        explicit_profile or environment.get("CODECAIRN_RETRIEVAL_PROFILE") or data.get("profile"),
-    )
+    profile = cast(RetrievalProfile, explicit_profile or environment.get("CODECAIRN_RETRIEVAL_PROFILE") or data.get("profile"))
     default = RetrievalConfig.default(profile)
     cache = environment.get("CODECAIRN_MODEL_CACHE") or data.get("cache_dir")
     dimension = environment.get("CODECAIRN_EMBEDDING_DIMENSION") or data.get("dimension")
-    endpoint = environment.get(
-        "CODECAIRN_EMBEDDING_ENDPOINT",
-        cast(str | None, data.get("endpoint")),
-    )
+    endpoint = environment.get("CODECAIRN_EMBEDDING_ENDPOINT", cast(str | None, data.get("endpoint")))
     if profile == "fastembed":
         endpoint = None
     if not isinstance(dimension, str | int) or isinstance(dimension, bool):
         raise ConfigurationError("Embedding dimension must be an integer")
     return RetrievalConfig(
         profile=profile,
-        model=environment.get("CODECAIRN_EMBEDDING_MODEL", cast(str, data.get("model")))
-        or default.model,
+        model=environment.get("CODECAIRN_EMBEDDING_MODEL", cast(str, data.get("model"))) or default.model,
         dimension=int(dimension or default.dimension),
         endpoint=endpoint or default.endpoint,
-        revision=environment.get("CODECAIRN_EMBEDDING_REVISION", cast(str, data.get("revision")))
-        or default.revision,
+        revision=environment.get("CODECAIRN_EMBEDDING_REVISION", cast(str, data.get("revision"))) or default.revision,
         cache_dir=_environment_path(cast(str | None, cache)),
     )
 
 
-def _semantic(
-    value: object,
-    *,
-    environment: Mapping[str, str],
-    explicit_profile: str | None = None,
-) -> SemanticConfig:
+def _semantic(value: object, *, environment: Mapping[str, str], explicit_profile: str | None = None) -> SemanticConfig:
     data = cast(dict[str, object], value)
-    profile = (
-        explicit_profile or environment.get("CODECAIRN_SEMANTIC_PROFILE") or data.get("profile")
-    )
+    profile = explicit_profile or environment.get("CODECAIRN_SEMANTIC_PROFILE") or data.get("profile")
     assert isinstance(profile, str)
     if profile == "none":
         return SemanticConfig()
     return SemanticConfig(
         profile=profile,
         model=environment.get("CODECAIRN_SEMANTIC_MODEL", cast(str | None, data.get("model"))),
-        endpoint=environment.get(
-            "CODECAIRN_SEMANTIC_ENDPOINT", cast(str | None, data.get("endpoint"))
-        ),
+        endpoint=environment.get("CODECAIRN_SEMANTIC_ENDPOINT", cast(str | None, data.get("endpoint"))),
     )
 
 
 def _render_binding(config: RuntimeConfig, *, portable_default: bool) -> str:
     retrieval = config.retrieval
-    root = (
-        "~/.codecairn"
-        if portable_default and config.runtime_root == Path.home() / ".codecairn"
-        else str(config.runtime_root)
-    )
+    root = "~/.codecairn" if portable_default and config.runtime_root == Path.home() / ".codecairn" else str(config.runtime_root)
     lines = [
         "schema_version = 1",
         f"runtime_root = {json.dumps(root)}",
@@ -348,12 +303,7 @@ def _select_remote(root: Path, *, explicit: str | None) -> str | None:
 
 
 def _git(root: Path, *arguments: str) -> str | None:
-    result = subprocess.run(
-        ("git", "-C", str(root), *arguments),
-        capture_output=True,
-        check=False,
-        text=True,
-    )
+    result = subprocess.run(("git", "-C", str(root), *arguments), capture_output=True, check=False, text=True)
     return result.stdout.strip() if result.returncode == 0 else None
 
 

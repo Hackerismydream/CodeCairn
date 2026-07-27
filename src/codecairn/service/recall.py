@@ -21,31 +21,12 @@ from codecairn.memory.models import (
     RecallResult,
     RecallSidecar,
 )
-from codecairn.memory.retrieval import (
-    EmbeddingProvider,
-    RerankingProvider,
-    retrieval_config_sha256,
-)
-from codecairn.memory.schema import (
-    CodingMemory,
-    MemoryType,
-    canonical_json,
-    coding_memory_to_dict,
-)
+from codecairn.memory.retrieval import EmbeddingProvider, RerankingProvider, retrieval_config_sha256
+from codecairn.memory.schema import CodingMemory, MemoryType, canonical_json, coding_memory_to_dict
 
 _RRF_K = 60
-_TYPE_PRIORITY: dict[MemoryType, int] = {
-    "repository_knowledge": 0,
-    "user_preference": 1,
-    "work_state": 2,
-    "task_experience": 3,
-}
-_TYPE_CAPS: dict[MemoryType, int] = {
-    "repository_knowledge": 8,
-    "user_preference": 4,
-    "work_state": 4,
-    "task_experience": 8,
-}
+_TYPE_PRIORITY: dict[MemoryType, int] = {"repository_knowledge": 0, "user_preference": 1, "work_state": 2, "task_experience": 3}
+_TYPE_CAPS: dict[MemoryType, int] = {"repository_knowledge": 8, "user_preference": 4, "work_state": 4, "task_experience": 8}
 
 
 class RecallIndex(Protocol):
@@ -53,21 +34,11 @@ class RecallIndex(Protocol):
     def profile_identity(self) -> str: ...
 
     def lexical_candidates(
-        self,
-        *,
-        repo_key: str,
-        query: str,
-        include_superseded: bool,
-        limit: int,
+        self, *, repo_key: str, query: str, include_superseded: bool, limit: int
     ) -> tuple[IndexCandidate, ...]: ...
 
     def vector_candidates(
-        self,
-        *,
-        repo_key: str,
-        vector: tuple[float, ...],
-        include_superseded: bool,
-        limit: int,
+        self, *, repo_key: str, vector: tuple[float, ...], include_superseded: bool, limit: int
     ) -> tuple[IndexCandidate, ...]: ...
 
 
@@ -76,23 +47,13 @@ class RecallState(Protocol):
 
     def memory_status(self, *, repo_key: str, memory_id: str) -> str | None: ...
 
-    def active_workstream_heads(
-        self,
-        *,
-        repo_key: str,
-    ) -> tuple[tuple[str, str], ...]: ...
+    def active_workstream_heads(self, *, repo_key: str) -> tuple[tuple[str, str], ...]: ...
 
     def recall_cursors(self, *, repo_key: str) -> tuple[int, int, str]: ...
 
 
 class IndexPreflight(Protocol):
-    def preflight(
-        self,
-        *,
-        repo_key: str,
-        worker_id: str = "recall",
-        max_jobs: int = 128,
-    ) -> bool: ...
+    def preflight(self, *, repo_key: str, worker_id: str = "recall", max_jobs: int = 128) -> bool: ...
 
 
 class RecallEngine:
@@ -138,24 +99,15 @@ class RecallEngine:
             raise ValueError("Recall namespace or limit is invalid")
         if self._index is None or self._embedder is None or self._preflight is None:
             raise IndexNotReady("No retrieval profile is configured")
-        if not self._preflight.preflight(
-            repo_key=repo_key,
-            max_jobs=self._preflight_job_cap,
-        ):
+        if not self._preflight.preflight(repo_key=repo_key, max_jobs=self._preflight_job_cap):
             raise IndexNotReady("The current namespace index is not ready")
         candidate_limit = min(100, max(20, limit * 4))
         vector = self._embedder.embed_query(query)
         lexical = self._index.lexical_candidates(
-            repo_key=repo_key,
-            query=query,
-            include_superseded=include_superseded,
-            limit=candidate_limit,
+            repo_key=repo_key, query=query, include_superseded=include_superseded, limit=candidate_limit
         )
         vector_candidates = self._index.vector_candidates(
-            repo_key=repo_key,
-            vector=vector,
-            include_superseded=include_superseded,
-            limit=candidate_limit,
+            repo_key=repo_key, vector=vector, include_superseded=include_superseded, limit=candidate_limit
         )
         ranked, omissions = self._rank(
             query,
@@ -167,10 +119,7 @@ class RecallEngine:
             workstream_key=workstream_key,
         )
         compiled = compile_context(query, ranked, token_limit=token_budget)
-        omissions.extend(
-            RecallOmission(memory_id=memory_id, reason="token_budget")
-            for memory_id in compiled.omitted_ids
-        )
+        omissions.extend(RecallOmission(memory_id=memory_id, reason="token_budget") for memory_id in compiled.omitted_ids)
         rendered = tuple(item for item in ranked if item.memory_id in set(compiled.rendered_ids))
         source_cursor, index_cursor, semantic_state = self._state.recall_cursors(repo_key=repo_key)
         sidecar = RecallSidecar(
@@ -187,9 +136,7 @@ class RecallEngine:
                 renderer=RENDERER_ID,
                 char_count=len(compiled.markdown),
                 rendered_memory_ids=compiled.rendered_ids,
-                rendered_fact_ids=tuple(
-                    fact_id for item in rendered for fact_id in item.episode_fact_ids
-                ),
+                rendered_fact_ids=tuple(fact_id for item in rendered for fact_id in item.episode_fact_ids),
                 omitted_memory_ids=tuple(item.memory_id for item in omissions),
                 omitted_snippet_count=0,
                 tokenizer=TOKENIZER_ID,
@@ -200,11 +147,7 @@ class RecallEngine:
             include_superseded=include_superseded,
             workstream_key=workstream_key,
             omissions=tuple(omissions),
-            budget=RecallBudget(
-                token_limit=token_budget,
-                token_count=compiled.token_count,
-                type_caps=tuple(_TYPE_CAPS.items()),
-            ),
+            budget=RecallBudget(token_limit=token_budget, token_count=compiled.token_count, type_caps=tuple(_TYPE_CAPS.items())),
             source_cursor=source_cursor,
             index_cursor=index_cursor,
             semantic_state=semantic_state,
@@ -237,36 +180,23 @@ class RecallEngine:
         memories = {
             memory_id: memory
             for memory_id in scores
-            if (memory := self._state.get_memory(repo_key=repo_key, memory_id=memory_id))
-            is not None
+            if (memory := self._state.get_memory(repo_key=repo_key, memory_id=memory_id)) is not None
         }
         statuses = {
-            memory_id: cast(
-                MemoryStatus,
-                self._state.memory_status(repo_key=repo_key, memory_id=memory_id),
-            )
+            memory_id: cast(MemoryStatus, self._state.memory_status(repo_key=repo_key, memory_id=memory_id))
             for memory_id in memories
         }
         valid = {
-            memory_id: memory
-            for memory_id, memory in memories.items()
-            if statuses[memory_id] == "active" or include_superseded
+            memory_id: memory for memory_id, memory in memories.items() if statuses[memory_id] == "active" or include_superseded
         }
         if self._reranker is not None:
             reranked = dict(
                 self._reranker.rerank(
-                    query,
-                    tuple(
-                        (memory_id, memory.content, scores[memory_id])
-                        for memory_id, memory in valid.items()
-                    ),
+                    query, tuple((memory_id, memory.content, scores[memory_id]) for memory_id, memory in valid.items())
                 )
             )
             scores.update(reranked)
-        pinned_id = self._pinned_work_state(
-            repo_key=repo_key,
-            workstream_key=workstream_key,
-        )
+        pinned_id = self._pinned_work_state(repo_key=repo_key, workstream_key=workstream_key)
         if pinned_id is not None and pinned_id not in valid:
             pinned = self._state.get_memory(repo_key=repo_key, memory_id=pinned_id)
             if pinned is not None:
@@ -311,18 +241,11 @@ class RecallEngine:
             omissions,
         )
 
-    def _pinned_work_state(
-        self,
-        *,
-        repo_key: str,
-        workstream_key: str | None,
-    ) -> str | None:
+    def _pinned_work_state(self, *, repo_key: str, workstream_key: str | None) -> str | None:
         if workstream_key is None:
             return None
         matches = tuple(
-            memory_id
-            for key, memory_id in self._state.active_workstream_heads(repo_key=repo_key)
-            if key == workstream_key
+            memory_id for key, memory_id in self._state.active_workstream_heads(repo_key=repo_key) if key == workstream_key
         )
         return matches[0] if len(matches) == 1 else None
 
@@ -346,9 +269,7 @@ class RecallEngine:
             title=memory.title,
             summary=memory.content,
             source_uri=f"codecairn://memory/{memory.memory_id}",
-            content_sha256=hashlib.sha256(
-                canonical_json(coding_memory_to_dict(memory)).encode()
-            ).hexdigest(),
+            content_sha256=hashlib.sha256(canonical_json(coding_memory_to_dict(memory)).encode()).hexdigest(),
             candidate_sources=sources,
             vector_score=None if vector is None else vector[1],
             vector_rank=None if vector is None else vector[0],

@@ -1,28 +1,25 @@
 from __future__ import annotations
 
-import json
 import re
 import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from codecairn.importers.jsonl import JsonlScan, RawRecord, read_jsonl
-from codecairn.memory.errors import SourceRewritten, TraceParseError
-from codecairn.memory.models import (
-    AgentTrace,
-    FileChangeFact,
-    FileChangeOperation,
-    ImportCheckpoint,
-    TraceEvent,
-    TraceReference,
+from codecairn.importers.jsonl import (
+    JsonlScan,
+    RawRecord,
+    agent_trace,
+    checkpoint_context,
+    read_import_scan,
+    text_content,
+    validated_session_id,
 )
+from codecairn.memory.errors import TraceParseError
+from codecairn.memory.models import AgentTrace, FileChangeFact, FileChangeOperation, ImportCheckpoint, TraceEvent, TraceReference
 from codecairn.memory.schema import Provider
 from codecairn.memory.trace import stable_id
 
-_MAX_SESSION_BYTES = 64 * 1024 * 1024
-_MAX_RAW_EVENTS = 100_000
-_MAX_SESSION_ID_CHARS = 512
 _MAX_SESSION_FILE_CHANGE_FACTS = 10_000
 _MAX_PATH_CHARS = 4_096
 _MIN_EXIT_CODE = -(2**31)
@@ -48,61 +45,23 @@ class _NormalizeState:
 class ClaudeImporter:
     provider: Provider = "claude"
 
-    def read(
-        self,
-        source_path: Path,
-        *,
-        source_root: Path | None = None,
-        checkpoint: ImportCheckpoint | None = None,
-    ) -> AgentTrace:
-        resumed_from = checkpoint.resume_raw_event_index if checkpoint is not None else 0
-        scan = read_jsonl(
-            source_path,
-            source_root=source_root,
-            start_raw_event_index=resumed_from,
-            max_session_bytes=_MAX_SESSION_BYTES,
-            max_raw_events=_MAX_RAW_EVENTS,
-        )
+    def read(self, source_path: Path, *, source_root: Path | None = None, checkpoint: ImportCheckpoint | None = None) -> AgentTrace:
+        scan = read_import_scan(source_path, source_root=source_root, checkpoint=checkpoint)
         return self._from_scan(scan, checkpoint=checkpoint)
 
-    def _from_scan(
-        self,
-        scan: JsonlScan,
-        *,
-        checkpoint: ImportCheckpoint | None,
-    ) -> AgentTrace:
-        if checkpoint is not None:
-            _validate_checkpoint(checkpoint)
-        resumed_from = checkpoint.resume_raw_event_index if checkpoint is not None else 0
-        if checkpoint is not None and scan.prefix_sha256 != checkpoint.resume_prefix_sha256:
-            raise SourceRewritten(
-                f"Claude source changed before committed checkpoint: {scan.source_path}"
-            )
-        if (
-            checkpoint is not None
-            and scan.raw_event_count - 1 < checkpoint.committed_raw_event_index
-        ):
-            raise SourceRewritten(
-                f"Claude source is truncated before committed cursor: {scan.source_path}"
-            )
+    def _from_scan(self, scan: JsonlScan, *, checkpoint: ImportCheckpoint | None) -> AgentTrace:
+        context = checkpoint_context(
+            scan, checkpoint, provider=self.provider, label="Claude", max_file_changes=_MAX_SESSION_FILE_CHANGE_FACTS
+        )
+        resumed_from, raw_prefix_call_ids, raw_prefix_file_change_fact_count = context
         session_id = (
-            _validated_session_id(checkpoint.session_id)
+            validated_session_id(checkpoint.session_id, label="Claude")
             if checkpoint is not None
             else _session_id(scan.records, fallback=scan.source_path.stem)
         )
-        raw_prefix_call_ids = checkpoint.resume_call_ids if checkpoint is not None else ()
-        raw_prefix_file_change_fact_count = (
-            checkpoint.resume_file_change_fact_count if checkpoint is not None else 0
-        )
-        state = _NormalizeState(
-            seen_call_ids=set(raw_prefix_call_ids),
-            file_change_fact_count=raw_prefix_file_change_fact_count,
-        )
+        state = _NormalizeState(seen_call_ids=set(raw_prefix_call_ids), file_change_fact_count=raw_prefix_file_change_fact_count)
         events: list[TraceEvent] = []
-        for index, (record, raw_event_sha256) in enumerate(
-            scan.records,
-            start=resumed_from,
-        ):
+        for index, (record, raw_event_sha256) in enumerate(scan.records, start=resumed_from):
             events.extend(
                 _normalize_record(
                     raw_event=record,
@@ -113,51 +72,15 @@ class ClaudeImporter:
                     state=state,
                 )
             )
-        return AgentTrace(
-            trace_id=stable_id("trace", self.provider, session_id),
-            provider=self.provider,
-            session_id=session_id,
-            source_path=str(scan.source_path),
-            source_sha256=scan.source_sha256,
-            raw_event_count=scan.raw_event_count,
-            resumed_from_raw_event_index=resumed_from,
-            raw_prefix_sha256=scan.prefix_sha256,
-            raw_prefix_call_ids=raw_prefix_call_ids,
-            raw_prefix_file_change_fact_count=raw_prefix_file_change_fact_count,
-            raw_suffix_event_sha256s=tuple(item[1] for item in scan.records),
-            events=tuple(events),
-        )
+        return agent_trace(scan, provider=self.provider, session_id=session_id, context=context, events=tuple(events))
 
 
 def _session_id(records: tuple[RawRecord, ...], *, fallback: str) -> str:
     for record, _raw_event_sha256 in records:
         value = record.get("sessionId")
         if isinstance(value, str):
-            return _validated_session_id(value)
-    return _validated_session_id(fallback)
-
-
-def _validated_session_id(value: str) -> str:
-    if not value or len(value) > _MAX_SESSION_ID_CHARS:
-        raise TraceParseError(
-            f"Claude session id must contain 1 to {_MAX_SESSION_ID_CHARS} characters"
-        )
-    if _contains_unsafe_text_character(value):
-        raise TraceParseError("Claude session id contains an unsafe control or line separator")
-    return value
-
-
-def _validate_checkpoint(checkpoint: ImportCheckpoint) -> None:
-    if checkpoint.provider != ClaudeImporter.provider:
-        raise TraceParseError("Claude checkpoint provider does not match the importer")
-    if checkpoint.committed_raw_event_index < -1:
-        raise TraceParseError("Claude committed raw-event index is invalid")
-    if not 0 <= checkpoint.resume_raw_event_index <= checkpoint.committed_raw_event_index + 1:
-        raise TraceParseError("Claude resume checkpoint is outside the committed cursor")
-    if not 0 <= checkpoint.resume_file_change_fact_count <= _MAX_SESSION_FILE_CHANGE_FACTS:
-        raise TraceParseError("Claude checkpoint file-change count is outside the import limit")
-    if len(checkpoint.resume_call_ids) != len(set(checkpoint.resume_call_ids)):
-        raise TraceParseError("Claude checkpoint contains duplicate call IDs")
+            return validated_session_id(value, label="Claude")
+    return validated_session_id(fallback, label="Claude")
 
 
 def _normalize_record(
@@ -269,14 +192,7 @@ def _message_event(
         session_id=session_id,
     )
     return TraceEvent(
-        event_id=_event_id(
-            session_id,
-            raw_event_index,
-            raw_event_sha256,
-            raw_event_type,
-            block_index,
-            "message",
-        ),
+        event_id=_event_id(session_id, raw_event_index, raw_event_sha256, raw_event_type, block_index, "message"),
         kind="message",
         evidence=evidence,
         role=role,
@@ -300,9 +216,7 @@ def _tool_call_event(
     raw_input = block.get("input")
     tool_input = raw_input if isinstance(raw_input, dict) else {}
     command_value = tool_input.get("command")
-    command = (
-        command_value if tool_name in _COMMAND_TOOLS and isinstance(command_value, str) else None
-    )
+    command = command_value if tool_name in _COMMAND_TOOLS and isinstance(command_value, str) else None
     evidence = _evidence(
         call_id=call_id,
         raw_event_type=raw_event_type,
@@ -312,14 +226,7 @@ def _tool_call_event(
         session_id=session_id,
     )
     event = TraceEvent(
-        event_id=_event_id(
-            session_id,
-            raw_event_index,
-            raw_event_sha256,
-            raw_event_type,
-            block_index,
-            "tool_call",
-        ),
+        event_id=_event_id(session_id, raw_event_index, raw_event_sha256, raw_event_type, block_index, "tool_call"),
         kind="tool_call",
         evidence=evidence,
         tool_name=tool_name,
@@ -328,9 +235,7 @@ def _tool_call_event(
     )
     if call_id is not None:
         if call_id in state.seen_call_ids:
-            raise TraceParseError(
-                f"Duplicate Claude call_id {call_id!r} at raw event {raw_event_index}"
-            )
+            raise TraceParseError(f"Duplicate Claude call_id {call_id!r} at raw event {raw_event_index}")
         state.seen_call_ids.add(call_id)
         state.pending_calls[call_id] = _PendingCall(event=event, tool_input=tool_input)
     return event
@@ -358,25 +263,13 @@ def _tool_result_event(
         source_path=source_path,
         session_id=session_id,
     )
-    event_id = _event_id(
-        session_id,
-        raw_event_index,
-        raw_event_sha256,
-        raw_event_type,
-        block_index,
-        "tool_result",
-    )
-    content = _result_text(block.get("content"))
+    event_id = _event_id(session_id, raw_event_index, raw_event_sha256, raw_event_type, block_index, "tool_result")
+    content = text_content(block.get("content"), json_fallback=True)
     is_error = block.get("is_error") is True
     paired_call = pending.event if pending is not None else None
     is_command_result = paired_call is not None and paired_call.tool_name in _COMMAND_TOOLS
     file_changes = _file_changes(
-        event_id=event_id,
-        evidence=evidence,
-        pending=pending,
-        tool_use_result=tool_use_result,
-        is_error=is_error,
-        state=state,
+        event_id=event_id, evidence=evidence, pending=pending, tool_use_result=tool_use_result, is_error=is_error, state=state
     )
     return TraceEvent(
         event_id=event_id,
@@ -409,18 +302,14 @@ def _file_changes(
         return ()
     path = _validated_path(path_value)
     result_type = structured.get("type")
-    if result_type == "create" or (
-        pending.event.tool_name == "Write" and structured.get("originalFile") is None
-    ):
+    if result_type == "create" or (pending.event.tool_name == "Write" and structured.get("originalFile") is None):
         operation: FileChangeOperation = "add"
     elif result_type == "delete":
         operation = "delete"
     else:
         operation = "update"
     if state.file_change_fact_count >= _MAX_SESSION_FILE_CHANGE_FACTS:
-        raise TraceParseError(
-            f"Claude session exceeds the {_MAX_SESSION_FILE_CHANGE_FACTS}-fact import limit"
-        )
+        raise TraceParseError(f"Claude session exceeds the {_MAX_SESSION_FILE_CHANGE_FACTS}-fact import limit")
     state.file_change_fact_count += 1
     return (
         FileChangeFact(
@@ -434,12 +323,7 @@ def _file_changes(
 
 
 def _unknown_event(
-    *,
-    raw_event_type: str,
-    raw_event_sha256: str,
-    raw_event_index: int,
-    source_path: Path,
-    session_id: str,
+    *, raw_event_type: str, raw_event_sha256: str, raw_event_index: int, source_path: Path, session_id: str
 ) -> TraceEvent:
     evidence = _evidence(
         call_id=None,
@@ -450,27 +334,14 @@ def _unknown_event(
         session_id=session_id,
     )
     return TraceEvent(
-        event_id=_event_id(
-            session_id,
-            raw_event_index,
-            raw_event_sha256,
-            raw_event_type,
-            0,
-            "unknown",
-        ),
+        event_id=_event_id(session_id, raw_event_index, raw_event_sha256, raw_event_type, 0, "unknown"),
         kind="unknown",
         evidence=evidence,
     )
 
 
 def _evidence(
-    *,
-    call_id: str | None,
-    raw_event_type: str,
-    raw_event_sha256: str,
-    raw_event_index: int,
-    source_path: Path,
-    session_id: str,
+    *, call_id: str | None, raw_event_type: str, raw_event_sha256: str, raw_event_index: int, source_path: Path, session_id: str
 ) -> TraceReference:
     return TraceReference(
         provider=ClaudeImporter.provider,
@@ -484,12 +355,7 @@ def _evidence(
 
 
 def _event_id(
-    session_id: str,
-    raw_event_index: int,
-    raw_event_sha256: str,
-    raw_event_type: str,
-    block_index: int,
-    normalized_type: str,
+    session_id: str, raw_event_index: int, raw_event_sha256: str, raw_event_type: str, block_index: int, normalized_type: str
 ) -> str:
     return stable_id(
         "event",
@@ -512,19 +378,6 @@ def _exit_code(content: str | None, *, is_error: bool) -> int:
                 raise TraceParseError(f"Claude exit code is outside signed 32-bit range: {value}")
             return value
     return 1 if is_error else 0
-
-
-def _result_text(value: object) -> str | None:
-    if isinstance(value, str):
-        return value
-    if not isinstance(value, list):
-        return None
-    texts = [
-        item["text"]
-        for item in value
-        if isinstance(item, dict) and isinstance(item.get("text"), str)
-    ]
-    return "\n".join(texts) if texts else json.dumps(value, sort_keys=True)
 
 
 def _validated_path(value: str) -> str:

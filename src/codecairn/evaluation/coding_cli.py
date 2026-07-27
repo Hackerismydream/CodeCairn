@@ -4,17 +4,11 @@ import argparse
 import json
 from pathlib import Path
 
-from codecairn.evaluation.coding import (
-    CodexExecAgent,
-    CodingRunConfig,
-    run_coding_evaluation,
-)
+from codecairn.evaluation.coding import CodexExecAgent, CodingRunConfig, run_coding_evaluation
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Run immutable CodingMemoryBench memory-on/off experiments."
-    )
+    parser = argparse.ArgumentParser(description="Run immutable CodingMemoryBench memory-on/off experiments.")
     parser.add_argument("--suite", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--experiment-id", required=True)
@@ -36,11 +30,7 @@ def main() -> None:
             seed=args.seed,
             max_workers=args.max_workers,
         ),
-        agent=CodexExecAgent(
-            executable=args.codex_executable,
-            model=args.model,
-            timeout_seconds=args.agent_timeout_seconds,
-        ),
+        agent=CodexExecAgent(executable=args.codex_executable, model=args.model, timeout_seconds=args.agent_timeout_seconds),
     )
     print(json.dumps(artifact.summary, indent=2, sort_keys=True))
 

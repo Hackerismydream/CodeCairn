@@ -20,12 +20,7 @@ def count_tokens(value: str) -> int:
     return (len(value.encode()) + 1) // 2
 
 
-def compile_context(
-    query: str,
-    ranked: tuple[RankedRecall, ...],
-    *,
-    token_limit: int,
-) -> CompiledContext:
+def compile_context(query: str, ranked: tuple[RankedRecall, ...], *, token_limit: int) -> CompiledContext:
     if not 256 <= token_limit <= 32_768:
         raise ValueError("Recall token budget must be between 256 and 32768")
     header = f"# Recall Context\n\nTask: {query}\n"
@@ -53,10 +48,7 @@ def compile_context(
         if count_tokens(markdown + empty) <= token_limit:
             markdown += empty
     return CompiledContext(
-        markdown=markdown,
-        rendered_ids=tuple(rendered),
-        omitted_ids=tuple(omitted),
-        token_count=count_tokens(markdown),
+        markdown=markdown, rendered_ids=tuple(rendered), omitted_ids=tuple(omitted), token_count=count_tokens(markdown)
     )
 
 

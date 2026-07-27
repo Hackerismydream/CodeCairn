@@ -48,11 +48,17 @@ branch = true
 source = ["codecairn"]
 
 [tool.ruff]
-line-length = 100
+line-length = 132
 target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
+
+[tool.ruff.format]
+skip-magic-trailing-comma = true
 
 [tool.mypy]
 python_version = "3.12"

@@ -17,13 +17,7 @@ from typing import cast
 
 from codecairn.evaluation.artifacts import file_sha256, read_json
 
-CATEGORY_NAMES = {
-    1: "multi-hop",
-    2: "temporal",
-    3: "open-domain",
-    4: "single-hop",
-    5: "adversarial",
-}
+CATEGORY_NAMES = {1: "multi-hop", 2: "temporal", 3: "open-domain", 4: "single-hop", 5: "adversarial"}
 LOCOMO_PUBLIC_COMPOSITE_CONTRACT = "public-exact-repair-outcomes-v1"
 
 
@@ -62,14 +56,8 @@ def report_locomo_composite(source: Path) -> dict[str, object]:
     for name in ("base", "repair"):
         source_root = source / "sources" / name
         receipt = _dict(receipts.get(name), field=f"LoCoMo {name} receipt")
-        public_manifest = _dict(
-            read_json(source_root / "manifest.json"),
-            field=f"LoCoMo {name} manifest",
-        )
-        public_report = _dict(
-            read_json(source_root / "report.json"),
-            field=f"LoCoMo {name} report",
-        )
+        public_manifest = _dict(read_json(source_root / "manifest.json"), field=f"LoCoMo {name} manifest")
+        public_report = _dict(read_json(source_root / "report.json"), field=f"LoCoMo {name} report")
         if public_manifest.get("source_manifest_sha256") != receipt.get("manifest_sha256"):
             raise ValueError(f"LoCoMo {name} manifest receipt does not match")
         if public_report.get("source_report_sha256") != receipt.get("report_sha256"):
@@ -79,21 +67,13 @@ def report_locomo_composite(source: Path) -> dict[str, object]:
         source_reports[name] = public_report
         source_outcomes[name] = outcomes
 
-    target_definition = _dict(
-        read_json(source / "target-question-set.json"),
-        field="LoCoMo target question set",
-    )
-    repair_definition = _dict(
-        read_json(source / "repair-question-set.json"),
-        field="LoCoMo repair question set",
-    )
+    target_definition = _dict(read_json(source / "target-question-set.json"), field="LoCoMo target question set")
+    repair_definition = _dict(read_json(source / "repair-question-set.json"), field="LoCoMo repair question set")
     target_receipt = _dict(composite.get("target"), field="LoCoMo target")
     repair_receipt = _dict(composite.get("repair_selection"), field="LoCoMo repair selection")
-    if file_sha256(source / "target-question-set.json") != target_receipt.get(
-        "question_set_sha256"
-    ) or file_sha256(source / "repair-question-set.json") != repair_receipt.get(
-        "question_set_sha256"
-    ):
+    if file_sha256(source / "target-question-set.json") != target_receipt.get("question_set_sha256") or file_sha256(
+        source / "repair-question-set.json"
+    ) != repair_receipt.get("question_set_sha256"):
         raise ValueError("LoCoMo public question-set receipt does not match")
     if target_definition.get("selection_id") != target_receipt.get("selection_id") or (
         repair_definition.get("selection_id") != repair_receipt.get("selection_id")
@@ -103,9 +83,7 @@ def report_locomo_composite(source: Path) -> dict[str, object]:
     base_outcomes = source_outcomes["base"]
     repair_outcomes = source_outcomes["repair"]
     failed_base_ids = {
-        question_id
-        for question_id, outcome in base_outcomes.items()
-        if outcome["outcome"] == "infrastructure_failed"
+        question_id for question_id, outcome in base_outcomes.items() if outcome["outcome"] == "infrastructure_failed"
     }
     repair_ids = _string_set(repair_definition.get("question_ids"), field="repair question IDs")
     if failed_base_ids != repair_ids or set(repair_outcomes) != repair_ids:
@@ -117,22 +95,12 @@ def report_locomo_composite(source: Path) -> dict[str, object]:
     ):
         raise ValueError("LoCoMo public final outcomes do not cover the target")
     for question_id, outcome in final_outcomes.items():
-        expected = (
-            repair_outcomes[question_id]
-            if question_id in repair_ids
-            else base_outcomes[question_id]
-        )
+        expected = repair_outcomes[question_id] if question_id in repair_ids else base_outcomes[question_id]
         if {key: value for key, value in outcome.items() if key != "source"} != expected:
             raise ValueError("LoCoMo public final outcome changes its source")
 
     aggregate = _aggregate_outcomes(final_outcomes)
-    for field in (
-        "scored_question_count",
-        "infrastructure_failed_count",
-        "correct_count",
-        "accuracy",
-        "by_category",
-    ):
+    for field in ("scored_question_count", "infrastructure_failed_count", "correct_count", "accuracy", "by_category"):
         if aggregate[field] != composite.get(field):
             raise ValueError("LoCoMo public outcomes do not reproduce the composite score")
     usage = _merge_usage(source_reports["base"], source_reports["repair"])
@@ -161,10 +129,7 @@ def report_locomo_composite(source: Path) -> dict[str, object]:
 
 def report_retrieval(run_dir: Path) -> dict[str, object]:
     manifest = _dict(read_json(run_dir / "manifest.json"), field="retrieval manifest")
-    records = [
-        _dict(read_json(path), field="retrieval query")
-        for path in sorted((run_dir / "queries").glob("*.json"))
-    ]
+    records = [_dict(read_json(path), field="retrieval query") for path in sorted((run_dir / "queries").glob("*.json"))]
     contract = _retrieval_contract(manifest)
     recall_at_1: list[float] = []
     recall_at_5: list[float] = []
@@ -178,22 +143,13 @@ def report_retrieval(run_dir: Path) -> dict[str, object]:
         rankings = record.get("rankings")
         if not isinstance(rankings, list):
             raise ValueError("Query rankings must be an array")
-        ranked_keys = [
-            item.get("key")
-            for item in rankings
-            if isinstance(item, dict) and isinstance(item.get("key"), str)
-        ]
+        ranked_keys = [item.get("key") for item in rankings if isinstance(item, dict) and isinstance(item.get("key"), str)]
         recall_at_1.append(len(relevant.intersection(ranked_keys[:1])) / len(relevant))
         recall_at_5.append(len(relevant.intersection(ranked_keys[:5])) / len(relevant))
-        first = next(
-            (rank for rank, key in enumerate(ranked_keys, start=1) if key in relevant),
-            None,
-        )
+        first = next((rank for rank, key in enumerate(ranked_keys, start=1) if key in relevant), None)
         reciprocal_ranks.append(0.0 if first is None else 1.0 / first)
         top_five = ranked_keys[:5]
-        irrelevant_rates.append(
-            0.0 if not top_five else sum(key not in relevant for key in top_five) / len(top_five)
-        )
+        irrelevant_rates.append(0.0 if not top_five else sum(key not in relevant for key in top_five) / len(top_five))
         latency = record.get("latency_ms")
         if isinstance(latency, bool) or not isinstance(latency, int | float):
             raise ValueError("Query latency must be numeric")
@@ -233,10 +189,7 @@ def report_recovery(run_dir: Path) -> dict[str, object]:
 
 def report_coding(run_dir: Path) -> dict[str, object]:
     experiment = _dict(read_json(run_dir / "experiment.json"), field="coding experiment")
-    results = [
-        _dict(read_json(path), field="coding result")
-        for path in sorted(run_dir.glob("*/result.json"))
-    ]
+    results = [_dict(read_json(path), field="coding result") for path in sorted(run_dir.glob("*/result.json"))]
     arms: dict[str, object] = {}
     for arm in ("memory-off", "memory-on"):
         selected = [result for result in results if result.get("arm") == arm]
@@ -271,9 +224,7 @@ def report_coding(run_dir: Path) -> dict[str, object]:
             "pass_rate": None if not completed else len(passed) / len(completed),
             "mean_repeated_file_reads": _numeric_mean(completed, "repeated_file_reads"),
             "mean_repeated_failed_commands": _numeric_mean(completed, "repeated_failed_commands"),
-            "mean_steps_to_first_useful_action": _numeric_mean(
-                completed, "steps_to_first_useful_action"
-            ),
+            "mean_steps_to_first_useful_action": _numeric_mean(completed, "steps_to_first_useful_action"),
             "total_tokens": sum(token_values),
             "total_input_tokens": sum(input_values),
             "total_cached_input_tokens": sum(cached_values),
@@ -287,34 +238,22 @@ def report_coding(run_dir: Path) -> dict[str, object]:
         "suite": "coding-memory-ab",
         "experiment_id": _str(experiment, "experiment_id"),
         "planned_run_count": _int(experiment, "planned_run_count"),
-        "completed_run_count": sum(
-            result.get("outcome") in {"passed", "failed"} for result in results
-        ),
-        "infrastructure_failure_count": sum(
-            result.get("outcome") == "infrastructure_failed" for result in results
-        ),
+        "completed_run_count": sum(result.get("outcome") in {"passed", "failed"} for result in results),
+        "infrastructure_failure_count": sum(result.get("outcome") == "infrastructure_failed" for result in results),
         "arms": arms,
     }
 
 
-def _retrieval_contract(
-    manifest: dict[str, object],
-) -> tuple[dict[str, object], int, str] | None:
+def _retrieval_contract(manifest: dict[str, object]) -> tuple[dict[str, object], int, str] | None:
     raw = manifest.get("retrieval")
-    if not isinstance(raw, dict) or not all(
-        isinstance(raw.get(name), dict) for name in ("embedding", "reranker")
-    ):
+    if not isinstance(raw, dict) or not all(isinstance(raw.get(name), dict) for name in ("embedding", "reranker")):
         return None
     top_k = _int(manifest, "top_k")
     canonical = json.dumps(raw, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
     return raw, top_k, hashlib.sha256(canonical.encode()).hexdigest()
 
 
-def _validate_retrieval_record(
-    record: dict[str, object],
-    *,
-    contract: tuple[dict[str, object], int, str] | None,
-) -> None:
+def _validate_retrieval_record(record: dict[str, object], *, contract: tuple[dict[str, object], int, str] | None) -> None:
     if contract is None:
         return
     config, top_k, digest = contract
@@ -329,20 +268,9 @@ def _validate_retrieval_record(
                 raise ValueError(f"Retrieval {provider} identity does not match its manifest")
 
 
-def _validate_source_report(
-    report: dict[str, object],
-    *,
-    outcomes: dict[str, dict[str, object]],
-    field: str,
-) -> None:
+def _validate_source_report(report: dict[str, object], *, outcomes: dict[str, dict[str, object]], field: str) -> None:
     aggregate = _aggregate_outcomes(outcomes)
-    for name in (
-        "scored_question_count",
-        "infrastructure_failed_count",
-        "correct_count",
-        "accuracy",
-        "by_category",
-    ):
+    for name in ("scored_question_count", "infrastructure_failed_count", "correct_count", "accuracy", "by_category"):
         if report.get(name) != aggregate[name]:
             raise ValueError(f"LoCoMo public {field} outcomes do not match its report")
 
@@ -392,20 +320,13 @@ def _load_outcomes(root: Path) -> dict[str, dict[str, object]]:
     return outcomes
 
 
-def _merge_usage(
-    base_report: dict[str, object],
-    repair_report: dict[str, object],
-) -> dict[str, object]:
+def _merge_usage(base_report: dict[str, object], repair_report: dict[str, object]) -> dict[str, object]:
     base = _dict(base_report.get("usage"), field="base usage")
     repair = _dict(repair_report.get("usage"), field="repair usage")
     merged: dict[str, object] = {}
     for field in sorted(set(base) | set(repair)):
         values = (base.get(field), repair.get(field))
-        numeric = [
-            value
-            for value in values
-            if isinstance(value, int | float) and not isinstance(value, bool)
-        ]
+        numeric = [value for value in values if isinstance(value, int | float) and not isinstance(value, bool)]
         if any(value is not None and not isinstance(value, int | float) for value in values):
             raise ValueError(f"LoCoMo usage field is not numeric: {field}")
         if not numeric:
@@ -418,12 +339,7 @@ def _merge_usage(
 
 
 def _numeric_mean(records: list[dict[str, object]], field: str) -> float | None:
-    values = [
-        float(value)
-        for record in records
-        for value in (record.get(field),)
-        if isinstance(value, int | float)
-    ]
+    values = [float(value) for record in records for value in (record.get(field),) if isinstance(value, int | float)]
     return None if not values else mean(values)
 
 

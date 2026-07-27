@@ -9,21 +9,10 @@ from typing import cast
 
 from codecairn.memory.episode import ClosedEpisode
 from codecairn.memory.models import TraceEvent
-from codecairn.memory.schema import (
-    EvidenceFact,
-    FactAttributes,
-    FactKind,
-    FactRole,
-    Provider,
-    SourceLocation,
-)
+from codecairn.memory.schema import EvidenceFact, FactAttributes, FactKind, FactRole, Provider, SourceLocation
 
 
-def collect_evidence_facts(
-    episodes: tuple[ClosedEpisode, ...],
-    *,
-    repo_key: str,
-) -> tuple[EvidenceFact, ...]:
+def collect_evidence_facts(episodes: tuple[ClosedEpisode, ...], *, repo_key: str) -> tuple[EvidenceFact, ...]:
     """Project normalized events into closed, immutable Source Facts."""
     facts: list[EvidenceFact] = []
     for episode in episodes:
@@ -48,50 +37,18 @@ def collect_evidence_facts(
 
 
 def _event_facts(
-    event: TraceEvent,
-    *,
-    repo_key: str,
-    episode_id: str,
-    command_fact_by_call: dict[str, str],
-    tool_fact_by_call: dict[str, str],
+    event: TraceEvent, *, repo_key: str, episode_id: str, command_fact_by_call: dict[str, str], tool_fact_by_call: dict[str, str]
 ) -> tuple[EvidenceFact, ...]:
     location = _source_location(event)
     specifications: list[tuple[FactKind, FactRole | None, str, FactAttributes]] = []
-    if (
-        event.kind == "message"
-        and event.text
-        and event.role
-        in {
-            "user",
-            "assistant",
-            "tool",
-            "system",
-        }
-    ):
+    if event.kind == "message" and event.text and event.role in {"user", "assistant", "tool", "system"}:
         specifications.append(("message", cast(FactRole, event.role), event.text, {}))
     if event.kind == "tool_call" and event.tool_name and event.call_id:
-        specifications.append(
-            (
-                "tool_call",
-                None,
-                event.tool_name,
-                {"tool_name": event.tool_name, "call_id": event.call_id},
-            )
-        )
+        specifications.append(("tool_call", None, event.tool_name, {"tool_name": event.tool_name, "call_id": event.call_id}))
         if event.command:
-            specifications.append(
-                (
-                    "command",
-                    None,
-                    event.command,
-                    {"command": event.command},
-                )
-            )
+            specifications.append(("command", None, event.command, {"command": event.command}))
     for change in event.file_changes:
-        attributes: dict[str, str] = {
-            "path": change.path,
-            "change_kind": change.operation,
-        }
+        attributes: dict[str, str] = {"path": change.path, "change_kind": change.operation}
         if change.destination_path is not None:
             attributes["destination_path"] = change.destination_path
         specifications.append(("file_change", None, change.path, attributes))
@@ -100,40 +57,21 @@ def _event_facts(
         tool_fact_id = tool_fact_by_call.get(event.call_id)
         if tool_fact_id is not None:
             specifications.append(
-                (
-                    "tool_result",
-                    None,
-                    event.tool_status or outcome,
-                    {"tool_call_fact_id": tool_fact_id, "outcome": outcome},
-                )
+                ("tool_result", None, event.tool_status or outcome, {"tool_call_fact_id": tool_fact_id, "outcome": outcome})
             )
         command_fact_id = command_fact_by_call.get(event.call_id)
         if event.is_command_result and command_fact_id is not None:
-            attributes_result: dict[str, str | int] = {
-                "command_fact_id": command_fact_id,
-                "outcome": outcome,
-            }
+            attributes_result: dict[str, str | int] = {"command_fact_id": command_fact_id, "outcome": outcome}
             if event.exit_code is not None:
                 attributes_result["exit_code"] = event.exit_code
-            specifications.append(
-                (
-                    "command_result",
-                    None,
-                    event.command or event.tool_status or outcome,
-                    attributes_result,
-                )
-            )
+            specifications.append(("command_result", None, event.command or event.tool_status or outcome, attributes_result))
             if event.command and _is_verification_command(event.command):
                 specifications.append(
                     (
                         "verification",
                         None,
                         event.command,
-                        {
-                            "check_name": _verification_name(event.command),
-                            "outcome": outcome,
-                            "command_fact_id": command_fact_id,
-                        },
+                        {"check_name": _verification_name(event.command), "outcome": outcome, "command_fact_id": command_fact_id},
                     )
                 )
         if tool_fact_id is None and command_fact_id is None and event.text:
@@ -204,8 +142,7 @@ def _is_verification_command(command: str) -> bool:
         return any(target in {"check", "ci", "lint", "test"} for target in tokens[1:])
     if executable in {"npm", "pnpm", "yarn", "bun"}:
         return len(tokens) > 1 and (
-            tokens[1] == "test"
-            or (tokens[1] == "run" and len(tokens) > 2 and tokens[2] in {"build", "test"})
+            tokens[1] == "test" or (tokens[1] == "run" and len(tokens) > 2 and tokens[2] in {"build", "test"})
         )
     if executable == "cargo":
         return len(tokens) > 1 and tokens[1] in {"build", "check", "test"}

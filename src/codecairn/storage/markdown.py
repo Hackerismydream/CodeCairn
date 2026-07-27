@@ -11,12 +11,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from codecairn.memory.evolution import (
-    EvolutionArtifact,
-    EvolutionRecord,
-    evolution_from_dict,
-    evolution_to_dict,
-)
+from codecairn.memory.evolution import EvolutionArtifact, EvolutionRecord, evolution_from_dict, evolution_to_dict
 from codecairn.memory.models import MemoryArtifact
 from codecairn.memory.schema import (
     CodingMemory,
@@ -91,42 +86,25 @@ class MarkdownMemoryStore:
 
     def prepare(self, memory: CodingMemory) -> MemoryArtifact:
         content = _render(memory)
-        return MemoryArtifact(
-            memory=memory,
-            path=self.path_for(memory),
-            content_sha256=hashlib.sha256(content).hexdigest(),
-        )
+        return MemoryArtifact(memory=memory, path=self.path_for(memory), content_sha256=hashlib.sha256(content).hexdigest())
 
     def write(
-        self,
-        memory: CodingMemory,
-        *,
-        on_stage: Callable[[str], None] | None = None,
-        stage_prefix: str = "capture",
+        self, memory: CodingMemory, *, on_stage: Callable[[str], None] | None = None, stage_prefix: str = "capture"
     ) -> MemoryArtifact:
         self._reject_legacy_root()
         artifact = self.prepare(memory)
         content = _render(memory)
-        artifact.path.parent.mkdir(parents=True, exist_ok=True)
-        existing = _read_bytes(artifact.path, missing_ok=True)
-        if existing is None:
-            _atomic_create(
-                artifact.path,
-                content,
-                on_stage=on_stage,
-                stage_prefix=stage_prefix,
-            )
-            existing = _read_bytes(artifact.path)
-        assert existing is not None
-        if hashlib.sha256(existing).hexdigest() != artifact.content_sha256:
-            try:
-                stored = self.read(artifact.path)
-            except (OSError, UnicodeError, SchemaInvalid, ValueError) as exc:
-                raise IdentityConflict(f"Conflicting Markdown truth: {memory.memory_id}") from exc
-            if coding_memory_to_dict(stored.memory) != coding_memory_to_dict(memory):
-                raise IdentityConflict(f"Conflicting immutable memory: {memory.memory_id}")
-            return stored
-        return artifact
+        stored = _write_immutable(
+            path=artifact.path,
+            content=content,
+            expected_digest=artifact.content_sha256,
+            read=self.read,
+            same=lambda item: coding_memory_to_dict(item.memory) == coding_memory_to_dict(memory),
+            identity=memory.memory_id,
+            on_stage=on_stage,
+            stage_prefix=stage_prefix,
+        )
+        return artifact if stored is None else stored
 
     def read(self, path: Path) -> MemoryArtifact:
         resolved = path.resolve(strict=True)
@@ -138,11 +116,7 @@ class MarkdownMemoryStore:
         expected = self.path_for(memory)
         if resolved != expected:
             raise SchemaInvalid("Memory Markdown is not at its canonical path")
-        return MemoryArtifact(
-            memory=memory,
-            path=resolved,
-            content_sha256=hashlib.sha256(source).hexdigest(),
-        )
+        return MemoryArtifact(memory=memory, path=resolved, content_sha256=hashlib.sha256(source).hexdigest())
 
     def scan(self) -> TruthScan:
         memories: list[MemoryArtifact] = []
@@ -162,9 +136,7 @@ class MarkdownMemoryStore:
 
     def path_for(self, memory: CodingMemory) -> Path:
         repo_slug = hashlib.sha256(memory.repo_key.encode("utf-8")).hexdigest()[:16]
-        path = (
-            self._root / "memory" / repo_slug / memory.memory_type / f"{memory.memory_id}.md"
-        ).resolve()
+        path = (self._root / "memory" / repo_slug / memory.memory_type / f"{memory.memory_id}.md").resolve()
         if not path.is_relative_to(self._root):
             raise SchemaInvalid("Markdown target escapes the runtime root")
         return path
@@ -175,42 +147,24 @@ class MarkdownMemoryStore:
     def prepare_evolution(self, record: EvolutionRecord) -> EvolutionArtifact:
         content = _render_evolution(record)
         return EvolutionArtifact(
-            record=record,
-            path=self.evolution_path_for(record),
-            content_sha256=hashlib.sha256(content).hexdigest(),
+            record=record, path=self.evolution_path_for(record), content_sha256=hashlib.sha256(content).hexdigest()
         )
 
-    def write_evolution(
-        self,
-        record: EvolutionRecord,
-        *,
-        on_stage: Callable[[str], None] | None = None,
-    ) -> EvolutionArtifact:
+    def write_evolution(self, record: EvolutionRecord, *, on_stage: Callable[[str], None] | None = None) -> EvolutionArtifact:
         self._reject_legacy_root()
         artifact = self.prepare_evolution(record)
         content = _render_evolution(record)
-        artifact.path.parent.mkdir(parents=True, exist_ok=True)
-        existing = _read_bytes(artifact.path, missing_ok=True)
-        if existing is None:
-            _atomic_create(
-                artifact.path,
-                content,
-                on_stage=on_stage,
-                stage_prefix="evolution",
-            )
-            existing = _read_bytes(artifact.path)
-        assert existing is not None
-        if hashlib.sha256(existing).hexdigest() != artifact.content_sha256:
-            try:
-                stored = self.read_evolution(artifact.path)
-            except (OSError, UnicodeError, SchemaInvalid, ValueError) as exc:
-                raise IdentityConflict(
-                    f"Conflicting Evolution truth: {record.evolution_id}"
-                ) from exc
-            if evolution_to_dict(stored.record) != evolution_to_dict(record):
-                raise IdentityConflict(f"Conflicting immutable Evolution: {record.evolution_id}")
-            return stored
-        return artifact
+        stored = _write_immutable(
+            path=artifact.path,
+            content=content,
+            expected_digest=artifact.content_sha256,
+            read=self.read_evolution,
+            same=lambda item: evolution_to_dict(item.record) == evolution_to_dict(record),
+            identity=record.evolution_id,
+            on_stage=on_stage,
+            stage_prefix="evolution",
+        )
+        return artifact if stored is None else stored
 
     def read_evolution(self, path: Path) -> EvolutionArtifact:
         resolved = path.resolve(strict=True)
@@ -221,11 +175,7 @@ class MarkdownMemoryStore:
         record = _parse_evolution(source)
         if resolved != self.evolution_path_for(record):
             raise SchemaInvalid("Evolution Markdown is not at its canonical path")
-        return EvolutionArtifact(
-            record=record,
-            path=resolved,
-            content_sha256=hashlib.sha256(source).hexdigest(),
-        )
+        return EvolutionArtifact(record=record, path=resolved, content_sha256=hashlib.sha256(source).hexdigest())
 
     def scan_evolutions(self) -> EvolutionTruthScan:
         evolutions: list[EvolutionArtifact] = []
@@ -252,103 +202,92 @@ class MarkdownMemoryStore:
 
     def _reject_legacy_root(self) -> None:
         if (self._root / "repos").exists():
-            raise LegacyRootUnsupported(
-                "Pre-v0.1 runtime root is unsupported; use a fresh root and re-import"
-            )
+            raise LegacyRootUnsupported("Pre-v0.1 runtime root is unsupported; use a fresh root and re-import")
 
 
 def _render(memory: CodingMemory) -> bytes:
     record = coding_memory_to_dict(memory)
-    content = record.pop("content")
-    envelope = {"record_kind": "coding_memory", **record}
-    lines = ["---"]
-    for key in _FRONTMATTER_KEYS:
-        lines.append(f"{key}: {canonical_json(envelope[key])}")
-    lines.extend(("---", str(content), ""))
-    encoded = "\n".join(lines).encode("utf-8")
-    if len(encoded) > _MAX_MARKDOWN_BYTES:
-        raise SchemaInvalid("Memory Markdown exceeds its byte limit")
-    return encoded
+    return _render_record(record, _FRONTMATTER_KEYS, "coding_memory", "content")
 
 
 def _render_evolution(record: EvolutionRecord) -> bytes:
-    value = evolution_to_dict(record)
-    reason = value.pop("reason")
-    envelope = {"record_kind": "evolution", **value}
-    lines = ["---"]
-    for key in _EVOLUTION_KEYS:
-        lines.append(f"{key}: {canonical_json(envelope[key])}")
-    lines.extend(("---", str(reason), ""))
-    encoded = "\n".join(lines).encode()
-    if len(encoded) > _MAX_MARKDOWN_BYTES:
-        raise SchemaInvalid("Evolution Markdown exceeds its byte limit")
-    return encoded
+    return _render_record(evolution_to_dict(record), _EVOLUTION_KEYS, "evolution", "reason")
 
 
 def _parse(source: bytes) -> CodingMemory:
-    if not source or len(source) > _MAX_MARKDOWN_BYTES:
-        raise SchemaInvalid("Memory Markdown is empty or exceeds its byte limit")
-    content = source.decode("utf-8")
-    if not content.startswith("---\n") or not content.endswith("\n"):
-        raise SchemaInvalid("Memory Markdown envelope is invalid")
-    frontmatter, separator, body = content[4:].partition("\n---\n")
-    if not separator:
-        raise SchemaInvalid("Memory Markdown frontmatter is unterminated")
-    lines = frontmatter.splitlines()
-    keys: list[str] = []
-    record: dict[str, object] = {}
-    for line in lines:
-        key, marker, raw_value = line.partition(": ")
-        if not marker or key in record:
-            raise SchemaInvalid("Memory Markdown frontmatter line is invalid")
-        keys.append(key)
-        try:
-            record[key] = json.loads(raw_value)
-        except json.JSONDecodeError as exc:
-            raise SchemaInvalid("Memory Markdown frontmatter JSON is invalid") from exc
-    if tuple(keys) != _FRONTMATTER_KEYS:
-        raise SchemaInvalid("Memory Markdown frontmatter fields or order are invalid")
-    if record.pop("record_kind") != "coding_memory":
-        raise SchemaInvalid("Markdown record_kind is not coding_memory")
-    record["content"] = body[:-1]
-    return coding_memory_from_dict(record)
+    return coding_memory_from_dict(_parse_record(source, _FRONTMATTER_KEYS, "coding_memory", "content"))
 
 
 def _parse_evolution(source: bytes) -> EvolutionRecord:
+    return evolution_from_dict(_parse_record(source, _EVOLUTION_KEYS, "evolution", "reason"))
+
+
+def _render_record(record: dict[str, object], keys: tuple[str, ...], kind: str, body_key: str) -> bytes:
+    value = {**record}
+    body = value.pop(body_key)
+    envelope = {"record_kind": kind, **value}
+    lines = ["---", *(f"{key}: {canonical_json(envelope[key])}" for key in keys)]
+    encoded = "\n".join((*lines, "---", str(body), "")).encode()
+    if len(encoded) > _MAX_MARKDOWN_BYTES:
+        raise SchemaInvalid(f"{kind} Markdown exceeds its byte limit")
+    return encoded
+
+
+def _parse_record(source: bytes, keys: tuple[str, ...], kind: str, body_key: str) -> dict[str, object]:
     if not source or len(source) > _MAX_MARKDOWN_BYTES:
-        raise SchemaInvalid("Evolution Markdown is empty or exceeds its byte limit")
+        raise SchemaInvalid(f"{kind} Markdown is empty or exceeds its byte limit")
     content = source.decode()
     if not content.startswith("---\n") or not content.endswith("\n"):
-        raise SchemaInvalid("Evolution Markdown envelope is invalid")
+        raise SchemaInvalid(f"{kind} Markdown envelope is invalid")
     frontmatter, separator, body = content[4:].partition("\n---\n")
     if not separator:
-        raise SchemaInvalid("Evolution Markdown frontmatter is unterminated")
-    keys: list[str] = []
+        raise SchemaInvalid(f"{kind} Markdown frontmatter is unterminated")
+    observed: list[str] = []
     record: dict[str, object] = {}
     for line in frontmatter.splitlines():
         key, marker, raw_value = line.partition(": ")
         if not marker or key in record:
-            raise SchemaInvalid("Evolution Markdown frontmatter line is invalid")
-        keys.append(key)
+            raise SchemaInvalid(f"{kind} Markdown frontmatter line is invalid")
+        observed.append(key)
         try:
             record[key] = json.loads(raw_value)
         except json.JSONDecodeError as exc:
-            raise SchemaInvalid("Evolution Markdown frontmatter JSON is invalid") from exc
-    if tuple(keys) != _EVOLUTION_KEYS:
-        raise SchemaInvalid("Evolution Markdown frontmatter fields or order are invalid")
-    if record.pop("record_kind") != "evolution":
-        raise SchemaInvalid("Markdown record_kind is not evolution")
-    record["reason"] = body[:-1]
-    return evolution_from_dict(record)
+            raise SchemaInvalid(f"{kind} Markdown frontmatter JSON is invalid") from exc
+    if tuple(observed) != keys or record.pop("record_kind") != kind:
+        raise SchemaInvalid(f"{kind} Markdown frontmatter is not canonical")
+    record[body_key] = body[:-1]
+    return record
 
 
-def _atomic_create(
+def _write_immutable[T](
+    *,
     path: Path,
     content: bytes,
-    *,
-    on_stage: Callable[[str], None] | None = None,
+    expected_digest: str,
+    read: Callable[[Path], T],
+    same: Callable[[T], bool],
+    identity: str,
+    on_stage: Callable[[str], None] | None,
     stage_prefix: str,
-) -> None:
+) -> T | None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    existing = _read_bytes(path, missing_ok=True)
+    if existing is None:
+        _atomic_create(path, content, on_stage=on_stage, stage_prefix=stage_prefix)
+        existing = _read_bytes(path)
+    assert existing is not None
+    if hashlib.sha256(existing).hexdigest() == expected_digest:
+        return None
+    try:
+        stored = read(path)
+    except (OSError, UnicodeError, SchemaInvalid, ValueError) as error:
+        raise IdentityConflict(f"Conflicting Markdown truth: {identity}") from error
+    if not same(stored):
+        raise IdentityConflict(f"Conflicting immutable record: {identity}")
+    return stored
+
+
+def _atomic_create(path: Path, content: bytes, *, on_stage: Callable[[str], None] | None = None, stage_prefix: str) -> None:
     descriptor: int | None = None
     temporary: Path | None = None
     created = False

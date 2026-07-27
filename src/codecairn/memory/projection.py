@@ -7,11 +7,7 @@ from codecairn.memory.models import MemoryStatus, RecallDocument
 from codecairn.memory.schema import CodingMemory, WorkStatePayload, canonical_json
 
 
-def project_memory(
-    memory: CodingMemory,
-    *,
-    status: MemoryStatus,
-) -> tuple[RecallDocument, ...]:
+def project_memory(memory: CodingMemory, *, status: MemoryStatus) -> tuple[RecallDocument, ...]:
     parent = _document(
         memory,
         status=status,
@@ -19,13 +15,7 @@ def project_memory(
         document_kind="memory",
         title=memory.title,
         content="\n".join(
-            (
-                memory.title,
-                memory.content,
-                memory.category,
-                " ".join(memory.tags),
-                *(fact.value for fact in memory.facts),
-            )
+            (memory.title, memory.content, memory.category, " ".join(memory.tags), *(fact.value for fact in memory.facts))
         ),
     )
     return (
@@ -54,14 +44,7 @@ def _document(
     content: str,
 ) -> RecallDocument:
     digest = hashlib.sha256(
-        canonical_json(
-            {
-                "schema_version": 1,
-                "document_id": document_id,
-                "status": status,
-                "content": content,
-            }
-        ).encode()
+        canonical_json({"schema_version": 1, "document_id": document_id, "status": status, "content": content}).encode()
     ).hexdigest()
     return RecallDocument(
         document_id=document_id,
@@ -74,7 +57,5 @@ def _document(
         content=content,
         content_sha256=digest,
         created_at_ms=memory.created_at_ms,
-        workstream_key=(
-            memory.payload.workstream_key if isinstance(memory.payload, WorkStatePayload) else None
-        ),
+        workstream_key=(memory.payload.workstream_key if isinstance(memory.payload, WorkStatePayload) else None),
     )

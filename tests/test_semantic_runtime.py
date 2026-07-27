@@ -8,12 +8,7 @@ import pytest
 
 from codecairn.importers import SessionImporter
 from codecairn.memory.schema import TaskExperiencePayload, WorkStatePayload
-from codecairn.memory.semantic import (
-    SemanticCandidate,
-    SemanticEvolutionSuggestion,
-    SemanticExtraction,
-    SemanticRequest,
-)
+from codecairn.memory.semantic import SemanticCandidate, SemanticEvolutionSuggestion, SemanticExtraction, SemanticRequest
 from codecairn.service.runtime import MemoryRuntime
 from codecairn.storage.markdown import MarkdownMemoryStore
 from codecairn.storage.sqlite import SQLiteState
@@ -21,12 +16,7 @@ from codecairn.storage.sqlite import SQLiteState
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-def _runtime(
-    root: Path,
-    *,
-    extractor: object | None = None,
-    fault_injector: Callable[[str], None] | None = None,
-) -> MemoryRuntime:
+def _runtime(root: Path, *, extractor: object | None = None, fault_injector: Callable[[str], None] | None = None) -> MemoryRuntime:
     return MemoryRuntime(
         importer=SessionImporter(),
         memory_store=MarkdownMemoryStore(root),
@@ -43,19 +33,13 @@ class _EmptyExtractor:
     def extract(self, request: SemanticRequest) -> SemanticExtraction:
         del request
         self.calls += 1
-        return SemanticExtraction(
-            extractor_id="test",
-            revision="1",
-            candidates=(),
-        )
+        return SemanticExtraction(extractor_id="test", revision="1", candidates=())
 
 
 class _RichExtractor:
     def extract(self, request: SemanticRequest) -> SemanticExtraction:
         user = next(fact for fact in request.task_experience.facts if fact.role == "user")
-        command = next(
-            fact for fact in request.task_experience.facts if fact.fact_kind == "command"
-        )
+        command = next(fact for fact in request.task_experience.facts if fact.fact_kind == "command")
         task_key = next(key for key in request.allowed_workstream_keys if key.startswith("task:"))
         return SemanticExtraction(
             extractor_id="test",
@@ -167,11 +151,7 @@ class _IssueLifecycleExtractor:
                 next_step=None,
                 terminal_outcome="completed",
             )
-        return SemanticExtraction(
-            extractor_id="test",
-            revision="issue-lifecycle",
-            candidates=(state,),
-        )
+        return SemanticExtraction(extractor_id="test", revision="issue-lifecycle", candidates=(state,))
 
 
 class _TimeoutThenSuccess(_EmptyExtractor):
@@ -179,11 +159,7 @@ class _TimeoutThenSuccess(_EmptyExtractor):
         self.calls += 1
         if self.calls == 1:
             raise TimeoutError("provider timeout")
-        return SemanticExtraction(
-            extractor_id="test",
-            revision="retry-1",
-            candidates=(),
-        )
+        return SemanticExtraction(extractor_id="test", revision="retry-1", candidates=())
 
 
 class _AlwaysFail:
@@ -197,16 +173,10 @@ class _AlwaysFail:
 
 
 def _capture(root: Path, *, fixture: str = "codex/failed_command.jsonl") -> None:
-    _runtime(root).import_session(
-        FIXTURES / fixture,
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
+    _runtime(root).import_session(FIXTURES / fixture, repo_key="acme/widgets", boundary_kind="manual_finalize")
 
 
-def test_missing_semantic_provider_keeps_experience_and_pending_job(
-    tmp_path: Path,
-) -> None:
+def test_missing_semantic_provider_keeps_experience_and_pending_job(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     _capture(root)
 
@@ -220,16 +190,13 @@ def test_missing_semantic_provider_keeps_experience_and_pending_job(
     assert state.index_health().pending == 1
 
 
-def test_semantic_success_persists_multiple_optional_memories_and_one_work_state(
-    tmp_path: Path,
-) -> None:
+def test_semantic_success_persists_multiple_optional_memories_and_one_work_state(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     _capture(root)
 
     report = _runtime(root, extractor=_RichExtractor()).process_pending(worker_id="test")
     state = SQLiteState(root / "state.sqlite3")
     memories = state.list_memories(repo_key="acme/widgets")
-    batches = state.list_semantic_batches()
 
     assert report.completed == 1
     assert [memory.memory_type for memory in memories].count("task_experience") == 1
@@ -237,22 +204,13 @@ def test_semantic_success_persists_multiple_optional_memories_and_one_work_state
     assert [memory.memory_type for memory in memories].count("user_preference") == 1
     assert [memory.memory_type for memory in memories].count("work_state") == 1
     assert state.index_health().pending == 5
-    assert len(batches) == 1
-    evolution = batches[0]["evolution"]
-    assert isinstance(evolution, list)
-    assert len(evolution) == 1
 
 
-def test_assistant_authored_preference_is_rejected_without_losing_experience(
-    tmp_path: Path,
-) -> None:
+def test_assistant_authored_preference_is_rejected_without_losing_experience(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     _capture(root, fixture="claude/failed_command.jsonl")
 
-    report = _runtime(
-        root,
-        extractor=_AssistantPreferenceExtractor(),
-    ).process_pending(worker_id="test")
+    report = _runtime(root, extractor=_AssistantPreferenceExtractor()).process_pending(worker_id="test")
     state = SQLiteState(root / "state.sqlite3")
 
     assert report.failed == 1
@@ -260,9 +218,7 @@ def test_assistant_authored_preference_is_rejected_without_losing_experience(
     assert state.list_semantic_jobs()[0].status == "failed"
 
 
-def test_provider_timeout_is_retryable_and_completed_job_is_not_called_again(
-    tmp_path: Path,
-) -> None:
+def test_provider_timeout_is_retryable_and_completed_job_is_not_called_again(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     extractor = _TimeoutThenSuccess()
     _capture(root)
@@ -296,20 +252,14 @@ def test_semantic_retry_is_bounded(tmp_path: Path) -> None:
     assert job.attempt_count == 3
 
 
-def test_later_episode_can_close_one_existing_issue_workstream(
-    tmp_path: Path,
-) -> None:
+def test_later_episode_can_close_one_existing_issue_workstream(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     source = tmp_path / "issue-session.jsonl"
     records = [
         {"type": "session_meta", "payload": {"id": "issue-session"}},
         {
             "type": "response_item",
-            "payload": {
-                "type": "message",
-                "role": "user",
-                "content": [{"type": "input_text", "text": "Fix issue #42."}],
-            },
+            "payload": {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "Fix issue #42."}]},
         },
         {
             "type": "response_item",
@@ -322,19 +272,11 @@ def test_later_episode_can_close_one_existing_issue_workstream(
         },
         {
             "type": "response_item",
-            "payload": {
-                "type": "function_call_output",
-                "call_id": "first",
-                "output": "Process exited with code 1",
-            },
+            "payload": {"type": "function_call_output", "call_id": "first", "output": "Process exited with code 1"},
         },
         {
             "type": "response_item",
-            "payload": {
-                "type": "message",
-                "role": "user",
-                "content": [{"type": "input_text", "text": "Finish issue #42."}],
-            },
+            "payload": {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "Finish issue #42."}]},
         },
         {
             "type": "response_item",
@@ -347,27 +289,13 @@ def test_later_episode_can_close_one_existing_issue_workstream(
         },
         {
             "type": "response_item",
-            "payload": {
-                "type": "function_call_output",
-                "call_id": "second",
-                "output": "Process exited with code 0",
-            },
+            "payload": {"type": "function_call_output", "call_id": "second", "output": "Process exited with code 0"},
         },
     ]
-    source.write_text(
-        "".join(f"{json.dumps(record)}\n" for record in records),
-        encoding="utf-8",
-    )
-    _runtime(root).import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
+    source.write_text("".join(f"{json.dumps(record)}\n" for record in records), encoding="utf-8")
+    _runtime(root).import_session(source, repo_key="acme/widgets", boundary_kind="manual_finalize")
 
-    report = _runtime(
-        root,
-        extractor=_IssueLifecycleExtractor(),
-    ).process_pending(worker_id="test")
+    report = _runtime(root, extractor=_IssueLifecycleExtractor()).process_pending(worker_id="test")
     work_states = [
         memory
         for memory in SQLiteState(root / "state.sqlite3").list_memories(repo_key="acme/widgets")
@@ -379,15 +307,13 @@ def test_later_episode_can_close_one_existing_issue_workstream(
     assert {memory.payload.workstream_state for memory in work_states} == {"closed", "open"}
     assert {memory.payload.workstream_key for memory in work_states} == {"issue:acme/widgets#42"}
     assert (
-        next(
-            memory.payload for memory in work_states if memory.payload.workstream_state == "closed"
-        ).terminal_outcome
+        next(memory.payload for memory in work_states if memory.payload.workstream_state == "closed").terminal_outcome
         == "completed"
     )
-    assert sorted(
-        state.memory_status(repo_key="acme/widgets", memory_id=memory.memory_id)
-        for memory in work_states
-    ) == ["active", "superseded"]
+    assert sorted(state.memory_status(repo_key="acme/widgets", memory_id=memory.memory_id) for memory in work_states) == [
+        "active",
+        "superseded",
+    ]
 
 
 @pytest.mark.parametrize(
@@ -400,10 +326,7 @@ def test_later_episode_can_close_one_existing_issue_workstream(
         "semantic_after_complete",
     ],
 )
-def test_semantic_commit_recovers_without_recalling_provider(
-    tmp_path: Path,
-    crash_stage: str,
-) -> None:
+def test_semantic_commit_recovers_without_recalling_provider(tmp_path: Path, crash_stage: str) -> None:
     root = tmp_path / "runtime"
     extractor = _RichExtractor()
     _capture(root)
@@ -416,11 +339,7 @@ def test_semantic_commit_recovers_without_recalling_provider(
             raise RuntimeError(f"injected crash at {stage}")
 
     with pytest.raises(RuntimeError, match="injected crash"):
-        _runtime(
-            root,
-            extractor=extractor,
-            fault_injector=fail_once,
-        ).process_pending(worker_id="test")
+        _runtime(root, extractor=extractor, fault_injector=fail_once).process_pending(worker_id="test")
 
     report = _runtime(root, extractor=extractor).process_pending(worker_id="test")
     state = SQLiteState(root / "state.sqlite3")

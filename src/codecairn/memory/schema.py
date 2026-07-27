@@ -6,31 +6,20 @@ import hashlib
 import json
 import posixpath
 import re
+import typing
 import unicodedata
 from collections.abc import Mapping
-from dataclasses import dataclass
-from typing import Literal, cast
+from dataclasses import dataclass, fields, is_dataclass
+from types import NoneType, UnionType
+from typing import Any, Literal, cast, get_args, get_origin, get_type_hints
 
 SCHEMA_VERSION = 1
 
 Provider = Literal["codex", "claude"]
-MemoryType = Literal[
-    "task_experience",
-    "repository_knowledge",
-    "user_preference",
-    "work_state",
-]
+MemoryType = Literal["task_experience", "repository_knowledge", "user_preference", "work_state"]
 MemoryOrigin = Literal["capture", "agent_asserted", "restored"]
 ExperienceOutcome = Literal["success", "failure", "partial", "unknown"]
-FactKind = Literal[
-    "message",
-    "command",
-    "command_result",
-    "file_change",
-    "tool_call",
-    "tool_result",
-    "verification",
-]
+FactKind = Literal["message", "command", "command_result", "file_change", "tool_call", "tool_result", "verification"]
 FactRole = Literal["user", "assistant", "tool", "system"]
 type FactScalar = str | int
 type FactAttributes = Mapping[str, FactScalar]
@@ -39,21 +28,9 @@ WorkstreamState = Literal["open", "closed"]
 
 _HEX_64 = re.compile(r"[0-9a-f]{64}\Z")
 _TYPED_ID = re.compile(r"[a-z][a-z_]*_[0-9a-f]{64}\Z")
-_MEMORY_TYPES = frozenset(
-    {"task_experience", "repository_knowledge", "user_preference", "work_state"}
-)
+_MEMORY_TYPES = frozenset({"task_experience", "repository_knowledge", "user_preference", "work_state"})
 _PROVIDERS = frozenset({"codex", "claude"})
-_FACT_KINDS = frozenset(
-    {
-        "message",
-        "command",
-        "command_result",
-        "file_change",
-        "tool_call",
-        "tool_result",
-        "verification",
-    }
-)
+_FACT_KINDS = frozenset({"message", "command", "command_result", "file_change", "tool_call", "tool_result", "verification"})
 _ROLES = frozenset({"user", "assistant", "tool", "system"})
 _ORIGINS = frozenset({"capture", "agent_asserted", "restored"})
 _OUTCOMES = frozenset({"success", "failure", "partial", "unknown"})
@@ -61,28 +38,15 @@ _ACTION_KINDS = frozenset({"command", "file_change", "tool", "decision", "observ
 _FACT_ATTRIBUTE_FIELDS = {
     "message": (frozenset(), frozenset({"actor"})),
     "command": (frozenset({"command"}), frozenset({"cwd_repo_relative"})),
-    "command_result": (
-        frozenset({"command_fact_id", "outcome"}),
-        frozenset({"exit_code"}),
-    ),
-    "file_change": (
-        frozenset({"path", "change_kind"}),
-        frozenset({"destination_path"}),
-    ),
+    "command_result": (frozenset({"command_fact_id", "outcome"}), frozenset({"exit_code"})),
+    "file_change": (frozenset({"path", "change_kind"}), frozenset({"destination_path"})),
     "tool_call": (frozenset({"tool_name", "call_id"}), frozenset()),
     "tool_result": (frozenset({"tool_call_fact_id", "outcome"}), frozenset()),
-    "verification": (
-        frozenset({"check_name", "outcome"}),
-        frozenset({"command_fact_id", "tool_call_fact_id"}),
-    ),
+    "verification": (frozenset({"check_name", "outcome"}), frozenset({"command_fact_id", "tool_call_fact_id"})),
 }
 _CATEGORIES = {
-    "task_experience": frozenset(
-        {"implementation", "debugging", "review", "evaluation", "operations", "other"}
-    ),
-    "repository_knowledge": frozenset(
-        {"architecture", "convention", "command", "constraint", "solution", "other"}
-    ),
+    "task_experience": frozenset({"implementation", "debugging", "review", "evaluation", "operations", "other"}),
+    "repository_knowledge": frozenset({"architecture", "convention", "command", "constraint", "solution", "other"}),
     "user_preference": frozenset({"workflow", "output", "tooling", "style", "other"}),
     "work_state": frozenset({"issue", "branch", "task", "session", "other"}),
 }
@@ -259,12 +223,7 @@ class TaskEpisode:
     start_event_index: int
     end_event_index_exclusive: int
     opening_event_id: str
-    boundary_kind: Literal[
-        "next_user",
-        "codex_stop",
-        "claude_session_end",
-        "manual_finalize",
-    ]
+    boundary_kind: Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize"]
     continues_episode_id: str | None
     source_order_key: SourceOrderKey
     prefix_sha256: str
@@ -277,18 +236,10 @@ class TaskEpisode:
         _bounded(self.session_id, field="session_id", maximum=256)
         _positive(self.source_generation, field="source_generation")
         _nonnegative(self.start_event_index, field="start_event_index")
-        if (
-            type(self.end_event_index_exclusive) is not int
-            or self.end_event_index_exclusive <= self.start_event_index
-        ):
+        if type(self.end_event_index_exclusive) is not int or self.end_event_index_exclusive <= self.start_event_index:
             raise SchemaInvalid("Episode end must be greater than its start")
         _bounded(self.opening_event_id, field="opening_event_id", maximum=256)
-        if self.boundary_kind not in {
-            "next_user",
-            "codex_stop",
-            "claude_session_end",
-            "manual_finalize",
-        }:
+        if self.boundary_kind not in {"next_user", "codex_stop", "claude_session_end", "manual_finalize"}:
             raise SchemaInvalid(f"Unknown Episode boundary: {self.boundary_kind!r}")
         if self.continues_episode_id is not None:
             _typed_id(self.continues_episode_id, prefix="ep")
@@ -315,12 +266,7 @@ class TaskEpisode:
         start_event_index: int,
         end_event_index_exclusive: int,
         opening_event_id: str,
-        boundary_kind: Literal[
-            "next_user",
-            "codex_stop",
-            "claude_session_end",
-            "manual_finalize",
-        ],
+        boundary_kind: Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize"],
         continues_episode_id: str | None,
         source_order_key: SourceOrderKey,
         prefix_sha256: str,
@@ -380,12 +326,7 @@ class TaskExperiencePayload:
             raise SchemaInvalid("Task Experience has too many actions")
         _bounded(self.result, field="result", maximum=32_768)
         _bounded_list(self.blockers, field="blockers", maximum=64, item_maximum=2_048)
-        _typed_id_set(
-            self.verification_fact_ids,
-            prefix="fact",
-            maximum=128,
-            field="verification_fact_ids",
-        )
+        _typed_id_set(self.verification_fact_ids, prefix="fact", maximum=128, field="verification_fact_ids")
 
 
 @dataclass(frozen=True, slots=True)
@@ -411,13 +352,7 @@ class UserPreferencePayload:
             raise SchemaInvalid("User Preference subject_key is not normalized")
         _bounded(self.subject_key, field="subject_key", maximum=512)
         _bounded(self.preference, field="preference", maximum=32_768)
-        _typed_id_set(
-            self.source_fact_ids,
-            prefix="fact",
-            maximum=128,
-            field="source_fact_ids",
-            allow_empty=False,
-        )
+        _typed_id_set(self.source_fact_ids, prefix="fact", maximum=128, field="source_fact_ids", allow_empty=False)
 
 
 @dataclass(frozen=True, slots=True)
@@ -444,18 +379,12 @@ class WorkStatePayload:
             if self.terminal_outcome is not None:
                 raise SchemaInvalid("Open Work State cannot have a terminal outcome")
         else:
-            _bounded(
-                cast(str, self.terminal_outcome),
-                field="terminal_outcome",
-                maximum=32_768,
-            )
+            _bounded(cast(str, self.terminal_outcome), field="terminal_outcome", maximum=32_768)
             if self.next_step is not None:
                 raise SchemaInvalid("Closed Work State cannot have a next step")
 
 
-type MemoryPayload = (
-    TaskExperiencePayload | RepositoryKnowledgePayload | UserPreferencePayload | WorkStatePayload
-)
+type MemoryPayload = TaskExperiencePayload | RepositoryKnowledgePayload | UserPreferencePayload | WorkStatePayload
 
 
 @dataclass(frozen=True, slots=True)
@@ -641,13 +570,7 @@ def typed_id(prefix: str, value: object) -> str:
 
 def canonical_json(value: object) -> str:
     _validate_identity_value(value)
-    return json.dumps(
-        value,
-        allow_nan=False,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    )
+    return json.dumps(value, allow_nan=False, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
 
 
 def normalize_machine_key(value: str) -> str:
@@ -677,351 +600,128 @@ def normalize_path_key(value: str) -> str:
 
 
 def payload_to_dict(payload: MemoryPayload) -> dict[str, object]:
-    if isinstance(payload, TaskExperiencePayload):
-        return {
-            "goal": payload.goal,
-            "outcome": payload.outcome,
-            "actions": [
-                {"kind": item.kind, "summary": item.summary, "fact_ids": list(item.fact_ids)}
-                for item in payload.actions
-            ],
-            "result": payload.result,
-            "blockers": list(payload.blockers),
-            "verification_fact_ids": list(payload.verification_fact_ids),
-        }
-    if isinstance(payload, RepositoryKnowledgePayload):
-        return {"subject_key": payload.subject_key, "claim": payload.claim}
-    if isinstance(payload, UserPreferencePayload):
-        return {
-            "subject_key": payload.subject_key,
-            "preference": payload.preference,
-            "source_fact_ids": list(payload.source_fact_ids),
-        }
-    return {
-        "workstream_key": payload.workstream_key,
-        "workstream_state": payload.workstream_state,
-        "goal": payload.goal,
-        "progress": payload.progress,
-        "blockers": list(payload.blockers),
-        "next_step": payload.next_step,
-        "terminal_outcome": payload.terminal_outcome,
-    }
-
-
-def evidence_reference_to_dict(reference: EvidenceReference) -> dict[str, object]:
-    return {"fact_id": reference.fact_id, **_public_fields(reference)}
+    return _record_to_dict(payload)
 
 
 def evidence_fact_to_dict(fact: EvidenceFact) -> dict[str, object]:
-    return {
-        "schema_version": fact.schema_version,
-        "fact_id": fact.fact_id,
-        "repo_key": fact.repo_key,
-        "episode_id": fact.episode_id,
-        "reference": evidence_reference_to_dict(fact.reference),
-        "fact_kind": fact.fact_kind,
-        "role": fact.role,
-        "value": fact.value,
-        "attributes": dict(fact.attributes),
-        "fact_ordinal": fact.fact_ordinal,
-    }
-
-
-def source_order_key_to_dict(key: SourceOrderKey) -> dict[str, object]:
-    return {
-        "trusted_timestamp_ms": key.trusted_timestamp_ms,
-        "provider": key.provider,
-        "session_id": key.session_id,
-        "source_generation": key.source_generation,
-        "event_index": key.event_index,
-    }
+    return _record_to_dict(fact)
 
 
 def task_episode_to_dict(episode: TaskEpisode) -> dict[str, object]:
-    return {
-        "schema_version": episode.schema_version,
-        "episode_id": episode.episode_id,
-        "repo_key": episode.repo_key,
-        "provider": episode.provider,
-        "session_id": episode.session_id,
-        "source_generation": episode.source_generation,
-        "start_event_index": episode.start_event_index,
-        "end_event_index_exclusive": episode.end_event_index_exclusive,
-        "opening_event_id": episode.opening_event_id,
-        "boundary_kind": episode.boundary_kind,
-        "continues_episode_id": episode.continues_episode_id,
-        "source_order_key": source_order_key_to_dict(episode.source_order_key),
-        "prefix_sha256": episode.prefix_sha256,
-    }
+    return _record_to_dict(episode)
 
 
 def coding_memory_to_dict(memory: CodingMemory) -> dict[str, object]:
-    return {
-        "schema_version": memory.schema_version,
-        "memory_id": memory.memory_id,
-        "repo_key": memory.repo_key,
-        "memory_type": memory.memory_type,
-        "title": memory.title,
-        "content": memory.content,
-        "category": memory.category,
-        "tags": list(memory.tags),
-        "created_at_ms": memory.created_at_ms,
-        "episode_id": memory.episode_id,
-        "evidence": [evidence_reference_to_dict(item) for item in memory.evidence],
-        "facts": [evidence_fact_to_dict(item) for item in memory.facts],
-        "origin": memory.origin,
-        "restored_from": memory.restored_from,
-        "restore_predecessor_id": memory.restore_predecessor_id,
-        "source_order_key": (
-            source_order_key_to_dict(memory.source_order_key)
-            if memory.source_order_key is not None
-            else None
-        ),
-        "payload": payload_to_dict(memory.payload),
-    }
-
-
-def evidence_reference_from_dict(value: object) -> EvidenceReference:
-    data = _closed_object(
-        value,
-        {
-            "fact_id",
-            "provider",
-            "session_id",
-            "source_generation",
-            "event_index",
-            "event_id",
-            "source_path_sha256",
-            "event_sha256",
-        },
-    )
-    return EvidenceReference(
-        fact_id=_string(data, "fact_id"),
-        provider=cast(Provider, _string(data, "provider")),
-        session_id=_string(data, "session_id"),
-        source_generation=_integer(data, "source_generation"),
-        event_index=_integer(data, "event_index"),
-        event_id=_string(data, "event_id"),
-        source_path_sha256=_string(data, "source_path_sha256"),
-        event_sha256=_string(data, "event_sha256"),
-    )
+    return _record_to_dict(memory)
 
 
 def evidence_fact_from_dict(value: object) -> EvidenceFact:
-    data = _closed_object(
-        value,
-        {
-            "schema_version",
-            "fact_id",
-            "repo_key",
-            "episode_id",
-            "reference",
-            "fact_kind",
-            "role",
-            "value",
-            "attributes",
-            "fact_ordinal",
-        },
-    )
-    attributes = _closed_scalar_map(data["attributes"], field="attributes")
-    return EvidenceFact(
-        schema_version=_integer(data, "schema_version"),
-        fact_id=_string(data, "fact_id"),
-        repo_key=_string(data, "repo_key"),
-        episode_id=_optional_string(data, "episode_id"),
-        reference=evidence_reference_from_dict(data["reference"]),
-        fact_kind=cast(FactKind, _string(data, "fact_kind")),
-        role=cast(FactRole | None, _optional_string(data, "role")),
-        value=_string(data, "value"),
-        attributes=attributes,
-        fact_ordinal=_integer(data, "fact_ordinal"),
-    )
-
-
-def source_order_key_from_dict(value: object) -> SourceOrderKey:
-    data = _closed_object(
-        value,
-        {
-            "trusted_timestamp_ms",
-            "provider",
-            "session_id",
-            "source_generation",
-            "event_index",
-        },
-    )
-    timestamp = data["trusted_timestamp_ms"]
-    if timestamp is not None and type(timestamp) is not int:
-        raise SchemaInvalid("trusted_timestamp_ms must be an integer or null")
-    return SourceOrderKey(
-        trusted_timestamp_ms=timestamp,
-        provider=cast(Provider, _string(data, "provider")),
-        session_id=_string(data, "session_id"),
-        source_generation=_integer(data, "source_generation"),
-        event_index=_integer(data, "event_index"),
-    )
+    return _record_from_dict(EvidenceFact, value)
 
 
 def task_episode_from_dict(value: object) -> TaskEpisode:
-    data = _closed_object(
-        value,
-        {
-            "schema_version",
-            "episode_id",
-            "repo_key",
-            "provider",
-            "session_id",
-            "source_generation",
-            "start_event_index",
-            "end_event_index_exclusive",
-            "opening_event_id",
-            "boundary_kind",
-            "continues_episode_id",
-            "source_order_key",
-            "prefix_sha256",
-        },
-    )
-    return TaskEpisode(
-        schema_version=_integer(data, "schema_version"),
-        episode_id=_string(data, "episode_id"),
-        repo_key=_string(data, "repo_key"),
-        provider=cast(Provider, _string(data, "provider")),
-        session_id=_string(data, "session_id"),
-        source_generation=_integer(data, "source_generation"),
-        start_event_index=_integer(data, "start_event_index"),
-        end_event_index_exclusive=_integer(data, "end_event_index_exclusive"),
-        opening_event_id=_string(data, "opening_event_id"),
-        boundary_kind=cast(
-            Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize"],
-            _string(data, "boundary_kind"),
-        ),
-        continues_episode_id=_optional_string(data, "continues_episode_id"),
-        source_order_key=source_order_key_from_dict(data["source_order_key"]),
-        prefix_sha256=_string(data, "prefix_sha256"),
-    )
+    return _record_from_dict(TaskEpisode, value)
 
 
 def coding_memory_from_dict(value: object) -> CodingMemory:
-    fields = {
-        "schema_version",
-        "memory_id",
-        "repo_key",
-        "memory_type",
-        "title",
-        "content",
-        "category",
-        "tags",
-        "created_at_ms",
-        "episode_id",
-        "evidence",
-        "facts",
-        "origin",
-        "restored_from",
-        "restore_predecessor_id",
-        "source_order_key",
-        "payload",
-    }
-    data = _closed_object(value, fields, optional={"tags", "evidence", "facts"})
+    data = _object(value, field="record")
+    data = {**data}
+    for field in ("tags", "evidence", "facts"):
+        data.setdefault(field, [])
     memory_type = cast(MemoryType, _string(data, "memory_type"))
-    evidence = tuple(
-        evidence_reference_from_dict(item)
-        for item in _array(data.get("evidence", []), field="evidence")
-    )
-    facts = tuple(
-        evidence_fact_from_dict(item) for item in _array(data.get("facts", []), field="facts")
-    )
-    order_value = data["source_order_key"]
-    return CodingMemory(
-        schema_version=_integer(data, "schema_version"),
-        memory_id=_string(data, "memory_id"),
-        repo_key=_string(data, "repo_key"),
-        memory_type=memory_type,
-        title=_string(data, "title"),
-        content=_string(data, "content"),
-        category=_string(data, "category"),
-        tags=tuple(
-            _string_value(item, field="tags") for item in _array(data.get("tags", []), field="tags")
-        ),
-        created_at_ms=_integer(data, "created_at_ms"),
-        episode_id=_optional_string(data, "episode_id"),
-        evidence=evidence,
-        facts=facts,
-        origin=cast(MemoryOrigin, _string(data, "origin")),
-        restored_from=_optional_string(data, "restored_from"),
-        restore_predecessor_id=_optional_string(data, "restore_predecessor_id"),
-        source_order_key=(
-            source_order_key_from_dict(order_value) if order_value is not None else None
-        ),
-        payload=_payload_from_dict(memory_type, data["payload"]),
-    )
-
-
-def _payload_from_dict(memory_type: MemoryType, value: object) -> MemoryPayload:
-    data = _object(value, field="payload")
-    if memory_type == "task_experience":
-        data = _closed_object(
-            data,
-            {"goal", "outcome", "actions", "result", "blockers", "verification_fact_ids"},
-            optional={"actions", "blockers", "verification_fact_ids"},
-        )
-        actions = tuple(
-            _action_from_dict(item) for item in _array(data.get("actions", []), field="actions")
-        )
-        return TaskExperiencePayload(
-            goal=_string(data, "goal"),
-            outcome=cast(ExperienceOutcome, _string(data, "outcome")),
-            actions=actions,
-            result=_string(data, "result"),
-            blockers=_string_tuple(data.get("blockers", []), field="blockers"),
-            verification_fact_ids=_string_tuple(
-                data.get("verification_fact_ids", []), field="verification_fact_ids"
-            ),
-        )
-    if memory_type == "repository_knowledge":
-        data = _closed_object(data, {"subject_key", "claim"})
-        return RepositoryKnowledgePayload(
-            subject_key=_string(data, "subject_key"),
-            claim=_string(data, "claim"),
-        )
-    if memory_type == "user_preference":
-        data = _closed_object(data, {"subject_key", "preference", "source_fact_ids"})
-        return UserPreferencePayload(
-            subject_key=_string(data, "subject_key"),
-            preference=_string(data, "preference"),
-            source_fact_ids=_string_tuple(data["source_fact_ids"], field="source_fact_ids"),
-        )
-    if memory_type != "work_state":
+    if memory_type not in _MEMORY_TYPES:
         raise SchemaInvalid(f"Unknown memory type: {memory_type!r}")
-    data = _closed_object(
-        data,
-        {
-            "workstream_key",
-            "workstream_state",
-            "goal",
-            "progress",
-            "blockers",
-            "next_step",
-            "terminal_outcome",
-        },
-        optional={"blockers"},
-    )
-    return WorkStatePayload(
-        workstream_key=_string(data, "workstream_key"),
-        workstream_state=cast(WorkstreamState, _string(data, "workstream_state")),
-        goal=_string(data, "goal"),
-        progress=_string(data, "progress"),
-        blockers=_string_tuple(data.get("blockers", []), field="blockers"),
-        next_step=_optional_string(data, "next_step"),
-        terminal_outcome=_optional_string(data, "terminal_outcome"),
-    )
+    payload_types = {
+        "task_experience": TaskExperiencePayload,
+        "repository_knowledge": RepositoryKnowledgePayload,
+        "user_preference": UserPreferencePayload,
+        "work_state": WorkStatePayload,
+    }
+    payload = _object(data["payload"], field="payload")
+    if memory_type == "task_experience":
+        payload = {**payload}
+        for field in ("actions", "blockers", "verification_fact_ids"):
+            payload.setdefault(field, [])
+    elif memory_type == "work_state":
+        payload = {"blockers": [], **payload}
+    data["payload"] = _record_from_dict(payload_types[memory_type], payload)
+    return _record_from_dict(CodingMemory, data)
 
 
-def _action_from_dict(value: object) -> ActionFacet:
-    data = _closed_object(value, {"kind", "summary", "fact_ids"})
-    return ActionFacet(
-        kind=cast(ActionKind, _string(data, "kind")),
-        summary=_string(data, "summary"),
-        fact_ids=_string_tuple(data["fact_ids"], field="fact_ids"),
-    )
+def _record_to_dict(value: object) -> dict[str, object]:
+    encoded = _encode_value(value)
+    if not isinstance(encoded, dict):
+        raise SchemaInvalid("Record must encode as an object")
+    return encoded
+
+
+def _encode_value(value: object) -> Any:
+    if is_dataclass(value) and not isinstance(value, type):
+        return {field.name: _encode_value(getattr(value, field.name)) for field in fields(value)}
+    if isinstance(value, Mapping):
+        return {key: _encode_value(item) for key, item in value.items()}
+    if isinstance(value, (tuple, list)):
+        return [_encode_value(item) for item in value]
+    return value
+
+
+def _record_from_dict[T](record_type: type[T], value: object) -> T:
+    data = _object(value, field="record")
+    dataclass_fields = fields(cast(Any, record_type))
+    record_fields = {field.name for field in dataclass_fields}
+    if set(data) != record_fields:
+        missing, unknown = record_fields - set(data), set(data) - record_fields
+        raise SchemaInvalid(f"Record field mismatch: missing={sorted(missing)!r}, unknown={sorted(unknown)!r}")
+    hints = get_type_hints(record_type)
+    try:
+        return record_type(**{field.name: _decode_value(hints[field.name], data[field.name]) for field in dataclass_fields})
+    except SchemaInvalid:
+        raise
+    except (TypeError, ValueError) as error:
+        raise SchemaInvalid(str(error)) from error
+
+
+def _decode_value(annotation: object, value: object) -> Any:
+    alias = getattr(annotation, "__value__", None)
+    if alias is not None:
+        return _decode_value(alias, value)
+    origin = get_origin(annotation)
+    arguments = get_args(annotation)
+    if origin is Literal:
+        if value not in arguments or not any(type(value) is type(item) for item in arguments):
+            raise SchemaInvalid(f"Value is not one of {arguments!r}")
+        return value
+    if origin in (UnionType, typing.Union):
+        for option in arguments:
+            try:
+                return _decode_value(option, value)
+            except SchemaInvalid:
+                continue
+        raise SchemaInvalid("Value does not match its union")
+    if annotation is NoneType:
+        if value is not None:
+            raise SchemaInvalid("Value must be null")
+        return None
+    if origin is tuple:
+        if not isinstance(value, list):
+            raise SchemaInvalid("Tuple field must be an array")
+        item_type = arguments[0]
+        return tuple(_decode_value(item_type, item) for item in value)
+    if origin in (dict, Mapping):
+        if not isinstance(value, dict):
+            raise SchemaInvalid("Mapping field must be an object")
+        key_type, item_type = arguments
+        return {_decode_value(key_type, key): _decode_value(item_type, item) for key, item in value.items()}
+    if isinstance(annotation, type) and is_dataclass(annotation):
+        if isinstance(value, annotation):
+            return value
+        return _record_from_dict(annotation, value)
+    if annotation is Any or annotation is object:
+        return value
+    if type(value) is not annotation:
+        name = getattr(annotation, "__name__", repr(annotation))
+        raise SchemaInvalid(f"Value must be {name}")
+    return value
 
 
 def _memory_identity_parts(
@@ -1035,11 +735,7 @@ def _memory_identity_parts(
     restore_predecessor_id: str | None,
     payload: MemoryPayload,
 ) -> dict[str, object]:
-    identity: dict[str, object] = {
-        "schema_version": SCHEMA_VERSION,
-        "repo_key": repo_key,
-        "memory_type": memory_type,
-    }
+    identity: dict[str, object] = {"schema_version": SCHEMA_VERSION, "repo_key": repo_key, "memory_type": memory_type}
     if memory_type == "task_experience":
         identity["episode_id"] = episode_id
         return identity
@@ -1050,18 +746,9 @@ def _memory_identity_parts(
     else:
         raise SchemaInvalid(f"{memory_type} has the wrong payload")
     source_fact_ids = (
-        list(payload.source_fact_ids)
-        if isinstance(payload, UserPreferencePayload)
-        else sorted(fact.fact_id for fact in facts)
+        list(payload.source_fact_ids) if isinstance(payload, UserPreferencePayload) else sorted(fact.fact_id for fact in facts)
     )
-    identity.update(
-        {
-            "key": key,
-            "source_fact_ids": source_fact_ids,
-            "payload": payload_to_dict(payload),
-            "origin": origin,
-        }
-    )
+    identity.update({"key": key, "source_fact_ids": source_fact_ids, "payload": payload_to_dict(payload), "origin": origin})
     if origin == "capture":
         identity["episode_id"] = episode_id
     elif origin == "restored":
@@ -1114,15 +801,13 @@ def _validate_payload(memory: CodingMemory) -> None:
         by_id = {fact.fact_id: fact for fact in memory.facts}
         embedded = tuple(sorted(by_id))
         selected = memory.payload.source_fact_ids
-        if embedded and (
-            embedded != selected or any(by_id[fact_id].role != "user" for fact_id in selected)
-        ):
+        if embedded and (embedded != selected or any(by_id[fact_id].role != "user" for fact_id in selected)):
             raise SchemaInvalid("User Preference requires user-authored Source Facts")
     if isinstance(memory.payload, TaskExperiencePayload):
         known = {fact.fact_id for fact in memory.facts}
-        selected_facets = {
-            fact_id for action in memory.payload.actions for fact_id in action.fact_ids
-        } | set(memory.payload.verification_fact_ids)
+        selected_facets = {fact_id for action in memory.payload.actions for fact_id in action.fact_ids} | set(
+            memory.payload.verification_fact_ids
+        )
         if not selected_facets <= known:
             raise SchemaInvalid("Task Experience facets must select embedded Source Facts")
 
@@ -1138,9 +823,7 @@ def _validate_memory_evidence(memory: CodingMemory) -> None:
         raise SchemaInvalid("Memory evidence must use canonical source order")
     if any(fact.repo_key != memory.repo_key for fact in memory.facts):
         raise SchemaInvalid("Memory facts cannot cross namespaces")
-    if memory.origin in {"capture", "restored"} and any(
-        fact.episode_id != memory.episode_id for fact in memory.facts
-    ):
+    if memory.origin in {"capture", "restored"} and any(fact.episode_id != memory.episode_id for fact in memory.facts):
         raise SchemaInvalid("Capture lineage facts must belong to the Memory Episode")
 
 
@@ -1151,9 +834,7 @@ def _validate_fact_attributes(kind: FactKind, attributes: FactAttributes) -> Non
     keys = frozenset(attributes)
     if not required <= keys or not keys <= required | optional:
         raise SchemaInvalid(f"{kind} attributes have an invalid field set")
-    if any(
-        isinstance(value, bool) or not isinstance(value, str | int) for value in attributes.values()
-    ):
+    if any(isinstance(value, bool) or not isinstance(value, str | int) for value in attributes.values()):
         raise SchemaInvalid("Evidence Fact attributes must contain scalar strings or integers")
     for key, value in attributes.items():
         if isinstance(value, str):
@@ -1195,13 +876,7 @@ def _location_from_reference(reference: EvidenceReference) -> SourceLocation:
 
 
 def _reference_sort_key(reference: EvidenceReference) -> tuple[str, str, int, int, str]:
-    return (
-        reference.provider,
-        reference.session_id,
-        reference.source_generation,
-        reference.event_index,
-        reference.fact_id,
-    )
+    return (reference.provider, reference.session_id, reference.source_generation, reference.event_index, reference.fact_id)
 
 
 def _schema(value: int) -> None:
@@ -1233,14 +908,7 @@ def _bounded(value: str, *, field: str, maximum: int) -> None:
         raise SchemaInvalid(f"{field} must use NFC text and LF newlines")
 
 
-def _bounded_list(
-    values: tuple[str, ...],
-    *,
-    field: str,
-    maximum: int,
-    item_maximum: int,
-    sorted_set: bool = False,
-) -> None:
+def _bounded_list(values: tuple[str, ...], *, field: str, maximum: int, item_maximum: int, sorted_set: bool = False) -> None:
     if len(values) > maximum:
         raise SchemaInvalid(f"{field} has too many values")
     for value in values:
@@ -1249,14 +917,7 @@ def _bounded_list(
         raise SchemaInvalid(f"{field} must be unique and sorted")
 
 
-def _typed_id_set(
-    values: tuple[str, ...],
-    *,
-    prefix: str,
-    maximum: int,
-    field: str,
-    allow_empty: bool = True,
-) -> None:
+def _typed_id_set(values: tuple[str, ...], *, prefix: str, maximum: int, field: str, allow_empty: bool = True) -> None:
     if (not allow_empty and not values) or len(values) > maximum:
         raise SchemaInvalid(f"{field} has an invalid cardinality")
     if values != tuple(sorted(set(values))):
@@ -1296,68 +957,16 @@ def _validate_identity_value(value: object) -> None:
     raise SchemaInvalid(f"Unsupported canonical identity value: {type(value).__name__}")
 
 
-def _closed_object(
-    value: object,
-    required: set[str],
-    *,
-    optional: set[str] | None = None,
-) -> dict[str, object]:
-    data = _object(value, field="record")
-    optional = optional or set()
-    keys = set(data)
-    if not required - optional <= keys or not keys <= required:
-        raise SchemaInvalid(
-            f"Record field mismatch: missing={sorted((required - optional) - keys)!r}, "
-            f"unknown={sorted(keys - required)!r}"
-        )
-    return data
-
-
 def _object(value: object, *, field: str) -> dict[str, object]:
     if not isinstance(value, dict) or not all(isinstance(key, str) for key in value):
         raise SchemaInvalid(f"{field} must be an object")
     return cast(dict[str, object], value)
 
 
-def _closed_scalar_map(value: object, *, field: str) -> dict[str, FactScalar]:
-    data = _object(value, field=field)
-    if any(isinstance(item, bool) or not isinstance(item, (str, int)) for item in data.values()):
-        raise SchemaInvalid(f"{field} must contain scalar strings or integers")
-    return cast(dict[str, FactScalar], data)
-
-
-def _array(value: object, *, field: str) -> list[object]:
-    if not isinstance(value, list):
-        raise SchemaInvalid(f"{field} must be an array")
-    return value
-
-
 def _string(data: Mapping[str, object], field: str) -> str:
     if field not in data:
         raise SchemaInvalid(f"Missing required field: {field}")
-    return _string_value(data[field], field=field)
-
-
-def _string_value(value: object, *, field: str) -> str:
+    value = data[field]
     if not isinstance(value, str):
         raise SchemaInvalid(f"{field} must be a string")
     return value
-
-
-def _optional_string(data: Mapping[str, object], field: str) -> str | None:
-    if field not in data:
-        raise SchemaInvalid(f"Missing required field: {field}")
-    value = data[field]
-    if value is None:
-        return None
-    return _string_value(value, field=field)
-
-
-def _integer(data: Mapping[str, object], field: str) -> int:
-    if field not in data or type(data[field]) is not int:
-        raise SchemaInvalid(f"{field} must be an integer")
-    return cast(int, data[field])
-
-
-def _string_tuple(value: object, *, field: str) -> tuple[str, ...]:
-    return tuple(_string_value(item, field=field) for item in _array(value, field=field))

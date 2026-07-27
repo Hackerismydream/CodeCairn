@@ -12,12 +12,7 @@ from typing import Protocol, cast
 
 import httpx
 
-from codecairn.memory.config import (
-    FASTEMBED_SOURCE,
-    RERANKER_MODEL,
-    RERANKER_REVISION,
-    RetrievalConfig,
-)
+from codecairn.memory.config import FASTEMBED_SOURCE, RERANKER_MODEL, RERANKER_REVISION, RetrievalConfig
 from codecairn.memory.errors import ProviderConfigurationError
 
 
@@ -32,13 +27,7 @@ class _FastReranker(Protocol):
 
 
 class DashScopeEmbedder:
-    def __init__(
-        self,
-        config: RetrievalConfig,
-        *,
-        api_key: str,
-        transport: httpx.BaseTransport | None = None,
-    ) -> None:
+    def __init__(self, config: RetrievalConfig, *, api_key: str, transport: httpx.BaseTransport | None = None) -> None:
         if config.profile != "dashscope":
             raise ValueError("DashScope adapter requires the dashscope profile")
         endpoint = httpx.URL(cast(str, config.endpoint))
@@ -63,11 +52,7 @@ class DashScopeEmbedder:
         return self._embed((text,))[0]
 
     def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
-        return tuple(
-            vector
-            for start in range(0, len(texts), 10)
-            for vector in self._embed(texts[start : start + 10])
-        )
+        return tuple(vector for start in range(0, len(texts), 10) for vector in self._embed(texts[start : start + 10]))
 
     def _embed(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
         if not self._configured:
@@ -79,12 +64,7 @@ class DashScopeEmbedder:
             try:
                 response = self._client.post(
                     "embeddings",
-                    json={
-                        "model": self.model_id,
-                        "input": list(texts),
-                        "dimensions": self.dimension,
-                        "encoding_format": "float",
-                    },
+                    json={"model": self.model_id, "input": list(texts), "dimensions": self.dimension, "encoding_format": "float"},
                 )
                 response.raise_for_status()
                 break
@@ -93,16 +73,12 @@ class DashScopeEmbedder:
                     raise ProviderConfigurationError("DashScope embedding is unreachable") from None
                 time.sleep(0.25 * 2**attempt)
             except httpx.HTTPStatusError as error:
-                raise ProviderConfigurationError(
-                    f"DashScope embedding returned HTTP {error.response.status_code}"
-                ) from None
+                raise ProviderConfigurationError(f"DashScope embedding returned HTTP {error.response.status_code}") from None
         assert response is not None
         try:
             body = response.json()
             data = body["data"]
-            indexed = {
-                item["index"]: _vector(item["embedding"], dimension=self.dimension) for item in data
-            }
+            indexed = {item["index"]: _vector(item["embedding"], dimension=self.dimension) for item in data}
         except (KeyError, TypeError, ValueError) as error:
             raise ValueError("DashScope returned an invalid embedding response") from error
         if set(indexed) != set(range(len(texts))):
@@ -128,21 +104,14 @@ class FastEmbedder:
         return _vector(next(iter(self._instance().query_embed(text))), dimension=self.dimension)
 
     def embed_documents(self, texts: tuple[str, ...]) -> tuple[tuple[float, ...], ...]:
-        return tuple(
-            _vector(vector, dimension=self.dimension)
-            for vector in self._instance().passage_embed(texts)
-        )
+        return tuple(_vector(vector, dimension=self.dimension) for vector in self._instance().passage_embed(texts))
 
     def _instance(self) -> _FastEmbedding:
         with self._lock:
             if self._model is None:
                 from fastembed import TextEmbedding
 
-                snapshot = _snapshot(
-                    FASTEMBED_SOURCE,
-                    self.revision,
-                    self._config.cache_dir,
-                )
+                snapshot = _snapshot(FASTEMBED_SOURCE, self.revision, self._config.cache_dir)
                 self._model = cast(
                     _FastEmbedding,
                     TextEmbedding(
@@ -164,27 +133,15 @@ class FastEmbedReranker:
         self._model: _FastReranker | None = None
         self._lock = Lock()
 
-    def rerank(
-        self,
-        query: str,
-        documents: tuple[tuple[str, str, float], ...],
-    ) -> tuple[tuple[str, float], ...]:
+    def rerank(self, query: str, documents: tuple[tuple[str, str, float], ...]) -> tuple[tuple[str, float], ...]:
         if not documents:
             return ()
         scores = tuple(
-            float(value)
-            for value in self._instance().rerank(
-                query,
-                (text for _memory_id, text, _score in documents),
-                batch_size=8,
-            )
+            float(value) for value in self._instance().rerank(query, (text for _memory_id, text, _score in documents), batch_size=8)
         )
         if len(scores) != len(documents) or any(not math.isfinite(score) for score in scores):
             raise ValueError("Reranker returned invalid scores")
-        return tuple(
-            (memory_id, score)
-            for (memory_id, _text, _fusion), score in zip(documents, scores, strict=True)
-        )
+        return tuple((memory_id, score) for (memory_id, _text, _fusion), score in zip(documents, scores, strict=True))
 
     def _instance(self) -> _FastReranker:
         with self._lock:
@@ -192,11 +149,7 @@ class FastEmbedReranker:
                 from fastembed.rerank.cross_encoder import TextCrossEncoder
 
                 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
-                snapshot = _snapshot(
-                    RERANKER_MODEL,
-                    RERANKER_REVISION,
-                    self._cache_dir,
-                )
+                snapshot = _snapshot(RERANKER_MODEL, RERANKER_REVISION, self._cache_dir)
                 self._model = cast(
                     _FastReranker,
                     TextCrossEncoder(
@@ -211,16 +164,11 @@ class FastEmbedReranker:
 
 
 def create_retrieval_adapters(
-    config: RetrievalConfig,
-    *,
-    environment: dict[str, str] | os._Environ[str] | None = None,
+    config: RetrievalConfig, *, environment: dict[str, str] | os._Environ[str] | None = None
 ) -> tuple[DashScopeEmbedder | FastEmbedder, FastEmbedReranker]:
     env = os.environ if environment is None else environment
     embedder: DashScopeEmbedder | FastEmbedder = (
-        DashScopeEmbedder(
-            config,
-            api_key=env.get("CODECAIRN_EMBEDDING_API_KEY") or env.get("DASHSCOPE_API_KEY", ""),
-        )
+        DashScopeEmbedder(config, api_key=env.get("CODECAIRN_EMBEDDING_API_KEY") or env.get("DASHSCOPE_API_KEY", ""))
         if config.profile == "dashscope"
         else FastEmbedder(config)
     )
@@ -230,11 +178,7 @@ def create_retrieval_adapters(
 def _snapshot(source: str, revision: str, cache_dir: Path | None) -> str:
     from huggingface_hub import snapshot_download
 
-    return snapshot_download(
-        repo_id=source,
-        revision=revision,
-        cache_dir=str(cache_dir) if cache_dir else None,
-    )
+    return snapshot_download(repo_id=source, revision=revision, cache_dir=str(cache_dir) if cache_dir else None)
 
 
 def _vector(value: object, *, dimension: int) -> tuple[float, ...]:

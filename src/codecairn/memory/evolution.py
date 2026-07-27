@@ -15,34 +15,23 @@ from codecairn.memory.schema import (
     SourceOrderKey,
     UserPreferencePayload,
     WorkStatePayload,
+    _record_from_dict,
+    _record_to_dict,
     coding_memory_from_dict,
     coding_memory_to_dict,
-    evidence_reference_from_dict,
     memory_subject_key,
-    source_order_key_from_dict,
-    source_order_key_to_dict,
     typed_id,
 )
 
 MemoryStatus = Literal["active", "superseded"]
 EvolutionDecision = Literal["keep_both", "supersede"]
 EvolutionRelation = Literal[
-    "work_state_update",
-    "preference_override",
-    "knowledge_obsolete",
-    "knowledge_contradiction",
-    "explicit_restore",
+    "work_state_update", "preference_override", "knowledge_obsolete", "knowledge_contradiction", "explicit_restore"
 ]
 EvolutionProposer = Literal["capture_model", "agent", "user", "system"]
 ProposalOutcome = Literal["pending", "applied", "kept_both", "rejected"]
 
-_RELATIONS = {
-    "work_state_update",
-    "preference_override",
-    "knowledge_obsolete",
-    "knowledge_contradiction",
-    "explicit_restore",
-}
+_RELATIONS = {"work_state_update", "preference_override", "knowledge_obsolete", "knowledge_contradiction", "explicit_restore"}
 _PROPOSERS = {"capture_model", "agent", "user", "system"}
 
 
@@ -170,11 +159,7 @@ class EvolutionRecord:
 
     @classmethod
     def from_proposal(
-        cls,
-        proposal: EvolutionProposal,
-        *,
-        evidence: tuple[EvidenceReference, ...],
-        created_at_ms: int,
+        cls, proposal: EvolutionProposal, *, evidence: tuple[EvidenceReference, ...], created_at_ms: int
     ) -> EvolutionRecord:
         if proposal.decision != "supersede" or proposal.predecessor_id is None:
             raise ValueError("Only a Supersession Proposal creates an Evolution Record")
@@ -236,8 +221,7 @@ class PreparedEvolutionCommit:
             raise ValueError("Evolution Write Intent memory file is inconsistent")
         if self.new_memory is not None and (
             self.new_memory.memory_id != self.record.successor_id
-            or cast(ExpectedMemoryFile, self.expected_memory_file).memory_id
-            != self.new_memory.memory_id
+            or cast(ExpectedMemoryFile, self.expected_memory_file).memory_id != self.new_memory.memory_id
         ):
             raise ValueError("Evolution Write Intent restored memory is inconsistent")
         if self.operation_id != typed_id("op", evolution_commit_payload(self)):
@@ -294,9 +278,7 @@ def evaluate_proposal(
     successor: CodingMemory,
     predecessor_status: MemoryStatus | None,
 ) -> ProposalResolution:
-    if successor.repo_key != proposal.repo_key or (
-        predecessor is not None and predecessor.repo_key != proposal.repo_key
-    ):
+    if successor.repo_key != proposal.repo_key or (predecessor is not None and predecessor.repo_key != proposal.repo_key):
         return ProposalResolution("rejected", "wrong_namespace")
     if proposal.successor_id != successor.memory_id:
         return ProposalResolution("rejected", "unknown_successor")
@@ -327,16 +309,10 @@ def evaluate_proposal(
             return ProposalResolution("rejected", "wrong_relation")
         return _newer_resolution(predecessor.source_order_key, successor.source_order_key)
     if isinstance(successor.payload, RepositoryKnowledgePayload):
-        if proposal.relation_kind not in {
-            "knowledge_obsolete",
-            "knowledge_contradiction",
-        }:
+        if proposal.relation_kind not in {"knowledge_obsolete", "knowledge_contradiction"}:
             return ProposalResolution("rejected", "wrong_relation")
         if proposal.proposer == "capture_model":
-            return _newer_resolution(
-                predecessor.source_order_key,
-                successor.source_order_key,
-            )
+            return _newer_resolution(predecessor.source_order_key, successor.source_order_key)
         return ProposalResolution("applied")
     return ProposalResolution("rejected", "wrong_type")
 
@@ -349,13 +325,7 @@ def require_applied(resolution: ProposalResolution) -> None:
         )
 
 
-def evolution_identity(
-    *,
-    repo_key: str,
-    relation_kind: EvolutionRelation,
-    predecessor_id: str,
-    successor_id: str,
-) -> str:
+def evolution_identity(*, repo_key: str, relation_kind: EvolutionRelation, predecessor_id: str, successor_id: str) -> str:
     return typed_id(
         "evo",
         {
@@ -369,101 +339,19 @@ def evolution_identity(
 
 
 def proposal_to_dict(proposal: EvolutionProposal) -> dict[str, object]:
-    return {
-        **_proposal_identity(proposal),
-        "proposal_id": proposal.proposal_id,
-    }
+    return _record_to_dict(proposal)
 
 
 def proposal_from_dict(value: object) -> EvolutionProposal:
-    data = _object(
-        value,
-        {
-            "schema_version",
-            "proposal_id",
-            "repo_key",
-            "decision",
-            "relation_kind",
-            "predecessor_id",
-            "successor_id",
-            "supporting_fact_ids",
-            "source_order_key",
-            "proposer",
-            "reason",
-        },
-    )
-    order = data["source_order_key"]
-    return EvolutionProposal(
-        schema_version=_integer(data, "schema_version"),
-        proposal_id=_string(data, "proposal_id"),
-        repo_key=_string(data, "repo_key"),
-        decision=cast(EvolutionDecision, _string(data, "decision")),
-        relation_kind=cast(EvolutionRelation, _string(data, "relation_kind")),
-        predecessor_id=_optional_string(data, "predecessor_id"),
-        successor_id=_string(data, "successor_id"),
-        supporting_fact_ids=_string_tuple(data, "supporting_fact_ids"),
-        source_order_key=None if order is None else source_order_key_from_dict(order),
-        proposer=cast(EvolutionProposer, _string(data, "proposer")),
-        reason=_string(data, "reason"),
-    )
+    return _record_from_dict(EvolutionProposal, value)
 
 
 def evolution_to_dict(record: EvolutionRecord) -> dict[str, object]:
-    return {
-        "schema_version": record.schema_version,
-        "evolution_id": record.evolution_id,
-        "repo_key": record.repo_key,
-        "relation_kind": record.relation_kind,
-        "predecessor_id": record.predecessor_id,
-        "successor_id": record.successor_id,
-        "proposal_id": record.proposal_id,
-        "supporting_fact_ids": list(record.supporting_fact_ids),
-        "source_order_key": _order_to_dict(record.source_order_key),
-        "proposer": record.proposer,
-        "reason": record.reason,
-        "evidence": [_evidence_to_dict(item) for item in record.evidence],
-        "created_at_ms": record.created_at_ms,
-    }
+    return _record_to_dict(record)
 
 
 def evolution_from_dict(value: object) -> EvolutionRecord:
-    data = _object(
-        value,
-        {
-            "schema_version",
-            "evolution_id",
-            "repo_key",
-            "relation_kind",
-            "predecessor_id",
-            "successor_id",
-            "proposal_id",
-            "supporting_fact_ids",
-            "source_order_key",
-            "proposer",
-            "reason",
-            "evidence",
-            "created_at_ms",
-        },
-    )
-    order = data["source_order_key"]
-    evidence = data["evidence"]
-    if not isinstance(evidence, list):
-        raise ValueError("Evolution evidence must be a list")
-    return EvolutionRecord(
-        schema_version=_integer(data, "schema_version"),
-        evolution_id=_string(data, "evolution_id"),
-        repo_key=_string(data, "repo_key"),
-        relation_kind=cast(EvolutionRelation, _string(data, "relation_kind")),
-        predecessor_id=_string(data, "predecessor_id"),
-        successor_id=_string(data, "successor_id"),
-        proposal_id=_optional_string(data, "proposal_id"),
-        supporting_fact_ids=_string_tuple(data, "supporting_fact_ids"),
-        source_order_key=None if order is None else source_order_key_from_dict(order),
-        proposer=cast(EvolutionProposer, _string(data, "proposer")),
-        reason=_string(data, "reason"),
-        evidence=tuple(evidence_reference_from_dict(item) for item in evidence),
-        created_at_ms=_integer(data, "created_at_ms"),
-    )
+    return _record_from_dict(EvolutionRecord, value)
 
 
 def evolution_commit_payload(commit: PreparedEvolutionCommit) -> dict[str, object]:
@@ -477,12 +365,7 @@ def evolution_commit_payload(commit: PreparedEvolutionCommit) -> dict[str, objec
     )
 
 
-def evolution_commit_from_payload(
-    value: object,
-    *,
-    operation_id: str,
-    created_at_ms: int,
-) -> PreparedEvolutionCommit:
+def evolution_commit_from_payload(value: object, *, operation_id: str, created_at_ms: int) -> PreparedEvolutionCommit:
     data = _object(
         value,
         {
@@ -496,10 +379,7 @@ def evolution_commit_from_payload(
             "expected_evolution_file",
         },
     )
-    if data["schema_version"] != SCHEMA_VERSION or data["operation_kind"] not in {
-        "evolution",
-        "restore",
-    }:
+    if data["schema_version"] != SCHEMA_VERSION or data["operation_kind"] not in {"evolution", "restore"}:
         raise ValueError("Evolution Write Intent envelope is invalid")
     raw_memory = data["new_memory"]
     raw_memory_file = data["expected_memory_file"]
@@ -509,16 +389,13 @@ def evolution_commit_from_payload(
         proposal=proposal_from_dict(data["proposal"]),
         record=evolution_from_dict(data["record"]),
         new_memory=None if raw_memory is None else coding_memory_from_dict(raw_memory),
-        expected_memory_file=(None if raw_memory_file is None else _memory_file(raw_memory_file)),
-        expected_evolution_file=_evolution_file(data["expected_evolution_file"]),
+        expected_memory_file=(None if raw_memory_file is None else _record_from_dict(ExpectedMemoryFile, raw_memory_file)),
+        expected_evolution_file=_record_from_dict(ExpectedEvolutionFile, data["expected_evolution_file"]),
         created_at_ms=created_at_ms,
     )
 
 
-def _newer_resolution(
-    predecessor: SourceOrderKey | None,
-    successor: SourceOrderKey | None,
-) -> ProposalResolution:
+def _newer_resolution(predecessor: SourceOrderKey | None, successor: SourceOrderKey | None) -> ProposalResolution:
     comparison = compare_source_order(predecessor, successor)
     if comparison is None:
         return ProposalResolution("kept_both", "incomparable_source_order")
@@ -527,45 +404,19 @@ def _newer_resolution(
     return ProposalResolution("applied")
 
 
-def compare_source_order(
-    left: SourceOrderKey | None,
-    right: SourceOrderKey | None,
-) -> int | None:
+def compare_source_order(left: SourceOrderKey | None, right: SourceOrderKey | None) -> int | None:
     if left is None or right is None:
         return None
-    if (
-        left.provider,
-        left.session_id,
-        left.source_generation,
-    ) == (
-        right.provider,
-        right.session_id,
-        right.source_generation,
-    ):
+    if (left.provider, left.session_id, left.source_generation) == (right.provider, right.session_id, right.source_generation):
         return (left.event_index > right.event_index) - (left.event_index < right.event_index)
     if left.trusted_timestamp_ms is None or right.trusted_timestamp_ms is None:
         return None
-    left_key = (
-        left.trusted_timestamp_ms,
-        left.provider,
-        left.session_id,
-        left.source_generation,
-        left.event_index,
-    )
-    right_key = (
-        right.trusted_timestamp_ms,
-        right.provider,
-        right.session_id,
-        right.source_generation,
-        right.event_index,
-    )
+    left_key = (left.trusted_timestamp_ms, left.provider, left.session_id, left.source_generation, left.event_index)
+    right_key = (right.trusted_timestamp_ms, right.provider, right.session_id, right.source_generation, right.event_index)
     return (left_key > right_key) - (left_key < right_key)
 
 
-def _restore_policy(
-    predecessor: CodingMemory,
-    successor: CodingMemory,
-) -> ProposalResolution:
+def _restore_policy(predecessor: CodingMemory, successor: CodingMemory) -> ProposalResolution:
     if (
         successor.origin != "restored"
         or successor.restore_predecessor_id != predecessor.memory_id
@@ -611,37 +462,14 @@ def _proposal_identity_fields(
         "predecessor_id": predecessor_id,
         "successor_id": successor_id,
         "supporting_fact_ids": list(supporting_fact_ids),
-        "source_order_key": _order_to_dict(source_order_key),
+        "source_order_key": (None if source_order_key is None else _record_to_dict(source_order_key)),
         "proposer": proposer,
         "reason": reason,
     }
 
 
-def _order_to_dict(value: SourceOrderKey | None) -> dict[str, object] | None:
-    return None if value is None else source_order_key_to_dict(value)
-
-
-def _evidence_to_dict(value: EvidenceReference) -> dict[str, object]:
-    return {
-        "provider": value.provider,
-        "session_id": value.session_id,
-        "source_generation": value.source_generation,
-        "event_index": value.event_index,
-        "event_id": value.event_id,
-        "source_path_sha256": value.source_path_sha256,
-        "event_sha256": value.event_sha256,
-        "fact_id": value.fact_id,
-    }
-
-
 def _evidence_order(value: EvidenceReference) -> tuple[str, str, int, int, str]:
-    return (
-        value.provider,
-        value.session_id,
-        value.source_generation,
-        value.event_index,
-        value.fact_id,
-    )
+    return (value.provider, value.session_id, value.source_generation, value.event_index, value.fact_id)
 
 
 def _memory_id(value: str) -> None:
@@ -665,39 +493,9 @@ def _commit_payload(
         "proposal": proposal_to_dict(proposal),
         "record": evolution_to_dict(record),
         "new_memory": None if new_memory is None else coding_memory_to_dict(new_memory),
-        "expected_memory_file": (
-            None
-            if expected_memory_file is None
-            else {
-                "relative_path": expected_memory_file.relative_path,
-                "content_sha256": expected_memory_file.content_sha256,
-                "memory_id": expected_memory_file.memory_id,
-            }
-        ),
-        "expected_evolution_file": {
-            "relative_path": expected_evolution_file.relative_path,
-            "content_sha256": expected_evolution_file.content_sha256,
-            "evolution_id": expected_evolution_file.evolution_id,
-        },
+        "expected_memory_file": (None if expected_memory_file is None else _record_to_dict(expected_memory_file)),
+        "expected_evolution_file": _record_to_dict(expected_evolution_file),
     }
-
-
-def _memory_file(value: object) -> ExpectedMemoryFile:
-    data = _object(value, {"relative_path", "content_sha256", "memory_id"})
-    return ExpectedMemoryFile(
-        relative_path=_string(data, "relative_path"),
-        content_sha256=_string(data, "content_sha256"),
-        memory_id=_string(data, "memory_id"),
-    )
-
-
-def _evolution_file(value: object) -> ExpectedEvolutionFile:
-    data = _object(value, {"relative_path", "content_sha256", "evolution_id"})
-    return ExpectedEvolutionFile(
-        relative_path=_string(data, "relative_path"),
-        content_sha256=_string(data, "content_sha256"),
-        evolution_id=_string(data, "evolution_id"),
-    )
 
 
 def _object(value: object, keys: set[str]) -> dict[str, object]:
@@ -711,24 +509,3 @@ def _string(data: dict[str, object], key: str) -> str:
     if not isinstance(value, str) or not value:
         raise ValueError(f"Evolution {key} must be a non-empty string")
     return value
-
-
-def _optional_string(data: dict[str, object], key: str) -> str | None:
-    value = data[key]
-    if value is not None and (not isinstance(value, str) or not value):
-        raise ValueError(f"Evolution {key} must be a string or null")
-    return value
-
-
-def _integer(data: dict[str, object], key: str) -> int:
-    value = data[key]
-    if type(value) is not int:
-        raise ValueError(f"Evolution {key} must be an integer")
-    return value
-
-
-def _string_tuple(data: dict[str, object], key: str) -> tuple[str, ...]:
-    value = data[key]
-    if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
-        raise ValueError(f"Evolution {key} must be a string list")
-    return tuple(cast(list[str], value))

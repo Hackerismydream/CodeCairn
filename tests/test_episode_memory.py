@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import sqlite3
 from pathlib import Path
 
 import pytest
 
+from codecairn.bootstrap import create_runtime
 from codecairn.memory.schema import (
     CodingMemory,
     EvidenceFact,
@@ -15,13 +15,11 @@ from codecairn.memory.schema import (
     TaskExperiencePayload,
     UserPreferencePayload,
     WorkStatePayload,
-    canonical_json,
     coding_memory_from_dict,
     coding_memory_to_dict,
     typed_id,
 )
 from codecairn.storage.markdown import MarkdownMemoryStore
-from codecairn.storage.sqlite import SQLiteState
 
 
 def _fact() -> EvidenceFact:
@@ -46,20 +44,8 @@ def _fact() -> EvidenceFact:
 
 def _memories() -> tuple[CodingMemory, ...]:
     fact = _fact()
-    order = SourceOrderKey(
-        trusted_timestamp_ms=None,
-        provider="codex",
-        session_id="session-1",
-        source_generation=1,
-        event_index=0,
-    )
-    common = {
-        "repo_key": "acme/widgets",
-        "tags": (),
-        "created_at_ms": 1,
-        "restored_from": None,
-        "restore_predecessor_id": None,
-    }
+    order = SourceOrderKey(trusted_timestamp_ms=None, provider="codex", session_id="session-1", source_generation=1, event_index=0)
+    common = {"repo_key": "acme/widgets", "tags": (), "created_at_ms": 1, "restored_from": None, "restore_predecessor_id": None}
     return (
         CodingMemory.create(
             **common,
@@ -92,10 +78,7 @@ def _memories() -> tuple[CodingMemory, ...]:
             facts=(),
             origin="agent_asserted",
             source_order_key=None,
-            payload=RepositoryKnowledgePayload(
-                subject_key="checks",
-                claim="Run make check.",
-            ),
+            payload=RepositoryKnowledgePayload(subject_key="checks", claim="Run make check."),
         ),
         CodingMemory.create(
             **common,
@@ -109,9 +92,7 @@ def _memories() -> tuple[CodingMemory, ...]:
             origin="agent_asserted",
             source_order_key=None,
             payload=UserPreferencePayload(
-                subject_key="answer-style",
-                preference="Keep answers concise.",
-                source_fact_ids=(fact.fact_id,),
+                subject_key="answer-style", preference="Keep answers concise.", source_fact_ids=(fact.fact_id,)
             ),
         ),
         CodingMemory.create(
@@ -139,17 +120,39 @@ def _memories() -> tuple[CodingMemory, ...]:
 
 
 def test_all_four_memory_types_round_trip_markdown_and_sqlite(tmp_path: Path) -> None:
+    fixture = Path(__file__).parent / "fixtures/codex/failed_command.jsonl"
+    runtime = create_runtime(tmp_path)
+    runtime.import_session(fixture, repo_key="acme/widgets", boundary_kind="manual_finalize")
+    captured = runtime.list_memories(repo_key="acme/widgets")[0]
+    user_fact = next(fact for fact in captured.facts if fact.role == "user")
+    direct = _memories()[1:]
+    preference = direct[1]
+    preference = CodingMemory.create(
+        repo_key=preference.repo_key,
+        memory_type="user_preference",
+        title=preference.title,
+        content=preference.content,
+        category=preference.category,
+        tags=preference.tags,
+        created_at_ms=preference.created_at_ms,
+        episode_id=None,
+        evidence=(),
+        facts=(),
+        origin="agent_asserted",
+        restored_from=None,
+        restore_predecessor_id=None,
+        source_order_key=None,
+        payload=UserPreferencePayload(
+            subject_key="answer-style", preference="Keep answers concise.", source_fact_ids=(user_fact.fact_id,)
+        ),
+    )
+    for memory in (direct[0], preference, direct[2]):
+        assert runtime.store_memory(memory) == memory
+
+    restored = runtime.list_memories(repo_key="acme/widgets")
     truth = MarkdownMemoryStore(tmp_path)
-    state = SQLiteState(tmp_path / "state.sqlite3")
-    state.store_source_facts((_fact(),))
-
-    for memory in _memories():
-        artifact = truth.write(memory)
-        assert state.store_memory(artifact) is True
-        assert state.store_memory(artifact) is False
-        assert truth.read(artifact.path).memory == memory
-
-    restored = state.list_memories(repo_key="acme/widgets")
+    scanned = tuple(sorted((artifact.memory for artifact in truth.scan().memories), key=lambda memory: memory.memory_id))
+    assert scanned == tuple(sorted(restored, key=lambda memory: memory.memory_id))
     assert {memory.memory_type for memory in restored} == {
         "task_experience",
         "repository_knowledge",
@@ -168,64 +171,3 @@ def test_unknown_memory_type_and_field_are_rejected() -> None:
     encoded["provider_attempt_id"] = "untrusted"
     with pytest.raises(SchemaInvalid, match="unknown"):
         coding_memory_from_dict(encoded)
-
-
-def test_v01_1_memory_state_adds_episode_projection_column(tmp_path: Path) -> None:
-    database = tmp_path / "state.sqlite3"
-    memory = _memories()[1]
-    with sqlite3.connect(database) as connection:
-        connection.executescript(
-            """
-            CREATE TABLE codecairn_meta (
-                key TEXT PRIMARY KEY,
-                value TEXT NOT NULL
-            );
-            INSERT INTO codecairn_meta VALUES ('schema_revision', 'codecairn-v01-1');
-            CREATE TABLE memories (
-                repo_key TEXT NOT NULL,
-                memory_id TEXT NOT NULL,
-                memory_type TEXT NOT NULL,
-                canonical_memory_json TEXT NOT NULL,
-                markdown_path TEXT NOT NULL,
-                content_sha256 TEXT NOT NULL,
-                PRIMARY KEY (repo_key, memory_id)
-            );
-            """
-        )
-        connection.execute(
-            """
-            INSERT INTO memories VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            (
-                memory.repo_key,
-                memory.memory_id,
-                memory.memory_type,
-                canonical_json(coding_memory_to_dict(memory)),
-                "/old/memory.md",
-                "0" * 64,
-            ),
-        )
-
-    state = SQLiteState(database)
-
-    assert state.list_memories(repo_key="acme/widgets") == (memory,)
-    with sqlite3.connect(database) as connection:
-        columns = {row[1] for row in connection.execute("PRAGMA table_info(memories)")}
-    assert "episode_id" in columns
-
-
-def test_v01_3_state_upgrades_to_current_schema(tmp_path: Path) -> None:
-    database = tmp_path / "state.sqlite3"
-    SQLiteState(database)
-    with sqlite3.connect(database) as connection:
-        connection.execute(
-            "UPDATE codecairn_meta SET value = 'codecairn-v01-3' WHERE key = 'schema_revision'"
-        )
-
-    SQLiteState(database)
-
-    with sqlite3.connect(database) as connection:
-        revision = connection.execute(
-            "SELECT value FROM codecairn_meta WHERE key = 'schema_revision'"
-        ).fetchone()
-    assert revision == ("codecairn-v01-4",)

@@ -29,10 +29,7 @@ def export_namespace(*, root: Path, repo_key: str, output: Path) -> dict[str, ob
             shutil.copytree(source, target / kind / slug)
     database = root / "state.sqlite3"
     if database.exists():
-        with (
-            sqlite3.connect(database) as source_db,
-            sqlite3.connect(target / "state.sqlite3") as destination_db,
-        ):
+        with sqlite3.connect(database) as source_db, sqlite3.connect(target / "state.sqlite3") as destination_db:
             source_db.backup(destination_db)
     files = tuple(
         sorted(
@@ -43,36 +40,18 @@ def export_namespace(*, root: Path, repo_key: str, output: Path) -> dict[str, ob
             }.items()
         )
     )
-    manifest = {
-        "schema_version": 1,
-        "repo_key": repo_key,
-        "file_count": len(files),
-        "files": dict(files),
-    }
+    manifest = {"schema_version": 1, "repo_key": repo_key, "file_count": len(files), "files": dict(files)}
     (target / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     return {"output": str(target), **manifest}
 
 
 def reset_namespace(
-    *,
-    root: Path,
-    repo_key: str,
-    confirm: str | None,
-    dry_run: bool,
-    state: SQLiteState,
-    index: NamespaceIndex | None,
+    *, root: Path, repo_key: str, confirm: str | None, dry_run: bool, state: SQLiteState, index: NamespaceIndex | None
 ) -> dict[str, object]:
     slug = _slug(repo_key)
-    paths = tuple(
-        str(path) for path in (root / "memory" / slug, root / "evolution" / slug) if path.exists()
-    )
+    paths = tuple(str(path) for path in (root / "memory" / slug, root / "evolution" / slug) if path.exists())
     memory_count = len(state.list_memories(repo_key=repo_key))
-    preview: dict[str, object] = {
-        "repo_key": repo_key,
-        "memory_count": memory_count,
-        "paths": paths,
-        "dry_run": dry_run,
-    }
+    preview: dict[str, object] = {"repo_key": repo_key, "memory_count": memory_count, "paths": paths, "dry_run": dry_run}
     if dry_run:
         return preview
     if confirm != repo_key:

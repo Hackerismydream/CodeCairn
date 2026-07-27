@@ -9,12 +9,7 @@ import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-ACCEPTED_BASELINE = {
-    "commit": "954f72842261074ed74c5a1fff664ae25ae4857a",
-    "core": 17_250,
-    "evaluation": 16_841,
-    "total": 34_091,
-}
+ACCEPTED_BASELINE = {"commit": "954f72842261074ed74c5a1fff664ae25ae4857a", "core": 17_250, "evaluation": 16_841, "total": 34_091}
 
 STAGE_LIMITS = {
     "v01-000a": {"core": 17_250, "total": 34_300},
@@ -110,10 +105,7 @@ def render_text(report: SourceBudgetReport) -> str:
         f"source-budget stage={report.stage} commit={report.commit} dirty={report.dirty}",
         (f"counts core={report.core} evaluation={report.evaluation} total={report.total}"),
         f"limits core={report.limits['core']} total={report.limits['total']}",
-        (
-            f"targets core={report.internal_targets['core']} "
-            f"total={report.internal_targets['total']}"
-        ),
+        (f"targets core={report.internal_targets['core']} total={report.internal_targets['total']}"),
         (
             "accepted-baseline "
             f"commit={report.accepted_baseline['commit']} "
@@ -134,21 +126,11 @@ def _physical_lines(path: Path) -> int:
 
 
 def _git_state(root: Path) -> tuple[str, bool | None]:
-    commit_result = subprocess.run(
-        ("git", "-C", str(root), "rev-parse", "HEAD"),
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    commit_result = subprocess.run(("git", "-C", str(root), "rev-parse", "HEAD"), check=False, capture_output=True, text=True)
     commit = commit_result.stdout.strip()
     if commit_result.returncode != 0 or len(commit) != 40:
         return "unavailable", None
-    status_result = subprocess.run(
-        ("git", "-C", str(root), "status", "--porcelain"),
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    status_result = subprocess.run(("git", "-C", str(root), "status", "--porcelain"), check=False, capture_output=True, text=True)
     dirty = None if status_result.returncode != 0 else bool(status_result.stdout)
     return commit, dirty
 

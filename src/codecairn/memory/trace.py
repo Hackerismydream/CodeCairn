@@ -2,12 +2,7 @@ from __future__ import annotations
 
 import hashlib
 
-from codecairn.memory.models import (
-    AgentTrace,
-    TraceEpisode,
-    TraceEpisodeOutcome,
-    TraceEvent,
-)
+from codecairn.memory.models import AgentTrace, TraceEpisode, TraceEpisodeOutcome, TraceEvent
 from codecairn.memory.schema import episode_identity
 
 EMPTY_RAW_PREFIX_SHA256 = hashlib.sha256(b"codecairn:raw-prefix:v1").hexdigest()
@@ -43,10 +38,7 @@ def segment_tasks(trace: AgentTrace, *, repo_key: str) -> tuple[TraceEpisode, ..
 
 
 def _build_episode(trace: AgentTrace, *, repo_key: str, events: list[TraceEvent]) -> TraceEpisode:
-    opening = next(
-        (event for event in events if event.kind == "message" and event.role == "user"),
-        events[0],
-    )
+    opening = next((event for event in events if event.kind == "message" and event.role == "user"), events[0])
     return TraceEpisode(
         episode_id=episode_identity(
             repo_key=repo_key,
@@ -65,11 +57,7 @@ def _build_episode(trace: AgentTrace, *, repo_key: str, events: list[TraceEvent]
 
 
 def _outcome(events: list[TraceEvent]) -> TraceEpisodeOutcome:
-    results = [
-        event.exit_code
-        for event in events
-        if event.kind == "tool_result" and event.is_command_result
-    ]
+    results = [event.exit_code for event in events if event.kind == "tool_result" and event.is_command_result]
     if any(code is not None and code != 0 for code in results):
         return "failure"
     if any(code == 0 for code in results):

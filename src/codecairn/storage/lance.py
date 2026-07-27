@@ -35,15 +35,9 @@ class LanceMemoryIndex:
                 pa.field("content_sha256", pa.string(), nullable=False),
                 pa.field("created_at_ms", pa.int64(), nullable=False),
                 pa.field("workstream_key", pa.string(), nullable=False),
-                pa.field(
-                    "vector",
-                    pa.list_(pa.float32(), embedder.dimension),
-                    nullable=False,
-                ),
+                pa.field("vector", pa.list_(pa.float32(), embedder.dimension), nullable=False),
             ],
-            metadata={
-                b"codecairn.profile": embedder.index_identity.encode(),
-            },
+            metadata={b"codecairn.profile": embedder.index_identity.encode()},
         )
 
     @property
@@ -58,31 +52,17 @@ class LanceMemoryIndex:
         with self._lock:
             table = self._table(create=True)
             assert table is not None
-            table.delete(
-                f"repo_key = {_literal(memory.repo_key)} "
-                f"AND memory_id = {_literal(memory.memory_id)}"
-            )
+            table.delete(f"repo_key = {_literal(memory.repo_key)} AND memory_id = {_literal(memory.memory_id)}")
             table.add(
                 pa.Table.from_pylist(
-                    [
-                        self._row(document, vector)
-                        for document, vector in zip(documents, vectors, strict=True)
-                    ],
-                    schema=self._schema,
+                    [self._row(document, vector) for document, vector in zip(documents, vectors, strict=True)], schema=self._schema
                 )
             )
             self._ensure_fts(table)
 
-    def replace_namespace(
-        self,
-        *,
-        repo_key: str,
-        documents: tuple[RecallDocument, ...],
-    ) -> None:
+    def replace_namespace(self, *, repo_key: str, documents: tuple[RecallDocument, ...]) -> None:
         vectors = self._embedder.embed_documents(tuple(document.content for document in documents))
-        rows = [
-            self._row(document, vector) for document, vector in zip(documents, vectors, strict=True)
-        ]
+        rows = [self._row(document, vector) for document, vector in zip(documents, vectors, strict=True)]
         with self._lock:
             table = self._table(create=bool(rows))
             if table is None:
@@ -92,14 +72,7 @@ class LanceMemoryIndex:
                 table.add(pa.Table.from_pylist(rows, schema=self._schema))
                 self._ensure_fts(table)
 
-    def lexical_candidates(
-        self,
-        *,
-        repo_key: str,
-        query: str,
-        include_superseded: bool,
-        limit: int,
-    ) -> tuple[IndexCandidate, ...]:
+    def lexical_candidates(self, *, repo_key: str, query: str, include_superseded: bool, limit: int) -> tuple[IndexCandidate, ...]:
         with self._lock:
             table = self._table(create=False)
             if table is None or table.count_rows() == 0:
@@ -113,21 +86,11 @@ class LanceMemoryIndex:
                 .to_list(),
             )
         return tuple(
-            IndexCandidate(
-                memory_id=str(row["memory_id"]),
-                source="lexical",
-                score=_finite(row["_score"]),
-            )
-            for row in rows
+            IndexCandidate(memory_id=str(row["memory_id"]), source="lexical", score=_finite(row["_score"])) for row in rows
         )
 
     def vector_candidates(
-        self,
-        *,
-        repo_key: str,
-        vector: tuple[float, ...],
-        include_superseded: bool,
-        limit: int,
+        self, *, repo_key: str, vector: tuple[float, ...], include_superseded: bool, limit: int
     ) -> tuple[IndexCandidate, ...]:
         with self._lock:
             table = self._table(create=False)
@@ -141,11 +104,7 @@ class LanceMemoryIndex:
                 .to_list(),
             )
         return tuple(
-            IndexCandidate(
-                memory_id=str(row["memory_id"]),
-                source="vector",
-                score=1.0 / (1.0 + _finite(row["_distance"])),
-            )
+            IndexCandidate(memory_id=str(row["memory_id"]), source="vector", score=1.0 / (1.0 + _finite(row["_distance"])))
             for row in rows
         )
 
@@ -156,12 +115,7 @@ class LanceMemoryIndex:
                 return set()
             rows = cast(list[dict[str, object]], table.to_arrow().to_pylist())
         return {
-            (
-                str(row["memory_id"]),
-                str(row["document_id"]),
-                str(row["status"]),
-                str(row["content_sha256"]),
-            )
+            (str(row["memory_id"]), str(row["document_id"]), str(row["status"]), str(row["content_sha256"]))
             for row in rows
             if row["repo_key"] == repo_key
         }
@@ -181,11 +135,7 @@ class LanceMemoryIndex:
             raise ValueError("retrieval_profile_changed")
         return table
 
-    def _row(
-        self,
-        document: RecallDocument,
-        vector: tuple[float, ...],
-    ) -> dict[str, object]:
+    def _row(self, document: RecallDocument, vector: tuple[float, ...]) -> dict[str, object]:
         if len(vector) != self._embedder.dimension:
             raise ValueError("Embedding dimension does not match retrieval profile")
         return {

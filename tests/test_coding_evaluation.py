@@ -95,9 +95,7 @@ def _write_suite(root: Path) -> Path:
     return suite
 
 
-def test_coding_runner_creates_isolated_immutable_runs_and_executes_verifier(
-    tmp_path: Path,
-) -> None:
+def test_coding_runner_creates_isolated_immutable_runs_and_executes_verifier(tmp_path: Path) -> None:
     suite_path = _write_suite(tmp_path / "inputs")
     agent = RecordingAgent()
     config = CodingRunConfig(
@@ -166,11 +164,7 @@ def test_provider_failure_is_infrastructure_failure_not_task_failure(tmp_path: P
     suite_path = _write_suite(tmp_path / "inputs")
     artifact = run_coding_evaluation(
         CodingRunConfig(
-            suite_path=suite_path,
-            output_root=tmp_path / "runs",
-            experiment_id="infra-exp",
-            repository_commit="abc123",
-            repeats=1,
+            suite_path=suite_path, output_root=tmp_path / "runs", experiment_id="infra-exp", repository_commit="abc123", repeats=1
         ),
         agent=RecordingAgent(fail_repeats={1}),
     )
@@ -201,10 +195,7 @@ def test_verifier_execution_error_is_infrastructure_failure(tmp_path: Path) -> N
 
     assert artifact.summary["completed_run_count"] == 0
     assert artifact.summary["infrastructure_failure_count"] == 2
-    verifier_records = [
-        json.loads(path.read_text(encoding="utf-8"))
-        for path in artifact.run_dir.glob("*/verifier.json")
-    ]
+    verifier_records = [json.loads(path.read_text(encoding="utf-8")) for path in artifact.run_dir.glob("*/verifier.json")]
     assert len(verifier_records) == 2
     assert all(record["status"] == "infrastructure_failed" for record in verifier_records)
 
@@ -226,32 +217,11 @@ def test_codex_trace_parser_extracts_usage_changes_and_shell_wrapped_reads() -> 
             json.dumps(
                 {
                     "type": "item.completed",
-                    "item": {
-                        "type": "command_execution",
-                        "command": "/bin/zsh -lc \"sed -n '1,40p' kata.py\"",
-                        "exit_code": 0,
-                    },
+                    "item": {"type": "command_execution", "command": "/bin/zsh -lc \"sed -n '1,40p' kata.py\"", "exit_code": 0},
                 }
             ),
-            json.dumps(
-                {
-                    "type": "item.completed",
-                    "item": {
-                        "type": "file_change",
-                        "changes": [{"path": "kata.py"}],
-                    },
-                }
-            ),
-            json.dumps(
-                {
-                    "type": "turn.completed",
-                    "usage": {
-                        "input_tokens": 100,
-                        "cached_input_tokens": 60,
-                        "output_tokens": 20,
-                    },
-                }
-            ),
+            json.dumps({"type": "item.completed", "item": {"type": "file_change", "changes": [{"path": "kata.py"}]}}),
+            json.dumps({"type": "turn.completed", "usage": {"input_tokens": 100, "cached_input_tokens": 60, "output_tokens": 20}}),
         ]
     )
 
@@ -262,10 +232,7 @@ def test_codex_trace_parser_extracts_usage_changes_and_shell_wrapped_reads() -> 
     assert (input_tokens, cached_input_tokens, output_tokens) == (100, 60, 20)
 
 
-def test_codex_agent_uses_ephemeral_auth_home_and_does_not_forward_secrets(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_codex_agent_uses_ephemeral_auth_home_and_does_not_forward_secrets(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     source_home = tmp_path / "source-home"
     source_home.mkdir()
     (source_home / "auth.json").write_text("{}", encoding="utf-8")
@@ -277,14 +244,9 @@ def test_codex_agent_uses_ephemeral_auth_home_and_does_not_forward_secrets(
         environment = kwargs["env"]
         assert isinstance(environment, dict)
         captured["environment"] = dict(environment)
-        captured["auth_exists_during_run"] = (
-            Path(environment["CODEX_HOME"]) / "auth.json"
-        ).is_file()
+        captured["auth_exists_during_run"] = (Path(environment["CODEX_HOME"]) / "auth.json").is_file()
         return subprocess.CompletedProcess(
-            args=[],
-            returncode=0,
-            stdout='{"type":"turn.completed","usage":{"input_tokens":1,"output_tokens":1}}\n',
-            stderr="",
+            args=[], returncode=0, stdout='{"type":"turn.completed","usage":{"input_tokens":1,"output_tokens":1}}\n', stderr=""
         )
 
     monkeypatch.setenv("CODEX_HOME", str(source_home))
@@ -337,10 +299,7 @@ def test_task_19_verifier_accepts_the_actual_longest_common_prefix(tmp_path: Pat
 
     assert correct.returncode == 0, correct.stderr
 
-    (tmp_path / "kata.py").write_text(
-        "def common_prefix(values):\n    return 'age' if values else ''\n",
-        encoding="utf-8",
-    )
+    (tmp_path / "kata.py").write_text("def common_prefix(values):\n    return 'age' if values else ''\n", encoding="utf-8")
     wrong = subprocess.run(
         [sys.executable, "verify.py", "task-19"],
         cwd=tmp_path,
@@ -352,9 +311,7 @@ def test_task_19_verifier_accepts_the_actual_longest_common_prefix(tmp_path: Pat
     assert wrong.returncode != 0
 
 
-def test_runner_injects_real_verifier_after_agent_and_imports_workspace_code(
-    tmp_path: Path,
-) -> None:
+def test_runner_injects_real_verifier_after_agent_and_imports_workspace_code(tmp_path: Path) -> None:
     inputs = tmp_path / "inputs"
     starter = inputs / "starter"
     verifier = inputs / "verifier"
@@ -399,11 +356,7 @@ def test_runner_injects_real_verifier_after_agent_and_imports_workspace_code(
 
     artifact = run_coding_evaluation(
         CodingRunConfig(
-            suite_path=suite,
-            output_root=tmp_path / "runs",
-            experiment_id="hidden-verifier",
-            repository_commit="abc123",
-            repeats=1,
+            suite_path=suite, output_root=tmp_path / "runs", experiment_id="hidden-verifier", repository_commit="abc123", repeats=1
         ),
         agent=RecordingAgent(),
     )

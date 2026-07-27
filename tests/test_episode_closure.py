@@ -13,12 +13,7 @@ from codecairn.storage.sqlite import SQLiteState
 
 
 def _event(
-    index: int,
-    *,
-    kind: str = "message",
-    role: str | None = None,
-    text: str | None = None,
-    exit_code: int | None = None,
+    index: int, *, kind: str = "message", role: str | None = None, text: str | None = None, exit_code: int | None = None
 ) -> TraceEvent:
     digest = hashlib.sha256(f"event-{index}".encode()).hexdigest()
     return TraceEvent(
@@ -82,26 +77,16 @@ def test_explicit_boundary_reports_partial_outcome() -> None:
         )
     )
 
-    closed = close_trace_episodes(
-        trace,
-        repo_key="acme/widgets",
-        final_boundary="manual_finalize",
-    )
+    closed = close_trace_episodes(trace, repo_key="acme/widgets", final_boundary="manual_finalize")
 
     assert len(closed) == 1
     assert closed[0].outcome == "partial"
     assert closed[0].record.end_event_index_exclusive == 3
 
 
-def test_same_cursor_boundary_is_first_close_wins_under_concurrency(
-    tmp_path: Path,
-) -> None:
+def test_same_cursor_boundary_is_first_close_wins_under_concurrency(tmp_path: Path) -> None:
     trace = _trace((_event(0, role="user", text="Ship it"),))
-    manual = close_trace_episodes(
-        trace,
-        repo_key="acme/widgets",
-        final_boundary="manual_finalize",
-    )[0].record
+    manual = close_trace_episodes(trace, repo_key="acme/widgets", final_boundary="manual_finalize")[0].record
     stop = replace(manual, boundary_kind="codex_stop")
     database = tmp_path / "state.sqlite3"
 
@@ -112,11 +97,7 @@ def test_same_cursor_boundary_is_first_close_wins_under_concurrency(
     with ThreadPoolExecutor(max_workers=2) as executor:
         ids = tuple(executor.map(store, (manual, stop)))
 
-    episodes = SQLiteState(database).list_episodes(
-        repo_key="acme/widgets",
-        provider="codex",
-        session_id="session-1",
-    )
+    episodes = SQLiteState(database).list_episodes(repo_key="acme/widgets", provider="codex", session_id="session-1")
     assert ids == (manual.episode_id, manual.episode_id)
     assert len(episodes) == 1
     assert episodes[0].boundary_kind in {"manual_finalize", "codex_stop"}
@@ -124,28 +105,15 @@ def test_same_cursor_boundary_is_first_close_wins_under_concurrency(
 
 def test_late_unpaired_tool_result_becomes_auditable_continuation() -> None:
     first_trace = _trace((_event(0, role="user", text="Run the check"),))
-    first = close_trace_episodes(
-        first_trace,
-        repo_key="acme/widgets",
-        final_boundary="codex_stop",
-    )[0]
+    first = close_trace_episodes(first_trace, repo_key="acme/widgets", final_boundary="codex_stop")[0]
     full_trace = _trace(
         (
             _event(0, role="user", text="Run the check"),
-            replace(
-                _event(1, kind="tool_result", exit_code=1),
-                call_id="late-result",
-                text="Process exited with code 1",
-            ),
+            replace(_event(1, kind="tool_result", exit_code=1), call_id="late-result", text="Process exited with code 1"),
         )
     )
 
-    continuation = close_trace_episodes(
-        full_trace,
-        repo_key="acme/widgets",
-        existing=(first.record,),
-        final_boundary="codex_stop",
-    )
+    continuation = close_trace_episodes(full_trace, repo_key="acme/widgets", existing=(first.record,), final_boundary="codex_stop")
     facts = collect_evidence_facts(continuation, repo_key="acme/widgets")
 
     assert len(continuation) == 1

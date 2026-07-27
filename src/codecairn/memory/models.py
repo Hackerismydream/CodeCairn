@@ -4,24 +4,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from codecairn.memory.schema import (
-    CodingMemory as CodingMemory,
-)
-from codecairn.memory.schema import (
-    EvidenceFact as EvidenceFact,
-)
-from codecairn.memory.schema import (
-    MemoryType as MemoryType,
-)
-from codecairn.memory.schema import (
-    Provider,
-)
+from codecairn.memory.schema import CodingMemory as CodingMemory
+from codecairn.memory.schema import EvidenceFact as EvidenceFact
+from codecairn.memory.schema import MemoryType as MemoryType
+from codecairn.memory.schema import Provider
 
 TraceEventKind = Literal["message", "tool_call", "tool_result", "metadata", "unknown"]
 FileChangeOperation = Literal["add", "update", "delete", "move"]
 TraceEpisodeOutcome = Literal["success", "failure", "partial", "unknown"]
 CandidateSource = Literal["lexical", "vector"]
 MemoryStatus = Literal["active", "superseded"]
+HookOutcome = Literal["imported", "noop", "failed", "unsupported"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -108,6 +101,23 @@ class ImportResult:
     created_memory_count: int
     skipped_memory_count: int
     repaired_memory_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class HookReceipt:
+    schema_version: int
+    receipt_id: str
+    repo_key: str | None
+    client: Literal["codex", "claude"]
+    event: Literal["stop", "session_end"]
+    client_version: str
+    session_identity_sha256: str
+    source_identity_sha256: str | None
+    outcome: HookOutcome
+    error_code: str | None
+    retry_command: str | None
+    started_at_ms: int
+    duration_ms: int
 
 
 @dataclass(frozen=True, slots=True)

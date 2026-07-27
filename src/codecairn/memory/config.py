@@ -34,32 +34,18 @@ class RetrievalConfig:
             raise ConfigurationError(f"Unknown retrieval profile: {self.profile}")
         if not self.model or not self.revision or self.dimension < 1:
             raise ConfigurationError("Retrieval model, revision, and dimension are required")
-        if self.profile == "dashscope" and (
-            self.model != DASHSCOPE_MODEL or self.dimension != 1_024 or not self.endpoint
-        ):
+        if self.profile == "dashscope" and (self.model != DASHSCOPE_MODEL or self.dimension != 1_024 or not self.endpoint):
             raise ConfigurationError("DashScope requires qwen3.7-text-embedding at 1024 dimensions")
-        if self.profile == "fastembed" and (
-            self.model != FASTEMBED_MODEL or self.dimension != 384 or self.endpoint is not None
-        ):
+        if self.profile == "fastembed" and (self.model != FASTEMBED_MODEL or self.dimension != 384 or self.endpoint is not None):
             raise ConfigurationError("FastEmbed requires the pinned 384-dimension local profile")
 
     @classmethod
     def default(cls, profile: RetrievalProfile) -> RetrievalConfig:
         if profile == "dashscope":
             return cls(
-                profile=profile,
-                model=DASHSCOPE_MODEL,
-                dimension=1_024,
-                endpoint=DASHSCOPE_ENDPOINT,
-                revision="provider-managed",
+                profile=profile, model=DASHSCOPE_MODEL, dimension=1_024, endpoint=DASHSCOPE_ENDPOINT, revision="provider-managed"
             )
-        return cls(
-            profile=profile,
-            model=FASTEMBED_MODEL,
-            dimension=384,
-            endpoint=None,
-            revision=FASTEMBED_REVISION,
-        )
+        return cls(profile=profile, model=FASTEMBED_MODEL, dimension=384, endpoint=None, revision=FASTEMBED_REVISION)
 
     @property
     def public_config(self) -> dict[str, object]:

@@ -4,13 +4,7 @@ import os
 
 import pytest
 
-from codecairn.memory.schema import (
-    CodingMemory,
-    IdentityConflict,
-    LegacyRootUnsupported,
-    RepositoryKnowledgePayload,
-    SchemaInvalid,
-)
+from codecairn.memory.schema import CodingMemory, IdentityConflict, LegacyRootUnsupported, RepositoryKnowledgePayload, SchemaInvalid
 from codecairn.storage.markdown import MarkdownMemoryStore
 
 
@@ -30,10 +24,7 @@ def _memory(*, content: str = "Run make check before committing.") -> CodingMemo
         restored_from=None,
         restore_predecessor_id=None,
         source_order_key=None,
-        payload=RepositoryKnowledgePayload(
-            subject_key="repository-checks",
-            claim=content,
-        ),
+        payload=RepositoryKnowledgePayload(subject_key="repository-checks", claim=content),
     )
 
 

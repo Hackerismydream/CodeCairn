@@ -39,11 +39,7 @@ class WorkerProcessResult:
 
 
 def run_monitored_worker(
-    command: tuple[str, ...],
-    *,
-    progress_root: Path,
-    limits: WorkerProcessLimits,
-    on_started: Callable[[int], None] | None = None,
+    command: tuple[str, ...], *, progress_root: Path, limits: WorkerProcessLimits, on_started: Callable[[int], None] | None = None
 ) -> WorkerProcessResult:
     """Run one worker without inherited Python state and enforce live resource gates."""
     if not command:
@@ -57,11 +53,7 @@ def run_monitored_worker(
     termination_reason: str | None = None
     monitor_error_type: str | None = None
     process = subprocess.Popen(
-        command,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        close_fds=True,
+        command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True
     )
     try:
         if on_started is not None:
@@ -124,12 +116,7 @@ def _process_rss_bytes(pid: int) -> int:
                 return int(fields[1]) * 1024
         return 0
     completed = subprocess.run(
-        ("ps", "-o", "rss=", "-p", str(pid)),
-        check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-        text=True,
-        timeout=2,
+        ("ps", "-o", "rss=", "-p", str(pid)), check=False, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, timeout=2
     )
     value = completed.stdout.strip()
     return int(value) * 1024 if value else 0

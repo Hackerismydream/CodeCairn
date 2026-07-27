@@ -17,12 +17,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal, Protocol, cast
 
-from codecairn.evaluation.artifacts import (
-    canonical_json,
-    file_sha256,
-    read_json,
-    write_json_exclusive,
-)
+from codecairn.evaluation.artifacts import canonical_json, file_sha256, read_json, write_json_exclusive
 from codecairn.evaluation.historical_reader import report_coding as _report_coding
 
 CodingArm = Literal["memory-on", "memory-off"]
@@ -187,15 +182,11 @@ class CodexExecAgent:
                     check=False,
                 )
         except subprocess.TimeoutExpired as error:
-            raise RuntimeError(
-                f"Codex agent timed out after {self.timeout_seconds} seconds"
-            ) from error
+            raise RuntimeError(f"Codex agent timed out after {self.timeout_seconds} seconds") from error
         raw_trace = completed.stdout
         if completed.stderr:
             raw_trace += f"\n--- stderr ---\n{completed.stderr}"
-        events, input_tokens, cached_input_tokens, output_tokens = parse_codex_trace(
-            completed.stdout
-        )
+        events, input_tokens, cached_input_tokens, output_tokens = parse_codex_trace(completed.stdout)
         return AgentExecution(
             exit_code=completed.returncode,
             events=events,
@@ -234,11 +225,7 @@ def load_coding_suite(path: Path) -> CodingSuite:
     )
 
 
-def run_coding_evaluation(
-    config: CodingRunConfig,
-    *,
-    agent: CodingAgent,
-) -> CodingRunArtifact:
+def run_coding_evaluation(config: CodingRunConfig, *, agent: CodingAgent) -> CodingRunArtifact:
     _validate_safe_id(config.experiment_id, field="experiment_id")
     if not config.repository_commit.strip():
         raise ValueError("repository_commit must not be empty")
@@ -389,10 +376,7 @@ def _run_one(
         )
         return
     _write_text_exclusive(item_dir / "raw-agent-trace.log", execution.raw_trace)
-    write_json_exclusive(
-        item_dir / "trace.json",
-        {"schema_version": 1, "events": [asdict(event) for event in execution.events]},
-    )
+    write_json_exclusive(item_dir / "trace.json", {"schema_version": 1, "events": [asdict(event) for event in execution.events]})
     if execution.exit_code != 0:
         _write_infrastructure_result(
             item_dir,
@@ -407,11 +391,7 @@ def _run_one(
         return
     workspace_snapshot_after = _directory_sha256(workspace)
     try:
-        verifier = _execute_verifier(
-            task,
-            workspace=workspace,
-            verifier_source_path=verifier_source_path,
-        )
+        verifier = _execute_verifier(task, workspace=workspace, verifier_source_path=verifier_source_path)
     except Exception as error:
         write_json_exclusive(
             item_dir / "verifier.json",
@@ -490,22 +470,13 @@ def _write_infrastructure_result(
     )
 
 
-def _execute_verifier(
-    task: CodingTask,
-    *,
-    workspace: Path,
-    verifier_source_path: Path,
-) -> dict[str, object]:
+def _execute_verifier(task: CodingTask, *, workspace: Path, verifier_source_path: Path) -> dict[str, object]:
     verifier_directory = workspace / ".codecairn-verifier"
     verifier_directory.mkdir(parents=False, exist_ok=False)
     verifier_path = verifier_directory / "verify.py"
     shutil.copyfile(verifier_source_path, verifier_path)
     argv = [
-        sys.executable
-        if value == "{python}"
-        else str(verifier_path.relative_to(workspace))
-        if value == "{verifier}"
-        else value
+        sys.executable if value == "{python}" else str(verifier_path.relative_to(workspace)) if value == "{verifier}" else value
         for value in task.verifier_argv
     ]
     started = time.perf_counter()
@@ -520,9 +491,7 @@ def _execute_verifier(
             env=_verifier_environment(workspace=workspace),
         )
     except subprocess.TimeoutExpired as error:
-        raise RuntimeError(
-            f"Verifier timed out after {task.verifier_timeout_seconds} seconds"
-        ) from error
+        raise RuntimeError(f"Verifier timed out after {task.verifier_timeout_seconds} seconds") from error
     finally:
         verifier_path.unlink(missing_ok=True)
         verifier_directory.rmdir()
@@ -536,9 +505,7 @@ def _execute_verifier(
         "stdout": completed.stdout,
         "stderr": completed.stderr,
         "duration_ms": (time.perf_counter() - started) * 1000,
-        "output_sha256": hashlib.sha256(
-            (completed.stdout + "\0" + completed.stderr).encode()
-        ).hexdigest(),
+        "output_sha256": hashlib.sha256((completed.stdout + "\0" + completed.stderr).encode()).hexdigest(),
         "verifier_source_sha256": file_sha256(verifier_source_path),
     }
 
@@ -546,9 +513,7 @@ def _execute_verifier(
 def _trace_metrics(events: tuple[TraceEvent, ...]) -> dict[str, int | None]:
     reads = Counter(event.path for event in events if event.kind == "file_read" and event.path)
     failed = Counter(
-        event.command
-        for event in events
-        if event.kind == "command" and event.command and event.exit_code not in {None, 0}
+        event.command for event in events if event.kind == "command" and event.command and event.exit_code not in {None, 0}
     )
     first_change = next((event.step for event in events if event.kind == "file_change"), None)
     return {
@@ -558,9 +523,7 @@ def _trace_metrics(events: tuple[TraceEvent, ...]) -> dict[str, int | None]:
     }
 
 
-def parse_codex_trace(
-    raw: str,
-) -> tuple[tuple[TraceEvent, ...], int | None, int | None, int | None]:
+def parse_codex_trace(raw: str) -> tuple[tuple[TraceEvent, ...], int | None, int | None, int | None]:
     events: list[TraceEvent] = []
     input_tokens: int | None = None
     cached_input_tokens: int | None = None
@@ -593,12 +556,7 @@ def parse_codex_trace(
             command = str(item.get("command", ""))
             exit_code = item.get("exit_code")
             events.append(
-                TraceEvent(
-                    step=step,
-                    kind="command",
-                    command=command,
-                    exit_code=exit_code if isinstance(exit_code, int) else None,
-                )
+                TraceEvent(step=step, kind="command", command=command, exit_code=exit_code if isinstance(exit_code, int) else None)
             )
             for path in _read_paths_from_command(command):
                 step += 1
@@ -653,10 +611,7 @@ def _changed_paths(value: object) -> tuple[str, ...]:
 
 
 def _agent_prompt(request: AgentRunRequest) -> str:
-    sections = [
-        "Work only inside the current workspace. Implement the requested change, then stop.",
-        f"Task: {request.prompt}",
-    ]
+    sections = ["Work only inside the current workspace. Implement the requested change, then stop.", f"Task: {request.prompt}"]
     if request.recall_context is not None:
         sections.append(
             "The following read-only Recall Context was retrieved before this run. "
@@ -682,11 +637,7 @@ def _parse_task(value: object, *, root: Path) -> CodingTask:
         if not context.is_file():
             raise ValueError(f"Recall context path is not a file: {context}")
     raw_argv = payload.get("verifier_argv")
-    if (
-        not isinstance(raw_argv, list)
-        or not raw_argv
-        or not all(isinstance(item, str) and item for item in raw_argv)
-    ):
+    if not isinstance(raw_argv, list) or not raw_argv or not all(isinstance(item, str) and item for item in raw_argv):
         raise ValueError("verifier_argv must be a non-empty string array")
     timeout = payload.get("verifier_timeout_seconds", 30)
     if not isinstance(timeout, int) or timeout < 1:
@@ -723,8 +674,7 @@ def _agent_environment(*, codex_home: Path) -> dict[str, str]:
     environment = {
         key: value
         for key, value in os.environ.items()
-        if key.upper() in _AGENT_ENV_ALLOWLIST
-        and not any(marker in key.upper() for marker in _MEMORY_ENV_MARKERS)
+        if key.upper() in _AGENT_ENV_ALLOWLIST and not any(marker in key.upper() for marker in _MEMORY_ENV_MARKERS)
     }
     environment["CODEX_HOME"] = str(codex_home)
     environment["HOME"] = str(codex_home)

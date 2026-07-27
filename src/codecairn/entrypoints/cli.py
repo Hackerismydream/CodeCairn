@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 from dataclasses import asdict
 from pathlib import Path
@@ -10,18 +11,11 @@ import typer
 from typer.core import TyperGroup
 
 from codecairn.configuration import initialize_repository, resolve_runtime_config
+from codecairn.entrypoints.hooks import HookClient, install_hook
 from codecairn.memory.config import RetrievalConfig, RuntimeConfig, SemanticConfig
-from codecairn.memory.errors import (
-    ConfigurationError,
-    IndexNotReady,
-    ProviderConfigurationError,
-)
+from codecairn.memory.errors import ConfigurationError, IndexNotReady, ProviderConfigurationError
 from codecairn.memory.schema import MemoryType
-from codecairn.service.application import (
-    CodeCairnApplication,
-    RememberRequest,
-    import_response,
-)
+from codecairn.service.application import CodeCairnApplication, RememberRequest, import_response
 
 
 class ApplicationFactory(Protocol):
@@ -33,6 +27,10 @@ class ApplicationFactory(Protocol):
         retrieval: RetrievalConfig | None = None,
         semantic: SemanticConfig | None = None,
     ) -> CodeCairnApplication: ...
+
+
+class HookRunner(Protocol):
+    def __call__(self, client: HookClient, raw: bytes) -> object: ...
 
 
 PROVIDER_CONFIGURATION_EXIT_CODE = 2
@@ -52,22 +50,67 @@ class _FailClosedGroup(TyperGroup):
             raise typer.Exit(code=PROVIDER_CONFIGURATION_EXIT_CODE) from None
 
 
-def build_app(application_factory: ApplicationFactory) -> typer.Typer:
+def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner | None = None) -> typer.Typer:
     """Build the CLI against an injected runtime composition function."""
     app = typer.Typer(
-        name="codecairn",
-        cls=_FailClosedGroup,
-        help="Auditable long-term memory runtime for coding agents.",
-        no_args_is_help=True,
+        name="codecairn", cls=_FailClosedGroup, help="Auditable long-term memory runtime for coding agents.", no_args_is_help=True
     )
     evidence_app = typer.Typer(help="Build or verify a public benchmark evidence bundle.")
+    hook_app = typer.Typer(help="Install or run coding-agent session hooks.")
     index_app = typer.Typer(help="Operate the rebuildable search index.")
     memory_app = typer.Typer(help="Inspect and evolve durable memory.")
     namespace_app = typer.Typer(help="Export or reset one memory namespace.")
     app.add_typer(evidence_app, name="evidence")
+    app.add_typer(hook_app, name="hook")
     app.add_typer(index_app, name="index")
     app.add_typer(memory_app, name="memory")
     app.add_typer(namespace_app, name="namespace")
+
+    @hook_app.command("run")
+    def hook_run_command(client: Annotated[HookClient, typer.Option("--client")]) -> None:
+        """Import one client event without blocking the client."""
+        try:
+            raw = sys.stdin.buffer.read(64 * 1024 + 1)
+            if hook_runner is not None:
+                hook_runner(client, raw)
+        except Exception:
+            pass
+
+    @hook_app.command("install")
+    def hook_install_command(
+        claude: Annotated[bool, typer.Option("--claude")] = False,
+        codex: Annotated[bool, typer.Option("--codex")] = False,
+        dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
+        claude_settings: Annotated[Path | None, typer.Option("--claude-settings", hidden=True)] = None,
+        codex_hooks: Annotated[Path | None, typer.Option("--codex-hooks", hidden=True)] = None,
+    ) -> None:
+        """Merge one stable handler into selected client settings."""
+        if not claude and not codex:
+            raise typer.BadParameter("select --claude, --codex, or both")
+        executable = shutil.which("codecairn")
+        if executable is None:
+            raise typer.BadParameter("codecairn executable is not installed on PATH")
+        selected: list[tuple[HookClient, Path]] = []
+        if claude:
+            selected.append(("claude", claude_settings or Path.home() / ".claude/settings.json"))
+        if codex:
+            selected.append(("codex", codex_hooks or Path.home() / ".codex/hooks.json"))
+        results: list[dict[str, object]] = []
+        for client, target in selected:
+            try:
+                result = install_hook(client=client, target=target, executable=Path(executable), dry_run=dry_run)
+            except ValueError as error:
+                if str(error) != "unsupported_client":
+                    raise
+                result = {
+                    "client": client,
+                    "target": str(target),
+                    "changed": False,
+                    "status": "unsupported",
+                    "manual": "codecairn import <owned-session.jsonl>",
+                }
+            results.append(result)
+        typer.echo(json.dumps({"hooks": results}, sort_keys=True))
 
     @app.command("init")
     def init_command(
@@ -75,10 +118,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         config: Annotated[Path | None, typer.Option("--config")] = None,
         repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
         remote: Annotated[str | None, typer.Option("--remote")] = None,
-        retrieval_profile: Annotated[
-            Literal["dashscope", "fastembed"] | None,
-            typer.Option("--retrieval-profile"),
-        ] = None,
+        retrieval_profile: Annotated[Literal["dashscope", "fastembed"] | None, typer.Option("--retrieval-profile")] = None,
         semantic_profile: Annotated[str | None, typer.Option("--semantic-profile")] = None,
         prefetch: Annotated[bool, typer.Option("--prefetch")] = False,
         check_provider: Annotated[bool, typer.Option("--check-provider")] = False,
@@ -119,10 +159,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
 
     @app.command("import")
     def import_session_command(
-        source: Annotated[
-            Path,
-            typer.Argument(exists=True, dir_okay=False, readable=True),
-        ],
+        source: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
         repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
@@ -130,17 +167,9 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         finalize: Annotated[bool, typer.Option("--finalize")] = False,
     ) -> None:
         """Import one supported agent session and persist evidence-backed memories."""
-        application, resolved = _resolve_application(
-            application_factory,
-            config=config,
-            root=root,
-            repo_key=repo_key,
-        )
+        application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         outcome = application.import_session(
-            source,
-            repo_key=resolved.repo_key,
-            index=index,
-            boundary_kind="manual_finalize" if finalize else None,
+            source, repo_key=resolved.repo_key, index=index, boundary_kind="manual_finalize" if finalize else None
         )
         typer.echo(json.dumps(import_response(outcome), sort_keys=True))
 
@@ -151,9 +180,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
         """List durable memories in one repository namespace."""
-        application, resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         memories = application.list_memories(repo_key=resolved.repo_key)
         typer.echo(json.dumps([asdict(memory) for memory in memories], sort_keys=True))
 
@@ -170,9 +197,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         output_format: Annotated[str, typer.Option("--format")] = "json",
     ) -> None:
         """Generate task-shaped Recall Context from hybrid candidates."""
-        application, resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         result = application.recall(
             task,
             repo_key=resolved.repo_key,
@@ -201,14 +226,10 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
     ) -> None:
         """Process bounded semantic and index queues."""
         del retry_failed
-        application, _resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         report: dict[str, object] = {}
         if semantic:
-            report["semantic"] = asdict(
-                application.process_pending(worker_id=worker_id, max_jobs=max_jobs)
-            )
+            report["semantic"] = asdict(application.process_pending(worker_id=worker_id, max_jobs=max_jobs))
         if index:
             report["index"] = asdict(application.sync_index(worker_id=worker_id, max_jobs=max_jobs))
         typer.echo(json.dumps(report, sort_keys=True))
@@ -224,9 +245,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         subject_key: Annotated[str | None, typer.Option("--subject-key")] = None,
         source_fact_id: Annotated[list[str] | None, typer.Option("--source-fact-id")] = None,
         workstream_key: Annotated[str | None, typer.Option("--workstream-key")] = None,
-        workstream_state: Annotated[
-            Literal["open", "closed"], typer.Option("--workstream-state")
-        ] = "open",
+        workstream_state: Annotated[Literal["open", "closed"], typer.Option("--workstream-state")] = "open",
         goal: Annotated[str | None, typer.Option("--goal")] = None,
         next_step: Annotated[str | None, typer.Option("--next-step")] = None,
         terminal_outcome: Annotated[str | None, typer.Option("--terminal-outcome")] = None,
@@ -237,9 +256,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
     ) -> None:
         """Store Repository Knowledge, Working Preference, or Work State."""
         content = _large_text(text=text, file=file, stdin=stdin)
-        application, resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         memory = application.remember_direct(
             RememberRequest(
                 memory_type=cast(MemoryType, memory_type),
@@ -266,15 +283,11 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        application, resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
-        memory = application.show_memory(
-            repo_key=resolved.repo_key,
-            memory_id=memory_id,
-        )
-        if memory is None:
-            raise typer.BadParameter("memory ID was not found", param_hint="memory_id")
+        application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
+        try:
+            memory = application.get_memory(repo_key=resolved.repo_key, memory_id=memory_id).memory
+        except KeyError:
+            raise typer.BadParameter("memory ID was not found", param_hint="memory_id") from None
         typer.echo(json.dumps(asdict(memory), sort_keys=True))
 
     @memory_app.command("history")
@@ -284,13 +297,8 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        application, resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
-        history = application.memory_history(
-            repo_key=resolved.repo_key,
-            memory_id=memory_id,
-        )
+        application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
+        history = application.memory_history(repo_key=resolved.repo_key, memory_id=memory_id)
         typer.echo(json.dumps(asdict(history), sort_keys=True))
 
     @memory_app.command("supersede")
@@ -302,15 +310,9 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        application, resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         record = application.supersede(
-            repo_key=resolved.repo_key,
-            predecessor_id=predecessor_id,
-            successor_id=successor_id,
-            reason=reason,
-            proposer="user",
+            repo_key=resolved.repo_key, predecessor_id=predecessor_id, successor_id=successor_id, reason=reason, proposer="user"
         )
         typer.echo(json.dumps(asdict(record), sort_keys=True))
 
@@ -321,9 +323,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        application, resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         restored = application.restore(repo_key=resolved.repo_key, memory_id=memory_id)
         typer.echo(json.dumps(asdict(restored), sort_keys=True))
 
@@ -334,9 +334,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        application, _resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         typer.echo(json.dumps(application.export_namespace(output), sort_keys=True))
 
     @namespace_app.command("reset")
@@ -347,22 +345,15 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
-        application, _resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
-        typer.echo(
-            json.dumps(
-                application.reset_namespace(confirm=confirm, dry_run=dry_run),
-                sort_keys=True,
-            )
-        )
+        application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
+        typer.echo(json.dumps(application.reset_namespace(confirm=confirm, dry_run=dry_run), sort_keys=True))
 
     @evidence_app.command("verify")
-    def evidence_verify_command(
-        bundle_dir: Annotated[Path, typer.Argument(exists=True, file_okay=False, readable=True)],
-    ) -> None:
+    def evidence_verify_command(bundle_dir: Annotated[Path, typer.Argument(exists=True, file_okay=False, readable=True)]) -> None:
         """Recompute and verify one public evidence bundle without provider access."""
-        result = application_factory(Path(".codecairn")).verify_evidence_bundle(bundle_dir)
+        from codecairn.evaluation.evidence_bundle import verify_evidence_bundle
+
+        result = verify_evidence_bundle(bundle_dir)
         typer.echo(json.dumps(result, sort_keys=True))
 
     @index_app.command("sync")
@@ -374,9 +365,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         max_jobs: Annotated[int | None, typer.Option("--max-jobs", min=1)] = None,
     ) -> None:
         """Drain the index outbox until it is idle and report queue state."""
-        application, _resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         health = application.sync_index(worker_id=worker_id, max_jobs=max_jobs)
         typer.echo(json.dumps(asdict(health), sort_keys=True))
 
@@ -387,9 +376,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
         """Rebuild the search index from durable truth and report truth-index parity."""
-        application, _resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         typer.echo(json.dumps(asdict(application.rebuild_index()), sort_keys=True))
 
     @index_app.command("status")
@@ -399,9 +386,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
         """Report index outbox state without resolving retrieval providers."""
-        application, _resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         typer.echo(json.dumps(asdict(application.index_status()), sort_keys=True))
 
     @app.command("doctor")
@@ -414,9 +399,7 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         output_format: Annotated[Literal["human", "json"], typer.Option("--format")] = "human",
     ) -> None:
         """Inspect durable truth, import state, index state, and providers."""
-        application, _resolved = _resolve_application(
-            application_factory, config=config, root=root, repo_key=repo_key
-        )
+        application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         result = application.doctor(live=live)
         if output_format == "json":
             typer.echo(json.dumps(result, sort_keys=True))
@@ -429,30 +412,15 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
 
 
 def _resolve_application(
-    application_factory: ApplicationFactory,
-    *,
-    config: Path | None,
-    root: Path | None,
-    repo_key: str | None,
+    application_factory: ApplicationFactory, *, config: Path | None, root: Path | None, repo_key: str | None
 ) -> tuple[CodeCairnApplication, RuntimeConfig]:
-    resolved = resolve_runtime_config(
-        start=Path.cwd(),
-        config_path=config,
-        root=root,
-        repo_key=repo_key,
-    )
+    resolved = resolve_runtime_config(start=Path.cwd(), config_path=config, root=root, repo_key=repo_key)
     return _application(application_factory, resolved), resolved
 
 
-def _application(
-    application_factory: ApplicationFactory,
-    resolved: RuntimeConfig,
-) -> CodeCairnApplication:
+def _application(application_factory: ApplicationFactory, resolved: RuntimeConfig) -> CodeCairnApplication:
     return application_factory(
-        resolved.runtime_root,
-        repo_key=resolved.repo_key,
-        retrieval=resolved.retrieval,
-        semantic=resolved.semantic,
+        resolved.runtime_root, repo_key=resolved.repo_key, retrieval=resolved.retrieval, semantic=resolved.semantic
     )
 
 
@@ -465,8 +433,7 @@ def _doctor_text(result: dict[str, object]) -> str:
             f"Namespace: {result['repo_key']}",
             f"Config: {providers['retrieval']} ({providers['retrieval_state']})",
             f"Semantic: {providers['semantic']}",
-            f"Privacy: storage={privacy['storage']}, embedding={privacy['embedding']}, "
-            f"semantic={privacy['semantic_extraction']}",
+            f"Privacy: storage={privacy['storage']}, embedding={privacy['embedding']}, semantic={privacy['semantic_extraction']}",
             f"Remedy: {result['remediation'] or 'none'}",
         )
     )

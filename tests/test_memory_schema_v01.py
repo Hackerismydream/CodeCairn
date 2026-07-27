@@ -26,11 +26,7 @@ _DIGEST = "0" * 64
 
 def _episode() -> TaskEpisode:
     order = SourceOrderKey(
-        trusted_timestamp_ms=1_750_000_000_000,
-        provider="codex",
-        session_id="session-1",
-        source_generation=1,
-        event_index=0,
+        trusted_timestamp_ms=1_750_000_000_000, provider="codex", session_id="session-1", source_generation=1, event_index=0
     )
     return TaskEpisode.create(
         repo_key="acme/widgets",
@@ -96,12 +92,7 @@ def test_capture_task_experience_has_one_episode_and_grounded_facets() -> None:
         restore_predecessor_id=None,
         source_order_key=episode.source_order_key,
         payload=TaskExperiencePayload(
-            goal=fact.value,
-            outcome="unknown",
-            actions=(),
-            result="No result was observed.",
-            blockers=(),
-            verification_fact_ids=(),
+            goal=fact.value, outcome="unknown", actions=(), result="No result was observed.", blockers=(), verification_fact_ids=()
         ),
     )
 
@@ -125,10 +116,7 @@ def test_direct_knowledge_and_work_state_do_not_synthesize_evidence() -> None:
         restored_from=None,
         restore_predecessor_id=None,
         source_order_key=None,
-        payload=RepositoryKnowledgePayload(
-            subject_key="checks",
-            claim="Run make check before committing.",
-        ),
+        payload=RepositoryKnowledgePayload(subject_key="checks", claim="Run make check before committing."),
     )
     work_state = CodingMemory.create(
         repo_key="acme/widgets",
@@ -226,12 +214,7 @@ def test_episode_and_memory_round_trip_reject_unknown_fields() -> None:
         restore_predecessor_id=None,
         source_order_key=episode.source_order_key,
         payload=TaskExperiencePayload(
-            goal=fact.value,
-            outcome="unknown",
-            actions=(),
-            result="No result was observed.",
-            blockers=(),
-            verification_fact_ids=(),
+            goal=fact.value, outcome="unknown", actions=(), result="No result was observed.", blockers=(), verification_fact_ids=()
         ),
     )
 

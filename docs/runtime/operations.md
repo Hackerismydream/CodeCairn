@@ -1,8 +1,8 @@
 # Runtime Operations
 
 This document describes behavior implemented on current `main` after
-`v01-006`. Hooks, release packaging, and release evaluation remain specified
-under [`../v0.1/`](../v0.1/).
+`v01-007`. Release packaging and release evaluation remain specified under
+[`../v0.1/`](../v0.1/).
 
 ## Current support matrix
 
@@ -12,6 +12,7 @@ under [`../v0.1/`](../v0.1/).
 | Initialize repository | `codecairn init` | not exposed | Derives and freezes repository identity, writes strict non-secret config, and constructs an explicit retrieval profile |
 | Process queued work | `codecairn process` | not exposed | Leases bounded semantic and index jobs; disabled semantic extraction remains visibly pending |
 | Direct memory | `codecairn remember` | not exposed | Creates Repository Knowledge, Repository Working Preference, or Work State; direct Task Experience is rejected |
+| Session hooks | `codecairn hook install/run` | not exposed | Claude `SessionEnd` and Codex `Stop` import owned transcripts without model calls or client blocking |
 | Evolve memory | `codecairn memory ...` | not exposed | Applies validated immutable Supersession, returns deterministic history, and creates forward-only restore revisions |
 | List memory | `codecairn list` | `GET /api/v1/memories` | Reads four-type durable memory in the resolved repository namespace |
 | Recall | `codecairn recall` | `POST /api/v1/recall` | Drains a bounded namespace index batch, then compiles active-only hybrid retrieval with optional explicit history |
@@ -63,6 +64,8 @@ codecairn memory supersede PREDECESSOR_ID SUCCESSOR_ID --reason TEXT
 codecairn memory restore MEMORY_ID
 codecairn namespace export --output DIR
 codecairn namespace reset [--dry-run] --confirm REPO
+codecairn hook install [--claude] [--codex] [--dry-run]
+codecairn hook run --client claude|codex
 codecairn doctor [--live] [--strict] [--format human|json]
 codecairn index status
 codecairn index sync
@@ -118,6 +121,28 @@ Registration is explicit and never edits client settings automatically:
 claude mcp add codecairn -- codecairn-mcp
 codex mcp add codecairn -- codecairn-mcp
 ```
+
+## Hooks
+
+`codecairn hook install --claude|--codex [--dry-run]` validates the installed
+client version, merges one absolute five-second command into the selected JSON
+settings, preserves unrelated entries and file mode, writes atomically, and
+verifies readback. A second install is byte-identical. The emitted `uninstall`
+field identifies the exact handler command to remove; removal is an explicit
+manual settings edit in v0.1.
+
+`codecairn hook run --client claude|codex` reads one bounded stdin JSON value,
+normalizes a Claude Code `SessionEnd` or Codex `Stop`, resolves the initialized
+repository namespace, and imports the owned transcript with the corresponding
+closure boundary. Codex may use its session ID only when exactly one source
+matches the supported local session layout. The hook does not compose semantic
+or retrieval providers and does not drain the full index.
+
+Every invocation exits zero with empty stdout. Success, no-op, unsupported,
+and failure outcomes are recorded as bounded Hook Receipts; failures degrade
+`doctor` and include `codecairn import <owned-session.jsonl>` as the manual
+fallback. Repeated events reuse the source cursor, and an appended Stop imports
+only the new Episode. A cwd inside the runtime root is skipped.
 
 ## HTTP
 
@@ -204,6 +229,8 @@ Implemented:
 - actionable human and stable JSON diagnostics;
 - seven explicit MCP tools, one canonical Markdown resource, bounded opaque
   pagination, and protocol-clean packaged stdio.
+- Claude `SessionEnd` and Codex `Stop` import hooks, atomic/idempotent settings
+  installation, bounded receipts, and hook-to-recall read-your-writes.
 
-Not yet implemented: Codex/Claude hooks, persistent release installation,
-one-command evaluation gates, and release-candidate evidence.
+Not yet implemented: persistent release installation, one-command evaluation
+gates, real-client release smoke, and release-candidate evidence.

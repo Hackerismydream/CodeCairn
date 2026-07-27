@@ -10,11 +10,7 @@ import pytest
 
 from codecairn.importers import SessionImporter, SourceRewritten
 from codecairn.memory.capture import PreparedCapture
-from codecairn.memory.schema import (
-    IdentityConflict,
-    LegacyRootUnsupported,
-    TaskExperiencePayload,
-)
+from codecairn.memory.schema import IdentityConflict, LegacyRootUnsupported, TaskExperiencePayload
 from codecairn.service.runtime import MemoryRuntime
 from codecairn.storage.markdown import MarkdownMemoryStore
 from codecairn.storage.sqlite import SQLiteState
@@ -22,11 +18,7 @@ from codecairn.storage.sqlite import SQLiteState
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-def _runtime(
-    root: Path,
-    *,
-    fault_injector: Callable[[str], None] | None = None,
-) -> MemoryRuntime:
+def _runtime(root: Path, *, fault_injector: Callable[[str], None] | None = None) -> MemoryRuntime:
     return MemoryRuntime(
         importer=SessionImporter(),
         memory_store=MarkdownMemoryStore(root),
@@ -35,20 +27,12 @@ def _runtime(
     )
 
 
-def _write_codex_session(
-    path: Path,
-    *,
-    exit_codes: tuple[int, ...],
-) -> None:
+def _write_codex_session(path: Path, *, exit_codes: tuple[int, ...]) -> None:
     records: list[dict[str, object]] = [
         {"type": "session_meta", "payload": {"id": "outcome-session"}},
         {
             "type": "response_item",
-            "payload": {
-                "type": "message",
-                "role": "user",
-                "content": [{"type": "input_text", "text": "Run all checks."}],
-            },
+            "payload": {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "Run all checks."}]},
         },
     ]
     for index, exit_code in enumerate(exit_codes):
@@ -74,38 +58,21 @@ def _write_codex_session(
                 },
             )
         )
-    path.write_text(
-        "".join(f"{json.dumps(record)}\n" for record in records),
-        encoding="utf-8",
-    )
+    path.write_text("".join(f"{json.dumps(record)}\n" for record in records), encoding="utf-8")
 
 
 @pytest.mark.parametrize(
-    ("fixture", "provider"),
-    [
-        ("codex/failed_command.jsonl", "codex"),
-        ("claude/failed_command.jsonl", "claude"),
-    ],
+    ("fixture", "provider"), [("codex/failed_command.jsonl", "codex"), ("claude/failed_command.jsonl", "claude")]
 )
-def test_import_creates_one_auditable_task_experience(
-    tmp_path: Path,
-    fixture: str,
-    provider: str,
-) -> None:
+def test_import_creates_one_auditable_task_experience(tmp_path: Path, fixture: str, provider: str) -> None:
     root = tmp_path / "runtime"
     runtime = _runtime(root)
     boundary = "codex_stop" if provider == "codex" else "claude_session_end"
 
-    result = runtime.import_session(
-        FIXTURES / fixture,
-        repo_key="acme/widgets",
-        boundary_kind=boundary,
-    )
+    result = runtime.import_session(FIXTURES / fixture, repo_key="acme/widgets", boundary_kind=boundary)
     memories = runtime.list_memories(repo_key="acme/widgets")
     episodes = SQLiteState(root / "state.sqlite3").list_episodes(
-        repo_key="acme/widgets",
-        provider=provider,
-        session_id=result.session_id,
+        repo_key="acme/widgets", provider=provider, session_id=result.session_id
     )
 
     assert result.provider == provider
@@ -116,12 +83,7 @@ def test_import_creates_one_auditable_task_experience(
     assert memory.memory_type == "task_experience"
     assert isinstance(memory.payload, TaskExperiencePayload)
     assert memory.payload.outcome == "failure"
-    assert {fact.fact_kind for fact in memory.facts} >= {
-        "message",
-        "command",
-        "command_result",
-        "verification",
-    }
+    assert {fact.fact_kind for fact in memory.facts} >= {"message", "command", "command_result", "verification"}
     assert all(reference.fact_id.startswith("fact_") for reference in memory.evidence)
     artifact = MarkdownMemoryStore(root).read(MarkdownMemoryStore(root).path_for(memory))
     assert artifact.memory == memory
@@ -131,16 +93,8 @@ def test_repeat_import_is_idempotent(tmp_path: Path) -> None:
     runtime = _runtime(tmp_path / "runtime")
     source = FIXTURES / "codex/failed_command.jsonl"
 
-    first = runtime.import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
-    second = runtime.import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
+    first = runtime.import_session(source, repo_key="acme/widgets", boundary_kind="manual_finalize")
+    second = runtime.import_session(source, repo_key="acme/widgets", boundary_kind="manual_finalize")
 
     assert first.created_memory_count == 1
     assert second.created_memory_count == 0
@@ -148,47 +102,25 @@ def test_repeat_import_is_idempotent(tmp_path: Path) -> None:
     assert len(runtime.list_memories(repo_key="acme/widgets")) == 1
 
 
-@pytest.mark.parametrize(
-    ("exit_codes", "expected"),
-    [
-        ((), "unknown"),
-        ((0,), "success"),
-        ((1,), "failure"),
-        ((0, 1), "partial"),
-    ],
-)
-def test_task_experience_uses_observed_outcome(
-    tmp_path: Path,
-    exit_codes: tuple[int, ...],
-    expected: str,
-) -> None:
+@pytest.mark.parametrize(("exit_codes", "expected"), [((), "unknown"), ((0,), "success"), ((1,), "failure"), ((0, 1), "partial")])
+def test_task_experience_uses_observed_outcome(tmp_path: Path, exit_codes: tuple[int, ...], expected: str) -> None:
     source = tmp_path / "outcome.jsonl"
     _write_codex_session(source, exit_codes=exit_codes)
     runtime = _runtime(tmp_path / "runtime")
 
-    runtime.import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
+    runtime.import_session(source, repo_key="acme/widgets", boundary_kind="manual_finalize")
     memory = runtime.list_memories(repo_key="acme/widgets")[0]
 
     assert isinstance(memory.payload, TaskExperiencePayload)
     assert memory.payload.outcome == expected
 
 
-def test_large_episode_uses_bounded_deterministic_evidence_selection(
-    tmp_path: Path,
-) -> None:
+def test_large_episode_uses_bounded_deterministic_evidence_selection(tmp_path: Path) -> None:
     source = tmp_path / "large.jsonl"
     _write_codex_session(source, exit_codes=(*([0] * 70), 1))
     runtime = _runtime(tmp_path / "runtime")
 
-    runtime.import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
+    runtime.import_session(source, repo_key="acme/widgets", boundary_kind="manual_finalize")
     memory = runtime.list_memories(repo_key="acme/widgets")[0]
 
     assert isinstance(memory.payload, TaskExperiencePayload)
@@ -201,49 +133,30 @@ def test_large_episode_uses_bounded_deterministic_evidence_selection(
 def test_unclosed_suffix_waits_for_explicit_finalize(tmp_path: Path) -> None:
     runtime = _runtime(tmp_path / "runtime")
     source = tmp_path / "session.jsonl"
-    source.write_text(
-        (FIXTURES / "codex/failed_command.jsonl").read_text(encoding="utf-8"),
-        encoding="utf-8",
-    )
+    source.write_text((FIXTURES / "codex/failed_command.jsonl").read_text(encoding="utf-8"), encoding="utf-8")
 
     observed = runtime.import_session(source, repo_key="acme/widgets")
-    finalized = runtime.import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
+    finalized = runtime.import_session(source, repo_key="acme/widgets", boundary_kind="manual_finalize")
 
     assert observed.created_memory_count == 0
     assert finalized.created_memory_count == 1
     assert len(runtime.list_memories(repo_key="acme/widgets")) == 1
 
     source.write_text(
-        source.read_text(encoding="utf-8").replace(
-            "Run the repository test suite.",
-            "Rewrite the finalized task.",
-        ),
+        source.read_text(encoding="utf-8").replace("Run the repository test suite.", "Rewrite the finalized task."),
         encoding="utf-8",
     )
     with pytest.raises(SourceRewritten):
         runtime.import_session(source, repo_key="acme/widgets")
 
 
-def test_next_user_closes_previous_task_but_leaves_new_task_open(
-    tmp_path: Path,
-) -> None:
+def test_next_user_closes_previous_task_but_leaves_new_task_open(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     source = tmp_path / "session.jsonl"
-    source.write_text(
-        (FIXTURES / "codex/failed_command.jsonl").read_text(encoding="utf-8"),
-        encoding="utf-8",
-    )
+    source.write_text((FIXTURES / "codex/failed_command.jsonl").read_text(encoding="utf-8"), encoding="utf-8")
     second_user = {
         "type": "response_item",
-        "payload": {
-            "type": "message",
-            "role": "user",
-            "content": [{"type": "input_text", "text": "Now update the docs."}],
-        },
+        "payload": {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "Now update the docs."}]},
     }
     with source.open("a", encoding="utf-8") as handle:
         handle.write(f"{json.dumps(second_user)}\n")
@@ -251,15 +164,9 @@ def test_next_user_closes_previous_task_but_leaves_new_task_open(
 
     observed = runtime.import_session(source, repo_key="acme/widgets")
     episodes = SQLiteState(root / "state.sqlite3").list_episodes(
-        repo_key="acme/widgets",
-        provider="codex",
-        session_id="session-test-001",
+        repo_key="acme/widgets", provider="codex", session_id="session-test-001"
     )
-    finalized = runtime.import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
+    finalized = runtime.import_session(source, repo_key="acme/widgets", boundary_kind="manual_finalize")
 
     assert observed.created_memory_count == 1
     assert len(episodes) == 1
@@ -268,20 +175,11 @@ def test_next_user_closes_previous_task_but_leaves_new_task_open(
     assert len(runtime.list_memories(repo_key="acme/widgets")) == 2
 
 
-def test_append_after_committed_boundary_creates_linked_continuation(
-    tmp_path: Path,
-) -> None:
+def test_append_after_committed_boundary_creates_linked_continuation(tmp_path: Path) -> None:
     runtime = _runtime(tmp_path / "runtime")
     source = tmp_path / "session.jsonl"
-    source.write_text(
-        (FIXTURES / "codex/failed_command.jsonl").read_text(encoding="utf-8"),
-        encoding="utf-8",
-    )
-    first = runtime.import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="codex_stop",
-    )
+    source.write_text((FIXTURES / "codex/failed_command.jsonl").read_text(encoding="utf-8"), encoding="utf-8")
+    first = runtime.import_session(source, repo_key="acme/widgets", boundary_kind="codex_stop")
     record = {
         "type": "response_item",
         "payload": {
@@ -293,16 +191,10 @@ def test_append_after_committed_boundary_creates_linked_continuation(
     with source.open("a", encoding="utf-8") as handle:
         handle.write(f"{json.dumps(record)}\n")
 
-    second = runtime.import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="codex_stop",
-    )
+    second = runtime.import_session(source, repo_key="acme/widgets", boundary_kind="codex_stop")
     memories = runtime.list_memories(repo_key="acme/widgets")
     episodes = SQLiteState(tmp_path / "runtime" / "state.sqlite3").list_episodes(
-        repo_key="acme/widgets",
-        provider="codex",
-        session_id="session-test-001",
+        repo_key="acme/widgets", provider="codex", session_id="session-test-001"
     )
 
     assert first.created_memory_count == 1
@@ -328,10 +220,7 @@ def test_append_after_committed_boundary_creates_linked_continuation(
         "capture_after_complete",
     ],
 )
-def test_capture_recovers_each_documented_write_intent_boundary(
-    tmp_path: Path,
-    crash_stage: str,
-) -> None:
+def test_capture_recovers_each_documented_write_intent_boundary(tmp_path: Path, crash_stage: str) -> None:
     root = tmp_path / "runtime"
     crashed = False
 
@@ -343,82 +232,41 @@ def test_capture_recovers_each_documented_write_intent_boundary(
 
     with pytest.raises(RuntimeError, match="injected crash"):
         _runtime(root, fault_injector=fail_once).import_session(
-            FIXTURES / "codex/failed_command.jsonl",
-            repo_key="acme/widgets",
-            boundary_kind="manual_finalize",
+            FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize"
         )
 
     recovered = _runtime(root).import_session(
-        FIXTURES / "codex/failed_command.jsonl",
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
+        FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize"
     )
     state = SQLiteState(root / "state.sqlite3")
 
     assert crashed is True
     assert len(state.list_memories(repo_key="acme/widgets")) == 1
-    assert (
-        len(
-            state.list_episodes(
-                repo_key="acme/widgets",
-                provider="codex",
-                session_id="session-test-001",
-            )
-        )
-        == 1
-    )
+    assert len(state.list_episodes(repo_key="acme/widgets", provider="codex", session_id="session-test-001")) == 1
     assert state.operational_counts().pending_recovery_count == 0
     assert recovered.created_memory_count == 0
 
 
-def test_committed_source_rewrite_is_typed_and_does_not_advance_cursor(
-    tmp_path: Path,
-) -> None:
+def test_committed_source_rewrite_is_typed_and_does_not_advance_cursor(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     source = tmp_path / "session.jsonl"
-    source.write_text(
-        (FIXTURES / "codex/failed_command.jsonl").read_text(encoding="utf-8"),
-        encoding="utf-8",
-    )
+    source.write_text((FIXTURES / "codex/failed_command.jsonl").read_text(encoding="utf-8"), encoding="utf-8")
     runtime = _runtime(root)
-    runtime.import_session(
-        source,
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
+    runtime.import_session(source, repo_key="acme/widgets", boundary_kind="manual_finalize")
     state = SQLiteState(root / "state.sqlite3")
-    before = state.get_checkpoint(
-        repo_key="acme/widgets",
-        source_path=str(source.resolve()),
-    )
+    before = state.get_checkpoint(repo_key="acme/widgets", source_path=str(source.resolve()))
     source.write_text(
-        source.read_text(encoding="utf-8").replace(
-            "Run the repository test suite.",
-            "Rewrite committed history.",
-        ),
-        encoding="utf-8",
+        source.read_text(encoding="utf-8").replace("Run the repository test suite.", "Rewrite committed history."), encoding="utf-8"
     )
 
     with pytest.raises(SourceRewritten) as captured:
-        runtime.import_session(
-            source,
-            repo_key="acme/widgets",
-            boundary_kind="manual_finalize",
-        )
+        runtime.import_session(source, repo_key="acme/widgets", boundary_kind="manual_finalize")
 
     assert captured.value.code == "source_rewritten"
-    assert (
-        state.get_checkpoint(
-            repo_key="acme/widgets",
-            source_path=str(source.resolve()),
-        )
-        == before
-    )
+    assert state.get_checkpoint(repo_key="acme/widgets", source_path=str(source.resolve())) == before
 
 
-def test_recovery_marks_conflicting_markdown_intent_conflicted(
-    tmp_path: Path,
-) -> None:
+def test_recovery_marks_conflicting_markdown_intent_conflicted(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
 
     def crash_after_intent(stage: str) -> None:
@@ -427,9 +275,7 @@ def test_recovery_marks_conflicting_markdown_intent_conflicted(
 
     with pytest.raises(RuntimeError, match="injected crash"):
         _runtime(root, fault_injector=crash_after_intent).import_session(
-            FIXTURES / "codex/failed_command.jsonl",
-            repo_key="acme/widgets",
-            boundary_kind="manual_finalize",
+            FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize"
         )
     state = SQLiteState(root / "state.sqlite3")
     capture = state.list_prepared_captures()[0]
@@ -439,9 +285,7 @@ def test_recovery_marks_conflicting_markdown_intent_conflicted(
 
     with pytest.raises(IdentityConflict):
         _runtime(root).import_session(
-            FIXTURES / "codex/failed_command.jsonl",
-            repo_key="acme/widgets",
-            boundary_kind="manual_finalize",
+            FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize"
         )
 
     assert state.list_prepared_captures() == ()
@@ -450,9 +294,7 @@ def test_recovery_marks_conflicting_markdown_intent_conflicted(
     assert state.list_memories(repo_key="acme/widgets") == ()
 
 
-def test_write_intent_reserves_episode_closure_before_markdown(
-    tmp_path: Path,
-) -> None:
+def test_write_intent_reserves_episode_closure_before_markdown(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
 
     def crash_after_intent(stage: str) -> None:
@@ -461,9 +303,7 @@ def test_write_intent_reserves_episode_closure_before_markdown(
 
     with pytest.raises(RuntimeError, match="injected crash"):
         _runtime(root, fault_injector=crash_after_intent).import_session(
-            FIXTURES / "codex/failed_command.jsonl",
-            repo_key="acme/widgets",
-            boundary_kind="manual_finalize",
+            FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize"
         )
     state = SQLiteState(root / "state.sqlite3")
     winner = state.list_prepared_captures()[0]

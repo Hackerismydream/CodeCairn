@@ -16,17 +16,14 @@ from codecairn.memory.schema import (
     SourceOrderKey,
     UserPreferencePayload,
     WorkStatePayload,
+    _record_from_dict,
+    _record_to_dict,
     canonical_json,
-    coding_memory_from_dict,
     coding_memory_to_dict,
     typed_id,
 )
 
-SemanticMemoryType = Literal[
-    "repository_knowledge",
-    "user_preference",
-    "work_state",
-]
+SemanticMemoryType = Literal["repository_knowledge", "user_preference", "work_state"]
 SemanticJobStatus = Literal["pending", "leased", "completed", "failed"]
 
 
@@ -49,11 +46,7 @@ class SemanticCandidate:
     terminal_outcome: str | None = None
 
     def __post_init__(self) -> None:
-        if self.memory_type not in {
-            "repository_knowledge",
-            "user_preference",
-            "work_state",
-        }:
+        if self.memory_type not in {"repository_knowledge", "user_preference", "work_state"}:
             raise ValueError("Semantic candidate type is invalid")
         if not self.title or not self.content or not self.category:
             raise ValueError("Semantic candidate display fields must not be empty")
@@ -65,32 +58,18 @@ class SemanticCandidate:
         elif self.memory_type == "user_preference":
             if self.subject_key is None or self.preference is None:
                 raise ValueError("User Preference proposal is incomplete")
-        elif (
-            self.workstream_key is None
-            or self.workstream_state is None
-            or self.goal is None
-            or self.progress is None
-        ):
+        elif self.workstream_key is None or self.workstream_state is None or self.goal is None or self.progress is None:
             raise ValueError("Work State proposal is incomplete")
-        elif self.workstream_state == "open" and (
-            self.next_step is None or self.terminal_outcome is not None
-        ):
+        elif self.workstream_state == "open" and (self.next_step is None or self.terminal_outcome is not None):
             raise ValueError("Open Work State proposal has invalid terminal fields")
-        elif self.workstream_state == "closed" and (
-            self.next_step is not None or self.terminal_outcome is None
-        ):
+        elif self.workstream_state == "closed" and (self.next_step is not None or self.terminal_outcome is None):
             raise ValueError("Closed Work State proposal has invalid terminal fields")
 
 
 @dataclass(frozen=True, slots=True)
 class SemanticEvolutionSuggestion:
     decision: Literal["keep_both", "supersede"]
-    relation_kind: Literal[
-        "work_state_update",
-        "preference_override",
-        "knowledge_obsolete",
-        "knowledge_contradiction",
-    ]
+    relation_kind: Literal["work_state_update", "preference_override", "knowledge_obsolete", "knowledge_contradiction"]
     predecessor_id: str | None
     successor_candidate_index: int
     supporting_fact_ids: tuple[str, ...]
@@ -99,12 +78,7 @@ class SemanticEvolutionSuggestion:
     def __post_init__(self) -> None:
         if self.decision not in {"keep_both", "supersede"}:
             raise ValueError("Semantic evolution decision is invalid")
-        if self.relation_kind not in {
-            "work_state_update",
-            "preference_override",
-            "knowledge_obsolete",
-            "knowledge_contradiction",
-        }:
+        if self.relation_kind not in {"work_state_update", "preference_override", "knowledge_obsolete", "knowledge_contradiction"}:
             raise ValueError("Semantic evolution relation kind is invalid")
         if self.decision == "supersede" and self.predecessor_id is None:
             raise ValueError("Supersession suggestion requires a predecessor")
@@ -131,9 +105,7 @@ class SemanticExtraction:
         if sum(item.memory_type == "work_state" for item in self.candidates) > 1:
             raise ValueError("Semantic extraction may propose at most one Work State")
         if any(
-            item.successor_candidate_index < 0
-            or item.successor_candidate_index >= len(self.candidates)
-            for item in self.evolution
+            item.successor_candidate_index < 0 or item.successor_candidate_index >= len(self.candidates) for item in self.evolution
         ):
             raise ValueError("Semantic evolution successor index is invalid")
 
@@ -192,9 +164,7 @@ class PreparedSemanticCommit:
         if self.created_at_ms < 0:
             raise ValueError("Semantic Write Intent time must not be negative")
         _digest(self.output_fingerprint)
-        if tuple(item.memory_id for item in self.expected_files) != tuple(
-            item.memory_id for item in self.memories
-        ):
+        if tuple(item.memory_id for item in self.expected_files) != tuple(item.memory_id for item in self.memories):
             raise ValueError("Semantic Write Intent files do not match Memories")
         if self.operation_id != typed_id("op", semantic_commit_payload(self)):
             raise ValueError("Semantic Write Intent identity does not match its payload")
@@ -231,10 +201,7 @@ class PreparedSemanticCommit:
         )
 
 
-def compile_semantic_extraction(
-    extraction: SemanticExtraction,
-    request: SemanticRequest,
-) -> CompiledSemanticBatch:
+def compile_semantic_extraction(extraction: SemanticExtraction, request: SemanticRequest) -> CompiledSemanticBatch:
     task = request.task_experience
     if task.memory_type != "task_experience" or task.episode_id is None:
         raise ValueError("Semantic extraction requires one Task Experience")
@@ -242,30 +209,17 @@ def compile_semantic_extraction(
     memories: list[CodingMemory] = []
     for candidate in extraction.candidates:
         selected = _select_facts(candidate.source_fact_ids, facts=facts)
-        if candidate.memory_type == "user_preference" and any(
-            fact.role != "user" for fact in selected
-        ):
+        if candidate.memory_type == "user_preference" and any(fact.role != "user" for fact in selected):
             raise ValueError("User Preference requires user-authored Source Facts")
-        if candidate.memory_type == "work_state" and (
-            candidate.workstream_key not in request.allowed_workstream_keys
-        ):
+        if candidate.memory_type == "work_state" and (candidate.workstream_key not in request.allowed_workstream_keys):
             raise ValueError("Work State key is not system-derived")
         if candidate.memory_type == "work_state":
             task_outcome = getattr(task.payload, "outcome", None)
             if candidate.workstream_state == "open" and task_outcome == "success":
                 raise ValueError("Successful Episode cannot open a Work State")
-            if (
-                candidate.workstream_state == "closed"
-                and candidate.workstream_key not in request.closable_workstream_keys
-            ):
+            if candidate.workstream_state == "closed" and candidate.workstream_key not in request.closable_workstream_keys:
                 raise ValueError("Closed Work State requires an existing open Workstream")
-        memories.append(
-            _candidate_memory(
-                candidate,
-                facts=selected,
-                task=task,
-            )
-        )
+        memories.append(_candidate_memory(candidate, facts=selected, task=task))
     for proposal in extraction.evolution:
         _select_facts(proposal.supporting_fact_ids, facts=facts)
     compiled_evolution = [
@@ -314,10 +268,7 @@ def compile_semantic_extraction(
     }
     fingerprint = hashlib.sha256(canonical_json(batch).encode()).hexdigest()
     return CompiledSemanticBatch(
-        memories=tuple(memories),
-        evolution=tuple(compiled_evolution),
-        canonical_batch=batch,
-        output_fingerprint=fingerprint,
+        memories=tuple(memories), evolution=tuple(compiled_evolution), canonical_batch=batch, output_fingerprint=fingerprint
     )
 
 
@@ -332,12 +283,7 @@ def semantic_commit_payload(commit: PreparedSemanticCommit) -> dict[str, object]
     )
 
 
-def semantic_commit_from_payload(
-    value: object,
-    *,
-    operation_id: str,
-    created_at_ms: int,
-) -> PreparedSemanticCommit:
+def semantic_commit_from_payload(value: object, *, operation_id: str, created_at_ms: int) -> PreparedSemanticCommit:
     if not isinstance(value, dict) or set(value) != {
         "schema_version",
         "operation_kind",
@@ -351,8 +297,10 @@ def semantic_commit_from_payload(
         raise ValueError("Semantic Write Intent payload is invalid")
     if value["schema_version"] != 1 or value["operation_kind"] != "semantic_commit":
         raise ValueError("Semantic Write Intent envelope is invalid")
-    raw_memories = _object_list(value["memories"], field="memories")
-    raw_files = _object_list(value["expected_files"], field="expected_files")
+    raw_memories = value["memories"]
+    raw_files = value["expected_files"]
+    if not isinstance(raw_memories, list) or not isinstance(raw_files, list):
+        raise ValueError("Semantic memories and files must be arrays")
     batch = value["canonical_batch"]
     if not isinstance(batch, dict):
         raise ValueError("Semantic batch must be an object")
@@ -360,7 +308,7 @@ def semantic_commit_from_payload(
         operation_id=operation_id,
         repo_key=_string(value["repo_key"], field="repo_key"),
         job_id=_string(value["job_id"], field="job_id"),
-        memories=tuple(coding_memory_from_dict(item) for item in raw_memories),
+        memories=tuple(_record_from_dict(CodingMemory, item) for item in raw_memories),
         expected_files=tuple(_expected_file(item) for item in raw_files),
         canonical_batch=cast(dict[str, object], batch),
         output_fingerprint=_string(value["output_fingerprint"], field="output_fingerprint"),
@@ -368,19 +316,11 @@ def semantic_commit_from_payload(
     )
 
 
-def _candidate_memory(
-    candidate: SemanticCandidate,
-    *,
-    facts: tuple[EvidenceFact, ...],
-    task: CodingMemory,
-) -> CodingMemory:
+def _candidate_memory(candidate: SemanticCandidate, *, facts: tuple[EvidenceFact, ...], task: CodingMemory) -> CodingMemory:
     first = min(facts, key=lambda item: item.reference.event_index)
     payload: RepositoryKnowledgePayload | UserPreferencePayload | WorkStatePayload
     if candidate.memory_type == "repository_knowledge":
-        payload = RepositoryKnowledgePayload(
-            subject_key=cast(str, candidate.subject_key),
-            claim=cast(str, candidate.claim),
-        )
+        payload = RepositoryKnowledgePayload(subject_key=cast(str, candidate.subject_key), claim=cast(str, candidate.claim))
     elif candidate.memory_type == "user_preference":
         payload = UserPreferencePayload(
             subject_key=cast(str, candidate.subject_key),
@@ -423,11 +363,7 @@ def _candidate_memory(
     )
 
 
-def _select_facts(
-    fact_ids: tuple[str, ...],
-    *,
-    facts: dict[str, EvidenceFact],
-) -> tuple[EvidenceFact, ...]:
+def _select_facts(fact_ids: tuple[str, ...], *, facts: dict[str, EvidenceFact]) -> tuple[EvidenceFact, ...]:
     if not fact_ids or len(fact_ids) != len(set(fact_ids)):
         raise ValueError("Semantic citations must be non-empty and unique")
     missing = tuple(fact_id for fact_id in fact_ids if fact_id not in facts)
@@ -448,34 +384,11 @@ def _select_facts(
 
 
 def _candidate_to_dict(candidate: SemanticCandidate) -> dict[str, object]:
-    return {
-        "memory_type": candidate.memory_type,
-        "title": candidate.title,
-        "content": candidate.content,
-        "category": candidate.category,
-        "source_fact_ids": list(candidate.source_fact_ids),
-        "subject_key": candidate.subject_key,
-        "claim": candidate.claim,
-        "preference": candidate.preference,
-        "workstream_key": candidate.workstream_key,
-        "workstream_state": candidate.workstream_state,
-        "goal": candidate.goal,
-        "progress": candidate.progress,
-        "blockers": list(candidate.blockers),
-        "next_step": candidate.next_step,
-        "terminal_outcome": candidate.terminal_outcome,
-    }
+    return _record_to_dict(candidate)
 
 
 def _evolution_to_dict(item: SemanticEvolutionSuggestion) -> dict[str, object]:
-    return {
-        "decision": item.decision,
-        "relation_kind": item.relation_kind,
-        "predecessor_id": item.predecessor_id,
-        "successor_candidate_index": item.successor_candidate_index,
-        "supporting_fact_ids": list(item.supporting_fact_ids),
-        "reason": item.reason,
-    }
+    return _record_to_dict(item)
 
 
 def _semantic_payload(
@@ -493,43 +406,16 @@ def _semantic_payload(
         "repo_key": repo_key,
         "job_id": job_id,
         "memories": [coding_memory_to_dict(item) for item in memories],
-        "expected_files": [
-            {
-                "record_kind": "coding_memory",
-                "relative_path": item.relative_path,
-                "content_sha256": item.content_sha256,
-                "memory_id": item.memory_id,
-            }
-            for item in expected_files
-        ],
+        "expected_files": [{"record_kind": "coding_memory", **_record_to_dict(item)} for item in expected_files],
         "canonical_batch": canonical_batch,
         "output_fingerprint": output_fingerprint,
     }
 
 
-def _expected_file(value: dict[str, object]) -> ExpectedMemoryFile:
-    if (
-        set(value)
-        != {
-            "record_kind",
-            "relative_path",
-            "content_sha256",
-            "memory_id",
-        }
-        or value["record_kind"] != "coding_memory"
-    ):
+def _expected_file(value: object) -> ExpectedMemoryFile:
+    if not isinstance(value, dict) or value.get("record_kind") != "coding_memory":
         raise ValueError("Semantic expected file is invalid")
-    return ExpectedMemoryFile(
-        relative_path=_string(value["relative_path"], field="relative_path"),
-        content_sha256=_string(value["content_sha256"], field="content_sha256"),
-        memory_id=_string(value["memory_id"], field="memory_id"),
-    )
-
-
-def _object_list(value: object, *, field: str) -> list[dict[str, object]]:
-    if not isinstance(value, list) or not all(isinstance(item, dict) for item in value):
-        raise ValueError(f"Semantic {field} must be a list of objects")
-    return cast(list[dict[str, object]], value)
+    return _record_from_dict(ExpectedMemoryFile, {key: item for key, item in value.items() if key != "record_kind"})
 
 
 def _string(value: object, *, field: str) -> str:

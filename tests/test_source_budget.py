@@ -37,10 +37,7 @@ def test_source_budget_uses_one_evaluation_classification(tmp_path: Path) -> Non
     assert report.core == 2
     assert report.evaluation == 3
     assert report.total == 5
-    assert report.included_paths == (
-        "src/codecairn/evaluation/report.py",
-        "src/codecairn/memory.py",
-    )
+    assert report.included_paths == ("src/codecairn/evaluation/report.py", "src/codecairn/memory.py")
 
 
 def test_source_budget_counts_newline_delimited_physical_lines(tmp_path: Path) -> None:
@@ -63,16 +60,7 @@ def test_source_budget_rejects_unknown_stage(tmp_path: Path) -> None:
 def test_source_budget_cli_fails_a_tight_stage(tmp_path: Path) -> None:
     _write_source(tmp_path, "module.py", b"line\n" * 10_001)
     result = subprocess.run(
-        (
-            sys.executable,
-            str(SCRIPT),
-            "--root",
-            str(tmp_path),
-            "--stage",
-            "release",
-            "--format",
-            "json",
-        ),
+        (sys.executable, str(SCRIPT), "--root", str(tmp_path), "--stage", "release", "--format", "json"),
         check=False,
         capture_output=True,
         text=True,

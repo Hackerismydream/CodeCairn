@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 from pathlib import PurePosixPath
-from typing import cast
 
 from codecairn.memory.models import ImportCheckpoint
 from codecairn.memory.schema import (
@@ -13,13 +12,10 @@ from codecairn.memory.schema import (
     EvidenceFact,
     Provider,
     TaskEpisode,
+    _record_from_dict,
+    _record_to_dict,
     canonical_json,
-    coding_memory_from_dict,
     coding_memory_to_dict,
-    evidence_fact_from_dict,
-    evidence_fact_to_dict,
-    task_episode_from_dict,
-    task_episode_to_dict,
     typed_id,
 )
 
@@ -93,9 +89,7 @@ class PreparedCapture:
             raise ValueError("Write Intent Source Facts must be unique")
         if len({item.memory_id for item in self.memories}) != len(self.memories):
             raise ValueError("Write Intent Memories must be unique")
-        if tuple(item.memory_id for item in self.expected_files) != tuple(
-            item.memory_id for item in self.memories
-        ):
+        if tuple(item.memory_id for item in self.expected_files) != tuple(item.memory_id for item in self.memories):
             raise ValueError("Write Intent expected files must match Memory order")
         expected_id = typed_id("op", prepared_capture_payload(self))
         if self.operation_id != expected_id:
@@ -160,56 +154,34 @@ def _capture_payload(
         "schema_version": 1,
         "operation_kind": "capture",
         "repo_key": repo_key,
-        "episodes": [task_episode_to_dict(item) for item in episodes],
-        "facts": [evidence_fact_to_dict(item) for item in facts],
+        "episodes": [_record_to_dict(item) for item in episodes],
+        "facts": [_record_to_dict(item) for item in facts],
         "memories": [coding_memory_to_dict(item) for item in memories],
-        "expected_files": [
-            {
-                "record_kind": "coding_memory",
-                "relative_path": item.relative_path,
-                "content_sha256": item.content_sha256,
-                "memory_id": item.memory_id,
-            }
-            for item in expected_files
-        ],
-        "checkpoint": _checkpoint_to_dict(checkpoint),
+        "expected_files": [{"record_kind": "coding_memory", **_record_to_dict(item)} for item in expected_files],
+        "checkpoint": _record_to_dict(checkpoint),
     }
 
 
-def prepared_capture_from_payload(
-    value: object,
-    *,
-    operation_id: str,
-    created_at_ms: int,
-) -> PreparedCapture:
+def prepared_capture_from_payload(value: object, *, operation_id: str, created_at_ms: int) -> PreparedCapture:
     if not isinstance(value, dict):
         raise ValueError("Write Intent payload must be an object")
-    required = {
-        "schema_version",
-        "operation_kind",
-        "repo_key",
-        "episodes",
-        "facts",
-        "memories",
-        "expected_files",
-        "checkpoint",
-    }
+    required = {"schema_version", "operation_kind", "repo_key", "episodes", "facts", "memories", "expected_files", "checkpoint"}
     if set(value) != required or value["schema_version"] != 1:
         raise ValueError("Write Intent payload fields are invalid")
     if value["operation_kind"] != "capture":
         raise ValueError("Write Intent operation kind is invalid")
-    episodes = _object_list(value["episodes"], field="episodes")
-    facts = _object_list(value["facts"], field="facts")
-    memories = _object_list(value["memories"], field="memories")
-    expected_files = _object_list(value["expected_files"], field="expected_files")
+    episodes = _list(value["episodes"], field="episodes")
+    facts = _list(value["facts"], field="facts")
+    memories = _list(value["memories"], field="memories")
+    expected_files = _list(value["expected_files"], field="expected_files")
     capture = PreparedCapture(
         operation_id=operation_id,
         repo_key=_string(value["repo_key"], field="repo_key"),
-        episodes=tuple(task_episode_from_dict(item) for item in episodes),
-        facts=tuple(evidence_fact_from_dict(item) for item in facts),
-        memories=tuple(coding_memory_from_dict(item) for item in memories),
+        episodes=tuple(_record_from_dict(TaskEpisode, item) for item in episodes),
+        facts=tuple(_record_from_dict(EvidenceFact, item) for item in facts),
+        memories=tuple(_record_from_dict(CodingMemory, item) for item in memories),
         expected_files=tuple(_expected_file_from_dict(item) for item in expected_files),
-        checkpoint=_checkpoint_from_dict(value["checkpoint"]),
+        checkpoint=_record_from_dict(CaptureCheckpoint, value["checkpoint"]),
         created_at_ms=created_at_ms,
     )
     return capture
@@ -219,98 +191,13 @@ def capture_input_fingerprint(memory: CodingMemory) -> str:
     return hashlib.sha256(canonical_json(coding_memory_to_dict(memory)).encode()).hexdigest()
 
 
-def _checkpoint_to_dict(checkpoint: CaptureCheckpoint) -> dict[str, object]:
-    resume = checkpoint.resume
-    return {
-        "repo_key": checkpoint.repo_key,
-        "provider": checkpoint.provider,
-        "session_id": checkpoint.session_id,
-        "source_path": checkpoint.source_path,
-        "source_sha256": checkpoint.source_sha256,
-        "raw_event_count": checkpoint.raw_event_count,
-        "committed_raw_event_index": checkpoint.committed_raw_event_index,
-        "resume_raw_event_index": resume.resume_raw_event_index,
-        "resume_prefix_sha256": resume.resume_prefix_sha256,
-        "resume_call_ids": list(resume.resume_call_ids),
-        "resume_file_change_fact_count": resume.resume_file_change_fact_count,
-        "prior_source_cursor": checkpoint.prior_source_cursor,
-    }
-
-
-def _checkpoint_from_dict(value: object) -> CaptureCheckpoint:
-    if not isinstance(value, dict):
-        raise ValueError("Write Intent checkpoint must be an object")
-    required = {
-        "repo_key",
-        "provider",
-        "session_id",
-        "source_path",
-        "source_sha256",
-        "raw_event_count",
-        "committed_raw_event_index",
-        "resume_raw_event_index",
-        "resume_prefix_sha256",
-        "resume_call_ids",
-        "resume_file_change_fact_count",
-        "prior_source_cursor",
-    }
-    if set(value) != required:
-        raise ValueError("Write Intent checkpoint fields are invalid")
-    provider = _string(value["provider"], field="provider")
-    if provider not in {"codex", "claude"}:
-        raise ValueError("Write Intent provider is invalid")
-    session_id = _string(value["session_id"], field="session_id")
-    committed = _integer(value["committed_raw_event_index"], field="committed cursor")
-    resume = ImportCheckpoint(
-        provider=provider,
-        session_id=session_id,
-        committed_raw_event_index=committed,
-        resume_raw_event_index=_integer(value["resume_raw_event_index"], field="resume cursor"),
-        resume_prefix_sha256=_string(value["resume_prefix_sha256"], field="resume prefix"),
-        resume_call_ids=tuple(
-            _string(item, field="resume call ID")
-            for item in _list(value["resume_call_ids"], field="resume_call_ids")
-        ),
-        resume_file_change_fact_count=_integer(
-            value["resume_file_change_fact_count"],
-            field="resume file-change count",
-        ),
-    )
-    return CaptureCheckpoint(
-        repo_key=_string(value["repo_key"], field="repo_key"),
-        provider=cast(Provider, provider),
-        session_id=session_id,
-        source_path=_string(value["source_path"], field="source_path"),
-        source_sha256=_string(value["source_sha256"], field="source_sha256"),
-        raw_event_count=_integer(value["raw_event_count"], field="raw_event_count"),
-        committed_raw_event_index=committed,
-        resume=resume,
-        prior_source_cursor=_integer(value["prior_source_cursor"], field="prior cursor"),
-    )
-
-
 def _expected_file_from_dict(value: object) -> ExpectedMemoryFile:
-    if not isinstance(value, dict) or set(value) != {
-        "record_kind",
-        "relative_path",
-        "content_sha256",
-        "memory_id",
-    }:
+    if not isinstance(value, dict) or set(value) != {"record_kind", "relative_path", "content_sha256", "memory_id"}:
         raise ValueError("Write Intent expected file is invalid")
     if value["record_kind"] != "coding_memory":
         raise ValueError("Write Intent expected record kind is invalid")
-    return ExpectedMemoryFile(
-        relative_path=_string(value["relative_path"], field="relative_path"),
-        content_sha256=_string(value["content_sha256"], field="content_sha256"),
-        memory_id=_string(value["memory_id"], field="memory_id"),
-    )
-
-
-def _object_list(value: object, *, field: str) -> list[dict[str, object]]:
-    items = _list(value, field=field)
-    if not all(isinstance(item, dict) for item in items):
-        raise ValueError(f"Write Intent {field} must contain objects")
-    return cast(list[dict[str, object]], items)
+    fields = {key: item for key, item in value.items() if key != "record_kind"}
+    return _record_from_dict(ExpectedMemoryFile, fields)
 
 
 def _list(value: object, *, field: str) -> list[object]:
@@ -322,12 +209,6 @@ def _list(value: object, *, field: str) -> list[object]:
 def _string(value: object, *, field: str) -> str:
     if not isinstance(value, str) or not value:
         raise ValueError(f"Write Intent {field} must be a non-empty string")
-    return value
-
-
-def _integer(value: object, *, field: str) -> int:
-    if isinstance(value, bool) or not isinstance(value, int):
-        raise ValueError(f"Write Intent {field} must be an integer")
     return value
 
 

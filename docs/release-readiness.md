@@ -1,7 +1,8 @@
 # Release Readiness
 
-Status: not release-ready. The baseline builds and tests, but the accepted
-version 0.1 lifecycle and distribution gates are not implemented.
+Status: not release-ready. The product lifecycle through fixture-backed client
+hooks is implemented, but evaluation, distribution, real-client smoke, and
+release evidence gates remain.
 
 ## Baseline evidence
 
@@ -24,13 +25,13 @@ This proves the baseline checkout, not version 0.1 release readiness.
 | Fable P0/B0 baseline | pass | retained | v01-000 |
 | Contract hardening | documented | exact schema, Episode, recovery, evolution, freshness contracts retained | contract gate |
 | Early guardrails | pass: 16,783 core / 34,285 total; benchmark-v3 pure reader verifies 4,411 files | retained and tightened at each stage | v01-000a |
-| Four-type capture | absent | one Task Experience per Episode plus optional Knowledge | v01-001/002 |
-| Memory evolution | absent | Supersession, active history, restore E2E | v01-003/004 |
-| Onboarding | manual | `init`, config, derived namespace, process, human doctor | v01-005 |
-| MCP | absent | seven tools and one resource from installed package | v01-006 |
-| Client hooks | absent | real Claude SessionEnd and Codex Stop smoke | v01-007/010 |
+| Four-type capture | implemented | retained through release smoke | v01-001/002 |
+| Memory evolution | implemented | retained through release smoke | v01-003/004 |
+| Onboarding | implemented in checkout | installed-artifact smoke | v01-005/009 |
+| MCP | seven tools and one resource pass in process | installed-package smoke | v01-006/009 |
+| Client hooks | both fixtures import idempotently; installer is atomic | real Claude SessionEnd and Codex Stop smoke | v01-007/010 |
 | Evaluation commands | historical complex CLI | eight documented Make targets | v01-008 |
-| Source budget | 17,250 core / 34,091 total | at most 10,000 / 15,000 | v01-001–008 |
+| Source budget | 9,998 core / 12,594 total at v01-007 | at most 10,000 / 15,000 | v01-001–008 |
 | Package metadata | partial | MIT, full metadata, curated artifacts | v01-009 |
 | Installed smoke | absent | CLI/MCP/hook lifecycle outside checkout | v01-009/010 |
 | Current evidence CI | stale bundle selection | selected release bundle verified | v01-008 |

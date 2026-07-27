@@ -5,24 +5,16 @@ from typing import Protocol
 
 from codecairn.importers.claude import ClaudeImporter
 from codecairn.importers.codex import CodexImporter
-from codecairn.importers.jsonl import JsonlScan, read_jsonl
+from codecairn.importers.jsonl import JsonlScan, read_import_scan
 from codecairn.memory.errors import TraceParseError
 from codecairn.memory.models import AgentTrace, ImportCheckpoint
 from codecairn.memory.schema import Provider
-
-_MAX_SESSION_BYTES = 64 * 1024 * 1024
-_MAX_RAW_EVENTS = 100_000
 
 
 class _JsonlAdapter(Protocol):
     provider: Provider
 
-    def _from_scan(
-        self,
-        scan: JsonlScan,
-        *,
-        checkpoint: ImportCheckpoint | None,
-    ) -> AgentTrace: ...
+    def _from_scan(self, scan: JsonlScan, *, checkpoint: ImportCheckpoint | None) -> AgentTrace: ...
 
 
 class SessionImporter:
@@ -34,21 +26,8 @@ class SessionImporter:
             CodexImporter.provider: CodexImporter(),
         }
 
-    def read(
-        self,
-        source_path: Path,
-        *,
-        source_root: Path | None = None,
-        checkpoint: ImportCheckpoint | None = None,
-    ) -> AgentTrace:
-        resumed_from = checkpoint.resume_raw_event_index if checkpoint is not None else 0
-        scan = read_jsonl(
-            source_path,
-            source_root=source_root,
-            start_raw_event_index=resumed_from,
-            max_session_bytes=_MAX_SESSION_BYTES,
-            max_raw_events=_MAX_RAW_EVENTS,
-        )
+    def read(self, source_path: Path, *, source_root: Path | None = None, checkpoint: ImportCheckpoint | None = None) -> AgentTrace:
+        scan = read_import_scan(source_path, source_root=source_root, checkpoint=checkpoint)
         provider = checkpoint.provider if checkpoint is not None else _detect_provider(scan)
         adapter = self._adapters.get(provider)
         if adapter is None:

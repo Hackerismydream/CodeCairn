@@ -16,12 +16,7 @@ def create_configured_app() -> FastAPI:
     source_value = os.environ.get("CODECAIRN_SOURCE_ROOTS", str(Path.cwd()))
     source_roots = tuple(Path(value) for value in source_value.split(os.pathsep) if value)
     bind_host = os.environ.get("CODECAIRN_BIND_HOST", "127.0.0.1")
-    return create_app(
-        create_application(runtime_root),
-        source_roots=source_roots,
-        artifact_root=artifact_root,
-        bind_host=bind_host,
-    )
+    return create_app(create_application(runtime_root), source_roots=source_roots, artifact_root=artifact_root, bind_host=bind_host)
 
 
 def main() -> None:

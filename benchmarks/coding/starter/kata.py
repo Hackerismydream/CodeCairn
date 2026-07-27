@@ -55,9 +55,7 @@ def safe_relative_path(value: str) -> str:
 
 
 def stable_partition(values: list[int], predicate: Any) -> list[int]:
-    return [item for item in reversed(values) if predicate(item)] + [
-        item for item in values if not predicate(item)
-    ]
+    return [item for item in reversed(values) if predicate(item)] + [item for item in values if not predicate(item)]
 
 
 def median(values: list[float]) -> float:

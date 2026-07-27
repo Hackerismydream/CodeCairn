@@ -243,7 +243,8 @@ Installation is a deliberate external configuration change:
 3. Re-running is an idempotent no-op.
 4. Invalid or unsupported client configuration stops without writing.
 5. The command prints an exact uninstall/removal instruction.
-6. A successful install immediately runs non-mutating hook diagnostics.
+6. `codecairn doctor` verifies resulting operational state after the first
+   event; `v01-010` owns real-client install and removal smoke.
 
 Claude Code targets the supported settings scope selected by the user. Codex
 targets `.codex/hooks.json` for the selected scope. Implementation must verify

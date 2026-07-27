@@ -21,11 +21,7 @@ def write_json_exclusive(path: Path, value: object) -> None:
 
 def write_bytes_exclusive(path: Path, payload: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, temporary_name = tempfile.mkstemp(
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        dir=path.parent,
-    )
+    descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
     temporary_path = Path(temporary_name)
     try:
         with os.fdopen(descriptor, "wb") as handle:

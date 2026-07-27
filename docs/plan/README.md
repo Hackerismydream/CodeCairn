@@ -2,8 +2,9 @@
 
 Status: implementation in progress. The source-budget guardrail, four-type
 domain migration, complete capture pipeline, immutable evolution layer,
-lifecycle-aware hybrid recall, repository onboarding, and explicit MCP access
-are merged through `v01-006`; `v01-007` is the only ready implementation task.
+lifecycle-aware hybrid recall, repository onboarding, explicit MCP access, and
+Claude/Codex hooks are merged through `v01-007`; `v01-008` is the only ready
+implementation task.
 
 ## Baseline
 
@@ -74,8 +75,8 @@ parallel. Implementation merges only after every listed dependency is on
 | [`v01-004`](tasks/v01-004-active-recall.md) | Active-only lifecycle-aware recall | v01-003 | done |
 | [`v01-005`](tasks/v01-005-onboarding.md) | Init, config, process, doctor | v01-004 | done |
 | [`v01-006`](tasks/v01-006-mcp.md) | Explicit MCP access | v01-005 | done |
-| [`v01-007`](tasks/v01-007-hooks.md) | Post-session automatic capture | v01-006 | ready |
-| [`v01-008`](tasks/v01-008-evaluation-slimming.md) | Small evaluation surface and source gates | v01-007 | planned |
+| [`v01-007`](tasks/v01-007-hooks.md) | Post-session automatic capture | v01-006 | done |
+| [`v01-008`](tasks/v01-008-evaluation-slimming.md) | Small evaluation surface and source gates | v01-007 | ready |
 | [`v01-009`](tasks/v01-009-packaging-learning.md) | Installable learner-facing package | v01-008 | planned |
 | [`v01-010`](tasks/v01-010-release-e2e.md) | One verified release candidate | v01-009 | planned |
 

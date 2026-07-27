@@ -23,64 +23,49 @@ entrypoints -> service -> memory
 `bootstrap` composes adapters. `evaluation` calls product/service contracts
 with isolated roots.
 
-## Implemented baseline: `954f728`
+## Implemented runtime through `v01-007`
 
-The accepted pre-development planning baseline is `2c79b3f`. Later
-contract and guardrail commits do not change the product behavior below. The
-guardrail layer now enforces the source budget in `make check`, classifies the
-LoCoMo worker under `evaluation`, and verifies benchmark-v3 through a pure
-historical reader.
+Current `main` implements the local memory lifecycle:
 
-### Implemented
+- Codex and Claude Code JSONL normalization, stable Task Episodes,
+  deterministic Source Facts, incremental checkpoints, and source-rewrite
+  detection;
+- one deterministic Task Experience per closed Episode plus bounded,
+  retryable semantic proposals for the other three memory types;
+- cross-store Write Intents, immutable Markdown truth, SQLite operational
+  state, and recoverable crash boundaries;
+- Supersession, active/superseded projection, history, and forward-only
+  restore;
+- active-only hybrid recall over LanceDB with bounded preflight, pinned open
+  Work State, provenance, ranking, omission, and token-budget sidecars;
+- repository initialization, explicit provider profiles, doctor,
+  export/reset, CLI, seven MCP tools, one MCP resource, and compatibility HTTP;
+- Claude Code `SessionEnd` and Codex `Stop` hooks with atomic/idempotent
+  settings installation and bounded operational receipts;
+- a deterministic source gate and pure verification of historical evidence.
 
-- Codex and Claude Code JSONL detection and normalization.
-- Stable Task Episodes, deterministic Evidence Facts, and resumable import.
-- Automatic deterministic Failed Command memory.
-- Service-only Evidence Gate paths for five other historical types.
-- Prepared Markdown plus SQLite Import Ledger and Index Queue. Public import
-  does not yet implement the version 0.1 cross-store Write Intent protocol.
-- Public CLI/HTTP index sync, rebuild, status, and import-time drain.
-- LanceDB parent/child projection and hierarchical Recall Context.
-- Lazy retrieval-provider construction with typed configuration errors.
-- Four evaluation suites and immutable public evidence.
-
-### Not implemented
-
-- complete four-type capture;
-- durable Supersession, status history, or restore;
-- MCP server;
-- Claude Code or Codex hooks;
-- `codecairn init`, config file, or automatic namespace derivation;
-- a small release evaluation surface;
-- tagged/package-curated open-source release.
+Release evaluation simplification, persistent install/package curation,
+real-client smoke, and release-candidate evidence remain in `v01-008` through
+`v01-010`.
 
 ## Current write paths
 
-### Public trace import
+### Trace import and hooks
 
 ```text
 provider JSONL
   -> Agent Trace
   -> Task Episodes
-  -> deterministic Evidence Facts
-  -> deterministic Failed Command
-  -> Markdown + SQLite + Index Queue
-  -> bounded in-process index drain
+  -> deterministic Source Facts and Task Experience
+  -> one cross-store Write Intent
+  -> Markdown + SQLite mirrors and semantic/index queues
+  -> optional bounded index drain or recall preflight
 ```
 
 The source cursor advances only after the complete durable write set commits.
 Repeated import validates the committed prefix and resumes from the active
-suffix. Provider-free import remains possible; retrieval configuration is
-resolved only when an index operation needs it.
-
-### Service proposal path
-
-The baseline also implements `MemoryProposal -> EvidenceGate -> gate audit`
-for User Preference, Repository Convention, Verified Fix, and Debug Episode.
-`write_episode` supplies a similar Conversation Episode path for LoCoMo.
-Neither is a complete public automatic-capture product.
-
-These paths are intentionally removed by task `v01-001`, not expanded.
+suffix. Hooks use explicit Stop/SessionEnd boundaries, call no model provider,
+leave full processing queued, and record outcomes without blocking the client.
 
 ## Current storage
 
@@ -95,9 +80,9 @@ Import durability and search readiness are separate. A skipped or failed drain
 leaves memory durable and index state degraded. Recall never silently scans
 Markdown as a fallback.
 
-## Version 0.1 target
+## Version 0.1 release remainder
 
-The target replaces the historical write model with:
+The implemented memory flow is:
 
 ```text
 Agent Trace
@@ -107,16 +92,9 @@ Agent Trace
   -> active-only Recall Context
 ```
 
-It adds:
-
-- one four-type Coding Profile;
-- storage without mandatory verification;
-- pending/retryable semantic capture;
-- Write Intent crash recovery for Markdown/SQLite batches;
-- forward-only Supersession and Restore;
-- CLI, MCP, and post-session hooks;
-- `init`, strict config, processing, and human diagnostics;
-- source-code and release-evidence gates.
+The remaining release work is a small one-command evaluation surface, curated
+persistent packaging and learner documentation, real installed-client
+lifecycle smoke, and a clean implementation/evidence SHA pair.
 
 The exact record contract is
 [`../v0.1/schema-contract.md`](../v0.1/schema-contract.md); lifecycle policy is

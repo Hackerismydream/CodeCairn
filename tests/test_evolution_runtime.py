@@ -8,11 +8,7 @@ import pytest
 
 from codecairn.bootstrap import create_runtime
 from codecairn.importers import SessionImporter
-from codecairn.memory.evolution import (
-    EvolutionProposal,
-    EvolutionRecord,
-    EvolutionRejected,
-)
+from codecairn.memory.evolution import EvolutionProposal, EvolutionRecord, EvolutionRejected
 from codecairn.memory.schema import CodingMemory, IdentityConflict, RepositoryKnowledgePayload
 from codecairn.service.runtime import MemoryRuntime
 from codecairn.storage.markdown import MarkdownMemoryStore
@@ -91,17 +87,11 @@ def test_supersession_is_immutable_idempotent_and_restorable(tmp_path: Path) -> 
             """,
             (old.memory_id, new.memory_id),
         ).fetchall()
-    assert set(targets) == {
-        (old.memory_id, "superseded", "pending"),
-        (new.memory_id, "active", "pending"),
+    assert set(targets) == {(old.memory_id, "superseded", "pending"), (new.memory_id, "active", "pending")}
+    assert {item.memory_id for item in runtime.memory_history(repo_key=old.repo_key, memory_id=old.memory_id).memories} == {
+        old.memory_id,
+        new.memory_id,
     }
-    assert {
-        item.memory_id
-        for item in runtime.memory_history(
-            repo_key=old.repo_key,
-            memory_id=old.memory_id,
-        ).memories
-    } == {old.memory_id, new.memory_id}
     assert MarkdownMemoryStore(root).scan_evolutions().evolutions[0].record == edge
 
     with pytest.raises(IdentityConflict, match="immutable content"):
@@ -120,15 +110,7 @@ def test_supersession_is_immutable_idempotent_and_restorable(tmp_path: Path) -> 
     assert restored.restore_predecessor_id == new.memory_id
     assert state.memory_status(repo_key=new.repo_key, memory_id=new.memory_id) == "superseded"
     assert state.memory_status(repo_key=restored.repo_key, memory_id=restored.memory_id) == "active"
-    assert (
-        len(
-            runtime.memory_history(
-                repo_key=old.repo_key,
-                memory_id=old.memory_id,
-            ).evolutions
-        )
-        == 2
-    )
+    assert len(runtime.memory_history(repo_key=old.repo_key, memory_id=old.memory_id).evolutions) == 2
 
 
 def test_policy_rejects_subject_mismatch_and_active_restore(tmp_path: Path) -> None:
@@ -154,16 +136,8 @@ def test_policy_rejects_subject_mismatch_and_active_restore(tmp_path: Path) -> N
 def test_restore_rejects_task_experience_and_ambiguous_lineage(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     runtime = create_runtime(root)
-    runtime.import_session(
-        FIXTURES / "codex/failed_command.jsonl",
-        repo_key="acme/widgets",
-        boundary_kind="manual_finalize",
-    )
-    task = next(
-        memory
-        for memory in runtime.list_memories(repo_key="acme/widgets")
-        if memory.memory_type == "task_experience"
-    )
+    runtime.import_session(FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize")
+    task = next(memory for memory in runtime.list_memories(repo_key="acme/widgets") if memory.memory_type == "task_experience")
     with pytest.raises(EvolutionRejected) as append_only:
         runtime.restore(repo_key=task.repo_key, memory_id=task.memory_id)
     assert append_only.value.code == "append_only_experience"
@@ -172,11 +146,7 @@ def test_restore_rejects_task_experience_and_ambiguous_lineage(tmp_path: Path) -
     new = runtime.store_memory(_knowledge(claim="Run make check."))
     other = runtime.store_memory(_knowledge(claim="Run uv run pytest."))
     runtime.supersede(
-        repo_key=old.repo_key,
-        predecessor_id=old.memory_id,
-        successor_id=new.memory_id,
-        reason="First lineage.",
-        proposer="user",
+        repo_key=old.repo_key, predecessor_id=old.memory_id, successor_id=new.memory_id, reason="First lineage.", proposer="user"
     )
     runtime.supersede(
         repo_key=other.repo_key,

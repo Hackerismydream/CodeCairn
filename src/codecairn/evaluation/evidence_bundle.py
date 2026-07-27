@@ -21,13 +21,7 @@ from codecairn.evaluation.historical_reader import (
 )
 
 AGGREGATION_COMMAND = "uv run codecairn evidence verify {bundle_dir}"
-_LEGACY_LOCOMO_CATEGORY_NAMES = {
-    1: "single-hop",
-    2: "multi-hop",
-    3: "open-domain",
-    4: "temporal",
-    5: "adversarial",
-}
+_LEGACY_LOCOMO_CATEGORY_NAMES = {1: "single-hop", 2: "multi-hop", 3: "open-domain", 4: "temporal", 5: "adversarial"}
 
 
 @dataclass(frozen=True)
@@ -59,16 +53,9 @@ def _report_locomo(source: Path) -> dict[str, object]:
     return cast(dict[str, object], saved)
 
 
-def _copy_locomo_composite_evidence(
-    source: Path,
-    target: Path,
-    *,
-    repository_root: Path,
-) -> None:
+def _copy_locomo_composite_evidence(source: Path, target: Path, *, repository_root: Path) -> None:
     del source, target, repository_root
-    raise ValueError(
-        "Building a composite LoCoMo bundle is unavailable during v0.1 evaluation migration"
-    )
+    raise ValueError("Building a composite LoCoMo bundle is unavailable during v0.1 evaluation migration")
 
 
 def build_evidence_bundle(config: EvidenceBundleConfig) -> EvidenceBundleArtifact:
@@ -81,9 +68,7 @@ def build_evidence_bundle(config: EvidenceBundleConfig) -> EvidenceBundleArtifac
     try:
         _copy_evaluation_artifacts(config, bundle_dir)
         metrics, manifest = _aggregate_bundle(
-            bundle_dir,
-            repository_root=config.repository_root.resolve(),
-            generator_commit=config.generator_commit,
+            bundle_dir, repository_root=config.repository_root.resolve(), generator_commit=config.generator_commit
         )
         write_json_exclusive(bundle_dir / "metrics.json", metrics)
         write_json_exclusive(bundle_dir / "bundle-manifest.json", manifest)
@@ -104,9 +89,7 @@ def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
     inventory = _required_dict(read_json(root / "inventory.json"), field="inventory")
     files = _required_dict(inventory.get("files"), field="inventory files")
     actual_paths = {
-        path.relative_to(root).as_posix()
-        for path in root.rglob("*")
-        if path.is_file() and path.name != "inventory.json"
+        path.relative_to(root).as_posix() for path in root.rglob("*") if path.is_file() and path.name != "inventory.json"
     }
     if actual_paths != set(files):
         raise ValueError("Evidence bundle file inventory does not match the filesystem")
@@ -116,9 +99,7 @@ def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
 
     manifest = _required_dict(read_json(root / "bundle-manifest.json"), field="bundle manifest")
     metrics, regenerated_manifest = _aggregate_bundle(
-        root,
-        repository_root=None,
-        generator_commit=_required_str(manifest, "generator_commit"),
+        root, repository_root=None, generator_commit=_required_str(manifest, "generator_commit")
     )
     _assert_equal(read_json(root / "metrics.json"), metrics, field="metrics")
     _assert_equal(manifest, regenerated_manifest, field="bundle manifest")
@@ -138,39 +119,16 @@ def verify_evidence_bundle(bundle_dir: Path) -> dict[str, object]:
 
 def _copy_evaluation_artifacts(config: EvidenceBundleConfig, target: Path) -> None:
     if config.locomo_run_dir.is_file():
-        _copy_locomo_composite_evidence(
-            config.locomo_run_dir,
-            target / "raw" / "locomo",
-            repository_root=config.repository_root,
-        )
+        _copy_locomo_composite_evidence(config.locomo_run_dir, target / "raw" / "locomo", repository_root=config.repository_root)
     else:
         _copy_locomo_report(config.locomo_run_dir, target / "raw" / "locomo")
-        _copy_named_files(
-            config.locomo_run_dir,
-            target / "raw" / "locomo",
-            ("manifest.json",),
-        )
+        _copy_named_files(config.locomo_run_dir, target / "raw" / "locomo", ("manifest.json",))
         _copy_public_locomo_ingests(config.locomo_run_dir, target / "raw" / "locomo")
-        _copy_public_locomo_questions(
-            config.locomo_run_dir,
-            target / "raw" / "locomo",
-        )
-    _copy_named_files(
-        config.retrieval_run_dir,
-        target / "raw" / "retrieval",
-        ("manifest.json", "summary.json", "corpus.json"),
-    )
+        _copy_public_locomo_questions(config.locomo_run_dir, target / "raw" / "locomo")
+    _copy_named_files(config.retrieval_run_dir, target / "raw" / "retrieval", ("manifest.json", "summary.json", "corpus.json"))
     _copy_glob(config.retrieval_run_dir, target / "raw" / "retrieval", "queries/*.json")
-    _copy_named_files(
-        config.recovery_run_dir,
-        target / "raw" / "recovery",
-        ("manifest.json", "summary.json", "checks.json"),
-    )
-    _copy_named_files(
-        config.coding_run_dir,
-        target / "raw" / "coding",
-        ("experiment.json", "summary.json"),
-    )
+    _copy_named_files(config.recovery_run_dir, target / "raw" / "recovery", ("manifest.json", "summary.json", "checks.json"))
+    _copy_named_files(config.coding_run_dir, target / "raw" / "coding", ("experiment.json", "summary.json"))
     for pattern in ("*/manifest.json", "*/result.json", "*/trace.json"):
         _copy_glob(config.coding_run_dir, target / "raw" / "coding", pattern)
     _copy_public_verifiers(config.coding_run_dir, target / "raw" / "coding")
@@ -200,20 +158,14 @@ def _copy_locomo_report(source: Path, target: Path) -> None:
     write_json_exclusive(target / "amendment.json", amendment)
 
 
-def _legacy_locomo_category_amendment(
-    saved: dict[str, object], recomputed: dict[str, object]
-) -> dict[str, object] | None:
+def _legacy_locomo_category_amendment(saved: dict[str, object], recomputed: dict[str, object]) -> dict[str, object] | None:
     normalized = copy.deepcopy(saved)
     categories = normalized.get("by_category")
     if not isinstance(categories, dict):
         return None
     corrected: list[dict[str, object]] = []
     for raw_category, raw_result in categories.items():
-        if (
-            not isinstance(raw_category, str)
-            or not raw_category.isascii()
-            or not raw_category.isdigit()
-        ):
+        if not isinstance(raw_category, str) or not raw_category.isascii() or not raw_category.isdigit():
             return None
         category = int(raw_category)
         if not isinstance(raw_result, dict):
@@ -228,13 +180,7 @@ def _legacy_locomo_category_amendment(
         if observed != legacy:
             return None
         raw_result["name"] = expected
-        corrected.append(
-            {
-                "category": category,
-                "from": observed,
-                "to": expected,
-            }
-        )
+        corrected.append({"category": category, "from": observed, "to": expected})
     if not corrected or normalized != recomputed:
         return None
     return {
@@ -316,14 +262,7 @@ def _copy_public_locomo_questions(source: Path, target: Path) -> None:
                 continue
             if key in {"schema_version", "category"}:
                 public[key] = _public_nonnegative_int(raw[key], field=key)
-            elif key in {
-                "sample_id",
-                "question_id",
-                "category_name",
-                "status",
-                "phase",
-                "error_type",
-            }:
+            elif key in {"sample_id", "question_id", "category_name", "status", "phase", "error_type"}:
                 public[key] = _public_string(raw[key], field=key)
             else:
                 public[key] = raw[key]
@@ -401,15 +340,9 @@ def _public_judge_votes(value: object) -> list[dict[str, object]]:
         public_vote: dict[str, object] = {
             "vote_index": _public_nonnegative_int(vote.get("vote_index"), field="judge vote index"),
             "label": label,
-            "attempt_count": _public_positive_int(
-                vote.get("attempt_count"), field="judge attempt count"
-            ),
-            "response_chars": _public_nonnegative_int(
-                vote.get("response_chars"), field="judge response chars"
-            ),
-            "failed_attempts": [
-                _public_failed_judge_attempt(attempt) for attempt in failed_attempts
-            ],
+            "attempt_count": _public_positive_int(vote.get("attempt_count"), field="judge attempt count"),
+            "response_chars": _public_nonnegative_int(vote.get("response_chars"), field="judge response chars"),
+            "failed_attempts": [_public_failed_judge_attempt(attempt) for attempt in failed_attempts],
         }
         for key in ("error_type", "model"):
             if key in vote:
@@ -422,13 +355,9 @@ def _public_judge_votes(value: object) -> list[dict[str, object]]:
 def _public_failed_judge_attempt(value: object) -> dict[str, object]:
     attempt = _required_dict(value, field="LoCoMo failed judge attempt")
     public: dict[str, object] = {
-        "attempt_index": _public_positive_int(
-            attempt.get("attempt_index"), field="failed judge attempt index"
-        ),
+        "attempt_index": _public_positive_int(attempt.get("attempt_index"), field="failed judge attempt index"),
         "error_type": _public_string(attempt.get("error_type"), field="failed judge error type"),
-        "response_chars": _public_nonnegative_int(
-            attempt.get("response_chars"), field="failed judge response chars"
-        ),
+        "response_chars": _public_nonnegative_int(attempt.get("response_chars"), field="failed judge response chars"),
     }
     if "model" in attempt:
         public["model"] = _public_string(attempt["model"], field="failed judge model")
@@ -482,13 +411,7 @@ def _copy_public_locomo_ingests(source: Path, target: Path) -> None:
     paths = sorted(source.glob("checkpoints/ingest/*.json"))
     if not paths:
         raise ValueError(f"Required LoCoMo ingest artifacts are missing: {source}")
-    allowed_fields = (
-        "sample_id",
-        "session_count",
-        "turn_count",
-        "accepted_memory_count",
-        "rejected_memory_count",
-    )
+    allowed_fields = ("sample_id", "session_count", "turn_count", "accepted_memory_count", "rejected_memory_count")
     for path in paths:
         raw = _required_dict(read_json(path), field="LoCoMo ingest checkpoint")
         public = {
@@ -506,10 +429,7 @@ def _copy_public_locomo_ingests(source: Path, target: Path) -> None:
 
 
 def _aggregate_bundle(
-    bundle_dir: Path,
-    *,
-    repository_root: Path | None,
-    generator_commit: str,
+    bundle_dir: Path, *, repository_root: Path | None, generator_commit: str
 ) -> tuple[dict[str, object], dict[str, object]]:
     raw = bundle_dir / "raw"
     locomo_dir = raw / "locomo"
@@ -536,25 +456,13 @@ def _aggregate_bundle(
     ):
         _assert_equal(read_json(directory / "summary.json"), report, field=f"{name} report")
 
-    locomo_manifest = _required_dict(
-        read_json(locomo_dir / "manifest.json"), field="LoCoMo manifest"
-    )
+    locomo_manifest = _required_dict(read_json(locomo_dir / "manifest.json"), field="LoCoMo manifest")
     amendments = [] if (locomo_dir / "composite.json").is_file() else _load_amendments(locomo_dir)
-    retrieval_manifest = _required_dict(
-        read_json(retrieval_dir / "manifest.json"), field="retrieval manifest"
-    )
-    recovery_manifest = _required_dict(
-        read_json(recovery_dir / "manifest.json"), field="recovery manifest"
-    )
-    coding_manifest = _required_dict(
-        read_json(coding_dir / "experiment.json"), field="coding experiment"
-    )
+    retrieval_manifest = _required_dict(read_json(retrieval_dir / "manifest.json"), field="retrieval manifest")
+    recovery_manifest = _required_dict(read_json(recovery_dir / "manifest.json"), field="recovery manifest")
+    coding_manifest = _required_dict(read_json(coding_dir / "experiment.json"), field="coding experiment")
     quality = _quality_metrics(raw / "quality")
-    counts = _inventory_counts(
-        locomo_dir=locomo_dir,
-        retrieval_dir=retrieval_dir,
-        coding_dir=coding_dir,
-    )
+    counts = _inventory_counts(locomo_dir=locomo_dir, retrieval_dir=retrieval_dir, coding_dir=coding_dir)
     _validate_completed_runs(
         locomo=locomo,
         retrieval=retrieval,
@@ -568,13 +476,7 @@ def _aggregate_bundle(
     metrics: dict[str, object] = {
         "schema_version": 1,
         "claims": _claims(
-            locomo=locomo,
-            retrieval=retrieval,
-            recovery=recovery,
-            coding=coding,
-            quality=quality,
-            counts=counts,
-            command=command,
+            locomo=locomo, retrieval=retrieval, recovery=recovery, coding=coding, quality=quality, counts=counts, command=command
         ),
         "counts": counts,
         "locomo": locomo,
@@ -611,10 +513,7 @@ def _aggregate_bundle(
         "locomo": "CC BY-NC 4.0; the dataset itself is not redistributed in this bundle.",
         "source": "https://github.com/snap-research/locomo",
     }
-    for key, source_manifest in (
-        ("locomo_retrieval", locomo_manifest),
-        ("retrieval_benchmark", retrieval_manifest),
-    ):
+    for key, source_manifest in (("locomo_retrieval", locomo_manifest), ("retrieval_benchmark", retrieval_manifest)):
         retrieval_models = _retrieval_models(source_manifest)
         if retrieval_models is not None:
             models[key] = retrieval_models
@@ -688,9 +587,7 @@ def _load_amendments(locomo_dir: Path) -> list[dict[str, object]]:
         if legacy == current or item.get("from") != legacy or item.get("to") != current:
             raise ValueError("LoCoMo amendment category correction mapping is invalid")
         seen_categories.add(category)
-    source_summary = _required_dict(
-        read_json(source_summary_path), field="LoCoMo amendment source summary"
-    )
+    source_summary = _required_dict(read_json(source_summary_path), field="LoCoMo amendment source summary")
     expected = _legacy_locomo_category_amendment(source_summary, _report_locomo(locomo_dir))
     if expected is None:
         raise ValueError("LoCoMo amendment source summary is not a label-only correction")
@@ -705,10 +602,7 @@ def _inventory_counts(*, locomo_dir: Path, retrieval_dir: Path, coding_dir: Path
         _required_dict(read_json(path), field="LoCoMo ingest checkpoint")
         for path in sorted((locomo_dir / "checkpoints" / "ingest").glob("*.json"))
     ]
-    coding_traces = [
-        _required_dict(read_json(path), field="coding trace")
-        for path in sorted(coding_dir.glob("*/trace.json"))
-    ]
+    coding_traces = [_required_dict(read_json(path), field="coding trace") for path in sorted(coding_dir.glob("*/trace.json"))]
     events = [
         event
         for trace in coding_traces
@@ -719,9 +613,7 @@ def _inventory_counts(*, locomo_dir: Path, retrieval_dir: Path, coding_dir: Path
     verifier_results = sorted(coding_dir.glob("*/verifier.json"))
     for result_path in results:
         result = _required_dict(read_json(result_path), field="coding result")
-        verifier = _required_dict(
-            read_json(result_path.with_name("verifier.json")), field="public verifier"
-        )
+        verifier = _required_dict(read_json(result_path.with_name("verifier.json")), field="public verifier")
         if verifier.get("passed") is not (result.get("outcome") == "passed"):
             raise ValueError(f"Verifier outcome does not match coding result: {result_path.parent}")
         source_sha256 = verifier.get("source_artifact_sha256")
@@ -729,19 +621,11 @@ def _inventory_counts(*, locomo_dir: Path, retrieval_dir: Path, coding_dir: Path
             raise ValueError("Public verifier must retain its source artifact SHA-256")
     return {
         "locomo_conversation_count": len(ingest_records),
-        "locomo_session_count": sum(
-            _required_int(item, "session_count") for item in ingest_records
-        ),
+        "locomo_session_count": sum(_required_int(item, "session_count") for item in ingest_records),
         "locomo_turn_count": sum(_required_int(item, "turn_count") for item in ingest_records),
-        "accepted_memory_count": sum(
-            _required_int(item, "accepted_memory_count") for item in ingest_records
-        ),
-        "rejected_memory_count": sum(
-            _required_int(item, "rejected_memory_count") for item in ingest_records
-        ),
-        "locomo_question_run_count": len(
-            list((locomo_dir / "checkpoints" / "questions").glob("*/*.json"))
-        ),
+        "accepted_memory_count": sum(_required_int(item, "accepted_memory_count") for item in ingest_records),
+        "rejected_memory_count": sum(_required_int(item, "rejected_memory_count") for item in ingest_records),
+        "locomo_question_run_count": len(list((locomo_dir / "checkpoints" / "questions").glob("*/*.json"))),
         "retrieval_query_count": len(list((retrieval_dir / "queries").glob("*.json"))),
         "coding_run_count": len(results),
         "coding_trace_count": len(coding_traces),
@@ -774,22 +658,16 @@ def _validate_completed_runs(
         if locomo_manifest.get("suite") == "locomo-public-composite"
         else _required_int(locomo, "completed_question_count")
     )
-    if counts["locomo_question_run_count"] != expected_completed or _required_int(
-        locomo, "infrastructure_failed_count"
-    ):
+    if counts["locomo_question_run_count"] != expected_completed or _required_int(locomo, "infrastructure_failed_count"):
         raise ValueError("LoCoMo question artifacts are incomplete")
     if locomo.get("scored") is True:
         selection = _required_dict(locomo_manifest.get("selection"), field="LoCoMo selection")
         if selection.get("categories") != [1, 2, 3, 4]:
             raise ValueError("Publishable full LoCoMo must select categories 1 through 4")
-        question_counts = _required_dict(
-            selection.get("question_counts"), field="LoCoMo selected question counts"
-        )
+        question_counts = _required_dict(selection.get("question_counts"), field="LoCoMo selected question counts")
         if set(question_counts) != {"1", "2", "3", "4"}:
             raise ValueError("Full LoCoMo question counts must cover categories 1 through 4")
-        expected_questions = sum(
-            _required_int(question_counts, category) for category in question_counts
-        )
+        expected_questions = sum(_required_int(question_counts, category) for category in question_counts)
         if counts["locomo_question_run_count"] != expected_questions:
             raise ValueError("Full LoCoMo checkpoints do not cover the selected questions")
         if _required_int(locomo, "scored_question_count") != expected_questions:
@@ -820,9 +698,7 @@ def _quality_metrics(quality_dir: Path) -> dict[str, object]:
     junit_root = ET.parse(quality_dir / "junit.xml").getroot()
     if junit_root.tag not in {"testsuites", "testsuite"}:
         raise ValueError("JUnit root must be testsuite or testsuites")
-    suites = (
-        [junit_root] if junit_root.tag == "testsuite" else list(junit_root.findall("testsuite"))
-    )
+    suites = [junit_root] if junit_root.tag == "testsuite" else list(junit_root.findall("testsuite"))
     if not suites:
         raise ValueError("JUnit testsuites must contain at least one testsuite")
     tests = sum(_xml_int(suite.attrib, "tests") for suite in suites)
@@ -973,13 +849,7 @@ def _claims(
 
 
 def _claim(
-    claim_id: str,
-    title: str,
-    value: int | float,
-    unit: str,
-    manifest: str,
-    raw_inputs: str,
-    shared: dict[str, str],
+    claim_id: str, title: str, value: int | float, unit: str, manifest: str, raw_inputs: str, shared: dict[str, str]
 ) -> dict[str, object]:
     return {
         "id": claim_id,
@@ -992,17 +862,11 @@ def _claim(
     }
 
 
-def _pending_measurements(
-    *, locomo: dict[str, object], coding: dict[str, object]
-) -> list[dict[str, str]]:
+def _pending_measurements(*, locomo: dict[str, object], coding: dict[str, object]) -> list[dict[str, str]]:
     pending: list[dict[str, str]] = []
     if locomo.get("scored") is not True or locomo.get("accuracy") is None:
         pending.append(
-            {
-                "measurement": "LoCoMo accuracy",
-                "status": "pending",
-                "reason": "Only the explicitly unscored smoke run is complete.",
-            }
+            {"measurement": "LoCoMo accuracy", "status": "pending", "reason": "Only the explicitly unscored smoke run is complete."}
         )
     if any(_arm(coding, arm).get("total_cost_usd") is None for arm in ("memory-off", "memory-on")):
         pending.append(
@@ -1028,9 +892,7 @@ def _locomo_claims(locomo: dict[str, object], *, shared: dict[str, str]) -> list
     completion = _claim(
         "locomo_full_completion" if locomo.get("scored") is True else "locomo_smoke_completion",
         "LoCoMo full completion" if locomo.get("scored") is True else "LoCoMo smoke completion",
-        100
-        * _required_number(locomo, "completed_question_count")
-        / _required_number(locomo, "question_artifact_count"),
+        100 * _required_number(locomo, "completed_question_count") / _required_number(locomo, "question_artifact_count"),
         "%",
         "raw/locomo/manifest.json",
         "raw/locomo/checkpoints/questions/*/*.json",
@@ -1061,14 +923,10 @@ def _locomo_cost(locomo: dict[str, object]) -> dict[str, object] | float | None:
     return float(cost_usd) if isinstance(cost_usd, int | float) else None
 
 
-def _known_limitations(
-    locomo: dict[str, object], *, amendments: list[dict[str, object]]
-) -> list[str]:
+def _known_limitations(locomo: dict[str, object], *, amendments: list[dict[str, object]]) -> list[str]:
     limitations: list[str] = []
     if locomo.get("scored") is not True:
-        limitations.append(
-            "The LoCoMo run is an unscored smoke run; full benchmark accuracy is pending."
-        )
+        limitations.append("The LoCoMo run is an unscored smoke run; full benchmark accuracy is pending.")
     if amendments:
         limitations.append(
             "LoCoMo category names were corrected from numeric category identifiers in a "
@@ -1078,11 +936,9 @@ def _known_limitations(
         [
             "LoCoMo category 5 is adversarial and excluded from the official scored subset.",
             "Provider cost is pending where upstream artifacts expose no cost observation.",
-            "Coding tasks and public fixtures are controlled evaluations, "
-            "not private production traces.",
+            "Coding tasks and public fixtures are controlled evaluations, not private production traces.",
             "Latency was measured on one local machine and is not a cross-machine guarantee.",
-            "An earlier CodingMemoryBench v1 run was invalidated and excluded after "
-            "a verifier defect was found.",
+            "An earlier CodingMemoryBench v1 run was invalidated and excluded after a verifier defect was found.",
         ]
     )
     return limitations
@@ -1107,8 +963,7 @@ def _render_readme(metrics: dict[str, object], manifest: dict[str, object]) -> s
         claim = _required_dict(item, field="claim")
         value = _format_value(_required_number(claim, "value"), _required_str(claim, "unit"))
         lines.append(
-            "| {title} | {value} | [{manifest}]({manifest}) | "
-            "[`{raw}`]({raw_link}) | `{command}` |".format(
+            "| {title} | {value} | [{manifest}]({manifest}) | [`{raw}`]({raw_link}) | `{command}` |".format(
                 title=_required_str(claim, "title"),
                 value=value,
                 manifest=_required_str(claim, "manifest"),
@@ -1227,10 +1082,7 @@ def _render_resume(metrics: dict[str, object]) -> str:
             "",
             "## Pending — do not publish as measured",
             "",
-            *[
-                f"- {_required_str(_required_dict(item, field='pending'), 'measurement')}: pending."
-                for item in pending
-            ],
+            *[f"- {_required_str(_required_dict(item, field='pending'), 'measurement')}: pending." for item in pending],
             "",
         ]
     )
@@ -1241,8 +1093,7 @@ def _render_resume_zh(metrics: dict[str, object]) -> str:
     counts = _required_dict(metrics.get("counts"), field="counts")
     pending = _required_list(metrics.get("pending"), field="pending")
     pending_lines = "\n".join(
-        f"- {_required_str(_required_dict(item, field='pending'), 'measurement')}: pending."
-        for item in pending
+        f"- {_required_str(_required_dict(item, field='pending'), 'measurement')}: pending." for item in pending
     )
     locomo_report = _required_dict(metrics.get("locomo"), field="LoCoMo report")
     if locomo_report.get("scored") is True:
@@ -1303,9 +1154,7 @@ def _retrieval_models(manifest: dict[str, object]) -> dict[str, object] | None:
     raw = manifest.get("retrieval")
     if not isinstance(raw, dict):
         return None
-    result = {
-        name: raw.get(name) for name in ("embedding", "reranker") if raw.get(name) is not None
-    }
+    result = {name: raw.get(name) for name in ("embedding", "reranker") if raw.get(name) is not None}
     return result or None
 
 
@@ -1317,10 +1166,7 @@ def _retrieval_licenses(manifest: dict[str, object]) -> dict[str, object] | None
     for name, raw in models.items():
         if not isinstance(raw, dict):
             continue
-        licenses[name] = {
-            "adapter": raw.get("adapter_license"),
-            "model": raw.get("license"),
-        }
+        licenses[name] = {"adapter": raw.get("adapter_license"), "model": raw.get("license")}
     return licenses or None
 
 
@@ -1373,9 +1219,7 @@ def _assert_equal(actual: object, expected: object, *, field: str) -> None:
 
 
 def _safe_id(value: str, *, field: str) -> str:
-    if not value or any(
-        character not in "abcdefghijklmnopqrstuvwxyz0123456789-." for character in value
-    ):
+    if not value or any(character not in "abcdefghijklmnopqrstuvwxyz0123456789-." for character in value):
         raise ValueError(f"{field} must contain only lowercase letters, digits, dash, or dot")
     return value
 
