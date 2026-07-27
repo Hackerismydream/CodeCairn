@@ -21,16 +21,15 @@ def _write(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
 
 
-def _offline(root: Path, name: str, aggregate: dict[str, object]) -> str:
+def _offline(root: Path, name: str, aggregate: dict[str, object], outcomes: list[object]) -> str:
     target = root / f"raw/offline/{name}"
-    outcomes: list[object] = []
     _write(
         target / "manifest.json",
         {
             "schema_version": 1,
             "implementation_sha": IMPLEMENTATION_SHA,
             "aggregate_sha256": canonical_sha256(aggregate),
-            "outcome_count": 0,
+            "outcome_count": len(outcomes),
         },
     )
     _write(target / "outcomes.json", outcomes)
@@ -105,28 +104,102 @@ def _report(root: Path, name: str, value: object) -> str:
 
 
 def _bundle(root: Path) -> None:
+    smoke_outcomes = [
+        {
+            "provider": provider,
+            "read_your_writes": True,
+            "repeat_created_memory_count": 0,
+            "freshness": "fresh",
+            "continuation_created_memory_count": 1,
+            "committed_identity_preserved": True,
+        }
+        for provider in ("codex", "claude")
+    ]
+    scale_outcomes = [
+        {
+            "kind": "session",
+            "provider": "codex" if index < 500 else "claude",
+            "session_id": f"session-{index}",
+            "source_sha256": f"{index:064x}",
+            "raw_event_count": 100,
+            "first_created_memory_count": 1,
+            "repeat_created_memory_count": 0,
+            "repaired_memory_count": 0,
+        }
+        for index in range(1_000)
+    ]
+    scale_outcomes.append(
+        {
+            "kind": "inventory",
+            "memory_ids": [f"mem_{index}" for index in range(1_000)],
+            "episode_ids": [f"ep_{index}" for index in range(1_000)],
+        }
+    )
+    retrieval_outcomes = []
+    for index in range(100):
+        relevant = f"relevant-{index}"
+        selected = relevant if index < 90 else f"other-{index}"
+        retrieval_outcomes.append(
+            {
+                "query_id": f"query-{index}",
+                "relevant_keys": [relevant],
+                "candidates": [
+                    {
+                        "key": selected,
+                        "status": "active",
+                        "source_uri": f"codecairn://memory/{index}",
+                        "content_sha256": f"{index:064x}",
+                    }
+                ],
+                "recall_at_5": index < 90,
+                "precision_at_5": 1.0 if index < 90 else 0.0,
+                "provenance_covered": True,
+                "stale_predecessor_count": 0,
+                "latency_ms": 10.0,
+            }
+        )
     runs = {
         "smoke": _offline(
             root,
             "smoke",
-            {"client_family_count": 2, "read_your_writes_rate": 1, "duplicate_memory_count": 0, "continuation_success_rate": 1},
+            {
+                "client_family_count": 2,
+                "trigger_count": 204,
+                "read_your_writes_rate": 1,
+                "duplicate_memory_count": 0,
+                "fresh_or_semantic_pending_count": 2,
+                "continuation_success_rate": 1,
+            },
+            smoke_outcomes,
         ),
         "scale": _offline(
             root,
             "scale",
             {
                 "session_count": 1_000,
+                "codex_session_count": 500,
+                "claude_session_count": 500,
                 "raw_event_count": 100_000,
                 "episode_count": 1_000,
                 "memory_count": 1_000,
+                "first_import_created_count": 1_000,
                 "repeat_created_count": 0,
                 "duplicate_episode_count": 0,
             },
+            scale_outcomes,
         ),
         "retrieval": _offline(
             root,
             "retrieval",
-            {"query_count": 100, "recall_at_5": 0.9, "provenance_coverage": 1, "stale_predecessor_leakage": 0, "p95_latency_ms": 10},
+            {
+                "query_count": 100,
+                "recall_at_5": 0.9,
+                "precision_at_5": 0.9,
+                "provenance_coverage": 1,
+                "stale_predecessor_leakage": 0,
+                "p95_latency_ms": 10.0,
+            },
+            retrieval_outcomes,
         ),
         "locomo_200": _locomo(root, "diagnostic", 200, correct=164),
         "locomo_full": _locomo(root, "full", 1_540, correct=1_263),
@@ -306,4 +379,16 @@ def test_release_bundle_rejects_unrecomputed_coding_metrics_and_unbound_wheel(tm
     clients["wheel_sha256"] = "c" * 64
     _write(clients_path, clients)
     with pytest.raises(ValueError, match="reproducible wheel"):
+        _aggregate(tmp_path, manifest, IMPLEMENTATION_SHA)
+
+
+def test_release_bundle_rejects_unrecomputed_offline_metrics(tmp_path: Path) -> None:
+    _bundle(tmp_path)
+    manifest = json.loads((tmp_path / "bundle-manifest.json").read_text())
+    retrieval_path = tmp_path / "raw/offline/retrieval/outcomes.json"
+    outcomes = json.loads(retrieval_path.read_text())
+    outcomes[0]["recall_at_5"] = False
+    _write(retrieval_path, outcomes)
+
+    with pytest.raises(ValueError, match="retrieval outcome metrics"):
         _aggregate(tmp_path, manifest, IMPLEMENTATION_SHA)

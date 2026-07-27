@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 from math import ceil, isfinite
 from pathlib import Path
+from statistics import mean
 from typing import Any, cast
 
 from codecairn.evaluation.artifacts import canonical_sha256, file_sha256, read_json
@@ -146,7 +147,104 @@ def _offline_run(root: Path, runs: dict[str, Any], name: str, implementation_sha
         or manifest.get("outcome_count") != len(outcomes)
     ):
         raise ValueError(f"{name} run binding is invalid")
+    _verify_offline_outcomes(name, outcomes, aggregate)
     return aggregate
+
+
+def _verify_offline_outcomes(name: str, outcomes: list[Any], aggregate: dict[str, Any]) -> None:
+    if name == "smoke":
+        items = [_dict(value, "smoke outcome") for value in outcomes]
+        if {item.get("provider") for item in items} != {"codex", "claude"}:
+            raise ValueError("smoke raw outcomes must cover Codex and Claude")
+        expected = {
+            "client_family_count": len(items),
+            "trigger_count": len(items) * 102,
+            "read_your_writes_rate": mean(_boolean(item, "read_your_writes") for item in items),
+            "duplicate_memory_count": sum(_integer(item, "repeat_created_memory_count") for item in items),
+            "fresh_or_semantic_pending_count": sum(item.get("freshness") in {"fresh", "semantic_pending"} for item in items),
+            "continuation_success_rate": mean(
+                _integer(item, "continuation_created_memory_count") == 1 and _boolean(item, "committed_identity_preserved")
+                for item in items
+            ),
+        }
+    elif name == "scale":
+        sessions = [_dict(value, "scale session") for value in outcomes if _dict(value, "scale outcome").get("kind") == "session"]
+        inventories = [
+            _dict(value, "scale inventory") for value in outcomes if _dict(value, "scale outcome").get("kind") == "inventory"
+        ]
+        if len(inventories) != 1 or len(sessions) + 1 != len(outcomes):
+            raise ValueError("scale raw outcome inventory is invalid")
+        session_ids = tuple(_string(item, "session_id") for item in sessions)
+        if (
+            len(session_ids) != len(set(session_ids))
+            or any(item.get("provider") not in {"codex", "claude"} for item in sessions)
+            or any(_DIGEST.fullmatch(str(item.get("source_sha256"))) is None for item in sessions)
+        ):
+            raise ValueError("scale raw session identity is invalid")
+        memory_ids = _strings(inventories[0], "memory_ids")
+        episode_ids = _strings(inventories[0], "episode_ids")
+        expected = {
+            "session_count": len(sessions),
+            "codex_session_count": sum(item.get("provider") == "codex" for item in sessions),
+            "claude_session_count": sum(item.get("provider") == "claude" for item in sessions),
+            "raw_event_count": sum(_integer(item, "raw_event_count") for item in sessions),
+            "episode_count": len(set(episode_ids)),
+            "memory_count": len(memory_ids),
+            "first_import_created_count": sum(_integer(item, "first_created_memory_count") for item in sessions),
+            "repeat_created_count": sum(_integer(item, "repeat_created_memory_count") for item in sessions),
+            "duplicate_episode_count": len(episode_ids) - len(set(episode_ids)),
+        }
+        if len(memory_ids) != len(set(memory_ids)):
+            raise ValueError("scale raw memory inventory contains duplicates")
+    elif name == "retrieval":
+        items = [_dict(value, "retrieval outcome") for value in outcomes]
+        if not items:
+            raise ValueError("retrieval raw outcomes are empty")
+        latencies: list[float] = []
+        recalls: list[bool] = []
+        precisions: list[float] = []
+        provenance: list[bool] = []
+        stale = 0
+        for item in items:
+            candidates = [_dict(value, "retrieval candidate") for value in _list(item.get("candidates"), "retrieval candidates")]
+            relevant = set(_strings(item, "relevant_keys"))
+            selected = {_string(candidate, "key") for candidate in candidates}
+            observed_recall = bool(relevant & selected)
+            observed_precision = len(relevant & selected) / max(1, len(selected))
+            observed_provenance = all(
+                isinstance(candidate.get("source_uri"), str)
+                and candidate["source_uri"]
+                and _DIGEST.fullmatch(str(candidate.get("content_sha256"))) is not None
+                for candidate in candidates
+            )
+            observed_stale = sum(candidate.get("status") != "active" for candidate in candidates)
+            if (
+                item.get("recall_at_5") != observed_recall
+                or item.get("precision_at_5") != observed_precision
+                or item.get("provenance_covered") != observed_provenance
+                or item.get("stale_predecessor_count") != observed_stale
+            ):
+                raise ValueError("retrieval outcome metrics do not match candidates")
+            latency = item.get("latency_ms")
+            if not isinstance(latency, int | float) or not isfinite(latency) or latency < 0:
+                raise ValueError("retrieval latency is invalid")
+            latencies.append(float(latency))
+            recalls.append(observed_recall)
+            precisions.append(observed_precision)
+            provenance.append(observed_provenance)
+            stale += observed_stale
+        expected = {
+            "query_count": len(items),
+            "recall_at_5": mean(recalls),
+            "precision_at_5": mean(precisions),
+            "provenance_coverage": mean(provenance),
+            "stale_predecessor_leakage": stale,
+            "p95_latency_ms": sorted(latencies)[max(0, ceil(len(latencies) * 0.95) - 1)],
+        }
+    else:
+        raise ValueError(f"unsupported offline release suite: {name}")
+    if any(aggregate.get(field) != value for field, value in expected.items()):
+        raise ValueError(f"{name} aggregate does not match raw outcomes")
 
 
 def _locomo_run(root: Path, runs: dict[str, Any], name: str, implementation_sha: str, *, expected: int) -> dict[str, object]:
@@ -233,9 +331,12 @@ def _verify_smoke(value: dict[str, Any]) -> None:
 def _verify_scale(value: dict[str, Any]) -> None:
     required = {
         "session_count": 1_000,
+        "codex_session_count": 500,
+        "claude_session_count": 500,
         "raw_event_count": 100_000,
         "episode_count": 1_000,
         "memory_count": 1_000,
+        "first_import_created_count": 1_000,
         "repeat_created_count": 0,
         "duplicate_episode_count": 0,
     }
@@ -402,6 +503,27 @@ def _list(value: object, field: str) -> list[Any]:
     if not isinstance(value, list):
         raise ValueError(f"{field} must be an array")
     return value
+
+
+def _integer(value: dict[str, Any], field: str) -> int:
+    item = value.get(field)
+    if not isinstance(item, int) or isinstance(item, bool) or item < 0:
+        raise ValueError(f"{field} must be a non-negative integer")
+    return item
+
+
+def _boolean(value: dict[str, Any], field: str) -> bool:
+    item = value.get(field)
+    if not isinstance(item, bool):
+        raise ValueError(f"{field} must be a boolean")
+    return item
+
+
+def _strings(value: dict[str, Any], field: str) -> tuple[str, ...]:
+    items = _list(value.get(field), field)
+    if any(not isinstance(item, str) or not item for item in items):
+        raise ValueError(f"{field} must contain non-empty strings")
+    return tuple(cast(str, item) for item in items)
 
 
 def _string(value: dict[str, Any], field: str) -> str:

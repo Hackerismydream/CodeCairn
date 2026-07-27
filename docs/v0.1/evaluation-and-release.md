@@ -47,11 +47,12 @@ Task Experience or a typed `index_not_ready`, never stale success.
 
 Offline and deterministic. A checked-in generator specification and seed
 produce 1,000 synthetic, redacted sessions split equally across Codex and
-Claude with 100,000 normalized events. The target imports the corpus twice,
-replays append/continuation cases, and emits raw aggregate inputs for session,
-event, Episode, memory, duplicate, duration, and recovery counts. Generated
-bulk inputs are excluded from the installable package; their generator,
-manifest, digests, and raw aggregates are checked in.
+Claude with 100,000 normalized events. The target imports every session twice
+and emits one raw outcome per session plus the final Memory/Episode identity
+inventory. The release verifier recomputes session, event, Episode, memory,
+and duplicate counts from those records. Generated bulk inputs are excluded
+from the installable package; their generator, manifest, digests, and raw
+outcomes are checked in.
 
 ### `make eval-retrieval`
 
@@ -106,8 +107,10 @@ credentials, and owned transcripts are excluded. The installed
 `codecairn-v01-release-evidence-v1` contract while retaining the historical
 bundle reader. Coding traces retain only step, event kind, exit status, and
 command/path hashes; the verifier recomputes the three trace metrics from those
-redacted events. Installed and real-client smoke wheel hashes must match both
-clean reproducible builds.
+redacted events. It also recomputes smoke, scale, and retrieval threshold
+metrics from their public raw outcomes rather than trusting stored aggregates.
+Installed and real-client smoke wheel hashes must match both clean
+reproducible builds.
 
 After freezing `implementation_sha`, generate each offline run with an explicit
 `RUN_ID`, save the recovery JUnit report, package reports, and real-client

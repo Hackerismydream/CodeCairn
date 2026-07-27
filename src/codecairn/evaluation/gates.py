@@ -229,6 +229,7 @@ def run_smoke(*, output_root: Path, run_id: str | None) -> dict[str, object]:
 
 def run_scale(*, output_root: Path, run_id: str | None) -> dict[str, object]:
     started = time.perf_counter()
+    outcomes: list[dict[str, object]] = []
     with tempfile.TemporaryDirectory(prefix="codecairn-scale-") as directory:
         root = Path(directory)
         sources = root / "sources"
@@ -245,8 +246,27 @@ def run_scale(*, output_root: Path, run_id: str | None) -> dict[str, object]:
             first_created += first.created_memory_count
             repeated_created += second.created_memory_count
             event_count += first.raw_event_count
+            outcomes.append(
+                {
+                    "kind": "session",
+                    "provider": provider,
+                    "session_id": first.session_id,
+                    "source_sha256": first.source_sha256,
+                    "raw_event_count": first.raw_event_count,
+                    "first_created_memory_count": first.created_memory_count,
+                    "repeat_created_memory_count": second.created_memory_count,
+                    "repaired_memory_count": first.repaired_memory_count + second.repaired_memory_count,
+                }
+            )
         memories = runtime.list_memories(repo_key="eval/scale")
         episodes.update(memory.episode_id for memory in memories if memory.episode_id)
+        outcomes.append(
+            {
+                "kind": "inventory",
+                "memory_ids": sorted(memory.memory_id for memory in memories),
+                "episode_ids": sorted(memory.episode_id for memory in memories if memory.episode_id),
+            }
+        )
         aggregate = {
             "schema_version": 1,
             "protocol": "codecairn-scale-1000x100-v01",
@@ -273,7 +293,7 @@ def run_scale(*, output_root: Path, run_id: str | None) -> dict[str, object]:
     }
     if any(aggregate[field] != value for field, value in expected.items()):
         raise RuntimeError(f"scale gate failed: {aggregate}")
-    return _publish("scale", output_root=output_root, run_id=run_id, outcomes=[], aggregate=aggregate)
+    return _publish("scale", output_root=output_root, run_id=run_id, outcomes=outcomes, aggregate=aggregate)
 
 
 def paid_plan(suite: str, *, help_only: bool) -> dict[str, object]:
