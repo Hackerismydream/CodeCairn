@@ -8,6 +8,28 @@ version = "0.1.0"
 description = "Auditable long-term memory runtime for coding agents."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Martin" }]
+maintainers = [{ name = "Martin" }]
+keywords = [
+  "agent-memory",
+  "coding-agents",
+  "claude-code",
+  "codex",
+  "mcp",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
   "fastembed>=0.8,<0.9",
   "filelock>=3.20,<4.0",
@@ -19,6 +41,12 @@ dependencies = [
   "pyarrow>=25,<26",
   "typer>=0.15,<1.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Hackerismydream/CodeCairn"
+Documentation = "https://github.com/Hackerismydream/CodeCairn/tree/main/docs"
+Issues = "https://github.com/Hackerismydream/CodeCairn/issues"
+Repository = "https://github.com/Hackerismydream/CodeCairn"
 
 [dependency-groups]
 dev = [
@@ -32,6 +60,36 @@ dev = [
 [project.scripts]
 codecairn = "codecairn.bootstrap:main"
 codecairn-mcp = "codecairn.bootstrap:mcp_main"
+
+[tool.hatch.build]
+exclude = [
+  "**/__pycache__",
+  "**/*.pyc",
+  "/.codecairn",
+  "/.git",
+  "/.mypy_cache",
+  "/.pytest_cache",
+  "/.ruff_cache",
+  "/.venv",
+  "/benchmark_results",
+  "/benchmarks",
+  "/dist",
+  "/evidence",
+  "/htmlcov",
+  "/tests",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/CHANGELOG.md",
+  "/CODE_OF_CONDUCT.md",
+  "/CONTRIBUTING.md",
+  "/LICENSE",
+  "/README.md",
+  "/SECURITY.md",
+  "/pyproject.toml",
+  "/src/codecairn",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/codecairn"]

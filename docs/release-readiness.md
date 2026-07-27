@@ -1,8 +1,8 @@
 # Release Readiness
 
-Status: not release-ready. The product lifecycle through fixture-backed client
-hooks and offline evaluation gates is implemented, but distribution,
-real-client smoke, paid release runs, and release evidence remain.
+Status: not release-ready. Product lifecycle, curated distribution, installed
+artifact smoke, learner documentation, and offline evaluation gates are
+implemented. Real-client smoke, paid release runs, and release evidence remain.
 
 ## Baseline evidence
 
@@ -27,16 +27,16 @@ This proves the baseline checkout, not version 0.1 release readiness.
 | Early guardrails | pass: 16,783 core / 34,285 total; benchmark-v3 pure reader verifies 4,411 files | retained and tightened at each stage | v01-000a |
 | Four-type capture | implemented | retained through release smoke | v01-001/002 |
 | Memory evolution | implemented | retained through release smoke | v01-003/004 |
-| Onboarding | implemented in checkout | installed-artifact smoke | v01-005/009 |
-| MCP | seven tools and one resource pass in process | installed-package smoke | v01-006/009 |
+| Onboarding | installed wheel initializes an empty Git repository | retained through final smoke | v01-005/009 |
+| MCP | installed wheel initializes with seven tools and one resource | real-client smoke | v01-006/009/010 |
 | Client hooks | both fixtures import idempotently; installer is atomic | real Claude SessionEnd and Codex Stop smoke | v01-007/010 |
 | Evaluation commands | eight Make targets; offline lifecycle/scale/retrieval and paid plans pass | candidate-bound paid results | v01-008/010 |
-| Source budget | 9,681 core / 13,314 total at v01-008 | internal gate at most 9,700 / 14,100 | v01-001–008 |
-| Package metadata | partial | MIT, full metadata, curated artifacts | v01-009 |
-| Installed smoke | absent | CLI/MCP/hook lifecycle outside checkout | v01-009/010 |
+| Source budget | 9,682 core / 13,315 total at v01-009 | internal gate at most 9,700 / 14,100 | v01-001–009 |
+| Package metadata | MIT, full metadata, curated 54-member wheel and 58-member sdist | retained | v01-009 |
+| Installed smoke | isolated `uv tool` CLI/MCP/import/recall/hook dry-run/evidence pass | real Claude/Codex UI and hook receipt | v01-009/010 |
 | Current evidence CI | benchmark-v3 verifies through immutable reader | selected release bundle verified | v01-008/010 |
 | Release benchmark | historical 82.60% only | new full run at candidate commit, at least 82.00% | v01-010 |
-| Governance | absent | changelog, security, contribution, conduct | v01-009 |
+| Governance | changelog, security, contribution, and conduct files present | retained | v01-009 |
 | Tag/publication | absent | verified implementation/evidence SHA pair and artifact inventory | v01-010 |
 
 ## Final gate

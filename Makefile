@@ -1,4 +1,4 @@
-.PHONY: check eval-coding-ab eval-locomo-200 eval-locomo-full eval-retrieval eval-scale eval-smoke evidence-verify format imports lint source-budget test typecheck
+.PHONY: artifact-check artifact-repro check docs-check eval-coding-ab eval-locomo-200 eval-locomo-full eval-retrieval eval-scale eval-smoke evidence-verify format imports installed-smoke lint source-budget test typecheck
 
 EVAL_OUTPUT_ROOT ?= benchmark_results
 
@@ -46,6 +46,18 @@ eval-coding-ab:
 
 evidence-verify:
 	uv run codecairn evidence verify "$(or $(EVIDENCE_BUNDLE),evidence/benchmark-v3)"
+
+artifact-check:
+	uv run python scripts/release_artifacts.py verify "$(or $(DIST_DIR),dist)"
+
+artifact-repro:
+	uv run python scripts/release_artifacts.py compare --repo . --commit HEAD
+
+installed-smoke:
+	uv run python scripts/installed_smoke.py --wheel "$(or $(DIST_DIR),dist)" --evidence "$(or $(EVIDENCE_BUNDLE),evidence/benchmark-v3)"
+
+docs-check:
+	uv run python scripts/check_docs.py --commands
 
 test:
 	uv run pytest --cov --cov-report=term-missing

@@ -1,7 +1,8 @@
 # Version 0.1 Scope
 
-Status: accepted design. Implementation is incomplete until the task files under
-[`../plan/tasks/`](../plan/tasks/) pass verification and merge.
+Status: implemented through installable learner packaging. Version 0.1 remains
+incomplete until the release-candidate task under
+[`../plan/tasks/`](../plan/tasks/) passes and merges.
 
 ## Purpose and boundary
 
@@ -131,6 +132,8 @@ source.
   evaluation, source budget, and release gates.
 - [`walkthrough.md`](walkthrough.md) — one concrete trace-to-recall example.
 - [`learning-path.md`](learning-path.md) — required learner-facing reading path.
+- [`../runtime/installation.md`](../runtime/installation.md) — persistent
+  install and one-client acceptance path.
 
 ## Cross-cutting decisions
 

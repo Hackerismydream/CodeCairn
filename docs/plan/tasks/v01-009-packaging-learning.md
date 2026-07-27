@@ -1,7 +1,7 @@
 ---
 id: v01-009
 scope: package publication surface and learner documentation
-status: ready
+status: done
 depends-on: [v01-008]
 ---
 
@@ -98,3 +98,43 @@ READMEs, and contribution files.
 - every maintained link and documented offline command passes;
 - learner docs match the actual implementation;
 - all checks pass and line ceilings remain green.
+
+## Completion evidence
+
+Completed on the v0.1 mainline after `v01-008`:
+
+- PEP 639 MIT metadata, authorship/maintenance fields, project URLs,
+  classifiers, keywords, and both console entrypoints are present;
+- the allowlisted sdist has 58 members and the wheel has 54; neither includes
+  tests, docs, benchmark data, evidence bundles, caches, runtime roots, or
+  generated build output;
+- two separate clean checkouts produced byte-identical wheel and sdist files;
+  unpacked inventory SHA-256 values were
+  `36f0a43056fcb7c0bb6c520ac2b3eed0d63fe6f0a0e3246c5b07c2460d193765`
+  for the wheel and
+  `e93d6ad308025b900425c71a4e949dec89e42f1dbd49679d0bfa89d3235a3d47`
+  for the sdist;
+- an isolated `uv tool` install passed CLI help, repository init, real
+  FastEmbed indexing, import/list/recall, MCP initialize with seven tools and
+  one resource, hook dry-run, doctor, and installed historical-evidence
+  verification;
+- the final automated smoke measured 16.56 seconds for the manual lower-bound,
+  19.10 seconds through one-client MCP/hook dry-run, and 20.29 seconds including
+  evidence verification on a warm model cache; these are not real client/trust
+  timings;
+- the installed smoke exposed and fixed production rejection of FastEmbed's
+  native NumPy `float32` vectors; a regression test covers the real adapter
+  output shape;
+- the maintained documentation checker passed 106 files, 171 local links, and
+  ten command surfaces;
+- README, installation, operations, learning path, ADR index, agent
+  instruction snippets, contribution, security, conduct, and changelog
+  documents describe current behavior and evidence boundaries;
+- `make format`, `make check` (163 tests), `make docs-check`,
+  `make eval-smoke`, `make evidence-verify`, `make source-budget`,
+  `uv build --clear`, `make artifact-check`, and `make installed-smoke` passed;
+- source count is 9,682 core / 3,633 evaluation / 13,315 total, below the
+  enforced 9,700 / 14,100 internal targets.
+
+Real Claude/Codex UI registration, Codex trust, live hook receipts, and the
+candidate-bound paid evidence remain owned by `v01-010`.

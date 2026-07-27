@@ -3,12 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 
 import httpx
+import numpy as np
 import pytest
 
 from codecairn.bootstrap import create_runtime
 from codecairn.memory.config import RetrievalConfig, SemanticConfig
 from codecairn.memory.errors import ProviderConfigurationError
-from codecairn.memory.providers import DashScopeEmbedder
+from codecairn.memory.providers import DashScopeEmbedder, FastEmbedder
 from codecairn.memory.semantic import SemanticRequest
 from codecairn.memory.semantic_provider import OpenAISemanticExtractor
 from tests.retrieval_fakes import TEST_RETRIEVAL
@@ -37,6 +38,20 @@ def test_dashscope_missing_key_is_typed_and_wrong_shape_fails_closed() -> None:
     )
     with pytest.raises(ValueError, match="invalid embedding response"):
         adapter.embed_query("one input")
+
+
+def test_fastembed_accepts_its_numpy_float32_output() -> None:
+    class FakeFastEmbedding:
+        def passage_embed(self, _texts: object) -> tuple[np.ndarray[tuple[int], np.dtype[np.float32]], ...]:
+            return (np.zeros(384, dtype=np.float32),)
+
+        def query_embed(self, _query: str) -> tuple[np.ndarray[tuple[int], np.dtype[np.float32]], ...]:
+            return (np.zeros(384, dtype=np.float32),)
+
+    adapter = FastEmbedder(RetrievalConfig.default("fastembed"))
+    adapter._model = FakeFastEmbedding()  # type: ignore[assignment]
+
+    assert adapter.embed_documents(("one input",)) == (tuple(0.0 for _ in range(384)),)
 
 
 def test_semantic_adapter_returns_untrusted_fact_id_selection(tmp_path: Path) -> None:

@@ -23,7 +23,11 @@ jobs:
         run: make source-budget
       - name: Run architecture, type, and test gates
         run: make check
+      - name: Check maintained documentation
+        run: make docs-check
       - name: Recompute the public evidence bundle
         run: make evidence-verify
       - name: Build source and wheel artifacts
         run: uv build
+      - name: Verify curated artifact inventories
+        run: make artifact-check

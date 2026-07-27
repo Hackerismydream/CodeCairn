@@ -6,6 +6,7 @@ import math
 import os
 import time
 from collections.abc import Iterable
+from numbers import Real
 from pathlib import Path
 from threading import Lock
 from typing import Protocol, cast
@@ -183,10 +184,10 @@ def _snapshot(source: str, revision: str, cache_dir: Path | None) -> str:
 
 def _vector(value: object, *, dimension: int) -> tuple[float, ...]:
     try:
-        items = cast(Iterable[object], value)
-        if any(not isinstance(item, int | float) or isinstance(item, bool) for item in items):
+        items = tuple(cast(Iterable[object], value))
+        if any(not isinstance(item, Real) or isinstance(item, bool) for item in items):
             raise ValueError
-        vector = tuple(float(cast(int | float, item)) for item in cast(Iterable[object], value))
+        vector = tuple(float(cast(Real, item)) for item in items)
     except (TypeError, ValueError) as error:
         raise ValueError("Embedding contains a non-numeric value") from error
     if len(vector) != dimension or any(not math.isfinite(item) for item in vector):

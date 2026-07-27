@@ -1,8 +1,8 @@
 # Runtime Operations
 
 This document describes behavior implemented on current `main` after
-`v01-008`. Release packaging and candidate-bound paid evaluation remain specified under
-[`../v0.1/`](../v0.1/).
+`v01-009`. Real-client and candidate-bound paid evaluation remain specified
+under [`../v0.1/`](../v0.1/).
 
 ## Current support matrix
 
@@ -20,6 +20,7 @@ This document describes behavior implemented on current `main` after
 | Namespace operations | `codecairn namespace ...` | Creates a consistent export or performs a confirmation-gated, backup-first reset |
 | Index commands | `codecairn index ...` | Operates the lifecycle-aware LanceDB cascade and parity service |
 | Historical evidence | `codecairn evidence verify` | Verifies frozen evidence without loading the live runtime |
+| Distribution | `uv tool install` | Installs curated MIT-licensed wheel entrypoints into an isolated persistent tool environment |
 
 ## Capture lifecycle
 
@@ -211,5 +212,5 @@ Implemented:
 - Claude `SessionEnd` and Codex `Stop` import hooks, atomic/idempotent settings
   installation, bounded receipts, and hook-to-recall read-your-writes.
 
-Not yet implemented: persistent release installation, one-command evaluation
-gates, real-client release smoke, and release-candidate evidence.
+Not yet implemented: real-client release smoke, publication/tagging, and
+candidate-bound release evidence.

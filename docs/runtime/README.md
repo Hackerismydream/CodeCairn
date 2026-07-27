@@ -23,7 +23,7 @@ entrypoints -> service -> memory
 `bootstrap` composes adapters. `evaluation` calls product/service contracts
 with isolated roots.
 
-## Implemented runtime through `v01-008`
+## Implemented runtime through `v01-009`
 
 Current `main` implements the local memory lifecycle:
 
@@ -44,10 +44,13 @@ Current `main` implements the local memory lifecycle:
   settings installation and bounded operational receipts;
 - eight authoritative evaluation commands, deterministic lifecycle/scale/
   retrieval gates, lean paid-run contracts, a deterministic source gate, and
-  pure verification of historical evidence.
+  pure verification of historical evidence;
+- MIT-licensed curated wheel/sdist packaging, persistent-tool installation,
+  installed CLI/MCP/lifecycle/evidence smoke, artifact inventory checks, and a
+  maintained learner path.
 
-Persistent install/package curation, real-client smoke, and release-candidate
-evidence remain in `v01-009` and `v01-010`.
+Real Claude/Codex client smoke and candidate-bound release evidence remain in
+`v01-010`.
 
 ## Current write paths
 
@@ -93,9 +96,8 @@ Agent Trace
   -> active-only Recall Context
 ```
 
-The remaining release work is curated persistent packaging and learner
-documentation, real installed-client lifecycle smoke, and a clean
-implementation/evidence SHA pair.
+The remaining release work is real installed-client lifecycle smoke through
+the client UI/trust boundary and a clean implementation/evidence SHA pair.
 
 The exact record contract is
 [`../v0.1/schema-contract.md`](../v0.1/schema-contract.md); lifecycle policy is

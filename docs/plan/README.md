@@ -1,10 +1,10 @@
 # CodeCairn v0.1 Delivery Plan
 
-Status: implementation in progress. The source-budget guardrail, four-type
-domain migration, complete capture pipeline, immutable evolution layer,
-lifecycle-aware hybrid recall, repository onboarding, explicit MCP access, and
-Claude/Codex hooks, and the one-command evaluation surface are implemented
-through `v01-008`; `v01-009` is the only ready implementation task.
+Status: release-candidate verification in progress. The source-budget
+guardrail, four-type domain migration, complete capture pipeline, immutable
+evolution layer, lifecycle-aware hybrid recall, repository onboarding, explicit
+MCP access, Claude/Codex hooks, one-command evaluation, installable packaging,
+and learner surface are implemented through `v01-009`; `v01-010` is ready.
 
 ## Baseline
 
@@ -77,8 +77,8 @@ parallel. Implementation merges only after every listed dependency is on
 | [`v01-006`](tasks/v01-006-mcp.md) | Explicit MCP access | v01-005 | done |
 | [`v01-007`](tasks/v01-007-hooks.md) | Post-session automatic capture | v01-006 | done |
 | [`v01-008`](tasks/v01-008-evaluation-slimming.md) | Small evaluation surface and source gates | v01-007 | done |
-| [`v01-009`](tasks/v01-009-packaging-learning.md) | Installable learner-facing package | v01-008 | ready |
-| [`v01-010`](tasks/v01-010-release-e2e.md) | One verified release candidate | v01-009 | planned |
+| [`v01-009`](tasks/v01-009-packaging-learning.md) | Installable learner-facing package | v01-008 | done |
+| [`v01-010`](tasks/v01-010-release-e2e.md) | One verified release candidate | v01-009 | ready |
 
 `ready` means an agent may implement the task from current `main`. `blocked`
 means a precise contract exists but an implementation dependency has not

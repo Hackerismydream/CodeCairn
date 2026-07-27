@@ -10,6 +10,7 @@ Read:
 1. [`../../README.md`](../../README.md)
 2. [`../../CONTEXT.md`](../../CONTEXT.md)
 3. [`README.md`](README.md)
+4. [`../runtime/installation.md`](../runtime/installation.md)
 
 You should be able to answer: what does CodeCairn own, what remains in the
 coding agent, and why are Source, Memory, Evolution, and Recall different
@@ -75,6 +76,11 @@ Read [`agent-integration.md`](agent-integration.md), then:
 All paths should terminate in the same service operations. If an entrypoint
 contains memory policy, the boundary has leaked.
 
+Compare the visible client workflow and agent wording in
+[`../runtime/installation.md`](../runtime/installation.md) and
+[`../runtime/agent-instructions.md`](../runtime/agent-instructions.md) with
+the adapter code. Setup never grants hidden trust or injects instructions.
+
 ## 7. Evaluation and evidence
 
 Read:
@@ -92,13 +98,14 @@ Use [`../adr/README.md`](../adr/README.md):
 
 - ADRs 0001–0011 explain the foundation;
 - ADRs 0012–0042 explain the implemented retrieval and evidence history;
-- ADRs 0043–0051 define the version 0.1 simplification and product.
+- ADRs 0043–0052 define the version 0.1 simplification and product.
 
 ADRs are causal history. Maintained design documents own the current target.
 
 ## Contribution rule
 
-Start from one file in [`../plan/tasks/`](../plan/tasks/). A task is complete
+Start from one file in [`../plan/tasks/`](../plan/tasks/), then follow
+[`../../CONTRIBUTING.md`](../../CONTRIBUTING.md). A task is complete
 only when its public verification passes and the maintained docs describe the
 actual behavior. Do not implement a deferred feature because a historical ADR
 or benchmark helper happens to mention it.

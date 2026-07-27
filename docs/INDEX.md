@@ -14,6 +14,8 @@ truth, historical decisions, and generated evidence.
 5. [`plan/README.md`](plan/README.md) — delivery order and agent-ready tasks.
 6. [`runtime/operations.md`](runtime/operations.md) — public behavior that
    exists on current `main`.
+7. [`runtime/installation.md`](runtime/installation.md) — persistent install
+   and one-client acceptance path.
 
 ## Authority
 
@@ -64,6 +66,8 @@ external tracker when tasks are published or assigned.
 |---|---|
 | [`runtime/README.md`](runtime/README.md) | Implemented baseline versus target runtime |
 | [`runtime/operations.md`](runtime/operations.md) | Exact current CLI/MCP/hook commands and failure posture |
+| [`runtime/installation.md`](runtime/installation.md) | Five-minute manual and ten-minute one-client path |
+| [`runtime/agent-instructions.md`](runtime/agent-instructions.md) | Reviewable AGENTS.md and CLAUDE.md snippets |
 | [`release-readiness.md`](release-readiness.md) | Current blockers and final release matrix |
 | [`reference-boundaries.md`](reference-boundaries.md) | Clean-room and external-reference boundaries |
 
@@ -89,6 +93,6 @@ contract.
 | [`0001`](adr/0001-new-public-repository-with-selective-reimplementation.md)–[`0011`](adr/0011-import-resume-replays-only-the-active-suffix.md) | Foundation, evidence, storage, entrypoints, resume |
 | [`0012`](adr/0012-hierarchical-recall-is-a-rebuildable-projection.md)–[`0027`](adr/0027-semantic-projection-rejects-foreign-citations-per-clause.md) | Retrieval and grounded projection |
 | [`0028`](adr/0028-embedding-transport-policy-is-artifact-identity.md)–[`0042`](adr/0042-ablation-gates-evaluate-natural-weighted-accuracy.md) | Evaluation protocols, exact repair, Fable baseline |
-| [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0051`](adr/0051-version-0-1-has-no-standalone-memory-verification-operation.md) | Version 0.1 product, lifecycle, surfaces, source budget |
+| [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0052`](adr/0052-version-0-1-retires-http-compatibility.md) | Version 0.1 product, lifecycle, surfaces, source budget |
 
 Use [`adr/README.md`](adr/README.md) for status and supersession rules.
