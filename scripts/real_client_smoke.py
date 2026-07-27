@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -411,11 +412,14 @@ def main() -> None:
     parser.add_argument("--wheel", type=Path, default=ROOT / "dist")
     parser.add_argument("--implementation-sha", required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--claude-max-budget-usd", type=float, default=0.10)
+    parser.add_argument("--spend-ack", choices=("YES",), required=True)
+    parser.add_argument("--claude-max-budget-usd", type=float, required=True)
     parser.add_argument("--claude-api-key-env")
     parser.add_argument("--claude-base-url-env")
     parser.add_argument("--claude-model-env")
     arguments = parser.parse_args()
+    if not math.isfinite(arguments.claude_max_budget_usd) or arguments.claude_max_budget_usd <= 0:
+        parser.error("--claude-max-budget-usd must be a positive finite number")
     print(
         json.dumps(
             run(

@@ -392,3 +392,24 @@ def test_release_bundle_rejects_unrecomputed_offline_metrics(tmp_path: Path) -> 
 
     with pytest.raises(ValueError, match="retrieval outcome metrics"):
         _aggregate(tmp_path, manifest, IMPLEMENTATION_SHA)
+
+
+def test_real_client_smoke_requires_explicit_spend_ack_and_ceiling(tmp_path: Path) -> None:
+    base = [
+        sys.executable,
+        "scripts/real_client_smoke.py",
+        "--implementation-sha",
+        IMPLEMENTATION_SHA,
+        "--output",
+        str(tmp_path / "must-not-exist.json"),
+    ]
+    missing = subprocess.run(base, check=False, capture_output=True, text=True)
+    invalid = subprocess.run(
+        [*base, "--spend-ack", "YES", "--claude-max-budget-usd", "nan"], check=False, capture_output=True, text=True
+    )
+
+    assert missing.returncode == 2
+    assert "--spend-ack" in missing.stderr
+    assert invalid.returncode == 2
+    assert "positive finite" in invalid.stderr
+    assert not (tmp_path / "must-not-exist.json").exists()

@@ -150,10 +150,15 @@ uv run python scripts/real_client_smoke.py \
   --wheel dist/codecairn-0.1.0-py3-none-any.whl \
   --implementation-sha "$IMPLEMENTATION_SHA" \
   --output benchmark_results/release/real-clients.json \
+  --spend-ack YES \
+  --claude-max-budget-usd "$APPROVED_CLIENT_SMOKE_CEILING" \
   --claude-api-key-env ANTHROPIC_API_KEY \
   --claude-base-url-env ANTHROPIC_BASE_URL \
   --claude-model-env ANTHROPIC_MODEL
 ```
+
+The script has no default paid allowance: both the acknowledgement and a
+positive finite Claude ceiling are required before either client starts.
 
 The builder may verify an uncommitted bundle while `HEAD` still equals
 `implementation_sha`. Release acceptance requires a clean evidence-only direct
