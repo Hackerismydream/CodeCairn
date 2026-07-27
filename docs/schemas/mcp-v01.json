@@ -1,0 +1,3033 @@
+{
+  "resources": [
+    {
+      "mime_type": "text/markdown",
+      "name": "CodeCairn memory",
+      "uri_template": "codecairn://memory/{memory_id}"
+    }
+  ],
+  "schema_version": 1,
+  "tools": [
+    {
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "repo_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repo Key"
+          }
+        },
+        "title": "doctorArguments",
+        "type": "object"
+      },
+      "name": "doctor",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "doctorDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "memory_id": {
+            "pattern": "^mem_[0-9a-f]{64}$",
+            "title": "Memory Id",
+            "type": "string"
+          },
+          "repo_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repo Key"
+          }
+        },
+        "required": [
+          "memory_id"
+        ],
+        "title": "get_memoryArguments",
+        "type": "object"
+      },
+      "name": "get_memory",
+      "output_schema": {
+        "$defs": {
+          "ActionFacet": {
+            "additionalProperties": false,
+            "properties": {
+              "fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Fact Ids",
+                "type": "array"
+              },
+              "kind": {
+                "enum": [
+                  "command",
+                  "file_change",
+                  "tool",
+                  "decision",
+                  "observation"
+                ],
+                "title": "Kind",
+                "type": "string"
+              },
+              "summary": {
+                "title": "Summary",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "summary",
+              "fact_ids"
+            ],
+            "title": "ActionFacet",
+            "type": "object"
+          },
+          "CodingMemory": {
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "title": "Category",
+                "type": "string"
+              },
+              "content": {
+                "title": "Content",
+                "type": "string"
+              },
+              "created_at_ms": {
+                "title": "Created At Ms",
+                "type": "integer"
+              },
+              "episode_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Episode Id"
+              },
+              "evidence": {
+                "items": {
+                  "$ref": "#/$defs/EvidenceReference"
+                },
+                "title": "Evidence",
+                "type": "array"
+              },
+              "facts": {
+                "items": {
+                  "$ref": "#/$defs/EvidenceFact"
+                },
+                "title": "Facts",
+                "type": "array"
+              },
+              "memory_id": {
+                "title": "Memory Id",
+                "type": "string"
+              },
+              "memory_type": {
+                "enum": [
+                  "task_experience",
+                  "repository_knowledge",
+                  "user_preference",
+                  "work_state"
+                ],
+                "title": "Memory Type",
+                "type": "string"
+              },
+              "origin": {
+                "enum": [
+                  "capture",
+                  "agent_asserted",
+                  "restored"
+                ],
+                "title": "Origin",
+                "type": "string"
+              },
+              "payload": {
+                "$ref": "#/$defs/MemoryPayload"
+              },
+              "repo_key": {
+                "title": "Repo Key",
+                "type": "string"
+              },
+              "restore_predecessor_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Restore Predecessor Id"
+              },
+              "restored_from": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Restored From"
+              },
+              "schema_version": {
+                "title": "Schema Version",
+                "type": "integer"
+              },
+              "source_order_key": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/SourceOrderKey"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "tags": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Tags",
+                "type": "array"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              }
+            },
+            "required": [
+              "schema_version",
+              "memory_id",
+              "repo_key",
+              "memory_type",
+              "title",
+              "content",
+              "category",
+              "tags",
+              "created_at_ms",
+              "episode_id",
+              "evidence",
+              "facts",
+              "origin",
+              "restored_from",
+              "restore_predecessor_id",
+              "source_order_key",
+              "payload"
+            ],
+            "title": "CodingMemory",
+            "type": "object"
+          },
+          "EvidenceFact": {
+            "additionalProperties": false,
+            "properties": {
+              "attributes": {
+                "$ref": "#/$defs/FactAttributes"
+              },
+              "episode_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Episode Id"
+              },
+              "fact_id": {
+                "title": "Fact Id",
+                "type": "string"
+              },
+              "fact_kind": {
+                "enum": [
+                  "message",
+                  "command",
+                  "command_result",
+                  "file_change",
+                  "tool_call",
+                  "tool_result",
+                  "verification"
+                ],
+                "title": "Fact Kind",
+                "type": "string"
+              },
+              "fact_ordinal": {
+                "title": "Fact Ordinal",
+                "type": "integer"
+              },
+              "reference": {
+                "$ref": "#/$defs/EvidenceReference"
+              },
+              "repo_key": {
+                "title": "Repo Key",
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "user",
+                      "assistant",
+                      "tool",
+                      "system"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Role"
+              },
+              "schema_version": {
+                "title": "Schema Version",
+                "type": "integer"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              }
+            },
+            "required": [
+              "schema_version",
+              "fact_id",
+              "repo_key",
+              "episode_id",
+              "reference",
+              "fact_kind",
+              "role",
+              "value",
+              "attributes",
+              "fact_ordinal"
+            ],
+            "title": "EvidenceFact",
+            "type": "object"
+          },
+          "EvidenceReference": {
+            "additionalProperties": false,
+            "properties": {
+              "event_id": {
+                "title": "Event Id",
+                "type": "string"
+              },
+              "event_index": {
+                "title": "Event Index",
+                "type": "integer"
+              },
+              "event_sha256": {
+                "title": "Event Sha256",
+                "type": "string"
+              },
+              "fact_id": {
+                "title": "Fact Id",
+                "type": "string"
+              },
+              "provider": {
+                "enum": [
+                  "codex",
+                  "claude"
+                ],
+                "title": "Provider",
+                "type": "string"
+              },
+              "session_id": {
+                "title": "Session Id",
+                "type": "string"
+              },
+              "source_generation": {
+                "title": "Source Generation",
+                "type": "integer"
+              },
+              "source_path_sha256": {
+                "title": "Source Path Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "fact_id",
+              "provider",
+              "session_id",
+              "source_generation",
+              "event_index",
+              "event_id",
+              "source_path_sha256",
+              "event_sha256"
+            ],
+            "title": "EvidenceReference",
+            "type": "object"
+          },
+          "FactAttributes": {
+            "additionalProperties": {
+              "$ref": "#/$defs/FactScalar"
+            },
+            "type": "object"
+          },
+          "FactScalar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "MemoryPayload": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/TaskExperiencePayload"
+              },
+              {
+                "$ref": "#/$defs/RepositoryKnowledgePayload"
+              },
+              {
+                "$ref": "#/$defs/UserPreferencePayload"
+              },
+              {
+                "$ref": "#/$defs/WorkStatePayload"
+              }
+            ]
+          },
+          "RepositoryKnowledgePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "claim": {
+                "title": "Claim",
+                "type": "string"
+              },
+              "subject_key": {
+                "title": "Subject Key",
+                "type": "string"
+              }
+            },
+            "required": [
+              "subject_key",
+              "claim"
+            ],
+            "title": "RepositoryKnowledgePayload",
+            "type": "object"
+          },
+          "SourceOrderKey": {
+            "additionalProperties": false,
+            "properties": {
+              "event_index": {
+                "title": "Event Index",
+                "type": "integer"
+              },
+              "provider": {
+                "enum": [
+                  "codex",
+                  "claude"
+                ],
+                "title": "Provider",
+                "type": "string"
+              },
+              "session_id": {
+                "title": "Session Id",
+                "type": "string"
+              },
+              "source_generation": {
+                "title": "Source Generation",
+                "type": "integer"
+              },
+              "trusted_timestamp_ms": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Trusted Timestamp Ms"
+              }
+            },
+            "required": [
+              "trusted_timestamp_ms",
+              "provider",
+              "session_id",
+              "source_generation",
+              "event_index"
+            ],
+            "title": "SourceOrderKey",
+            "type": "object"
+          },
+          "TaskExperiencePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "actions": {
+                "items": {
+                  "$ref": "#/$defs/ActionFacet"
+                },
+                "title": "Actions",
+                "type": "array"
+              },
+              "blockers": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Blockers",
+                "type": "array"
+              },
+              "goal": {
+                "title": "Goal",
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "success",
+                  "failure",
+                  "partial",
+                  "unknown"
+                ],
+                "title": "Outcome",
+                "type": "string"
+              },
+              "result": {
+                "title": "Result",
+                "type": "string"
+              },
+              "verification_fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Verification Fact Ids",
+                "type": "array"
+              }
+            },
+            "required": [
+              "goal",
+              "outcome",
+              "actions",
+              "result",
+              "blockers",
+              "verification_fact_ids"
+            ],
+            "title": "TaskExperiencePayload",
+            "type": "object"
+          },
+          "UserPreferencePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "preference": {
+                "title": "Preference",
+                "type": "string"
+              },
+              "source_fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Source Fact Ids",
+                "type": "array"
+              },
+              "subject_key": {
+                "title": "Subject Key",
+                "type": "string"
+              }
+            },
+            "required": [
+              "subject_key",
+              "preference",
+              "source_fact_ids"
+            ],
+            "title": "UserPreferencePayload",
+            "type": "object"
+          },
+          "WorkStatePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "blockers": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Blockers",
+                "type": "array"
+              },
+              "goal": {
+                "title": "Goal",
+                "type": "string"
+              },
+              "next_step": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Next Step"
+              },
+              "progress": {
+                "title": "Progress",
+                "type": "string"
+              },
+              "terminal_outcome": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Terminal Outcome"
+              },
+              "workstream_key": {
+                "title": "Workstream Key",
+                "type": "string"
+              },
+              "workstream_state": {
+                "enum": [
+                  "open",
+                  "closed"
+                ],
+                "title": "Workstream State",
+                "type": "string"
+              }
+            },
+            "required": [
+              "workstream_key",
+              "workstream_state",
+              "goal",
+              "progress",
+              "blockers",
+              "next_step",
+              "terminal_outcome"
+            ],
+            "title": "WorkStatePayload",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "memory": {
+            "$ref": "#/$defs/CodingMemory"
+          },
+          "resource_uri": {
+            "title": "Resource Uri",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "memory",
+          "status",
+          "resource_uri"
+        ],
+        "title": "MemoryDetail",
+        "type": "object"
+      }
+    },
+    {
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "repo_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repo Key"
+          },
+          "source_path": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Source Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_path"
+        ],
+        "title": "import_sessionArguments",
+        "type": "object"
+      },
+      "name": "import_session",
+      "output_schema": {
+        "$defs": {
+          "ImportResult": {
+            "additionalProperties": false,
+            "properties": {
+              "committed_raw_event_index": {
+                "title": "Committed Raw Event Index",
+                "type": "integer"
+              },
+              "created_memory_count": {
+                "title": "Created Memory Count",
+                "type": "integer"
+              },
+              "processed_raw_event_count": {
+                "title": "Processed Raw Event Count",
+                "type": "integer"
+              },
+              "provider": {
+                "title": "Provider",
+                "type": "string"
+              },
+              "raw_event_count": {
+                "title": "Raw Event Count",
+                "type": "integer"
+              },
+              "repaired_memory_count": {
+                "title": "Repaired Memory Count",
+                "type": "integer"
+              },
+              "resumed_from_raw_event_index": {
+                "title": "Resumed From Raw Event Index",
+                "type": "integer"
+              },
+              "session_id": {
+                "title": "Session Id",
+                "type": "string"
+              },
+              "skipped_memory_count": {
+                "title": "Skipped Memory Count",
+                "type": "integer"
+              },
+              "source_sha256": {
+                "title": "Source Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "provider",
+              "session_id",
+              "source_sha256",
+              "raw_event_count",
+              "committed_raw_event_index",
+              "resumed_from_raw_event_index",
+              "processed_raw_event_count",
+              "created_memory_count",
+              "skipped_memory_count",
+              "repaired_memory_count"
+            ],
+            "title": "ImportResult",
+            "type": "object"
+          },
+          "IndexHealth": {
+            "additionalProperties": false,
+            "properties": {
+              "failed": {
+                "title": "Failed",
+                "type": "integer"
+              },
+              "indexed": {
+                "title": "Indexed",
+                "type": "integer"
+              },
+              "leased": {
+                "title": "Leased",
+                "type": "integer"
+              },
+              "pending": {
+                "title": "Pending",
+                "type": "integer"
+              },
+              "stale": {
+                "title": "Stale",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "pending",
+              "leased",
+              "indexed",
+              "failed",
+              "stale"
+            ],
+            "title": "IndexHealth",
+            "type": "object"
+          },
+          "IndexSyncReport": {
+            "additionalProperties": false,
+            "description": "Result of the index drain that follows one import commit.",
+            "properties": {
+              "error": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Error"
+              },
+              "error_type": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Error Type"
+              },
+              "health": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/IndexHealth"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "requested": {
+                "title": "Requested",
+                "type": "boolean"
+              },
+              "synced": {
+                "title": "Synced",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "requested",
+              "synced"
+            ],
+            "title": "IndexSyncReport",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "description": "One durable import result plus the index drain attempted after it.",
+        "properties": {
+          "index": {
+            "$ref": "#/$defs/IndexSyncReport"
+          },
+          "result": {
+            "$ref": "#/$defs/ImportResult"
+          }
+        },
+        "required": [
+          "result",
+          "index"
+        ],
+        "title": "ImportOutcome",
+        "type": "object"
+      }
+    },
+    {
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "anyOf": [
+              {
+                "maxLength": 4096,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cursor"
+          },
+          "limit": {
+            "default": 20,
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "memory_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "task_experience",
+                  "repository_knowledge",
+                  "user_preference",
+                  "work_state"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Memory Type"
+          },
+          "repo_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repo Key"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "active",
+                  "superseded"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          }
+        },
+        "title": "list_memoriesArguments",
+        "type": "object"
+      },
+      "name": "list_memories",
+      "output_schema": {
+        "$defs": {
+          "MemorySummary": {
+            "additionalProperties": false,
+            "properties": {
+              "created_at_ms": {
+                "title": "Created At Ms",
+                "type": "integer"
+              },
+              "memory_id": {
+                "title": "Memory Id",
+                "type": "string"
+              },
+              "memory_type": {
+                "enum": [
+                  "task_experience",
+                  "repository_knowledge",
+                  "user_preference",
+                  "work_state"
+                ],
+                "title": "Memory Type",
+                "type": "string"
+              },
+              "status": {
+                "title": "Status",
+                "type": "string"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              }
+            },
+            "required": [
+              "memory_id",
+              "memory_type",
+              "title",
+              "status",
+              "created_at_ms"
+            ],
+            "title": "MemorySummary",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/MemorySummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "repo_key": {
+            "title": "Repo Key",
+            "type": "string"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schema_version",
+          "repo_key",
+          "items",
+          "next_cursor"
+        ],
+        "title": "MemoryPage",
+        "type": "object"
+      }
+    },
+    {
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "memory_id": {
+            "pattern": "^mem_[0-9a-f]{64}$",
+            "title": "Memory Id",
+            "type": "string"
+          },
+          "repo_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repo Key"
+          }
+        },
+        "required": [
+          "memory_id"
+        ],
+        "title": "memory_historyArguments",
+        "type": "object"
+      },
+      "name": "memory_history",
+      "output_schema": {
+        "$defs": {
+          "ActionFacet": {
+            "additionalProperties": false,
+            "properties": {
+              "fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Fact Ids",
+                "type": "array"
+              },
+              "kind": {
+                "enum": [
+                  "command",
+                  "file_change",
+                  "tool",
+                  "decision",
+                  "observation"
+                ],
+                "title": "Kind",
+                "type": "string"
+              },
+              "summary": {
+                "title": "Summary",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "summary",
+              "fact_ids"
+            ],
+            "title": "ActionFacet",
+            "type": "object"
+          },
+          "CodingMemory": {
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "title": "Category",
+                "type": "string"
+              },
+              "content": {
+                "title": "Content",
+                "type": "string"
+              },
+              "created_at_ms": {
+                "title": "Created At Ms",
+                "type": "integer"
+              },
+              "episode_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Episode Id"
+              },
+              "evidence": {
+                "items": {
+                  "$ref": "#/$defs/EvidenceReference"
+                },
+                "title": "Evidence",
+                "type": "array"
+              },
+              "facts": {
+                "items": {
+                  "$ref": "#/$defs/EvidenceFact"
+                },
+                "title": "Facts",
+                "type": "array"
+              },
+              "memory_id": {
+                "title": "Memory Id",
+                "type": "string"
+              },
+              "memory_type": {
+                "enum": [
+                  "task_experience",
+                  "repository_knowledge",
+                  "user_preference",
+                  "work_state"
+                ],
+                "title": "Memory Type",
+                "type": "string"
+              },
+              "origin": {
+                "enum": [
+                  "capture",
+                  "agent_asserted",
+                  "restored"
+                ],
+                "title": "Origin",
+                "type": "string"
+              },
+              "payload": {
+                "$ref": "#/$defs/MemoryPayload"
+              },
+              "repo_key": {
+                "title": "Repo Key",
+                "type": "string"
+              },
+              "restore_predecessor_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Restore Predecessor Id"
+              },
+              "restored_from": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Restored From"
+              },
+              "schema_version": {
+                "title": "Schema Version",
+                "type": "integer"
+              },
+              "source_order_key": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/SourceOrderKey"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "tags": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Tags",
+                "type": "array"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              }
+            },
+            "required": [
+              "schema_version",
+              "memory_id",
+              "repo_key",
+              "memory_type",
+              "title",
+              "content",
+              "category",
+              "tags",
+              "created_at_ms",
+              "episode_id",
+              "evidence",
+              "facts",
+              "origin",
+              "restored_from",
+              "restore_predecessor_id",
+              "source_order_key",
+              "payload"
+            ],
+            "title": "CodingMemory",
+            "type": "object"
+          },
+          "EvidenceFact": {
+            "additionalProperties": false,
+            "properties": {
+              "attributes": {
+                "$ref": "#/$defs/FactAttributes"
+              },
+              "episode_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Episode Id"
+              },
+              "fact_id": {
+                "title": "Fact Id",
+                "type": "string"
+              },
+              "fact_kind": {
+                "enum": [
+                  "message",
+                  "command",
+                  "command_result",
+                  "file_change",
+                  "tool_call",
+                  "tool_result",
+                  "verification"
+                ],
+                "title": "Fact Kind",
+                "type": "string"
+              },
+              "fact_ordinal": {
+                "title": "Fact Ordinal",
+                "type": "integer"
+              },
+              "reference": {
+                "$ref": "#/$defs/EvidenceReference"
+              },
+              "repo_key": {
+                "title": "Repo Key",
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "user",
+                      "assistant",
+                      "tool",
+                      "system"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Role"
+              },
+              "schema_version": {
+                "title": "Schema Version",
+                "type": "integer"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              }
+            },
+            "required": [
+              "schema_version",
+              "fact_id",
+              "repo_key",
+              "episode_id",
+              "reference",
+              "fact_kind",
+              "role",
+              "value",
+              "attributes",
+              "fact_ordinal"
+            ],
+            "title": "EvidenceFact",
+            "type": "object"
+          },
+          "EvidenceReference": {
+            "additionalProperties": false,
+            "properties": {
+              "event_id": {
+                "title": "Event Id",
+                "type": "string"
+              },
+              "event_index": {
+                "title": "Event Index",
+                "type": "integer"
+              },
+              "event_sha256": {
+                "title": "Event Sha256",
+                "type": "string"
+              },
+              "fact_id": {
+                "title": "Fact Id",
+                "type": "string"
+              },
+              "provider": {
+                "enum": [
+                  "codex",
+                  "claude"
+                ],
+                "title": "Provider",
+                "type": "string"
+              },
+              "session_id": {
+                "title": "Session Id",
+                "type": "string"
+              },
+              "source_generation": {
+                "title": "Source Generation",
+                "type": "integer"
+              },
+              "source_path_sha256": {
+                "title": "Source Path Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "fact_id",
+              "provider",
+              "session_id",
+              "source_generation",
+              "event_index",
+              "event_id",
+              "source_path_sha256",
+              "event_sha256"
+            ],
+            "title": "EvidenceReference",
+            "type": "object"
+          },
+          "EvolutionRecord": {
+            "additionalProperties": false,
+            "properties": {
+              "created_at_ms": {
+                "title": "Created At Ms",
+                "type": "integer"
+              },
+              "evidence": {
+                "items": {
+                  "$ref": "#/$defs/EvidenceReference"
+                },
+                "title": "Evidence",
+                "type": "array"
+              },
+              "evolution_id": {
+                "title": "Evolution Id",
+                "type": "string"
+              },
+              "predecessor_id": {
+                "title": "Predecessor Id",
+                "type": "string"
+              },
+              "proposal_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Proposal Id"
+              },
+              "proposer": {
+                "enum": [
+                  "capture_model",
+                  "agent",
+                  "user",
+                  "system"
+                ],
+                "title": "Proposer",
+                "type": "string"
+              },
+              "reason": {
+                "title": "Reason",
+                "type": "string"
+              },
+              "relation_kind": {
+                "enum": [
+                  "work_state_update",
+                  "preference_override",
+                  "knowledge_obsolete",
+                  "knowledge_contradiction",
+                  "explicit_restore"
+                ],
+                "title": "Relation Kind",
+                "type": "string"
+              },
+              "repo_key": {
+                "title": "Repo Key",
+                "type": "string"
+              },
+              "schema_version": {
+                "title": "Schema Version",
+                "type": "integer"
+              },
+              "source_order_key": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/SourceOrderKey"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "successor_id": {
+                "title": "Successor Id",
+                "type": "string"
+              },
+              "supporting_fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Supporting Fact Ids",
+                "type": "array"
+              }
+            },
+            "required": [
+              "schema_version",
+              "evolution_id",
+              "repo_key",
+              "relation_kind",
+              "predecessor_id",
+              "successor_id",
+              "proposal_id",
+              "supporting_fact_ids",
+              "source_order_key",
+              "proposer",
+              "reason",
+              "evidence",
+              "created_at_ms"
+            ],
+            "title": "EvolutionRecord",
+            "type": "object"
+          },
+          "FactAttributes": {
+            "additionalProperties": {
+              "$ref": "#/$defs/FactScalar"
+            },
+            "type": "object"
+          },
+          "FactScalar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "MemoryPayload": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/TaskExperiencePayload"
+              },
+              {
+                "$ref": "#/$defs/RepositoryKnowledgePayload"
+              },
+              {
+                "$ref": "#/$defs/UserPreferencePayload"
+              },
+              {
+                "$ref": "#/$defs/WorkStatePayload"
+              }
+            ]
+          },
+          "RepositoryKnowledgePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "claim": {
+                "title": "Claim",
+                "type": "string"
+              },
+              "subject_key": {
+                "title": "Subject Key",
+                "type": "string"
+              }
+            },
+            "required": [
+              "subject_key",
+              "claim"
+            ],
+            "title": "RepositoryKnowledgePayload",
+            "type": "object"
+          },
+          "SourceOrderKey": {
+            "additionalProperties": false,
+            "properties": {
+              "event_index": {
+                "title": "Event Index",
+                "type": "integer"
+              },
+              "provider": {
+                "enum": [
+                  "codex",
+                  "claude"
+                ],
+                "title": "Provider",
+                "type": "string"
+              },
+              "session_id": {
+                "title": "Session Id",
+                "type": "string"
+              },
+              "source_generation": {
+                "title": "Source Generation",
+                "type": "integer"
+              },
+              "trusted_timestamp_ms": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Trusted Timestamp Ms"
+              }
+            },
+            "required": [
+              "trusted_timestamp_ms",
+              "provider",
+              "session_id",
+              "source_generation",
+              "event_index"
+            ],
+            "title": "SourceOrderKey",
+            "type": "object"
+          },
+          "TaskExperiencePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "actions": {
+                "items": {
+                  "$ref": "#/$defs/ActionFacet"
+                },
+                "title": "Actions",
+                "type": "array"
+              },
+              "blockers": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Blockers",
+                "type": "array"
+              },
+              "goal": {
+                "title": "Goal",
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "success",
+                  "failure",
+                  "partial",
+                  "unknown"
+                ],
+                "title": "Outcome",
+                "type": "string"
+              },
+              "result": {
+                "title": "Result",
+                "type": "string"
+              },
+              "verification_fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Verification Fact Ids",
+                "type": "array"
+              }
+            },
+            "required": [
+              "goal",
+              "outcome",
+              "actions",
+              "result",
+              "blockers",
+              "verification_fact_ids"
+            ],
+            "title": "TaskExperiencePayload",
+            "type": "object"
+          },
+          "UserPreferencePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "preference": {
+                "title": "Preference",
+                "type": "string"
+              },
+              "source_fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Source Fact Ids",
+                "type": "array"
+              },
+              "subject_key": {
+                "title": "Subject Key",
+                "type": "string"
+              }
+            },
+            "required": [
+              "subject_key",
+              "preference",
+              "source_fact_ids"
+            ],
+            "title": "UserPreferencePayload",
+            "type": "object"
+          },
+          "WorkStatePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "blockers": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Blockers",
+                "type": "array"
+              },
+              "goal": {
+                "title": "Goal",
+                "type": "string"
+              },
+              "next_step": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Next Step"
+              },
+              "progress": {
+                "title": "Progress",
+                "type": "string"
+              },
+              "terminal_outcome": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Terminal Outcome"
+              },
+              "workstream_key": {
+                "title": "Workstream Key",
+                "type": "string"
+              },
+              "workstream_state": {
+                "enum": [
+                  "open",
+                  "closed"
+                ],
+                "title": "Workstream State",
+                "type": "string"
+              }
+            },
+            "required": [
+              "workstream_key",
+              "workstream_state",
+              "goal",
+              "progress",
+              "blockers",
+              "next_step",
+              "terminal_outcome"
+            ],
+            "title": "WorkStatePayload",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "evolutions": {
+            "items": {
+              "$ref": "#/$defs/EvolutionRecord"
+            },
+            "title": "Evolutions",
+            "type": "array"
+          },
+          "memories": {
+            "items": {
+              "$ref": "#/$defs/CodingMemory"
+            },
+            "title": "Memories",
+            "type": "array"
+          },
+          "statuses": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "enum": [
+                    "active",
+                    "superseded"
+                  ],
+                  "type": "string"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Statuses",
+            "type": "array"
+          }
+        },
+        "required": [
+          "memories",
+          "evolutions",
+          "statuses"
+        ],
+        "title": "MemoryHistory",
+        "type": "object"
+      }
+    },
+    {
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "include_superseded": {
+            "default": false,
+            "title": "Include Superseded",
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 20,
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "repo_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repo Key"
+          },
+          "task": {
+            "maxLength": 8192,
+            "minLength": 1,
+            "title": "Task",
+            "type": "string"
+          },
+          "workstream_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Workstream Key"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "recallArguments",
+        "type": "object"
+      },
+      "name": "recall",
+      "output_schema": {
+        "$defs": {
+          "RankedRecall": {
+            "additionalProperties": false,
+            "properties": {
+              "candidate_sources": {
+                "items": {
+                  "enum": [
+                    "lexical",
+                    "vector"
+                  ],
+                  "type": "string"
+                },
+                "title": "Candidate Sources",
+                "type": "array"
+              },
+              "content_sha256": {
+                "title": "Content Sha256",
+                "type": "string"
+              },
+              "episode_fact_ids": {
+                "default": [],
+                "items": {
+                  "type": "string"
+                },
+                "title": "Episode Fact Ids",
+                "type": "array"
+              },
+              "episode_text": {
+                "default": "",
+                "title": "Episode Text",
+                "type": "string"
+              },
+              "evidence": {
+                "items": {
+                  "$ref": "#/$defs/RecallEvidence"
+                },
+                "title": "Evidence",
+                "type": "array"
+              },
+              "final_score": {
+                "title": "Final Score",
+                "type": "number"
+              },
+              "lexical_rank": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Lexical Rank"
+              },
+              "lexical_score": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Lexical Score"
+              },
+              "memory_id": {
+                "title": "Memory Id",
+                "type": "string"
+              },
+              "memory_type": {
+                "enum": [
+                  "task_experience",
+                  "repository_knowledge",
+                  "user_preference",
+                  "work_state"
+                ],
+                "title": "Memory Type",
+                "type": "string"
+              },
+              "pinned": {
+                "default": false,
+                "title": "Pinned",
+                "type": "boolean"
+              },
+              "rank": {
+                "title": "Rank",
+                "type": "integer"
+              },
+              "selection_reason": {
+                "default": "ranked",
+                "title": "Selection Reason",
+                "type": "string"
+              },
+              "source_uri": {
+                "title": "Source Uri",
+                "type": "string"
+              },
+              "status": {
+                "default": "active",
+                "enum": [
+                  "active",
+                  "superseded"
+                ],
+                "title": "Status",
+                "type": "string"
+              },
+              "summary": {
+                "title": "Summary",
+                "type": "string"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "vector_rank": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Vector Rank"
+              },
+              "vector_score": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Vector Score"
+              }
+            },
+            "required": [
+              "rank",
+              "memory_id",
+              "memory_type",
+              "title",
+              "summary",
+              "source_uri",
+              "content_sha256",
+              "candidate_sources",
+              "vector_score",
+              "vector_rank",
+              "lexical_score",
+              "lexical_rank",
+              "final_score",
+              "evidence"
+            ],
+            "title": "RankedRecall",
+            "type": "object"
+          },
+          "RecallBudget": {
+            "additionalProperties": false,
+            "properties": {
+              "token_count": {
+                "title": "Token Count",
+                "type": "integer"
+              },
+              "token_limit": {
+                "title": "Token Limit",
+                "type": "integer"
+              },
+              "type_caps": {
+                "items": {
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "prefixItems": [
+                    {
+                      "enum": [
+                        "task_experience",
+                        "repository_knowledge",
+                        "user_preference",
+                        "work_state"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ],
+                  "type": "array"
+                },
+                "title": "Type Caps",
+                "type": "array"
+              }
+            },
+            "required": [
+              "token_limit",
+              "token_count",
+              "type_caps"
+            ],
+            "title": "RecallBudget",
+            "type": "object"
+          },
+          "RecallContextTrace": {
+            "additionalProperties": false,
+            "properties": {
+              "char_count": {
+                "title": "Char Count",
+                "type": "integer"
+              },
+              "omitted_memory_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Omitted Memory Ids",
+                "type": "array"
+              },
+              "omitted_snippet_count": {
+                "title": "Omitted Snippet Count",
+                "type": "integer"
+              },
+              "rendered_fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Rendered Fact Ids",
+                "type": "array"
+              },
+              "rendered_memory_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Rendered Memory Ids",
+                "type": "array"
+              },
+              "renderer": {
+                "title": "Renderer",
+                "type": "string"
+              },
+              "token_count": {
+                "default": 0,
+                "title": "Token Count",
+                "type": "integer"
+              },
+              "token_limit": {
+                "default": 8192,
+                "title": "Token Limit",
+                "type": "integer"
+              },
+              "tokenizer": {
+                "default": "codecairn/utf8-two-byte-upper-bound-v1",
+                "title": "Tokenizer",
+                "type": "string"
+              }
+            },
+            "required": [
+              "renderer",
+              "char_count",
+              "rendered_memory_ids",
+              "rendered_fact_ids",
+              "omitted_memory_ids",
+              "omitted_snippet_count"
+            ],
+            "title": "RecallContextTrace",
+            "type": "object"
+          },
+          "RecallEvidence": {
+            "additionalProperties": false,
+            "properties": {
+              "call_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Call Id"
+              },
+              "provider": {
+                "title": "Provider",
+                "type": "string"
+              },
+              "raw_event_index": {
+                "title": "Raw Event Index",
+                "type": "integer"
+              },
+              "raw_event_sha256": {
+                "title": "Raw Event Sha256",
+                "type": "string"
+              },
+              "raw_event_type": {
+                "title": "Raw Event Type",
+                "type": "string"
+              },
+              "session_id": {
+                "title": "Session Id",
+                "type": "string"
+              }
+            },
+            "required": [
+              "provider",
+              "session_id",
+              "raw_event_sha256",
+              "raw_event_index",
+              "raw_event_type",
+              "call_id"
+            ],
+            "title": "RecallEvidence",
+            "type": "object"
+          },
+          "RecallOmission": {
+            "additionalProperties": false,
+            "properties": {
+              "memory_id": {
+                "title": "Memory Id",
+                "type": "string"
+              },
+              "reason": {
+                "enum": [
+                  "historical_filter",
+                  "type_cap",
+                  "limit",
+                  "token_budget"
+                ],
+                "title": "Reason",
+                "type": "string"
+              }
+            },
+            "required": [
+              "memory_id",
+              "reason"
+            ],
+            "title": "RecallOmission",
+            "type": "object"
+          },
+          "RecallSidecar": {
+            "additionalProperties": false,
+            "properties": {
+              "budget": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/RecallBudget"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "completion": {
+                "default": "complete",
+                "enum": [
+                  "complete",
+                  "partial"
+                ],
+                "title": "Completion",
+                "type": "string"
+              },
+              "context_trace": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/RecallContextTrace"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "degraded_stages": {
+                "default": [],
+                "items": {
+                  "type": "string"
+                },
+                "title": "Degraded Stages",
+                "type": "array"
+              },
+              "freshness": {
+                "default": "fresh",
+                "enum": [
+                  "fresh",
+                  "semantic_pending"
+                ],
+                "title": "Freshness",
+                "type": "string"
+              },
+              "include_superseded": {
+                "default": false,
+                "title": "Include Superseded",
+                "type": "boolean"
+              },
+              "index_cursor": {
+                "default": -1,
+                "title": "Index Cursor",
+                "type": "integer"
+              },
+              "latency_ms": {
+                "title": "Latency Ms",
+                "type": "number"
+              },
+              "lexical_candidate_count": {
+                "title": "Lexical Candidate Count",
+                "type": "integer"
+              },
+              "limit": {
+                "title": "Limit",
+                "type": "integer"
+              },
+              "omissions": {
+                "default": [],
+                "items": {
+                  "$ref": "#/$defs/RecallOmission"
+                },
+                "title": "Omissions",
+                "type": "array"
+              },
+              "query": {
+                "title": "Query",
+                "type": "string"
+              },
+              "ranked": {
+                "items": {
+                  "$ref": "#/$defs/RankedRecall"
+                },
+                "title": "Ranked",
+                "type": "array"
+              },
+              "repo_key": {
+                "title": "Repo Key",
+                "type": "string"
+              },
+              "retrieval_profile": {
+                "default": "unconfigured",
+                "title": "Retrieval Profile",
+                "type": "string"
+              },
+              "semantic_state": {
+                "default": "complete",
+                "title": "Semantic State",
+                "type": "string"
+              },
+              "source_cursor": {
+                "default": -1,
+                "title": "Source Cursor",
+                "type": "integer"
+              },
+              "vector_candidate_count": {
+                "title": "Vector Candidate Count",
+                "type": "integer"
+              },
+              "workstream_key": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Workstream Key"
+              }
+            },
+            "required": [
+              "query",
+              "repo_key",
+              "limit",
+              "latency_ms",
+              "vector_candidate_count",
+              "lexical_candidate_count",
+              "ranked"
+            ],
+            "title": "RecallSidecar",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "markdown": {
+            "title": "Markdown",
+            "type": "string"
+          },
+          "sidecar": {
+            "$ref": "#/$defs/RecallSidecar"
+          }
+        },
+        "required": [
+          "markdown",
+          "sidecar"
+        ],
+        "title": "RecallResult",
+        "type": "object"
+      }
+    },
+    {
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "default": "other",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Category",
+            "type": "string"
+          },
+          "content": {
+            "maxLength": 32768,
+            "minLength": 1,
+            "title": "Content",
+            "type": "string"
+          },
+          "goal": {
+            "anyOf": [
+              {
+                "maxLength": 32768,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Goal"
+          },
+          "memory_type": {
+            "enum": [
+              "task_experience",
+              "repository_knowledge",
+              "user_preference",
+              "work_state"
+            ],
+            "title": "Memory Type",
+            "type": "string"
+          },
+          "next_step": {
+            "anyOf": [
+              {
+                "maxLength": 32768,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Next Step"
+          },
+          "repo_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repo Key"
+          },
+          "source_fact_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 128,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Source Fact Ids"
+          },
+          "subject_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subject Key"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 32,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tags"
+          },
+          "terminal_outcome": {
+            "anyOf": [
+              {
+                "maxLength": 32768,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Terminal Outcome"
+          },
+          "title": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "workstream_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Workstream Key"
+          },
+          "workstream_state": {
+            "default": "open",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "title": "Workstream State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "memory_type",
+          "title",
+          "content"
+        ],
+        "title": "rememberArguments",
+        "type": "object"
+      },
+      "name": "remember",
+      "output_schema": {
+        "$defs": {
+          "ActionFacet": {
+            "additionalProperties": false,
+            "properties": {
+              "fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Fact Ids",
+                "type": "array"
+              },
+              "kind": {
+                "enum": [
+                  "command",
+                  "file_change",
+                  "tool",
+                  "decision",
+                  "observation"
+                ],
+                "title": "Kind",
+                "type": "string"
+              },
+              "summary": {
+                "title": "Summary",
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "summary",
+              "fact_ids"
+            ],
+            "title": "ActionFacet",
+            "type": "object"
+          },
+          "EvidenceFact": {
+            "additionalProperties": false,
+            "properties": {
+              "attributes": {
+                "$ref": "#/$defs/FactAttributes"
+              },
+              "episode_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Episode Id"
+              },
+              "fact_id": {
+                "title": "Fact Id",
+                "type": "string"
+              },
+              "fact_kind": {
+                "enum": [
+                  "message",
+                  "command",
+                  "command_result",
+                  "file_change",
+                  "tool_call",
+                  "tool_result",
+                  "verification"
+                ],
+                "title": "Fact Kind",
+                "type": "string"
+              },
+              "fact_ordinal": {
+                "title": "Fact Ordinal",
+                "type": "integer"
+              },
+              "reference": {
+                "$ref": "#/$defs/EvidenceReference"
+              },
+              "repo_key": {
+                "title": "Repo Key",
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "user",
+                      "assistant",
+                      "tool",
+                      "system"
+                    ],
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Role"
+              },
+              "schema_version": {
+                "title": "Schema Version",
+                "type": "integer"
+              },
+              "value": {
+                "title": "Value",
+                "type": "string"
+              }
+            },
+            "required": [
+              "schema_version",
+              "fact_id",
+              "repo_key",
+              "episode_id",
+              "reference",
+              "fact_kind",
+              "role",
+              "value",
+              "attributes",
+              "fact_ordinal"
+            ],
+            "title": "EvidenceFact",
+            "type": "object"
+          },
+          "EvidenceReference": {
+            "additionalProperties": false,
+            "properties": {
+              "event_id": {
+                "title": "Event Id",
+                "type": "string"
+              },
+              "event_index": {
+                "title": "Event Index",
+                "type": "integer"
+              },
+              "event_sha256": {
+                "title": "Event Sha256",
+                "type": "string"
+              },
+              "fact_id": {
+                "title": "Fact Id",
+                "type": "string"
+              },
+              "provider": {
+                "enum": [
+                  "codex",
+                  "claude"
+                ],
+                "title": "Provider",
+                "type": "string"
+              },
+              "session_id": {
+                "title": "Session Id",
+                "type": "string"
+              },
+              "source_generation": {
+                "title": "Source Generation",
+                "type": "integer"
+              },
+              "source_path_sha256": {
+                "title": "Source Path Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "fact_id",
+              "provider",
+              "session_id",
+              "source_generation",
+              "event_index",
+              "event_id",
+              "source_path_sha256",
+              "event_sha256"
+            ],
+            "title": "EvidenceReference",
+            "type": "object"
+          },
+          "FactAttributes": {
+            "additionalProperties": {
+              "$ref": "#/$defs/FactScalar"
+            },
+            "type": "object"
+          },
+          "FactScalar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "MemoryPayload": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/TaskExperiencePayload"
+              },
+              {
+                "$ref": "#/$defs/RepositoryKnowledgePayload"
+              },
+              {
+                "$ref": "#/$defs/UserPreferencePayload"
+              },
+              {
+                "$ref": "#/$defs/WorkStatePayload"
+              }
+            ]
+          },
+          "RepositoryKnowledgePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "claim": {
+                "title": "Claim",
+                "type": "string"
+              },
+              "subject_key": {
+                "title": "Subject Key",
+                "type": "string"
+              }
+            },
+            "required": [
+              "subject_key",
+              "claim"
+            ],
+            "title": "RepositoryKnowledgePayload",
+            "type": "object"
+          },
+          "SourceOrderKey": {
+            "additionalProperties": false,
+            "properties": {
+              "event_index": {
+                "title": "Event Index",
+                "type": "integer"
+              },
+              "provider": {
+                "enum": [
+                  "codex",
+                  "claude"
+                ],
+                "title": "Provider",
+                "type": "string"
+              },
+              "session_id": {
+                "title": "Session Id",
+                "type": "string"
+              },
+              "source_generation": {
+                "title": "Source Generation",
+                "type": "integer"
+              },
+              "trusted_timestamp_ms": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Trusted Timestamp Ms"
+              }
+            },
+            "required": [
+              "trusted_timestamp_ms",
+              "provider",
+              "session_id",
+              "source_generation",
+              "event_index"
+            ],
+            "title": "SourceOrderKey",
+            "type": "object"
+          },
+          "TaskExperiencePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "actions": {
+                "items": {
+                  "$ref": "#/$defs/ActionFacet"
+                },
+                "title": "Actions",
+                "type": "array"
+              },
+              "blockers": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Blockers",
+                "type": "array"
+              },
+              "goal": {
+                "title": "Goal",
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "success",
+                  "failure",
+                  "partial",
+                  "unknown"
+                ],
+                "title": "Outcome",
+                "type": "string"
+              },
+              "result": {
+                "title": "Result",
+                "type": "string"
+              },
+              "verification_fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Verification Fact Ids",
+                "type": "array"
+              }
+            },
+            "required": [
+              "goal",
+              "outcome",
+              "actions",
+              "result",
+              "blockers",
+              "verification_fact_ids"
+            ],
+            "title": "TaskExperiencePayload",
+            "type": "object"
+          },
+          "UserPreferencePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "preference": {
+                "title": "Preference",
+                "type": "string"
+              },
+              "source_fact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Source Fact Ids",
+                "type": "array"
+              },
+              "subject_key": {
+                "title": "Subject Key",
+                "type": "string"
+              }
+            },
+            "required": [
+              "subject_key",
+              "preference",
+              "source_fact_ids"
+            ],
+            "title": "UserPreferencePayload",
+            "type": "object"
+          },
+          "WorkStatePayload": {
+            "additionalProperties": false,
+            "properties": {
+              "blockers": {
+                "items": {
+                  "type": "string"
+                },
+                "title": "Blockers",
+                "type": "array"
+              },
+              "goal": {
+                "title": "Goal",
+                "type": "string"
+              },
+              "next_step": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Next Step"
+              },
+              "progress": {
+                "title": "Progress",
+                "type": "string"
+              },
+              "terminal_outcome": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Terminal Outcome"
+              },
+              "workstream_key": {
+                "title": "Workstream Key",
+                "type": "string"
+              },
+              "workstream_state": {
+                "enum": [
+                  "open",
+                  "closed"
+                ],
+                "title": "Workstream State",
+                "type": "string"
+              }
+            },
+            "required": [
+              "workstream_key",
+              "workstream_state",
+              "goal",
+              "progress",
+              "blockers",
+              "next_step",
+              "terminal_outcome"
+            ],
+            "title": "WorkStatePayload",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "created_at_ms": {
+            "title": "Created At Ms",
+            "type": "integer"
+          },
+          "episode_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Episode Id"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/$defs/EvidenceReference"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/$defs/EvidenceFact"
+            },
+            "title": "Facts",
+            "type": "array"
+          },
+          "memory_id": {
+            "title": "Memory Id",
+            "type": "string"
+          },
+          "memory_type": {
+            "enum": [
+              "task_experience",
+              "repository_knowledge",
+              "user_preference",
+              "work_state"
+            ],
+            "title": "Memory Type",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "capture",
+              "agent_asserted",
+              "restored"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/$defs/MemoryPayload"
+          },
+          "repo_key": {
+            "title": "Repo Key",
+            "type": "string"
+          },
+          "restore_predecessor_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Restore Predecessor Id"
+          },
+          "restored_from": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Restored From"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "source_order_key": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/SourceOrderKey"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "memory_id",
+          "repo_key",
+          "memory_type",
+          "title",
+          "content",
+          "category",
+          "tags",
+          "created_at_ms",
+          "episode_id",
+          "evidence",
+          "facts",
+          "origin",
+          "restored_from",
+          "restore_predecessor_id",
+          "source_order_key",
+          "payload"
+        ],
+        "title": "CodingMemory",
+        "type": "object"
+      }
+    }
+  ]
+}

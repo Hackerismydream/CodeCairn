@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import sys
-import time
 from dataclasses import asdict
 from pathlib import Path
 from typing import Annotated, Any, Literal, Protocol, cast
@@ -17,17 +16,10 @@ from codecairn.memory.errors import (
     IndexNotReady,
     ProviderConfigurationError,
 )
-from codecairn.memory.schema import (
-    CodingMemory,
-    MemoryPayload,
-    RepositoryKnowledgePayload,
-    UserPreferencePayload,
-    WorkStatePayload,
-    normalize_machine_key,
-    normalize_tag,
-)
+from codecairn.memory.schema import MemoryType
 from codecairn.service.application import (
     CodeCairnApplication,
+    RememberRequest,
     import_response,
 )
 
@@ -248,22 +240,24 @@ def build_app(application_factory: ApplicationFactory) -> typer.Typer:
         application, resolved = _resolve_application(
             application_factory, config=config, root=root, repo_key=repo_key
         )
-        memory = _direct_memory(
-            memory_type=memory_type,
-            repo_key=resolved.repo_key,
-            title=title,
-            content=content,
-            category=category,
-            subject_key=subject_key,
-            source_fact_ids=tuple(source_fact_id or ()),
-            workstream_key=workstream_key,
-            workstream_state=workstream_state,
-            goal=goal,
-            next_step=next_step,
-            terminal_outcome=terminal_outcome,
-            tags=tuple(tag or ()),
+        memory = application.remember_direct(
+            RememberRequest(
+                memory_type=cast(MemoryType, memory_type),
+                repo_key=resolved.repo_key,
+                title=title,
+                content=content,
+                category=category,
+                subject_key=subject_key,
+                source_fact_ids=tuple(source_fact_id or ()),
+                workstream_key=workstream_key,
+                workstream_state=workstream_state,
+                goal=goal,
+                next_step=next_step,
+                terminal_outcome=terminal_outcome,
+                tags=tuple(tag or ()),
+            )
         )
-        typer.echo(json.dumps(asdict(application.remember(memory)), sort_keys=True))
+        typer.echo(json.dumps(asdict(memory), sort_keys=True))
 
     @memory_app.command("show")
     def memory_show_command(
@@ -485,79 +479,3 @@ def _large_text(*, text: str | None, file: Path | None, stdin: bool) -> str:
     if not value:
         raise typer.BadParameter("memory text must not be empty")
     return value
-
-
-def _direct_memory(
-    *,
-    memory_type: str,
-    repo_key: str,
-    title: str,
-    content: str,
-    category: str,
-    subject_key: str | None,
-    source_fact_ids: tuple[str, ...],
-    workstream_key: str | None,
-    workstream_state: Literal["open", "closed"],
-    goal: str | None,
-    next_step: str | None,
-    terminal_outcome: str | None,
-    tags: tuple[str, ...],
-) -> CodingMemory:
-    payload: MemoryPayload
-    if memory_type == "task_experience":
-        raise typer.BadParameter("Task Experience is capture-only", param_hint="memory_type")
-    if memory_type == "repository_knowledge":
-        if subject_key is None:
-            raise typer.BadParameter("--subject-key is required")
-        payload = RepositoryKnowledgePayload(
-            subject_key=normalize_machine_key(subject_key),
-            claim=content,
-        )
-    elif memory_type == "user_preference":
-        if subject_key is None or not source_fact_ids:
-            raise typer.BadParameter(
-                "Working Preference requires --subject-key and --source-fact-id"
-            )
-        payload = UserPreferencePayload(
-            subject_key=normalize_machine_key(subject_key),
-            preference=content,
-            source_fact_ids=tuple(sorted(source_fact_ids)),
-        )
-    elif memory_type == "work_state":
-        if workstream_key is None or goal is None:
-            raise typer.BadParameter("Work State requires --workstream-key and --goal")
-        if workstream_state == "open" and next_step is None:
-            raise typer.BadParameter("Open Work State requires --next-step")
-        if workstream_state == "closed" and terminal_outcome is None:
-            raise typer.BadParameter("Closed Work State requires --terminal-outcome")
-        payload = WorkStatePayload(
-            workstream_key=normalize_machine_key(workstream_key),
-            workstream_state=workstream_state,
-            goal=goal,
-            progress=content,
-            blockers=(),
-            next_step=next_step if workstream_state == "open" else None,
-            terminal_outcome=terminal_outcome if workstream_state == "closed" else None,
-        )
-    else:
-        raise typer.BadParameter(
-            "memory type must be repository_knowledge, user_preference, or work_state",
-            param_hint="memory_type",
-        )
-    return CodingMemory.create(
-        repo_key=repo_key,
-        memory_type=cast(Any, memory_type),
-        title=title,
-        content=content,
-        category=category,
-        tags=tuple(sorted({normalize_tag(tag) for tag in tags})),
-        created_at_ms=time.time_ns() // 1_000_000,
-        episode_id=None,
-        evidence=(),
-        facts=(),
-        origin="agent_asserted",
-        restored_from=None,
-        restore_predecessor_id=None,
-        source_order_key=None,
-        payload=payload,
-    )

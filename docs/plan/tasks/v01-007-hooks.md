@@ -1,7 +1,7 @@
 ---
 id: v01-007
 scope: Claude Code and Codex session-end import hooks
-status: planned
+status: ready
 depends-on: [v01-006]
 ---
 

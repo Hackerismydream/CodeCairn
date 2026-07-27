@@ -1,8 +1,8 @@
 # Runtime Operations
 
 This document describes behavior implemented on current `main` after
-`v01-005`. MCP, hooks, release packaging, and release evaluation remain
-specified under [`../v0.1/`](../v0.1/).
+`v01-006`. Hooks, release packaging, and release evaluation remain specified
+under [`../v0.1/`](../v0.1/).
 
 ## Current support matrix
 
@@ -87,6 +87,38 @@ score fusion adapters are test-only. `init --check-provider` and
 `doctor --live` perform an explicit live embedding check; an unchecked profile
 is only `configured`, never reported as live verified.
 
+## MCP
+
+`codecairn-mcp` is a protocol-clean stdio program over the same
+`CodeCairnApplication` used by CLI and HTTP:
+
+| Tool | Behavior |
+|---|---|
+| `recall` | Returns Recall Markdown and the complete structured sidecar |
+| `remember` | Creates direct Knowledge, user-sourced Working Preference, or Work State |
+| `list_memories` | Returns a bounded page with an opaque namespace-bound cursor |
+| `get_memory` | Returns one full memory, lifecycle status, and resource URI |
+| `memory_history` | Returns one ordered immutable lineage |
+| `import_session` | Imports one owned source through a manual-finalize boundary |
+| `doctor` | Returns structured subsystem health and remedies |
+
+The one resource template is `codecairn://memory/{memory_id}` and returns the
+canonical durable Markdown. Typed IDs are validated before storage lookup;
+unsafe, missing, and foreign-namespace reads are errors.
+
+Tool inputs are closed and bounded. Direct Task Experience and source-less User
+Preference are rejected. MCP errors expose a bounded JSON envelope with
+`code`, `message`, `remediation`, and `retryable`; they contain no stack trace
+or provider secret. Checked-in input/output/resource schemas live in
+[`../schemas/mcp-v01.json`](../schemas/mcp-v01.json).
+
+Registration is explicit and never edits client settings automatically:
+
+```bash
+claude mcp add codecairn -- codecairn-mcp
+codex mcp add codecairn -- codecairn-mcp
+```
+
 ## HTTP
 
 The compatibility import request is:
@@ -169,7 +201,9 @@ Implemented:
 - explicit pinned FastEmbed and DashScope retrieval composition;
 - independent semantic-provider configuration;
 - lifecycle/direct-memory/namespace CLI presentation;
-- actionable human and stable JSON diagnostics.
+- actionable human and stable JSON diagnostics;
+- seven explicit MCP tools, one canonical Markdown resource, bounded opaque
+  pagination, and protocol-clean packaged stdio.
 
-Not yet implemented: MCP, Codex/Claude hooks, persistent release installation,
+Not yet implemented: Codex/Claude hooks, persistent release installation,
 one-command evaluation gates, and release-candidate evidence.

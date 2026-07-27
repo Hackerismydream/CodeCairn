@@ -253,6 +253,15 @@ class _LocalOperations(ApplicationOperations):
             index=index,
         )
 
+    def read_memory_markdown(self, *, repo_key: str, memory_id: str) -> str:
+        for artifact in MarkdownMemoryStore(self._root).scan().memories:
+            if artifact.memory.memory_id != memory_id:
+                continue
+            if artifact.memory.repo_key != repo_key:
+                raise ValueError("foreign_namespace")
+            return artifact.path.read_text()
+        raise KeyError(memory_id)
+
     def _adapters(self) -> tuple[EmbeddingProvider, RerankingProvider]:
         if self._test_retrieval:
             return HashingEmbedder(), FusionReranker()
@@ -339,6 +348,12 @@ app = build_app(create_application)
 
 def main() -> None:
     app()
+
+
+def mcp_main() -> None:
+    from codecairn.entrypoints.mcp import build_server
+
+    build_server(create_application).run(transport="stdio")
 
 
 def _doctor_row(status: str, remediation: str) -> dict[str, str]:

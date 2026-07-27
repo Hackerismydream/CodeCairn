@@ -12,9 +12,9 @@ runner, IDE, hidden prompt injector, or cloud knowledge platform.
 
 The repository is pre-release. The version 0.1 product design, source-budget
 guardrail, historical-evidence boundary, four-type domain, complete capture
-pipeline, immutable evolution layer, lifecycle-aware recall, and installed
-repository onboarding are implemented. MCP, hooks, evaluation simplification,
-and release packaging remain in progress. The distinction between current
+pipeline, immutable evolution layer, lifecycle-aware recall, repository
+onboarding, and explicit MCP access are implemented. Hooks, evaluation
+simplification, and release packaging remain in progress. The distinction between current
 behavior and the release target matters:
 
 | Area | Current implementation | Version 0.1 target |
@@ -22,12 +22,12 @@ behavior and the release target matters:
 | Import | Incremental Codex/Claude trace import with explicit Episode closure, stable continuation, derived namespace, and typed source rewrite failure | Add installed hooks |
 | Automatic capture | One deterministic Task Experience per closed Episode; optional semantic work is queued and retryable; semantic `none` is explicit | Add installed session-end hooks |
 | Memory model | Four durable types with system-owned provenance and derived lifecycle status | Same |
-| Evolution | Immutable Supersession, CLI history/supersede, and forward-only restore | Add MCP presentation |
+| Evolution | Immutable Supersession, CLI/MCP history, and forward-only restore | Same |
 | Recall | Active-only hybrid recall with explicit history, bounded index preflight, pinned Work State, attributed context, and installed production retrieval profiles | Same |
-| Product surfaces | CLI and loopback HTTP | CLI, MCP, and session-end hooks; HTTP compatibility |
+| Product surfaces | CLI, seven-tool/one-resource stdio MCP, and loopback HTTP | Add session-end hooks |
 | Setup | `codecairn init`, strict repository binding, derived identity, explicit retrieval and semantic profiles | Same |
 | Distribution | Checkout build, no license/tag | MIT, curated persistent-tool/PyPI package |
-| Source size | 12,644 core / 15,557 total physical Python lines at `v01-005` | at most 10,000 core / 15,000 total |
+| Source size | 13,131 core / 16,044 total physical Python lines at `v01-006` | at most 10,000 core / 15,000 total |
 
 The implementation plan is
 [`docs/plan/README.md`](docs/plan/README.md). Do not treat commands marked as
@@ -75,6 +75,19 @@ uv run codecairn doctor
 uv run codecairn memory history MEMORY_ID
 uv run codecairn namespace export
 ```
+
+The dedicated MCP program exposes visible, explicit memory operations without
+injecting prompts:
+
+```bash
+claude mcp add codecairn -- codecairn-mcp
+codex mcp add codecairn -- codecairn-mcp
+```
+
+It provides `recall`, `remember`, `list_memories`, `get_memory`,
+`memory_history`, `import_session`, and `doctor`, plus
+`codecairn://memory/{memory_id}`. CLI and MCP use the same application facade,
+IDs, lifecycle policy, configuration, and typed failures.
 
 The exact current surface is
 [`docs/runtime/operations.md`](docs/runtime/operations.md).
