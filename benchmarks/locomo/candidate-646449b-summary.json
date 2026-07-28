@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "status": "candidate_failed_full_release_gate",
+  "implementation_sha": "646449b82b13dac0a2848911c77892893cb72a10",
+  "protocol_sha256": "657ae457fd9924e2b825f776a90175a95e632d02de21f025f1391f778b0be432",
+  "diagnostic_200": {
+    "status": "passed",
+    "run_id": "locomo-200-646449b-dsv4flash-w2-v1",
+    "manifest_sha256": "e198ff7030871f1843dfc0bec45b63632a87678d7ac7d35171592b0eae8a20c8",
+    "aggregate_sha256": "78656d21e3e16407010020bf401f888a9d20c1912c4439cf1ae6ba0365639eb8",
+    "result_inventory_sha256": "7252b5ed896fa9206218367906da19f4e167acc6ed4989003794cf38a91b5fc2",
+    "selected": 200,
+    "scored": 200,
+    "correct": 155,
+    "wrong": 45,
+    "infrastructure_failed": 0,
+    "raw_accuracy": 0.775,
+    "natural_weighted_accuracy": 0.8557662337662337,
+    "retrieval_p95_ms": 3096.775082987733,
+    "categories": {
+      "1": {"correct": 34, "scored": 50, "accuracy": 0.68},
+      "2": {"correct": 43, "scored": 50, "accuracy": 0.86},
+      "3": {"correct": 31, "scored": 50, "accuracy": 0.62},
+      "4": {"correct": 47, "scored": 50, "accuracy": 0.94}
+    },
+    "promotion": {
+      "minimum_natural_weighted_accuracy": 0.82,
+      "maximum_infrastructure_failures": 0,
+      "maximum_retrieval_p95_ms": 8000,
+      "passed": true
+    }
+  },
+  "full_1540": {
+    "status": "stopped_when_release_threshold_became_mathematically_impossible",
+    "publishable_score": false,
+    "run_id": "locomo-full-646449b-dsv4flash-w2-v1",
+    "manifest_sha256": "abce74c2808edd28d9ecf7e3fa4e33cb177e0cf3cb63f6d267b94d13cfd4516d",
+    "result_inventory_sha256": "214694f79ab4f53023fda85fe08538b07ea62ec5ba8368353b6b77ddca62927e",
+    "selected": 1540,
+    "scored": 1439,
+    "unscored": 101,
+    "correct": 1157,
+    "wrong": 282,
+    "infrastructure_failed": 0,
+    "observed_accuracy": 0.8040305767894371,
+    "maximum_possible_final_accuracy": 0.8168831168831169,
+    "retrieval_p95_ms": 5409.847,
+    "categories": {
+      "1": {"correct": 181, "wrong": 95, "scored": 276, "accuracy": 0.6557971014492754},
+      "2": {"correct": 254, "wrong": 59, "scored": 313, "accuracy": 0.8115015974440895},
+      "3": {"correct": 57, "wrong": 39, "scored": 96, "accuracy": 0.59375},
+      "4": {"correct": 665, "wrong": 89, "scored": 754, "accuracy": 0.8819628647214854}
+    },
+    "release_minimum_accuracy": 0.82,
+    "maximum_wrong_answers_for_release": 277
+  },
+  "provider_ablation": {
+    "status": "stopped_for_no_observed_gain",
+    "paired_question_count": 62,
+    "flash_correct": 49,
+    "pro_correct": 48,
+    "flash_wrong_pro_correct": 2,
+    "flash_correct_pro_wrong": 3
+  },
+  "inventory_contract": "sha256(canonical-json({result-filename: file-sha256}))",
+  "notes": [
+    "The full run is negative candidate evidence, not a completed LoCoMo score.",
+    "Protected question, reference, candidate, and recalled-context text are not redistributed.",
+    "The candidate does not authorize Coding A/B or a version 0.1 release claim."
+  ]
+}

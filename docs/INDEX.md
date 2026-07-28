@@ -44,6 +44,7 @@ permission to advertise target behavior as shipped.
 | [`v0.1/agent-integration.md`](v0.1/agent-integration.md) | CLI, seven MCP tools, resource, Claude/Codex hooks |
 | [`v0.1/onboarding-and-operations.md`](v0.1/onboarding-and-operations.md) | Init, config, providers, queues, doctor |
 | [`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md) | One-command evaluation, source budget, release gates |
+| [`v0.1/candidate-evaluation-646449b.md`](v0.1/candidate-evaluation-646449b.md) | Current candidate metrics, failure boundary, resume-safe wording |
 | [`v0.1/walkthrough.md`](v0.1/walkthrough.md) | Trace-to-recall narrative |
 | [`v0.1/learning-path.md`](v0.1/learning-path.md) | Outside-in code-reading path |
 | [`v0.1/review-brief.md`](v0.1/review-brief.md) | External architecture review prompt |
@@ -77,6 +78,7 @@ external tracker when tasks are published or assigned.
 |---|---|
 | [`evaluation/README.md`](evaluation/README.md) | Current suites, artifact truth, known limitations |
 | [`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md) | Target release commands and thresholds |
+| [`v0.1/candidate-evaluation-646449b.md`](v0.1/candidate-evaluation-646449b.md) | Candidate-bound positive and negative results |
 | [`evidence-bundle.md`](evidence-bundle.md) | Reducer and offline-verifier contract |
 | [`../evidence/benchmark-v3/README.md`](../evidence/benchmark-v3/README.md) | Current generated historical evidence |
 | [`../benchmarks/locomo/README.md`](../benchmarks/locomo/README.md) | Current LoCoMo execution protocol |

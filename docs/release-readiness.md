@@ -1,6 +1,6 @@
 # Release Readiness
 
-Status: release-candidate verification in progress. Product lifecycle, direct
+Status: candidate `646449b` failed the full LoCoMo release gate. Product lifecycle, direct
 Memory Write Intent recovery, curated distribution, installed-artifact smoke,
 learner documentation, offline evaluation gates, and the version 0.1 evidence
 verifier are implemented. Candidate-bound real-client evidence, paid release
@@ -37,7 +37,7 @@ This proves the baseline checkout, not version 0.1 release readiness.
 | Package metadata | MIT, full metadata, curated 55-member wheel and 59-member sdist | retained | v01-009/010 |
 | Installed smoke | isolated `uv tool` CLI/MCP/import/recall/hook dry-run/evidence pass | real Claude/Codex UI and hook receipt | v01-009/010 |
 | Current evidence CI | benchmark-v3 verifier retained; v0.1 bundle builder/verifier implemented | selected candidate bundle verified | v01-008/010 |
-| Release benchmark | historical 82.60% only | new full run at candidate commit, at least 82.00% | v01-010 |
+| Release benchmark | candidate `646449b`: diagnostic 85.58% natural-weighted; full run mathematically failed after 1,439/1,540 | new complete run at candidate commit, at least 82.00% | v01-010 |
 | Governance | changelog, security, contribution, and conduct files present | retained | v01-009 |
 | Tag/publication | absent | verified implementation/evidence SHA pair and artifact inventory | v01-010 |
 
@@ -90,3 +90,6 @@ Benchmark bundles and package releases have different lifecycles:
 
 No release language may replace a skipped, provider-blocked, fixture-only, or
 historical gate with “pass.”
+
+The complete candidate audit and resume-safe wording are recorded in
+[`v0.1/candidate-evaluation-646449b.md`](v0.1/candidate-evaluation-646449b.md).
