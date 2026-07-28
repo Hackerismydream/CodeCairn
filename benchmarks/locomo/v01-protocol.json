@@ -23,7 +23,7 @@
   },
   "recall": {
     "contract": "public-active-only-hybrid-v01",
-    "limit": 20,
+    "limit": 40,
     "token_budget": 8192,
     "retrieval_profile": "recorded-in-run-manifest"
   },

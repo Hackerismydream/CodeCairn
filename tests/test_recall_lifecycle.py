@@ -108,11 +108,11 @@ def test_open_work_state_is_pinned_and_ambiguity_pins_none(tmp_path: Path) -> No
 
 def test_type_caps_and_total_token_budget_explain_omissions(tmp_path: Path) -> None:
     runtime = create_runtime(tmp_path / "runtime", retrieval_adapters=TEST_RETRIEVAL)
-    for index in range(22):
+    for index in range(42):
         runtime.store_memory(_knowledge(index))
     runtime.store_memory(_knowledge(20, content="repository checks " + "X" * 8_000))
 
-    recalled = runtime.recall("repository checks", repo_key="acme/widgets", limit=20, token_budget=512)
+    recalled = runtime.recall("repository checks", repo_key="acme/widgets", limit=40, token_budget=512)
 
     assert recalled.sidecar.context_trace is not None
     assert recalled.sidecar.context_trace.token_count <= 512
@@ -137,17 +137,17 @@ def test_recall_renders_relevant_exact_lines_from_an_oversized_memory(tmp_path: 
     assert recalled.sidecar.ranked[0].snippets[0].document_id.startswith(f"{stored.memory_id}:snippet:")
 
 
-def test_repository_only_recall_can_use_the_public_twenty_memory_limit(tmp_path: Path) -> None:
+def test_repository_only_recall_can_use_the_public_forty_memory_limit(tmp_path: Path) -> None:
     runtime = create_runtime(tmp_path / "runtime", retrieval_adapters=TEST_RETRIEVAL)
     stored = tuple(
-        runtime.store_memory(_knowledge(index, content=f"Joanna hiking clue {index} near Fort Wayne.")) for index in range(12)
+        runtime.store_memory(_knowledge(index, content=f"Joanna hiking clue {index} near Fort Wayne.")) for index in range(32)
     )
 
-    recalled = runtime.recall("Joanna hiking near Fort Wayne", repo_key="acme/widgets", limit=20)
+    recalled = runtime.recall("Joanna hiking near Fort Wayne", repo_key="acme/widgets", limit=40)
 
     assert {item.memory_id for item in recalled.sidecar.ranked} == {memory.memory_id for memory in stored}
     assert recalled.sidecar.context_trace is not None
-    assert dict(recalled.sidecar.context_trace.type_caps)["repository_knowledge"] == 20
+    assert dict(recalled.sidecar.context_trace.type_caps)["repository_knowledge"] == 40
 
 
 def test_recall_compiles_all_fitting_ranked_snippets_not_a_fixed_three_lines(tmp_path: Path) -> None:

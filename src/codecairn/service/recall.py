@@ -25,7 +25,7 @@ from codecairn.memory.schema import CodingMemory, MemoryType, canonical_json, co
 
 _RRF_K = 60
 _TYPE_PRIORITY: dict[MemoryType, int] = {"repository_knowledge": 0, "user_preference": 1, "work_state": 2, "task_experience": 3}
-_TYPE_CAPS: dict[MemoryType, int] = {"repository_knowledge": 20, "user_preference": 4, "work_state": 4, "task_experience": 8}
+_TYPE_CAPS: dict[MemoryType, int] = {"repository_knowledge": 40, "user_preference": 4, "work_state": 4, "task_experience": 8}
 
 
 class RecallIndex(Protocol):

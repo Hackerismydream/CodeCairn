@@ -393,7 +393,7 @@ def _run_question(runtime: Any, question: Question, *, answer: TextProvider, jud
     root.mkdir()
     started = time.perf_counter()
     try:
-        recall = runtime.recall(question.text, repo_key=f"locomo/{question.sample_id}", limit=20, token_budget=8_192)
+        recall = runtime.recall(question.text, repo_key=f"locomo/{question.sample_id}", limit=40, token_budget=8_192)
         answer_data, answer_usage = _attempt(
             answer,
             root=root,

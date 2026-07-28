@@ -32,7 +32,7 @@ Markdown Truth, and their status follows the parent.
 Lexical and vector search operate over the same parent/child projection. Parent
 scores use reciprocal-rank fusion. Eligible child documents are reranked
 locally, capped at 12 per memory, and attached to their parent result. Recall
-admits up to 20 Repository Knowledge parents, then globally packs the highest
+admits up to 40 Repository Knowledge parents, then globally packs the highest
 scoring exact excerpts while repeatedly checking the rendered UTF-8 token
 upper bound. The returned sidecar records actual rendered memory and Evidence
 Fact IDs, the public type caps, and omitted excerpt count.
