@@ -8,6 +8,7 @@ import pytest
 from codecairn.bootstrap import create_runtime
 from codecairn.importers import SessionImporter
 from codecairn.memory.errors import IndexNotReady
+from codecairn.memory.models import IndexCandidate
 from codecairn.memory.schema import CodingMemory, RepositoryKnowledgePayload, WorkStatePayload
 from codecairn.service.cascade import MiniCascade
 from codecairn.service.recall import RecallEngine
@@ -147,6 +148,7 @@ def test_repository_only_recall_can_use_the_public_forty_memory_limit(tmp_path: 
 
     assert {item.memory_id for item in recalled.sidecar.ranked} == {memory.memory_id for memory in stored}
     assert recalled.sidecar.context_trace is not None
+    assert set(recalled.sidecar.context_trace.rendered_memory_ids) == {memory.memory_id for memory in stored}
     assert dict(recalled.sidecar.context_trace.type_caps)["repository_knowledge"] == 40
 
 
@@ -160,6 +162,45 @@ def test_recall_compiles_all_fitting_ranked_snippets_not_a_fixed_three_lines(tmp
     assert all(line in recalled.markdown for line in relevant)
     assert recalled.sidecar.context_trace is not None
     assert recalled.sidecar.context_trace.token_count <= 1_024
+
+
+def test_snippet_selection_searches_inside_admitted_memory() -> None:
+    relevant = "Caroline: I adopted a rescue greyhound named Finch."
+    memory = _knowledge(1, content="\n".join(("unrelated detail", relevant)))
+    engine = object.__new__(RecallEngine)
+    engine._reranker = None
+
+    selected = engine._rank_snippets("What kind of dog did Caroline adopt?", memories=(memory,), candidates={}, scores={})
+
+    assert selected[memory.memory_id][0].text == relevant
+
+
+def test_snippet_selection_has_a_per_memory_bound() -> None:
+    memories = tuple(_knowledge(index, content="\n".join(f"detail {line}" for line in range(20))) for index in range(20))
+    engine = object.__new__(RecallEngine)
+    engine._reranker = None
+
+    selected = engine._rank_snippets("detail", memories=memories, candidates={}, scores={})
+
+    assert sum(map(len, selected.values())) == 240
+
+
+def test_searched_snippets_remain_a_priority_layer_for_negative_reranker_scores() -> None:
+    memory = _knowledge(1, content="searched line\nCaroline adopted a greyhound")
+    document_id = f"{memory.memory_id}:snippet:0000"
+    engine = object.__new__(RecallEngine)
+    engine._reranker = type(
+        "NegativeReranker", (), {"rerank": lambda _self, _query, documents: tuple((key, -100.0) for key, _text, _score in documents)}
+    )()
+
+    selected = engine._rank_snippets(
+        "What dog did Caroline adopt?",
+        memories=(memory,),
+        candidates={document_id: IndexCandidate(memory.memory_id, document_id, "searched line")},
+        scores={document_id: 0.1},
+    )
+
+    assert selected[memory.memory_id][0].document_id == document_id
 
 
 def test_bounded_preflight_returns_index_not_ready_without_fallback(tmp_path: Path) -> None:

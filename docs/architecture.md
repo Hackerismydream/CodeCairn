@@ -191,8 +191,9 @@ task query
   -> bounded deterministic index preflight
   -> active-only parent and exact-child candidate search
   -> pin matching open Work State
-  -> fuse parent ranks and locally rerank exact children
+  -> fuse parent ranks and locally rerank searched exact children
   -> apply per-type caps
+  -> supplement exact lines inside admitted parents
   -> globally pack exact excerpts under one total token budget
   -> render attributed Markdown from admitted excerpts
   -> emit structured JSON sidecar
@@ -210,11 +211,13 @@ Recall Context is a derived view and is not written back as memory.
 Each projected memory has one searchable parent. Capture-derived memory also
 has one child per exact Evidence Fact. A memory without Evidence Facts projects
 up to 128 non-empty content lines as exact search children; these are
-rebuildable excerpts, not new durable facts. Child ranking is bounded to 12
-excerpts per memory. The Repository Knowledge cap is 20 parents, while the
-renderer admits excerpts globally by score and rechecks the encoded context
-after every admission. The sidecar reports the IDs actually rendered rather
-than treating every ranked parent as present in context.
+rebuildable excerpts, not new durable facts. Searched children are reranked;
+after parent admission, Recall supplements missing exact lines from admitted
+memories while memories with Evidence Facts remain fact-only. Child ranking is
+bounded to 12 excerpts per memory. The Repository Knowledge cap is 40 parents,
+and the renderer considers at most 192 excerpts before applying the encoded
+context budget. The sidecar reports the IDs actually rendered rather than
+treating every ranked parent as present in context.
 
 ## Storage authority
 

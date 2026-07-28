@@ -31,14 +31,13 @@ def compile_context(query: str, ranked: tuple[RankedRecall, ...], *, token_limit
     candidates: list[tuple[RankedRecall, RecallSnippet]] = []
     omitted_snippets = 0
     for memory in ranked:
-        snippets = memory.snippets
-        if not snippets:
+        if not (snippets := memory.snippets):
             lines = tuple(line.strip() for line in memory.summary.splitlines() if line.strip())
             base = f"{memory.memory_id}:memory:"
             snippets = tuple(RecallSnippet(f"{base}{i:04d}", line, memory.final_score - i * 1e-9) for i, line in enumerate(lines[:12]))
             omitted_snippets += max(0, len(lines) - len(snippets))
         candidates.extend((memory, snippet) for snippet in snippets)
-    candidates.sort(key=lambda item: (-item[1].final_score, item[0].rank, item[1].document_id))
+    candidates = sorted(candidates, key=lambda item: (-item[1].final_score, item[0].rank, item[1].document_id))[:192]
     selected: dict[str, list[RecallSnippet]] = {}
     for memory, snippet in candidates:
         bucket = selected.setdefault(memory.memory_id, [])

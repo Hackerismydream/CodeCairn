@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import math
+import re
 import time
 from collections import defaultdict
 from typing import Protocol, cast
@@ -98,19 +100,15 @@ class RecallEngine:
             raise IndexNotReady("No retrieval profile is configured")
         if not self._preflight.preflight(repo_key=repo_key, max_jobs=self._preflight_job_cap):
             raise IndexNotReady("The current namespace index is not ready")
-        candidate_limit = min(100, max(20, limit * 4))
+        cap = min(100, max(20, limit * 4))
         vector = self._embedder.embed_query(query)
-        lexical = self._index.lexical_candidates(
-            repo_key=repo_key, query=query, include_superseded=include_superseded, limit=candidate_limit
-        )
-        vector_candidates = self._index.vector_candidates(
-            repo_key=repo_key, vector=vector, include_superseded=include_superseded, limit=candidate_limit
-        )
+        lexical = self._index.lexical_candidates(repo_key=repo_key, query=query, include_superseded=include_superseded, limit=cap)
+        vectors = self._index.vector_candidates(repo_key=repo_key, vector=vector, include_superseded=include_superseded, limit=cap)
         ranked, omissions = self._rank(
             query,
             repo_key=repo_key,
             lexical=lexical,
-            vector=vector_candidates,
+            vector=vectors,
             limit=limit,
             include_superseded=include_superseded,
             workstream_key=workstream_key,
@@ -123,7 +121,7 @@ class RecallEngine:
             repo_key=repo_key,
             limit=limit,
             latency_ms=(time.perf_counter() - started) * 1_000,
-            vector_candidate_count=len(vector_candidates),
+            vector_candidate_count=len(vectors),
             lexical_candidate_count=len(lexical),
             ranked=ranked,
             context_trace=RecallContextTrace(
@@ -163,14 +161,13 @@ class RecallEngine:
         snippet_scores: dict[str, float] = defaultdict(float)
         snippet_candidates: dict[str, IndexCandidate] = {}
         for source, candidates in (("lexical", lexical), ("vector", vector)):
-            typed_source = cast(CandidateSource, source)
             for rank, candidate in enumerate(candidates, start=1):
                 if ":memory" not in candidate.document_id and candidate.document_id and candidate.content:
                     snippet_scores[candidate.document_id] += 1.0 / (_RRF_K + rank)
                     snippet_candidates[candidate.document_id] = candidate
-                if typed_source in sources[candidate.memory_id]:
+                if cast(CandidateSource, source) in sources[candidate.memory_id]:
                     continue
-                sources[candidate.memory_id].add(typed_source)
+                sources[candidate.memory_id].add(cast(CandidateSource, source))
                 scores[candidate.memory_id] += 1.0 / (_RRF_K + rank)
         memories = {
             memory_id: memory
@@ -182,13 +179,8 @@ class RecallEngine:
         }
         valid = {memory_id: memory for memory_id, memory in memories.items() if statuses[memory_id] == "active" or include_superseded}
         if self._reranker is not None:
-            reranked = dict(
-                self._reranker.rerank(
-                    query, tuple((memory_id, memory.content, scores[memory_id]) for memory_id, memory in valid.items())
-                )
-            )
-            scores.update(reranked)
-        ranked_snippets = self._rank_snippets(query, valid_memory_ids=set(valid), candidates=snippet_candidates, scores=snippet_scores)
+            documents = tuple((memory_id, memory.content, scores[memory_id]) for memory_id, memory in valid.items())
+            scores.update(self._reranker.rerank(query, documents))
         pinned_id = self._pinned_work_state(repo_key=repo_key, workstream_key=workstream_key)
         if pinned_id is not None and pinned_id not in valid:
             pinned = self._state.get_memory(repo_key=repo_key, memory_id=pinned_id)
@@ -218,6 +210,7 @@ class RecallEngine:
             else:
                 admitted.append(memory)
                 counts[memory.memory_type] += 1
+        ranked_snippets = self._rank_snippets(query, memories=tuple(admitted), candidates=snippet_candidates, scores=snippet_scores)
         return (
             tuple(
                 self._ranked(
@@ -271,15 +264,24 @@ class RecallEngine:
         self,
         query: str,
         *,
-        valid_memory_ids: set[str],
+        memories: tuple[CodingMemory, ...],
         candidates: dict[str, IndexCandidate],
         scores: dict[str, float],
         per_memory_limit: int = 12,
     ) -> dict[str, tuple[RecallSnippet, ...]]:
-        eligible = {document_id: candidate for document_id, candidate in candidates.items() if candidate.memory_id in valid_memory_ids}
-        if self._reranker is not None and eligible:
-            documents = tuple((document_id, candidate.content, scores[document_id]) for document_id, candidate in eligible.items())
-            scores.update(self._reranker.rerank(query, documents))
+        terms, memory_ids = set(re.findall(r"[a-z0-9]+", query.casefold())), {memory.memory_id for memory in memories}
+        eligible = {document_id: candidate for document_id, candidate in candidates.items() if candidate.memory_id in memory_ids}
+        if self._reranker is not None:
+            scores.update(self._reranker.rerank(query, tuple((key, item.content, scores[key]) for key, item in eligible.items())))
+        for memory in memories:
+            lines = () if memory.facts else tuple(line.strip() for line in memory.content.splitlines() if line.strip())[:128]
+            for index, line in enumerate(lines):
+                eligible.setdefault(
+                    document_id := f"{memory.memory_id}:snippet:{index:04d}", IndexCandidate(memory.memory_id, document_id, line)
+                )
+        for document_id, candidate in eligible.items():
+            overlap = len(terms & set(re.findall(r"[a-z0-9]+", candidate.content.casefold()))) / max(1, len(terms))
+            scores[document_id] = 1.5 + math.atan(scores[document_id]) / math.pi if document_id in candidates else overlap
         grouped: dict[str, list[RecallSnippet]] = defaultdict(list)
         for document_id, candidate in sorted(eligible.items(), key=lambda item: (-scores[item[0]], item[0])):
             if len(grouped[candidate.memory_id]) >= per_memory_limit:
