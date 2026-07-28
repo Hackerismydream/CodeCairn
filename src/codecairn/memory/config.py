@@ -18,6 +18,7 @@ FASTEMBED_SOURCE = "qdrant/bge-small-en-v1.5-onnx-q"
 FASTEMBED_REVISION = "52398278842ec682c6f32300af41344b1c0b0bb2"
 RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"
 RERANKER_REVISION = "a09144355adeed5f58c8ed011d209bf8ee5a1fec"
+RETRIEVAL_PROJECTION = "codecairn-memory-line-snippets-v1"
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,6 +57,7 @@ class RetrievalConfig:
             "dimension": self.dimension,
             "endpoint": self.endpoint,
             "revision": self.revision,
+            "projection": RETRIEVAL_PROJECTION,
             "reranker_model": RERANKER_MODEL,
             "reranker_revision": RERANKER_REVISION,
         }

@@ -19,6 +19,18 @@ from codecairn.evaluation.artifacts import canonical_sha256, file_sha256, read_j
 from codecairn.memory.config import RetrievalConfig
 from codecairn.memory.schema import CodingMemory, RepositoryKnowledgePayload
 
+ANSWER_INSTRUCTION = (
+    "Use the supplied Memory as evidence to answer the Question. Search all memory sections and connect relevant facts. "
+    "You may use ordinary common knowledge or causal inference, but do not invent personal facts. "
+    "For list questions, collect every matching fact; for temporal questions, compare dates; "
+    "for likely or potential questions, infer the single answer that best satisfies all stated constraints. "
+    "Return a JSON object with one string field named answer."
+)
+JUDGE_INSTRUCTION = (
+    "Judge whether Candidate is semantically equivalent to Reference for the Question. "
+    "Allow extra correct detail. Return JSON with label equal to correct or wrong."
+)
+
 
 @dataclass(frozen=True, slots=True)
 class Question:
@@ -77,7 +89,7 @@ class TextProvider:
                 "temperature": 0,
                 "max_completion_tokens": 512,
                 "response_format": {"type": "json_object"},
-                "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
+                "messages": [{"role": "system", "content": system}, {"role": "user", "content": f"{system}\n\n{prompt}"}],
             },
         )
         response.raise_for_status()
@@ -386,7 +398,7 @@ def _run_question(runtime: Any, question: Question, *, answer: TextProvider, jud
             answer,
             root=root,
             phase="answer",
-            system="Answer only from the supplied conversation memory. Return JSON with one string field named answer.",
+            system=ANSWER_INSTRUCTION,
             prompt=f"Memory:\n{recall.markdown}\n\nQuestion: {question.text}",
             attempts=2,
         )
@@ -400,10 +412,7 @@ def _run_question(runtime: Any, question: Question, *, answer: TextProvider, jud
                 judge,
                 root=root,
                 phase=f"judge-{vote + 1}",
-                system=(
-                    "Judge semantic equivalence generously. Extra correct detail is allowed. "
-                    "Return JSON with label equal to correct or wrong."
-                ),
+                system=JUDGE_INSTRUCTION,
                 prompt=f"Question: {question.text}\nReference: {question.answer}\nCandidate: {candidate}",
                 attempts=2,
             )

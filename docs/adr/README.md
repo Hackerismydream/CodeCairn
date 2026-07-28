@@ -77,7 +77,7 @@ protocol files and every published V23 result keep their frozen contracts.
 
 ### Version 0.1 product and simplification
 
-ADRs 0043–0052 define the accepted version 0.1 target:
+ADRs 0043–0053 define the accepted version 0.1 target:
 
 - ADR 0043 removes mandatory verification from memory storage while retaining
   system-owned provenance;
@@ -93,6 +93,8 @@ ADRs 0043–0052 define the accepted version 0.1 target:
   operation while retaining system-derived verification facets.
 - ADR 0052 retires the unpublished HTTP compatibility adapter so the
   application service has only the three required local presentations.
+- ADR 0053 makes exact Evidence Facts or source lines the context-packing unit
+  and versions the resulting search projection.
 
 These decisions are specified for implementation under
 [`../plan/tasks/`](../plan/tasks/). Current shipped behavior remains

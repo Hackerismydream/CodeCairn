@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 from pathlib import Path
 from typing import cast
 
@@ -48,7 +47,7 @@ class LanceMemoryIndex:
         if not documents:
             raise ValueError("Index upsert requires projected documents")
         memory = documents[0]
-        vectors = self._embedder.embed_documents(tuple(document.content for document in documents))
+        vectors = self._embedder.embed_documents(tuple(_embedding_text(document) for document in documents))
         with self._lock:
             table = self._table(create=True)
             assert table is not None
@@ -61,7 +60,7 @@ class LanceMemoryIndex:
             self._ensure_fts(table)
 
     def replace_namespace(self, *, repo_key: str, documents: tuple[RecallDocument, ...]) -> None:
-        vectors = self._embedder.embed_documents(tuple(document.content for document in documents))
+        vectors = self._embedder.embed_documents(tuple(_embedding_text(document) for document in documents))
         rows = [self._row(document, vector) for document, vector in zip(documents, vectors, strict=True)]
         with self._lock:
             table = self._table(create=bool(rows))
@@ -85,7 +84,7 @@ class LanceMemoryIndex:
                 .limit(limit)
                 .to_list(),
             )
-        return tuple(IndexCandidate(memory_id=str(row["memory_id"]), source="lexical", score=_finite(row["_score"])) for row in rows)
+        return tuple(_candidate(row) for row in rows)
 
     def vector_candidates(
         self, *, repo_key: str, vector: tuple[float, ...], include_superseded: bool, limit: int
@@ -101,10 +100,7 @@ class LanceMemoryIndex:
                 .limit(limit)
                 .to_list(),
             )
-        return tuple(
-            IndexCandidate(memory_id=str(row["memory_id"]), source="vector", score=1.0 / (1.0 + _finite(row["_distance"])))
-            for row in rows
-        )
+        return tuple(_candidate(row) for row in rows)
 
     def fingerprints(self, *, repo_key: str) -> set[tuple[str, str, str, str]]:
         with self._lock:
@@ -167,8 +163,9 @@ def _literal(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
-def _finite(value: object) -> float:
-    result = float(value)  # type: ignore[arg-type]
-    if not math.isfinite(result):
-        raise ValueError("LanceDB returned a non-finite score")
-    return result
+def _embedding_text(document: RecallDocument) -> str:
+    return f"{document.title}\n{document.content}"
+
+
+def _candidate(row: dict[str, object]) -> IndexCandidate:
+    return IndexCandidate(memory_id=str(row["memory_id"]), document_id=str(row["document_id"]), content=str(row["content"]))

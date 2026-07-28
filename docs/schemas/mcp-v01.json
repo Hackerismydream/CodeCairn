@@ -1812,6 +1812,59 @@
       "name": "recall",
       "output_schema": {
         "$defs": {
+          "EvidenceReference": {
+            "additionalProperties": false,
+            "properties": {
+              "event_id": {
+                "title": "Event Id",
+                "type": "string"
+              },
+              "event_index": {
+                "title": "Event Index",
+                "type": "integer"
+              },
+              "event_sha256": {
+                "title": "Event Sha256",
+                "type": "string"
+              },
+              "fact_id": {
+                "title": "Fact Id",
+                "type": "string"
+              },
+              "provider": {
+                "enum": [
+                  "codex",
+                  "claude"
+                ],
+                "title": "Provider",
+                "type": "string"
+              },
+              "session_id": {
+                "title": "Session Id",
+                "type": "string"
+              },
+              "source_generation": {
+                "title": "Source Generation",
+                "type": "integer"
+              },
+              "source_path_sha256": {
+                "title": "Source Path Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "fact_id",
+              "provider",
+              "session_id",
+              "source_generation",
+              "event_index",
+              "event_id",
+              "source_path_sha256",
+              "event_sha256"
+            ],
+            "title": "EvidenceReference",
+            "type": "object"
+          },
           "RankedRecall": {
             "additionalProperties": false,
             "properties": {
@@ -1830,22 +1883,9 @@
                 "title": "Content Sha256",
                 "type": "string"
               },
-              "episode_fact_ids": {
-                "default": [],
-                "items": {
-                  "type": "string"
-                },
-                "title": "Episode Fact Ids",
-                "type": "array"
-              },
-              "episode_text": {
-                "default": "",
-                "title": "Episode Text",
-                "type": "string"
-              },
               "evidence": {
                 "items": {
-                  "$ref": "#/$defs/RecallEvidence"
+                  "$ref": "#/$defs/EvidenceReference"
                 },
                 "title": "Evidence",
                 "type": "array"
@@ -1853,28 +1893,6 @@
               "final_score": {
                 "title": "Final Score",
                 "type": "number"
-              },
-              "lexical_rank": {
-                "anyOf": [
-                  {
-                    "type": "integer"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Lexical Rank"
-              },
-              "lexical_score": {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Lexical Score"
               },
               "memory_id": {
                 "title": "Memory Id",
@@ -1899,10 +1917,13 @@
                 "title": "Rank",
                 "type": "integer"
               },
-              "selection_reason": {
-                "default": "ranked",
-                "title": "Selection Reason",
-                "type": "string"
+              "snippets": {
+                "default": [],
+                "items": {
+                  "$ref": "#/$defs/RecallSnippet"
+                },
+                "title": "Snippets",
+                "type": "array"
               },
               "source_uri": {
                 "title": "Source Uri",
@@ -1924,28 +1945,6 @@
               "title": {
                 "title": "Title",
                 "type": "string"
-              },
-              "vector_rank": {
-                "anyOf": [
-                  {
-                    "type": "integer"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Vector Rank"
-              },
-              "vector_score": {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Vector Score"
               }
             },
             "required": [
@@ -1957,73 +1956,15 @@
               "source_uri",
               "content_sha256",
               "candidate_sources",
-              "vector_score",
-              "vector_rank",
-              "lexical_score",
-              "lexical_rank",
               "final_score",
               "evidence"
             ],
             "title": "RankedRecall",
             "type": "object"
           },
-          "RecallBudget": {
-            "additionalProperties": false,
-            "properties": {
-              "token_count": {
-                "title": "Token Count",
-                "type": "integer"
-              },
-              "token_limit": {
-                "title": "Token Limit",
-                "type": "integer"
-              },
-              "type_caps": {
-                "items": {
-                  "maxItems": 2,
-                  "minItems": 2,
-                  "prefixItems": [
-                    {
-                      "enum": [
-                        "task_experience",
-                        "repository_knowledge",
-                        "user_preference",
-                        "work_state"
-                      ],
-                      "type": "string"
-                    },
-                    {
-                      "type": "integer"
-                    }
-                  ],
-                  "type": "array"
-                },
-                "title": "Type Caps",
-                "type": "array"
-              }
-            },
-            "required": [
-              "token_limit",
-              "token_count",
-              "type_caps"
-            ],
-            "title": "RecallBudget",
-            "type": "object"
-          },
           "RecallContextTrace": {
             "additionalProperties": false,
             "properties": {
-              "char_count": {
-                "title": "Char Count",
-                "type": "integer"
-              },
-              "omitted_memory_ids": {
-                "items": {
-                  "type": "string"
-                },
-                "title": "Omitted Memory Ids",
-                "type": "array"
-              },
               "omitted_snippet_count": {
                 "title": "Omitted Snippet Count",
                 "type": "integer"
@@ -2060,63 +2001,39 @@
                 "default": "codecairn/utf8-two-byte-upper-bound-v1",
                 "title": "Tokenizer",
                 "type": "string"
+              },
+              "type_caps": {
+                "items": {
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "prefixItems": [
+                    {
+                      "enum": [
+                        "task_experience",
+                        "repository_knowledge",
+                        "user_preference",
+                        "work_state"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ],
+                  "type": "array"
+                },
+                "title": "Type Caps",
+                "type": "array"
               }
             },
             "required": [
               "renderer",
-              "char_count",
               "rendered_memory_ids",
               "rendered_fact_ids",
-              "omitted_memory_ids",
-              "omitted_snippet_count"
+              "omitted_snippet_count",
+              "type_caps"
             ],
             "title": "RecallContextTrace",
-            "type": "object"
-          },
-          "RecallEvidence": {
-            "additionalProperties": false,
-            "properties": {
-              "call_id": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Call Id"
-              },
-              "provider": {
-                "title": "Provider",
-                "type": "string"
-              },
-              "raw_event_index": {
-                "title": "Raw Event Index",
-                "type": "integer"
-              },
-              "raw_event_sha256": {
-                "title": "Raw Event Sha256",
-                "type": "string"
-              },
-              "raw_event_type": {
-                "title": "Raw Event Type",
-                "type": "string"
-              },
-              "session_id": {
-                "title": "Session Id",
-                "type": "string"
-              }
-            },
-            "required": [
-              "provider",
-              "session_id",
-              "raw_event_sha256",
-              "raw_event_index",
-              "raw_event_type",
-              "call_id"
-            ],
-            "title": "RecallEvidence",
             "type": "object"
           },
           "RecallOmission": {
@@ -2147,26 +2064,6 @@
           "RecallSidecar": {
             "additionalProperties": false,
             "properties": {
-              "budget": {
-                "anyOf": [
-                  {
-                    "$ref": "#/$defs/RecallBudget"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "default": null
-              },
-              "completion": {
-                "default": "complete",
-                "enum": [
-                  "complete",
-                  "partial"
-                ],
-                "title": "Completion",
-                "type": "string"
-              },
               "context_trace": {
                 "anyOf": [
                   {
@@ -2177,14 +2074,6 @@
                   }
                 ],
                 "default": null
-              },
-              "degraded_stages": {
-                "default": [],
-                "items": {
-                  "type": "string"
-                },
-                "title": "Degraded Stages",
-                "type": "array"
               },
               "freshness": {
                 "default": "fresh",
@@ -2282,6 +2171,30 @@
               "ranked"
             ],
             "title": "RecallSidecar",
+            "type": "object"
+          },
+          "RecallSnippet": {
+            "additionalProperties": false,
+            "properties": {
+              "document_id": {
+                "title": "Document Id",
+                "type": "string"
+              },
+              "final_score": {
+                "title": "Final Score",
+                "type": "number"
+              },
+              "text": {
+                "title": "Text",
+                "type": "string"
+              }
+            },
+            "required": [
+              "document_id",
+              "text",
+              "final_score"
+            ],
+            "title": "RecallSnippet",
             "type": "object"
           }
         },

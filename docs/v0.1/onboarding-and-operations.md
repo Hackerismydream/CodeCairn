@@ -155,8 +155,8 @@ Without a DashScope key, `init` records the pinned FastEmbed profile as its
 documented non-interactive default; this is an initialization decision, not a
 runtime fallback. An explicit profile flag always wins. Hashing is test-only.
 
-Changing provider, model, dimension, declared revision, or adapter version
-marks the LanceDB projection stale and requires rebuild.
+Changing provider, model, dimension, declared revision, adapter version, or
+exact-child projection revision marks LanceDB stale and requires rebuild.
 
 ### Semantic capture
 

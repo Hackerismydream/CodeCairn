@@ -162,8 +162,11 @@ SQLite contains:
 - lifecycle-aware index projection jobs with target status, profile identity,
   bounded leases, retries, and failure detail.
 
-Capture and evolution enqueue deterministic parent/Source Fact child
-projections. Before recall, a bounded namespace cascade reconciles expected
+Capture and evolution enqueue deterministic parents and exact children.
+Capture-derived memory uses Source Fact children; direct multiline memory
+without facts uses up to 128 exact source-line children. Recall reranks at most
+12 children per parent and globally packs the best excerpts under the token
+budget. Before recall, a bounded namespace cascade reconciles expected
 fingerprints, drains work to the source cursor, and verifies LanceDB parity.
 If the cap is exhausted or the configured retrieval identity differs from the
 index identity, recall returns `index_not_ready`; it never scans Markdown as a
@@ -197,8 +200,10 @@ Implemented:
 - retryable semantic proposal batches with source-role enforcement;
 - immutable Supersession, lifecycle status, history, and forward-only restore;
 - typed source rewrite failure;
-- active-only lexical/vector/reranker recall with explicit historical access;
-- pinned open Work State selection, per-type caps, total token budget, and an
+- active-only parent/child lexical/vector/reranker recall with explicit
+  historical access;
+- pinned open Work State selection, a 20-parent Repository Knowledge cap,
+  globally packed exact excerpts, a strict total token budget, and an
   attributed sidecar;
 - status-aware LanceDB parent/child projections, bounded preflight, rebuild
   parity, and historical evidence verification.

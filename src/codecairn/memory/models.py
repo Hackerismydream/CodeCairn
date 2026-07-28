@@ -6,6 +6,7 @@ from typing import Literal
 
 from codecairn.memory.schema import CodingMemory as CodingMemory
 from codecairn.memory.schema import EvidenceFact as EvidenceFact
+from codecairn.memory.schema import EvidenceReference as EvidenceReference
 from codecairn.memory.schema import MemoryType as MemoryType
 from codecairn.memory.schema import Provider
 
@@ -13,6 +14,7 @@ TraceEventKind = Literal["message", "tool_call", "tool_result", "metadata", "unk
 FileChangeOperation = Literal["add", "update", "delete", "move"]
 TraceEpisodeOutcome = Literal["success", "failure", "partial", "unknown"]
 CandidateSource = Literal["lexical", "vector"]
+DocumentKind = Literal["memory", "fact", "snippet"]
 MemoryStatus = Literal["active", "superseded"]
 HookOutcome = Literal["imported", "noop", "failed", "unsupported"]
 
@@ -167,7 +169,7 @@ class IndexJob:
 @dataclass(frozen=True, slots=True)
 class RecallDocument:
     document_id: str
-    document_kind: Literal["memory", "fact"]
+    document_kind: DocumentKind
     repo_key: str
     memory_id: str
     memory_type: MemoryType
@@ -182,18 +184,15 @@ class RecallDocument:
 @dataclass(frozen=True, slots=True)
 class IndexCandidate:
     memory_id: str
-    source: CandidateSource
-    score: float
+    document_id: str = ""
+    content: str = ""
 
 
 @dataclass(frozen=True, slots=True)
-class RecallEvidence:
-    provider: str
-    session_id: str
-    raw_event_sha256: str
-    raw_event_index: int
-    raw_event_type: str
-    call_id: str | None
+class RecallSnippet:
+    document_id: str
+    text: str
+    final_score: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -206,27 +205,20 @@ class RankedRecall:
     source_uri: str
     content_sha256: str
     candidate_sources: tuple[CandidateSource, ...]
-    vector_score: float | None
-    vector_rank: int | None
-    lexical_score: float | None
-    lexical_rank: int | None
     final_score: float
-    evidence: tuple[RecallEvidence, ...]
+    evidence: tuple[EvidenceReference, ...]
     status: MemoryStatus = "active"
-    selection_reason: str = "ranked"
     pinned: bool = False
-    episode_text: str = ""
-    episode_fact_ids: tuple[str, ...] = ()
+    snippets: tuple[RecallSnippet, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
 class RecallContextTrace:
     renderer: str
-    char_count: int
     rendered_memory_ids: tuple[str, ...]
     rendered_fact_ids: tuple[str, ...]
-    omitted_memory_ids: tuple[str, ...]
     omitted_snippet_count: int
+    type_caps: tuple[tuple[MemoryType, int], ...]
     tokenizer: str = "codecairn/utf8-two-byte-upper-bound-v1"
     token_count: int = 0
     token_limit: int = 8_192
@@ -239,13 +231,6 @@ class RecallOmission:
 
 
 @dataclass(frozen=True, slots=True)
-class RecallBudget:
-    token_limit: int
-    token_count: int
-    type_caps: tuple[tuple[MemoryType, int], ...]
-
-
-@dataclass(frozen=True, slots=True)
 class RecallSidecar:
     query: str
     repo_key: str
@@ -254,14 +239,11 @@ class RecallSidecar:
     vector_candidate_count: int
     lexical_candidate_count: int
     ranked: tuple[RankedRecall, ...]
-    completion: Literal["complete", "partial"] = "complete"
-    degraded_stages: tuple[str, ...] = ()
     context_trace: RecallContextTrace | None = None
     retrieval_profile: str = "unconfigured"
     include_superseded: bool = False
     workstream_key: str | None = None
     omissions: tuple[RecallOmission, ...] = ()
-    budget: RecallBudget | None = None
     source_cursor: int = -1
     index_cursor: int = -1
     semantic_state: str = "complete"

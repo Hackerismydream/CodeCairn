@@ -189,11 +189,12 @@ an ambiguous lineage is an error.
 task query
   -> resolve Memory Namespace
   -> bounded deterministic index preflight
-  -> active-only candidate search
+  -> active-only parent and exact-child candidate search
   -> pin matching open Work State
-  -> rank Knowledge, Preference, Experience
-  -> apply total token budget and per-type caps
-  -> render attributed Markdown
+  -> fuse parent ranks and locally rerank exact children
+  -> apply per-type caps
+  -> globally pack exact excerpts under one total token budget
+  -> render attributed Markdown from admitted excerpts
   -> emit structured JSON sidecar
 ```
 
@@ -205,6 +206,15 @@ remain pending while its deterministic Task Experience is recallable, and the
 sidecar reports source/index cursors, semantic state, and freshness.
 `include_superseded` and `memory history` are explicit historical operations.
 Recall Context is a derived view and is not written back as memory.
+
+Each projected memory has one searchable parent. Capture-derived memory also
+has one child per exact Evidence Fact. A memory without Evidence Facts projects
+up to 128 non-empty content lines as exact search children; these are
+rebuildable excerpts, not new durable facts. Child ranking is bounded to 12
+excerpts per memory. The Repository Knowledge cap is 20 parents, while the
+renderer admits excerpts globally by score and rechecks the encoded context
+after every admission. The sidecar reports the IDs actually rendered rather
+than treating every ranked parent as present in context.
 
 ## Storage authority
 
@@ -247,9 +257,11 @@ source cursors and queues. They are not an independent editing surface.
 
 ### LanceDB
 
-LanceDB contains searchable parent and atomic child documents only. Index rows
-include memory status and retrieval-profile identity. Rebuild replays Markdown
-and Evolution Records and verifies the complete projected document set.
+LanceDB contains searchable parents plus exact Evidence Fact or source-line
+children. Index rows include memory status and retrieval-profile identity.
+The projection revision is part of that identity, so a child-schema change
+requires rebuild. Rebuild replays Markdown and Evolution Records and verifies
+the complete projected document set.
 
 Recall does not scan Markdown as a hidden fallback. A stale or missing index is
 an explicit degraded state with a remediation command.

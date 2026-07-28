@@ -14,19 +14,18 @@ from codecairn.memory.models import (
     IndexCandidate,
     MemoryStatus,
     RankedRecall,
-    RecallBudget,
     RecallContextTrace,
-    RecallEvidence,
     RecallOmission,
     RecallResult,
     RecallSidecar,
+    RecallSnippet,
 )
 from codecairn.memory.retrieval import EmbeddingProvider, RerankingProvider, retrieval_config_sha256
 from codecairn.memory.schema import CodingMemory, MemoryType, canonical_json, coding_memory_to_dict
 
 _RRF_K = 60
 _TYPE_PRIORITY: dict[MemoryType, int] = {"repository_knowledge": 0, "user_preference": 1, "work_state": 2, "task_experience": 3}
-_TYPE_CAPS: dict[MemoryType, int] = {"repository_knowledge": 8, "user_preference": 4, "work_state": 4, "task_experience": 8}
+_TYPE_CAPS: dict[MemoryType, int] = {"repository_knowledge": 20, "user_preference": 4, "work_state": 4, "task_experience": 8}
 
 
 class RecallIndex(Protocol):
@@ -118,7 +117,6 @@ class RecallEngine:
         )
         compiled = compile_context(query, ranked, token_limit=token_budget)
         omissions.extend(RecallOmission(memory_id=memory_id, reason="token_budget") for memory_id in compiled.omitted_ids)
-        rendered = tuple(item for item in ranked if item.memory_id in set(compiled.rendered_ids))
         source_cursor, index_cursor, semantic_state = self._state.recall_cursors(repo_key=repo_key)
         sidecar = RecallSidecar(
             query=query,
@@ -128,15 +126,12 @@ class RecallEngine:
             vector_candidate_count=len(vector_candidates),
             lexical_candidate_count=len(lexical),
             ranked=ranked,
-            completion="partial" if omissions else "complete",
-            degraded_stages=(),
             context_trace=RecallContextTrace(
                 renderer=RENDERER_ID,
-                char_count=len(compiled.markdown),
                 rendered_memory_ids=compiled.rendered_ids,
-                rendered_fact_ids=tuple(fact_id for item in rendered for fact_id in item.episode_fact_ids),
-                omitted_memory_ids=tuple(item.memory_id for item in omissions),
-                omitted_snippet_count=0,
+                rendered_fact_ids=compiled.rendered_fact_ids,
+                omitted_snippet_count=compiled.omitted_snippet_count,
+                type_caps=tuple(_TYPE_CAPS.items()),
                 tokenizer=TOKENIZER_ID,
                 token_count=compiled.token_count,
                 token_limit=token_budget,
@@ -145,7 +140,6 @@ class RecallEngine:
             include_superseded=include_superseded,
             workstream_key=workstream_key,
             omissions=tuple(omissions),
-            budget=RecallBudget(token_limit=token_budget, token_count=compiled.token_count, type_caps=tuple(_TYPE_CAPS.items())),
             source_cursor=source_cursor,
             index_cursor=index_cursor,
             semantic_state=semantic_state,
@@ -166,15 +160,18 @@ class RecallEngine:
     ) -> tuple[tuple[RankedRecall, ...], list[RecallOmission]]:
         sources: dict[str, set[CandidateSource]] = defaultdict(set)
         scores: dict[str, float] = defaultdict(float)
-        positions: dict[tuple[str, CandidateSource], tuple[int, float]] = {}
+        snippet_scores: dict[str, float] = defaultdict(float)
+        snippet_candidates: dict[str, IndexCandidate] = {}
         for source, candidates in (("lexical", lexical), ("vector", vector)):
             typed_source = cast(CandidateSource, source)
             for rank, candidate in enumerate(candidates, start=1):
-                if (candidate.memory_id, typed_source) in positions:
+                if ":memory" not in candidate.document_id and candidate.document_id and candidate.content:
+                    snippet_scores[candidate.document_id] += 1.0 / (_RRF_K + rank)
+                    snippet_candidates[candidate.document_id] = candidate
+                if typed_source in sources[candidate.memory_id]:
                     continue
                 sources[candidate.memory_id].add(typed_source)
                 scores[candidate.memory_id] += 1.0 / (_RRF_K + rank)
-                positions[(candidate.memory_id, typed_source)] = (rank, candidate.score)
         memories = {
             memory_id: memory
             for memory_id in scores
@@ -191,6 +188,7 @@ class RecallEngine:
                 )
             )
             scores.update(reranked)
+        ranked_snippets = self._rank_snippets(query, valid_memory_ids=set(valid), candidates=snippet_candidates, scores=snippet_scores)
         pinned_id = self._pinned_work_state(repo_key=repo_key, workstream_key=workstream_key)
         if pinned_id is not None and pinned_id not in valid:
             pinned = self._state.get_memory(repo_key=repo_key, memory_id=pinned_id)
@@ -228,8 +226,8 @@ class RecallEngine:
                     score=scores[memory.memory_id],
                     status=statuses[memory.memory_id],
                     sources=tuple(sorted(sources[memory.memory_id])),
-                    positions=positions,
                     pinned=memory.memory_id == pinned_id,
+                    snippets=ranked_snippets.get(memory.memory_id, ()),
                 )
                 for rank, memory in enumerate(admitted, start=1)
             ),
@@ -250,11 +248,9 @@ class RecallEngine:
         score: float,
         status: MemoryStatus,
         sources: tuple[CandidateSource, ...],
-        positions: dict[tuple[str, CandidateSource], tuple[int, float]],
         pinned: bool,
+        snippets: tuple[RecallSnippet, ...],
     ) -> RankedRecall:
-        lexical = positions.get((memory.memory_id, "lexical"))
-        vector = positions.get((memory.memory_id, "vector"))
         return RankedRecall(
             rank=rank,
             memory_id=memory.memory_id,
@@ -264,25 +260,29 @@ class RecallEngine:
             source_uri=f"codecairn://memory/{memory.memory_id}",
             content_sha256=hashlib.sha256(canonical_json(coding_memory_to_dict(memory)).encode()).hexdigest(),
             candidate_sources=sources,
-            vector_score=None if vector is None else vector[1],
-            vector_rank=None if vector is None else vector[0],
-            lexical_score=None if lexical is None else lexical[1],
-            lexical_rank=None if lexical is None else lexical[0],
             final_score=score,
-            evidence=tuple(
-                RecallEvidence(
-                    provider=item.provider,
-                    session_id=item.session_id,
-                    raw_event_sha256=item.event_sha256,
-                    raw_event_index=item.event_index,
-                    raw_event_type="normalized_event",
-                    call_id=None,
-                )
-                for item in memory.evidence
-            ),
+            evidence=memory.evidence,
             status=status,
-            selection_reason="pinned_work_state" if pinned else "ranked",
             pinned=pinned,
-            episode_text=memory.content,
-            episode_fact_ids=tuple(fact.fact_id for fact in memory.facts),
+            snippets=snippets,
         )
+
+    def _rank_snippets(
+        self,
+        query: str,
+        *,
+        valid_memory_ids: set[str],
+        candidates: dict[str, IndexCandidate],
+        scores: dict[str, float],
+        per_memory_limit: int = 12,
+    ) -> dict[str, tuple[RecallSnippet, ...]]:
+        eligible = {document_id: candidate for document_id, candidate in candidates.items() if candidate.memory_id in valid_memory_ids}
+        if self._reranker is not None and eligible:
+            documents = tuple((document_id, candidate.content, scores[document_id]) for document_id, candidate in eligible.items())
+            scores.update(self._reranker.rerank(query, documents))
+        grouped: dict[str, list[RecallSnippet]] = defaultdict(list)
+        for document_id, candidate in sorted(eligible.items(), key=lambda item: (-scores[item[0]], item[0])):
+            if len(grouped[candidate.memory_id]) >= per_memory_limit:
+                continue
+            grouped[candidate.memory_id].append(RecallSnippet(document_id, candidate.content, scores[document_id]))
+        return {memory_id: tuple(items) for memory_id, items in grouped.items()}

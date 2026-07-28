@@ -139,4 +139,8 @@ def test_locomo_provider_caps_completion_output(monkeypatch: Any) -> None:
 
     assert value == {"answer": "Friday"}
     assert captured["path"] == "chat/completions"
-    assert cast(dict[str, object], captured["json"])["max_completion_tokens"] == 512
+    request = cast(dict[str, object], captured["json"])
+    assert request["max_completion_tokens"] == 512
+    messages = cast(list[dict[str, str]], request["messages"])
+    assert messages[0] == {"role": "system", "content": "system"}
+    assert messages[1] == {"role": "user", "content": "system\n\nprompt"}

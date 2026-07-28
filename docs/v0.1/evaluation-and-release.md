@@ -68,6 +68,19 @@ judge, retrieval, budget, and repository identity. It is the normal iteration
 loop and may spend provider money. The target refuses to run without an
 explicit run ID and spend acknowledgement.
 
+The answer and judge instruction contracts are versioned protocol inputs.
+OpenAI-compatible requests deliver each instruction both as the system message
+and as a prefix to the user message. This is intentional transport
+compatibility, not an additional hidden prompt: some intermediaries replace
+the supplied system message. The run manifest records the exact endpoint,
+model alias, instruction contract, and prompt-delivery revision. Right Code's
+current Codex documentation uses `https://rightapi.ai/codex/v1`; each paid run
+must still discover the model and complete a bounded preflight before scoring.
+See the official
+[Codex configuration](https://docs.right.codes/docs/rc_cli_config/codex) and
+[request compatibility](https://docs.right.codes/docs/rc_extension/curl)
+documentation.
+
 ### `make eval-locomo-full`
 
 Runs all 1,540 category 1–4 questions under a versioned release protocol. It:
@@ -324,18 +337,21 @@ The release bundle publishes, in addition to LoCoMo:
 1. Freeze the protocol and clean `implementation_sha`.
 2. Run all offline checks, scale/retrieval suites, and installed-artifact
    smoke.
-3. Run LoCoMo-200 as a cost and correctness rehearsal.
-4. Run the full LoCoMo protocol once; repair only exact infrastructure
+3. Discover the configured answer/judge models and complete bounded real
+   request preflights.
+4. Run LoCoMo-200 to completion as a cost and correctness rehearsal; promote
+   only with zero infrastructure failures and at least 82.00%.
+5. Run the full LoCoMo protocol once; repair only exact infrastructure
    failures through a separate immutable run.
-5. Run coding A/B.
-6. Build a new evidence bundle and commit only generated evidence/docs as the
+6. Run coding A/B only after the full LoCoMo gate passes.
+7. Build a new evidence bundle and commit only generated evidence/docs as the
    direct `evidence_sha` descendant.
-7. Check redaction and run `make evidence-verify`; the verifier binds the
+8. Check redaction and run `make evidence-verify`; the verifier binds the
    checked inventory to the clean current HEAD as `evidence_sha`.
-8. Re-run `make check`, `make source-budget`, `make eval-smoke`, and
+9. Re-run `make check`, `make source-budget`, `make eval-smoke`, and
    `make evidence-verify` at `evidence_sha`.
-9. Build wheel/sdist twice from clean checkouts and compare inventories.
-10. Tag `evidence_sha`. Any code change starts again with a new
+10. Build wheel/sdist twice from clean checkouts and compare inventories.
+11. Tag `evidence_sha`. Any code change starts again with a new
     `implementation_sha`.
 
 ## Deferred evaluation

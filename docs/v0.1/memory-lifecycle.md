@@ -277,10 +277,13 @@ Restart completes matching/missing deterministic files or records a typed
 conflict; it never deletes a partially written authoritative file merely
 because its mirror is absent.
 
-LanceDB stores all memory documents with projected status. Normal recall filters
+LanceDB stores every memory parent with projected status. A memory with
+Evidence Facts projects exact fact children; otherwise, a multiline body
+projects up to 128 exact non-empty line children. These children are disposable
+search excerpts, not Coding Memories or Evidence Facts. Normal recall filters
 `active`; historical recall explicitly permits `superseded`. Rebuild reads
 Markdown Memories and Evolution Records, derives status, then proves memory and
-document parity.
+document parity under the versioned projection identity.
 
 ## Pre-release migration boundary
 

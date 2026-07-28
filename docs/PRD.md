@@ -127,10 +127,11 @@ product.
 - **FR-15**: Default recall searches only active memory.
 - **FR-16**: A matching open Work State is pinned first. Closed Work State and
   the remaining Repository Knowledge, User Preference, and Task Experience are
-  ranked under a total context budget and per-type caps.
+  ranked under per-type caps. Exact Evidence Fact or source-line children are
+  globally packed under one strict total context budget.
 - **FR-17**: Recall returns Markdown for the agent and a JSON sidecar containing
   memory identity, type, status, ranking, provenance, provider identity, and
-  omissions.
+  the IDs actually rendered, public type caps, and omissions.
 - **FR-18**: Historical recall is explicit through `include_superseded` and
   `memory history`.
 - **FR-18a**: Recall provides read-your-writes for deterministic memory through
