@@ -11,6 +11,7 @@ import pytest
 from codecairn.evaluation.artifacts import file_sha256
 from codecairn.evaluation.gates import _synthetic_session, paid_plan, run_retrieval
 from codecairn.evaluation.locomo import (
+    JUDGE_INSTRUCTION,
     Question,
     TextProvider,
     _preflight_recall,
@@ -196,6 +197,17 @@ def test_locomo_provider_caps_completion_output(monkeypatch: Any) -> None:
     messages = cast(list[dict[str, str]], request["messages"])
     assert messages[0] == {"role": "system", "content": "system"}
     assert messages[1] == {"role": "user", "content": "system\n\nprompt"}
+
+
+def test_locomo_judge_instruction_implements_frozen_generous_contract() -> None:
+    for clause in (
+        "essential reference information",
+        "adds non-conflicting detail",
+        "short entity reference",
+        "equivalent date formats",
+        "missing or contradicted",
+    ):
+        assert clause in JUDGE_INSTRUCTION
 
 
 def test_locomo_worker_count_is_explicit_and_bounded() -> None:
