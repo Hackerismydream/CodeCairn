@@ -24,7 +24,11 @@ accuracies. Diagnostic promotion requires:
 
 - natural-weighted accuracy of at least 82.00%;
 - zero infrastructure failures; and
-- retrieval P95 at most 4.0 seconds.
+- retrieval P95 at most 8.0 seconds under the two-worker LoCoMo pressure run.
+
+This pressure ceiling belongs only to the paid long-conversation diagnostic.
+The versioned 100-query product retrieval suite retains its 4.0-second P95
+release gate.
 
 The report retains raw balanced accuracy and every category result. The
 weighted value is explicitly a promotion estimate; only a complete

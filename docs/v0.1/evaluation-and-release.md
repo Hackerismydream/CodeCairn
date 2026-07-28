@@ -75,7 +75,12 @@ weights rather than the diagnostic's artificial 25% per-category mix. The
 report publishes both raw diagnostic accuracy and
 `natural_weighted_accuracy`; the latter is a promotion estimate, not a
 1,540-question result. Promotion requires at least 82.00%, zero infrastructure
-failures, and retrieval P95 at most 4.0 seconds.
+failures, and retrieval P95 at most 8.0 seconds under the two-worker pressure
+protocol.
+
+The diagnostic is a two-worker long-conversation pressure run, so its
+retrieval P95 ceiling is 8.0 seconds. This is distinct from the 100-query
+product retrieval suite, whose P95 release gate remains 4.0 seconds.
 
 The answer and judge instruction contracts are versioned protocol inputs.
 OpenAI-compatible requests deliver each instruction both as the system message
@@ -237,8 +242,8 @@ binds the allowed `evidence_sha` described below:
 | Write Intent recovery | 8 crash points across capture, direct memory, evolution, and restore; 100% deterministic recovery |
 | Hook read-your-writes | 100% for both fixture families without explicit `process` |
 | Retrieval | 100-query Recall@5 at least 90.00%; provenance coverage 100%; stale predecessor leakage 0% |
-| LoCoMo full | at least 82.00%; target at least 82.60% |
-| Local recall latency | P95 at most 4.0 seconds under release protocol |
+| LoCoMo full | at least 82.00%; ship target 85.00% to 86.00% |
+| Product recall latency | 100-query suite P95 at most 4.0 seconds |
 | Coding A/B | complete 20-task artifact; memory-induced regression count 0; observed delta published |
 | Evidence verifier | pass on new bundle |
 | Product core source | at most 10,000 physical Python lines; internal target 9,700 |
@@ -247,13 +252,14 @@ binds the allowed `evidence_sha` described below:
 | Documentation | links, commands, terms, and walkthrough pass |
 | License/governance | MIT, security, contribution, conduct, changelog |
 
-The LoCoMo minimum prevents a known regression. The target preserves the
-historical headline. Coding A/B publishes the observed delta rather than
-selecting a result after seeing it; the release safety gate is zero tasks that
-pass memory-off and fail because of supplied active memory. A resume claim of
-improvement requires an observed increase of at least one of 20 tasks
-(5 percentage points); otherwise the product result is published without that
-claim.
+The LoCoMo minimum prevents a known regression. Version 0.1 stops retrieval
+optimization once the full result is inside the 85% to 86% ship band; a higher
+score is not a release requirement. Coding A/B publishes the observed delta
+rather than selecting a result after seeing it; the release safety gate is
+zero tasks that pass memory-off and fail because of supplied active memory. A
+resume claim of improvement requires an observed increase of at least one of
+20 tasks (5 percentage points); otherwise the product result is published
+without that claim.
 
 ## Source-budget command
 
@@ -350,7 +356,8 @@ The release bundle publishes, in addition to LoCoMo:
    request preflights.
 4. Run LoCoMo-200 to completion as a cost and correctness rehearsal; promote
    only when its frozen natural-weighted gate reaches 82.00%, with zero
-   infrastructure failures and retrieval P95 at most 4.0 seconds.
+   infrastructure failures and retrieval P95 at most 8.0 seconds under the
+   two-worker pressure protocol.
 5. Run the full LoCoMo protocol once; repair only exact infrastructure
    failures through a separate immutable run.
 6. Run coding A/B only after the full LoCoMo gate passes.

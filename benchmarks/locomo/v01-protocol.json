@@ -37,7 +37,7 @@
     },
     "minimum_accuracy": 0.82,
     "maximum_infrastructure_failures": 0,
-    "maximum_retrieval_p95_ms": 4000
+    "maximum_retrieval_p95_ms": 8000
   },
   "execution": {
     "contract": "bounded-question-parallelism-v1",

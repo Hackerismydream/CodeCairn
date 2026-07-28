@@ -97,6 +97,10 @@ ADRs 0043–0054 define the accepted version 0.1 target:
   and versions the resulting search projection.
 - ADR 0054 applies the natural LoCoMo category distribution when a balanced
   diagnostic decides whether to run the full release set.
+- ADR 0055 supplements admitted memories with exact source excerpts after
+  ranked snippets.
+- ADR 0056 separates LoCoMo pressure latency from the product retrieval
+  latency gate and records the v0.1 optimization stop band.
 
 These decisions are specified for implementation under
 [`../plan/tasks/`](../plan/tasks/). Current shipped behavior remains

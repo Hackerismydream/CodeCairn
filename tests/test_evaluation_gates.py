@@ -119,7 +119,7 @@ def test_balanced_locomo_diagnostic_reports_natural_weighted_promotion(tmp_path:
         "category_weights": {"1": 282, "2": 321, "3": 96, "4": 841},
         "minimum_accuracy": 0.82,
         "maximum_infrastructure_failures": 0,
-        "maximum_retrieval_p95_ms": 4_000,
+        "maximum_retrieval_p95_ms": 8_000,
     }
     _write_json(
         run / "manifest.json",
@@ -148,7 +148,7 @@ def test_balanced_locomo_diagnostic_reports_natural_weighted_promotion(tmp_path:
         "metric": "natural-category-weighted-accuracy-v1",
         "minimum_accuracy": 0.82,
         "maximum_infrastructure_failures": 0,
-        "maximum_retrieval_p95_ms": 4_000,
+        "maximum_retrieval_p95_ms": 8_000,
         "passed": True,
     }
 
