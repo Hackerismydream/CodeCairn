@@ -27,6 +27,10 @@
     "token_budget": 8192,
     "retrieval_profile": "recorded-in-run-manifest"
   },
+  "execution": {
+    "contract": "bounded-question-parallelism-v1",
+    "workers": "recorded-in-run-manifest"
+  },
   "answer": {
     "adapter": "openai-compatible-chat-v1",
     "instruction_contract": "memory-evidence-multihop-v2",

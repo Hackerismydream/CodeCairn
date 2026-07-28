@@ -56,11 +56,15 @@ A live LoCoMo command requires:
 ```bash
 RUN_ID=<immutable-id> \
 SPEND_ACK=YES \
+CODECAIRN_EVAL_WORKERS=4 \
 SPEND_CEILING_USD=<hard-ceiling> \
 MAX_CALL_COST_USD=<provider-upper-bound> \
 DATASET=benchmarks/locomo/data/locomo10.json \
 make eval-locomo-200
 ```
+
+`CODECAIRN_EVAL_WORKERS` accepts 1 through 8 and is recorded in the run
+manifest. Use 4 unless the provider requires a lower concurrency limit.
 
 The full target uses the same contract with `eval-locomo-full`. Before creating
 the run, it verifies a clean commit, the frozen dataset digest, provider

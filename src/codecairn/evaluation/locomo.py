@@ -8,6 +8,7 @@ import json
 import math
 import time
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -132,6 +133,7 @@ def run_locomo(
     selection = load_selection(dataset_path, question_set_path)
     answer = TextProvider("ANSWER", environment=environment)
     judge = TextProvider("JUDGE", environment=environment)
+    workers = _worker_count(environment)
     retrieval = RetrievalConfig.default(cast(Literal["dashscope", "fastembed"], environment.get("RETRIEVAL_PROFILE", "dashscope")))
     run_dir = output_root / suite / run_id
     run_dir.mkdir(parents=True, exist_ok=False)
@@ -154,6 +156,7 @@ def run_locomo(
             "question_count": len(selection.questions),
         },
         "providers": {"answer": answer.identity, "judge": judge.identity, "retrieval": retrieval.public_config},
+        "execution": {"contract": "bounded-question-parallelism-v1", "workers": workers},
         "budget": {
             "spend_ceiling_usd": spend_ceiling_usd,
             "max_call_cost_usd": max_call_cost_usd,
@@ -168,9 +171,13 @@ def run_locomo(
     _ingest_sessions(runtime, selection.sessions)
     results_dir = run_dir / "questions"
     results_dir.mkdir()
-    for question in selection.questions:
+
+    def evaluate(question: Question) -> None:
         result = _run_question(runtime, question, answer=answer, judge=judge, root=results_dir / question.question_id)
         write_json_exclusive(results_dir / f"{question.question_id}.json", result)
+
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="locomo") as executor:
+        tuple(executor.map(evaluate, selection.questions))
     report = report_locomo(run_dir)
     write_json_exclusive(run_dir / "aggregate.json", report)
     if report["infrastructure_failed_count"]:
@@ -466,6 +473,13 @@ def _attempt(
 
 def _stable_id(prefix: str, *parts: str) -> str:
     return f"{prefix}_{hashlib.sha256(chr(31).join(parts).encode()).hexdigest()[:20]}"
+
+
+def _worker_count(environment: dict[str, str]) -> int:
+    workers = int(environment.get("CODECAIRN_EVAL_WORKERS", "1"))
+    if not 1 <= workers <= 8:
+        raise ValueError("CODECAIRN_EVAL_WORKERS must be between 1 and 8")
+    return workers
 
 
 def _bounded_utf8(value: str, maximum: int) -> str:

@@ -47,6 +47,7 @@ Then run from a clean commit:
 ```bash
 RUN_ID="<immutable-id>" \
 SPEND_ACK=YES \
+CODECAIRN_EVAL_WORKERS=4 \
 SPEND_CEILING_USD="<hard-ceiling>" \
 MAX_CALL_COST_USD="<provider-upper-bound>" \
 DATASET=benchmarks/locomo/data/locomo10.json \

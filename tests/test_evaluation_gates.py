@@ -6,10 +6,19 @@ from pathlib import Path
 from typing import Any, cast
 
 import httpx
+import pytest
 
 from codecairn.evaluation.artifacts import file_sha256
 from codecairn.evaluation.gates import _synthetic_session, paid_plan, run_retrieval
-from codecairn.evaluation.locomo import TextProvider, _stable_id, compose_repair, load_selection, report_locomo, write_repair_selection
+from codecairn.evaluation.locomo import (
+    TextProvider,
+    _stable_id,
+    _worker_count,
+    compose_repair,
+    load_selection,
+    report_locomo,
+    write_repair_selection,
+)
 
 
 def _write_json(path: Path, value: object) -> None:
@@ -144,3 +153,10 @@ def test_locomo_provider_caps_completion_output(monkeypatch: Any) -> None:
     messages = cast(list[dict[str, str]], request["messages"])
     assert messages[0] == {"role": "system", "content": "system"}
     assert messages[1] == {"role": "user", "content": "system\n\nprompt"}
+
+
+def test_locomo_worker_count_is_explicit_and_bounded() -> None:
+    assert _worker_count({}) == 1
+    assert _worker_count({"CODECAIRN_EVAL_WORKERS": "4"}) == 4
+    with pytest.raises(ValueError, match="between 1 and 8"):
+        _worker_count({"CODECAIRN_EVAL_WORKERS": "9"})
