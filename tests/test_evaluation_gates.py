@@ -111,6 +111,47 @@ def test_locomo_selection_report_and_exact_repair_are_pure(tmp_path: Path) -> No
     assert aggregate["infrastructure_failed_count"] == 0
 
 
+def test_balanced_locomo_diagnostic_reports_natural_weighted_promotion(tmp_path: Path) -> None:
+    run = tmp_path / "diagnostic"
+    promotion = {
+        "metric": "natural-category-weighted-accuracy-v1",
+        "category_weights": {"1": 282, "2": 321, "3": 96, "4": 841},
+        "minimum_accuracy": 0.82,
+        "maximum_infrastructure_failures": 0,
+        "maximum_retrieval_p95_ms": 4_000,
+    }
+    _write_json(
+        run / "manifest.json",
+        {
+            "schema_version": 1,
+            "suite": "locomo-200",
+            "protocol": {"contract": {"diagnostic_promotion": promotion}},
+            "question_set": {"question_count": 4},
+        },
+    )
+    for category in range(1, 5):
+        _write_json(
+            run / "questions" / f"q{category}.json",
+            {
+                "question_id": f"q{category}",
+                "category": category,
+                "outcome": "wrong" if category == 3 else "correct",
+                "retrieval_latency_ms": 1.0,
+            },
+        )
+
+    aggregate = report_locomo(run)
+
+    assert aggregate["natural_weighted_accuracy"] == pytest.approx(1444 / 1540)
+    assert aggregate["diagnostic_promotion"] == {
+        "metric": "natural-category-weighted-accuracy-v1",
+        "minimum_accuracy": 0.82,
+        "maximum_infrastructure_failures": 0,
+        "maximum_retrieval_p95_ms": 4_000,
+        "passed": True,
+    }
+
+
 def test_paid_plans_expose_inputs_outputs_and_spend_boundary() -> None:
     locomo = paid_plan("locomo-full", help_only=True)
     coding = paid_plan("coding-ab", help_only=True)

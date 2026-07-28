@@ -27,6 +27,18 @@
     "token_budget": 8192,
     "retrieval_profile": "recorded-in-run-manifest"
   },
+  "diagnostic_promotion": {
+    "metric": "natural-category-weighted-accuracy-v1",
+    "category_weights": {
+      "1": 282,
+      "2": 321,
+      "3": 96,
+      "4": 841
+    },
+    "minimum_accuracy": 0.82,
+    "maximum_infrastructure_failures": 0,
+    "maximum_retrieval_p95_ms": 4000
+  },
   "execution": {
     "contract": "bounded-question-parallelism-v1",
     "workers": "recorded-in-run-manifest"

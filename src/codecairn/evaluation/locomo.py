@@ -256,7 +256,7 @@ def _reduce(manifest: dict[str, Any], results: list[dict[str, Any]]) -> dict[str
             "accuracy": None if not items else sum(item["outcome"] == "correct" for item in items) / len(items),
         }
     latencies = sorted(float(item["retrieval_latency_ms"]) for item in results if "retrieval_latency_ms" in item)
-    return {
+    report: dict[str, object] = {
         "schema_version": 1,
         "protocol": manifest["protocol"],
         "selected_question_count": expected,
@@ -270,6 +270,46 @@ def _reduce(manifest: dict[str, Any], results: list[dict[str, Any]]) -> dict[str
         "manifest_sha256": canonical_sha256(manifest),
         "result_inventory_sha256": canonical_sha256(results),
     }
+    promotion = _diagnostic_promotion(manifest, categories, report)
+    if promotion is not None:
+        report["natural_weighted_accuracy"], report["diagnostic_promotion"] = promotion
+    return report
+
+
+def _diagnostic_promotion(
+    manifest: dict[str, Any], categories: dict[str, object], report: dict[str, object]
+) -> tuple[float, dict[str, object]] | None:
+    protocol = manifest.get("protocol")
+    if manifest.get("suite") != "locomo-200" or not isinstance(protocol, dict):
+        return None
+    contract = protocol.get("contract")
+    if not isinstance(contract, dict) or "diagnostic_promotion" not in contract:
+        return None
+    promotion = _dict(contract["diagnostic_promotion"], field="diagnostic promotion")
+    if promotion.get("metric") != "natural-category-weighted-accuracy-v1":
+        raise ValueError("unsupported diagnostic promotion metric")
+    weights = _dict(promotion.get("category_weights"), field="diagnostic category weights")
+    if set(weights) != {"1", "2", "3", "4"} or any(type(value) is not int or value <= 0 for value in weights.values()):
+        raise ValueError("diagnostic category weights must be four positive integers")
+    accuracies = {category: _dict(categories[category], field="category result").get("accuracy") for category in weights}
+    if any(not isinstance(value, float) for value in accuracies.values()):
+        raise ValueError("diagnostic promotion requires every category")
+    natural = sum(weights[key] * cast(float, accuracies[key]) for key in weights) / sum(weights.values())
+    minimum = promotion.get("minimum_accuracy")
+    maximum_failures = promotion.get("maximum_infrastructure_failures")
+    maximum_p95 = promotion.get("maximum_retrieval_p95_ms")
+    if not isinstance(minimum, (int, float)) or not isinstance(maximum_failures, int) or not isinstance(maximum_p95, (int, float)):
+        raise ValueError("diagnostic promotion thresholds are invalid")
+    gate = {
+        "metric": promotion["metric"],
+        "minimum_accuracy": minimum,
+        "maximum_infrastructure_failures": maximum_failures,
+        "maximum_retrieval_p95_ms": maximum_p95,
+        "passed": natural >= minimum
+        and cast(int, report["infrastructure_failed_count"]) <= maximum_failures
+        and cast(float, report["retrieval_p95_ms"]) <= maximum_p95,
+    }
+    return natural, gate
 
 
 def load_selection(dataset_path: Path, question_set_path: Path) -> Selection:

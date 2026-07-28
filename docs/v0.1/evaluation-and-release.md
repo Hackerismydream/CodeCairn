@@ -68,6 +68,15 @@ judge, retrieval, budget, and repository identity. It is the normal iteration
 loop and may spend provider money. The target refuses to run without an
 explicit run ID and spend acknowledgement.
 
+The diagnostic contains 50 questions from each category, while the release
+dataset contains 282 multi-hop, 321 temporal, 96 open-domain, and 841
+single-hop questions. Promotion therefore uses the frozen natural category
+weights rather than the diagnostic's artificial 25% per-category mix. The
+report publishes both raw diagnostic accuracy and
+`natural_weighted_accuracy`; the latter is a promotion estimate, not a
+1,540-question result. Promotion requires at least 82.00%, zero infrastructure
+failures, and retrieval P95 at most 4.0 seconds.
+
 The answer and judge instruction contracts are versioned protocol inputs.
 OpenAI-compatible requests deliver each instruction both as the system message
 and as a prefix to the user message. This is intentional transport
@@ -340,7 +349,8 @@ The release bundle publishes, in addition to LoCoMo:
 3. Discover the configured answer/judge models and complete bounded real
    request preflights.
 4. Run LoCoMo-200 to completion as a cost and correctness rehearsal; promote
-   only with zero infrastructure failures and at least 82.00%.
+   only when its frozen natural-weighted gate reaches 82.00%, with zero
+   infrastructure failures and retrieval P95 at most 4.0 seconds.
 5. Run the full LoCoMo protocol once; repair only exact infrastructure
    failures through a separate immutable run.
 6. Run coding A/B only after the full LoCoMo gate passes.
