@@ -169,6 +169,7 @@ def run_locomo(
     write_json_exclusive(run_dir / "manifest.json", manifest)
     runtime = create_runtime(run_dir / "runtime", retrieval=retrieval, environment=environment)
     _ingest_sessions(runtime, selection.sessions)
+    _preflight_recall(runtime, selection.questions)
     results_dir = run_dir / "questions"
     results_dir.mkdir()
 
@@ -394,6 +395,15 @@ def _ingest_sessions(runtime: Any, sessions: tuple[Session, ...]) -> None:
             ),
         )
         runtime.store_memory(memory)
+
+
+def _preflight_recall(runtime: Any, questions: tuple[Question, ...]) -> None:
+    seen: set[str] = set()
+    for question in questions:
+        if question.sample_id in seen:
+            continue
+        seen.add(question.sample_id)
+        runtime.recall(question.text, repo_key=f"locomo/{question.sample_id}", limit=1, token_budget=256)
 
 
 def _run_question(runtime: Any, question: Question, *, answer: TextProvider, judge: TextProvider, root: Path) -> dict[str, object]:

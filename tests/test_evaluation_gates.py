@@ -11,7 +11,9 @@ import pytest
 from codecairn.evaluation.artifacts import file_sha256
 from codecairn.evaluation.gates import _synthetic_session, paid_plan, run_retrieval
 from codecairn.evaluation.locomo import (
+    Question,
     TextProvider,
+    _preflight_recall,
     _stable_id,
     _worker_count,
     compose_repair,
@@ -160,3 +162,20 @@ def test_locomo_worker_count_is_explicit_and_bounded() -> None:
     assert _worker_count({"CODECAIRN_EVAL_WORKERS": "4"}) == 4
     with pytest.raises(ValueError, match="between 1 and 8"):
         _worker_count({"CODECAIRN_EVAL_WORKERS": "9"})
+
+
+def test_locomo_preflights_each_namespace_once_before_parallel_questions() -> None:
+    calls: list[tuple[str, str]] = []
+
+    class Runtime:
+        def recall(self, query: str, *, repo_key: str, limit: int, token_budget: int) -> None:
+            calls.append((query, repo_key))
+
+    questions = (
+        Question("q1", "sample-a", "first", "a", 1),
+        Question("q2", "sample-a", "second", "b", 1),
+        Question("q3", "sample-b", "third", "c", 1),
+    )
+    _preflight_recall(Runtime(), questions)
+
+    assert calls == [("first", "locomo/sample-a"), ("third", "locomo/sample-b")]
