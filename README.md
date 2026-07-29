@@ -1,6 +1,10 @@
 <h1 align="center">CodeCairn</h1>
 
 <p align="center">
+  <strong>English</strong> | <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
   <strong>Local, auditable memory for Codex and Claude Code.</strong>
 </p>
 

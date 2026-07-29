@@ -32,6 +32,7 @@ COMMANDS = (
 def markdown_files() -> tuple[Path, ...]:
     candidates = [
         ROOT / "README.md",
+        ROOT / "README.zh-CN.md",
         ROOT / "CONTEXT.md",
         ROOT / "CHANGELOG.md",
         ROOT / "CODE_OF_CONDUCT.md",
