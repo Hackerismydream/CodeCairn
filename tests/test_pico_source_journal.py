@@ -206,8 +206,9 @@ def test_unterminated_tail_without_stage_fails_closed(tmp_path: Path) -> None:
 def test_stage_is_published_atomically_and_orphan_temp_is_replaced(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id="session-1")
-    journal._prepare_directory()
-    temporary = journal.staged_path.with_suffix(".tmp")
+    with journal._locked_directory():
+        pass
+    temporary = journal.staged_path.with_name(f"{journal.staged_path.name}.tmp")
     temporary.write_bytes(b'{"partial":')
 
     with pytest.raises(RuntimeError, match="injected import failure"):
@@ -227,6 +228,28 @@ def test_namespace_symlink_is_rejected_before_external_files_are_created(tmp_pat
 
     with pytest.raises(PicoJournalError, match="symbolic links"):
         journal.commit(({"kind": "message", "role": "user", "text": "Stay inside."},), importer=_FailingImporter())
+
+    assert tuple(outside.iterdir()) == ()
+
+
+def test_namespace_swap_after_open_cannot_redirect_journal_writes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root = tmp_path / "runtime"
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id="session-1")
+    original = pico_journal._open_directory
+
+    def swap_after_open(runtime_root: Path, components: tuple[str, ...]) -> int:
+        descriptor = original(runtime_root, components)
+        namespace = journal.path.parent
+        moved = namespace.with_name(f"{namespace.name}.moved")
+        namespace.rename(moved)
+        namespace.symlink_to(outside, target_is_directory=True)
+        return descriptor
+
+    monkeypatch.setattr(pico_journal, "_open_directory", swap_after_open)
+    with pytest.raises(RuntimeError, match="injected import failure"):
+        journal.commit(({"kind": "message", "role": "user", "text": "Pinned."},), importer=_FailingImporter())
 
     assert tuple(outside.iterdir()) == ()
 

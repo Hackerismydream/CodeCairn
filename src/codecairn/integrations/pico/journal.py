@@ -1,16 +1,16 @@
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import os
 import secrets
 import stat
 import unicodedata
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
+from contextlib import contextmanager, suppress
 from pathlib import Path
 from typing import Any, Protocol, TypeVar, cast
-
-from filelock import FileLock
 
 from codecairn.importers.jsonl import MAX_RAW_EVENTS, MAX_SESSION_BYTES
 from codecairn.importers.pico import MAX_PICO_BATCH_BYTES, MAX_PICO_BATCH_EVENTS, MAX_PICO_SESSION_FILE_CHANGES, PICO_SOURCE_SCHEMA
@@ -61,15 +61,14 @@ class PicoSourceJournal:
         session_hash = hashlib.sha256(self.session_id.encode()).hexdigest()
         self.path = self._runtime_root / "sources" / "pico" / namespace_hash / f"{session_hash}.jsonl"
         self.staged_path = self.path.with_name(f".{session_hash}.stage.jsonl")
-        self._lock = FileLock(str(self.path.with_name(f".{session_hash}.lock")))
+        self._lock_name = f".{session_hash}.lock"
 
     def commit(self, events: Sequence[Mapping[str, object]], *, importer: PicoJournalImporter[_T]) -> _T:
         normalized_events = _canonical_events(events)
-        self._prepare_directory()
-        with self._lock:
-            if self.staged_path.exists():
-                self._recover_locked(importer)
-            state = self._read_journal()
+        with self._locked_directory() as directory:
+            if _exists(directory, self.staged_path.name):
+                self._recover_locked(importer, directory)
+            state = self._read_journal(directory)
             checkpoint = importer.import_checkpoint(self.path, repo_key=self.repo_key)
             self._verify_committed_prefix(state, checkpoint)
             if state.trailing:
@@ -91,43 +90,42 @@ class PicoSourceJournal:
                 raise PicoJournalError(f"Pico batch exceeds the {MAX_PICO_BATCH_BYTES}-byte limit")
             if state.complete_bytes + len(staged) > MAX_SESSION_BYTES:
                 raise PicoJournalError("Pico journal exceeds the import byte limit")
-            _create_staged(self.staged_path, staged)
-            return self._recover_locked(importer)
+            _create_staged(directory, self.staged_path.name, staged)
+            return self._recover_locked(importer, directory)
 
     def recover(self, *, importer: PicoJournalImporter[_T]) -> _T | None:
-        self._prepare_directory()
-        with self._lock:
-            if not self.staged_path.exists():
+        with self._locked_directory() as directory:
+            if not _exists(directory, self.staged_path.name):
                 return None
-            return self._recover_locked(importer)
+            return self._recover_locked(importer, directory)
 
-    def _recover_locked(self, importer: PicoJournalImporter[_T]) -> _T:
-        staged = _read_regular(self.staged_path, maximum=MAX_PICO_BATCH_BYTES)
+    def _recover_locked(self, importer: PicoJournalImporter[_T], directory: int) -> _T:
+        staged = _read_regular(directory, self.staged_path.name, maximum=MAX_PICO_BATCH_BYTES)
         staged_record = _decode_canonical_line(staged, label="staged Pico batch")
         _validate_batch_record(staged_record)
-        state = self._read_journal()
+        state = self._read_journal(directory)
         checkpoint = importer.import_checkpoint(self.path, repo_key=self.repo_key)
         self._verify_committed_prefix(state, checkpoint)
         if not state.records:
-            _create_fsynced(self.path, self._header_line())
-            state = self._read_journal()
+            _create_fsynced(directory, self.path.name, self._header_line())
+            state = self._read_journal(directory)
         self._validate_header(state.records[0])
-        self._install_staged_batch(state, staged=staged, staged_record=staged_record, checkpoint=checkpoint)
+        self._install_staged_batch(directory, state, staged=staged, staged_record=staged_record, checkpoint=checkpoint)
         result = importer.import_session(
             self.path, repo_key=self.repo_key, source_root=self._runtime_root, boundary_kind="pico_turn_end"
         )
         committed = importer.import_checkpoint(self.path, repo_key=self.repo_key)
-        current = self._read_journal()
+        current = self._read_journal(directory)
         if committed is None or committed.committed_raw_event_index != len(current.records) - 1 or current.trailing:
             raise PicoJournalError("Pico import did not commit the complete journal")
-        self.staged_path.unlink()
-        _fsync_directory(self.staged_path.parent)
+        os.unlink(self.staged_path.name, dir_fd=directory)
+        os.fsync(directory)
         return result
 
-    def _read_journal(self) -> _JournalState:
-        if not self.path.exists():
+    def _read_journal(self, directory: int) -> _JournalState:
+        if not _exists(directory, self.path.name):
             return _JournalState((), b"", 0)
-        source = _read_regular(self.path, maximum=MAX_SESSION_BYTES)
+        source = _read_regular(directory, self.path.name, maximum=MAX_SESSION_BYTES)
         records: list[bytes] = []
         cursor = 0
         while True:
@@ -158,7 +156,7 @@ class PicoSourceJournal:
             raise SourceRewritten(f"Pico source changed before checkpoint: {self.path}")
 
     def _install_staged_batch(
-        self, state: _JournalState, *, staged: bytes, staged_record: dict[str, Any], checkpoint: ImportCheckpoint | None
+        self, directory: int, state: _JournalState, *, staged: bytes, staged_record: dict[str, Any], checkpoint: ImportCheckpoint | None
     ) -> None:
         committed_count = 0 if checkpoint is None else checkpoint.committed_raw_event_index + 1
         complete_records = state.records
@@ -171,8 +169,8 @@ class PicoSourceJournal:
                 raise PicoJournalError("Pico journal has an uncommitted complete batch before the staged fragment")
             if staged_record["batch_ordinal"] != len(complete_records):
                 raise PicoJournalError("Pico staged batch ordinal does not follow the journal")
-            _truncate_fsynced(self.path, state.complete_bytes)
-            _append_fsynced(self.path, staged)
+            _truncate_fsynced(directory, self.path.name, state.complete_bytes)
+            _append_fsynced(directory, self.path.name, staged)
             return
         decoded = tuple(_decode_canonical_line(line, label="Pico journal record") for line in complete_records)
         matching = tuple(index for index, record in enumerate(decoded) if record.get("batch_id") == staged_record["batch_id"])
@@ -185,7 +183,7 @@ class PicoSourceJournal:
         expected_ordinal = len(complete_records)
         if staged_record["batch_ordinal"] != expected_ordinal:
             raise PicoJournalError("Pico staged batch ordinal does not follow the journal")
-        _append_fsynced(self.path, staged)
+        _append_fsynced(directory, self.path.name, staged)
 
     def _header_line(self) -> bytes:
         return _canonical_line(
@@ -204,14 +202,22 @@ class PicoSourceJournal:
         if line != self._header_line():
             raise PicoJournalError("Pico journal header does not match its bound repository and session")
 
-    def _prepare_directory(self) -> None:
-        directory = self._runtime_root
-        directory.mkdir(parents=True, exist_ok=True)
-        for component in self.path.parent.relative_to(directory).parts:
-            directory /= component
-            if directory.is_symlink():
-                raise PicoJournalError("Pico journal directory must not traverse symbolic links")
-            directory.mkdir(exist_ok=True)
+    @contextmanager
+    def _locked_directory(self) -> Iterator[int]:
+        directory = _open_directory(self._runtime_root, self.path.parent.relative_to(self._runtime_root).parts)
+        lock = os.open(
+            self._lock_name,
+            os.O_RDWR | os.O_CREAT | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+            0o600,
+            dir_fd=directory,
+        )
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            yield directory
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+            os.close(lock)
+            os.close(directory)
 
 
 class _JournalState:
@@ -394,24 +400,52 @@ def _decode_canonical_line(line: bytes, *, label: str) -> dict[str, Any]:
     return cast(dict[str, Any], value)
 
 
-def _read_regular(path: Path, *, maximum: int) -> bytes:
+def _open_directory(root: Path, components: tuple[str, ...]) -> int:
+    root.mkdir(parents=True, exist_ok=True)
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    directory = os.open(root, flags)
+    try:
+        for component in components:
+            with suppress(FileExistsError):
+                os.mkdir(component, 0o700, dir_fd=directory)
+            try:
+                child = os.open(component, flags, dir_fd=directory)
+            except OSError as exc:
+                raise PicoJournalError("Pico journal directory must not traverse symbolic links") from exc
+            os.close(directory)
+            directory = child
+    except BaseException:
+        os.close(directory)
+        raise
+    return directory
+
+
+def _exists(directory: int, name: str) -> bool:
+    try:
+        os.stat(name, dir_fd=directory, follow_symlinks=False)
+    except FileNotFoundError:
+        return False
+    return True
+
+
+def _read_regular(directory: int, name: str, *, maximum: int) -> bytes:
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-    descriptor = os.open(path, flags)
+    descriptor = os.open(name, flags, dir_fd=directory)
     try:
         if not stat.S_ISREG(os.fstat(descriptor).st_mode):
-            raise PicoJournalError(f"Pico journal path is not a regular file: {path}")
+            raise PicoJournalError(f"Pico journal path is not a regular file: {name}")
         with os.fdopen(descriptor, "rb", closefd=False) as handle:
             source = handle.read(maximum + 1)
     finally:
         os.close(descriptor)
     if len(source) > maximum:
-        raise PicoJournalError(f"Pico journal file exceeds the {maximum}-byte limit: {path}")
+        raise PicoJournalError(f"Pico journal file exceeds the {maximum}-byte limit: {name}")
     return source
 
 
-def _create_fsynced(path: Path, content: bytes) -> None:
+def _create_fsynced(directory: int, name: str, content: bytes) -> None:
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-    descriptor = os.open(path, flags, 0o600)
+    descriptor = os.open(name, flags, 0o600, dir_fd=directory)
     try:
         with os.fdopen(descriptor, "wb", closefd=False) as handle:
             handle.write(content)
@@ -419,20 +453,21 @@ def _create_fsynced(path: Path, content: bytes) -> None:
             os.fsync(handle.fileno())
     finally:
         os.close(descriptor)
-    _fsync_directory(path.parent)
+    os.fsync(directory)
 
 
-def _create_staged(path: Path, content: bytes) -> None:
-    temporary = path.with_suffix(".tmp")
-    temporary.unlink(missing_ok=True)
-    _create_fsynced(temporary, content)
-    os.replace(temporary, path)
-    _fsync_directory(path.parent)
+def _create_staged(directory: int, name: str, content: bytes) -> None:
+    temporary = f"{name}.tmp"
+    with suppress(FileNotFoundError):
+        os.unlink(temporary, dir_fd=directory)
+    _create_fsynced(directory, temporary, content)
+    os.replace(temporary, name, src_dir_fd=directory, dst_dir_fd=directory)
+    os.fsync(directory)
 
 
-def _append_fsynced(path: Path, content: bytes) -> None:
+def _append_fsynced(directory: int, name: str, content: bytes) -> None:
     flags = os.O_WRONLY | os.O_APPEND | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-    descriptor = os.open(path, flags)
+    descriptor = os.open(name, flags, dir_fd=directory)
     try:
         if os.fstat(descriptor).st_size + len(content) > MAX_SESSION_BYTES:
             raise PicoJournalError("Pico journal exceeds the import byte limit")
@@ -444,19 +479,11 @@ def _append_fsynced(path: Path, content: bytes) -> None:
         os.close(descriptor)
 
 
-def _truncate_fsynced(path: Path, length: int) -> None:
+def _truncate_fsynced(directory: int, name: str, length: int) -> None:
     flags = os.O_WRONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-    descriptor = os.open(path, flags)
+    descriptor = os.open(name, flags, dir_fd=directory)
     try:
         os.ftruncate(descriptor, length)
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
-
-
-def _fsync_directory(path: Path) -> None:
-    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
-    try:
         os.fsync(descriptor)
     finally:
         os.close(descriptor)

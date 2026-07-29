@@ -23,7 +23,7 @@ post-v0.1 delivery stages:
 
 | Stage | Non-evaluation core | Complete package | Owned scope |
 |---|---:|---:|---|
-| `v02-001` | 10,575 | 14,850 | Pico Source Journal and evidence-preserving importer |
+| `v02-001` | 10,625 | 14,900 | Pico Source Journal and evidence-preserving importer |
 | `v02-002` | 11,000 | 15,300 | Installed Pico Memory Backend adapter and packaging |
 
 The evaluation tree receives no additional allowance; each total ceiling is
@@ -37,9 +37,10 @@ relabelled as version 0.2.
 
 These are ceilings, not allocation targets. Moving code to another installable
 package or generated file still does not satisfy the budget.
-The Delivery 1 core allowance includes the fail-closed journal recovery and
-path-safety fixes required by independent review; the complete-package ceiling
-and the final Delivery 2 ceilings remain unchanged.
+The Delivery 1 allowance includes the fail-closed journal recovery and
+directory-descriptor path-safety required by independent review. The final
+Delivery 2 ceilings remain unchanged, so this reallocates rather than expands
+the complete version 0.2 budget.
 
 ## Consequences
 
