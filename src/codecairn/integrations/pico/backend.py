@@ -49,7 +49,12 @@ class CodeCairnPicoBackend:
     async def start(self) -> None:
         if self._started:
             return
-        await self._blocking("startup", self._start_sync)
+        try:
+            await self._blocking("startup", self._start_sync)
+        except Exception:
+            self._application = None
+            self._config = None
+            raise
         self._started = True
 
     async def stop(self) -> None:
@@ -94,7 +99,7 @@ class CodeCairnPicoBackend:
     async def store(self, session_id: str, messages: list[dict[str, Any]]) -> None:
         self._require_started()
         events = _pico_events(messages)
-        if not events:
+        if not events or not any(event.get("kind") == "message" and event.get("role") == "user" for event in events):
             return
         config = self._config_required()
         journal = PicoSourceJournal(config.runtime_root, repo_key=config.repo_key, session_id=session_id)
@@ -120,19 +125,20 @@ class CodeCairnPicoBackend:
             config.runtime_root, repo_key=config.repo_key, retrieval=config.retrieval, semantic=config.semantic
         )
         self._config, self._application = config, application
-        self._recover_sync()
+        self._recover_sync(require_ready=False)
         application.sync_index(worker_id="pico-start", max_jobs=128)
         self._assert_ready()
         doctor = application.doctor(live=True)
         if doctor.get("status") != "ok":
             raise PicoAdapterError("codecairn_startup_invalid", "run 'codecairn doctor --live' and repair degraded subsystems")
 
-    def _recover_sync(self) -> None:
+    def _recover_sync(self, *, require_ready: bool = True) -> None:
         config = self._config_required()
         PicoSourceJournal.recover_pending(
             config.runtime_root, repo_key=config.repo_key, importer=cast(PicoJournalImporter[Any], self._application_required())
         )
-        self._assert_ready()
+        if require_ready:
+            self._assert_ready()
 
     def _assert_ready(self) -> None:
         health = self._application_required().index_status()

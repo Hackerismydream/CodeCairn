@@ -119,6 +119,6 @@ contract.
 | [`0012`](adr/0012-hierarchical-recall-is-a-rebuildable-projection.md)–[`0027`](adr/0027-semantic-projection-rejects-foreign-citations-per-clause.md) | Retrieval and grounded projection |
 | [`0028`](adr/0028-embedding-transport-policy-is-artifact-identity.md)–[`0042`](adr/0042-ablation-gates-evaluate-natural-weighted-accuracy.md) | Evaluation protocols, exact repair, Fable baseline |
 | [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0056`](adr/0056-locomo-pressure-latency-is-not-product-latency.md) | Version 0.1 product, lifecycle, surfaces, source budget, and measurement limits |
-| [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md)–[`0058`](adr/0058-version-0-2-has-an-additive-pico-integration-budget.md) | Post-v0.1 Pico Memory Backend integration and its additive source budget |
+| [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md)–[`0059`](adr/0059-pico-adapter-targets-one-frozen-host-contract.md) | Post-v0.1 Pico Memory Backend integration, additive source budget, and frozen host contract |
 
 Use [`adr/README.md`](adr/README.md) for status and supersession rules.

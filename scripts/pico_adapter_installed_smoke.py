@@ -13,6 +13,9 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+_PICO_COMMIT = "228a36a1720b460f8dca8f03c40a47af82fa5a2a"
+_PICO_WHEEL_SHA256 = "3df9a4510e435f861967d64f3a7af1e99277b0cc8a447d04d4bf7ce15f15f50b"
+
 _PROBE = r"""
 import asyncio
 import json
@@ -100,6 +103,8 @@ def main() -> None:
     args = parser.parse_args()
     codecairn_wheel = args.codecairn_wheel.resolve()
     pico_wheel = args.pico_wheel.resolve()
+    if args.pico_commit != _PICO_COMMIT or _sha256(pico_wheel) != _PICO_WHEEL_SHA256:
+        raise RuntimeError("Pico compatibility identity does not match ADR 0059")
     with tempfile.TemporaryDirectory(prefix="codecairn-pico-installed-") as temporary:
         root = Path(temporary)
         environment = root / "environment"

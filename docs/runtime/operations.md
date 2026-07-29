@@ -237,7 +237,10 @@ user track to repository recall and returns one compiled context with
 system-derived sidecar metadata and score `0.0`; the Agent track returns `[]`.
 Store appends and imports one durable `pico_turn_end` batch, then requires index
 readiness before returning. All blocking CodeCairn calls are offloaded from
-Pico's event loop.
+Pico's event loop. A frozen-host subagent slice contains no user opening after
+Pico removes its synthetic announce; the adapter treats that Agent-only slice
+as an explicit no-op rather than inventing a user event or breaking the
+subagent Turn.
 
 The adapter does not own Local Skills, add a media tool, fall back to EverOS,
 or initialize repositories implicitly.

@@ -18,6 +18,7 @@ import pytest
 from codecairn.bootstrap import create_application
 from codecairn.configuration import initialize_repository, resolve_runtime_config
 from codecairn.integrations.pico.backend import CodeCairnPicoBackend, PicoAdapterError, make_backend
+from codecairn.service.application import RememberRequest
 from tests.retrieval_fakes import TEST_RETRIEVAL
 
 
@@ -117,6 +118,18 @@ def test_agent_track_feedback_and_invalid_track_behavior(tmp_path: Path) -> None
     asyncio.run(scenario())
 
 
+def test_assistant_only_subagent_slice_is_an_explicit_no_op(tmp_path: Path) -> None:
+    backend, _, runtime = _fixture(tmp_path)
+
+    async def scenario() -> None:
+        await backend.start()
+        await backend.store("subagent-session", [{"role": "assistant", "content": "Subagent result."}])
+        await backend.stop()
+
+    asyncio.run(scenario())
+    assert tuple((runtime / "sources" / "pico").glob("*/*.jsonl")) == ()
+
+
 def test_missing_initialization_and_repository_runtime_fail_closed(tmp_path: Path) -> None:
     repository = tmp_path / "repository"
     repository.mkdir()
@@ -130,6 +143,50 @@ def test_missing_initialization_and_repository_runtime_fail_closed(tmp_path: Pat
     nested = CodeCairnPicoBackend(context)
     with pytest.raises(PicoAdapterError, match="external runtime root"):
         asyncio.run(nested.start())
+
+
+def test_start_drains_durable_pending_index_before_readiness_check(tmp_path: Path) -> None:
+    backend, _, runtime = _fixture(tmp_path)
+    seed = create_application(runtime, repo_key="example/project", retrieval_adapters=TEST_RETRIEVAL)
+    seed.remember_direct(
+        RememberRequest(
+            repo_key="example/project",
+            memory_type="repository_knowledge",
+            title="Release check",
+            content="Releases require make check.",
+            subject_key="release-check",
+        )
+    )
+    assert seed.index_status().pending == 1
+
+    asyncio.run(backend.start())
+
+    assert seed.index_status().pending == 0
+    asyncio.run(backend.stop())
+
+
+def test_failed_start_clears_partial_application_state(tmp_path: Path) -> None:
+    backend, _, _ = _fixture(tmp_path)
+
+    class _FailingApplication:
+        def import_checkpoint(self, *_: Any, **__: Any) -> None:
+            return None
+
+        def sync_index(self, *_: Any, **__: Any) -> None:
+            raise RuntimeError("injected secret path /tmp/private")
+
+        def index_status(self) -> Any:
+            return SimpleNamespace(pending=0, leased=0, failed=0, stale=0)
+
+    backend._application_factory = lambda *_args, **_kwargs: _FailingApplication()
+
+    with pytest.raises(PicoAdapterError) as failure:
+        asyncio.run(backend.start())
+
+    assert "secret" not in str(failure.value)
+    assert "/tmp/private" not in str(failure.value)
+    assert backend._config is None
+    assert backend._application is None
 
 
 def test_blocking_start_is_offloaded_from_event_loop(tmp_path: Path) -> None:
