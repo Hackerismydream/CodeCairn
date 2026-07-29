@@ -218,6 +218,19 @@ def test_stage_is_published_atomically_and_orphan_temp_is_replaced(tmp_path: Pat
     assert temporary.exists() is False
 
 
+def test_recover_pending_discovers_bound_journal_after_restart(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id="session-1")
+    with pytest.raises(RuntimeError, match="injected import failure"):
+        journal.commit(({"kind": "message", "role": "user", "text": "Recoverable."},), importer=_FailingImporter())
+
+    recovered = PicoSourceJournal.recover_pending(root, repo_key="acme/widgets", importer=_runtime(root))
+
+    assert recovered == 1
+    assert journal.staged_path.exists() is False
+    assert len(_runtime(root).list_memories(repo_key="acme/widgets")) == 1
+
+
 def test_partial_header_is_atomically_replaced_during_recovery(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id="session-1")

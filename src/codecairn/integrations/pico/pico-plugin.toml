@@ -1,0 +1,11 @@
+[plugin]
+id                 = "codecairn-memory"
+version            = "0.1.0"
+display_name       = "CodeCairn repository memory"
+pico               = ">=0.1"
+bundled            = false
+enabled_by_default = true
+
+[[plugin.contributes.memory_backends]]
+name    = "codecairn"
+factory = "codecairn.integrations.pico.backend:make_backend"

@@ -115,6 +115,9 @@ ADR 0058 amends ADR 0049 only for post-v0.1 delivery. It preserves every
 version 0.1 source ceiling and gives `v02-001` and `v02-002` explicit additive
 integration budgets.
 
+ADR 0059 freezes the Pico plugin and `MemoryBackend` compatibility identity
+used to implement, install-test, and hand off the CodeCairn adapter.
+
 These decisions are specified for implementation under
 [`../plan/tasks/`](../plan/tasks/). Current shipped behavior remains
 [`../runtime/operations.md`](../runtime/operations.md) until the relevant task

@@ -72,14 +72,15 @@ external tracker when tasks are published or assigned.
 |---|---|
 | [`v0.2/README.md`](v0.2/README.md) | Canonical Pico Source Journal, Memory Adapter, ownership, failure, and evidence contract |
 | [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) | Decision to replace Pico's long-term Memory Backend directly |
+| [`adr/0059-pico-adapter-targets-one-frozen-host-contract.md`](adr/0059-pico-adapter-targets-one-frozen-host-contract.md) | Frozen Pico plugin and MemoryBackend compatibility identity |
 | [`plan/tasks/v02-001-pico-trace-import.md`](plan/tasks/v02-001-pico-trace-import.md) | Pico source journal and evidence-preserving importer |
 | [`plan/tasks/v02-002-pico-memory-adapter.md`](plan/tasks/v02-002-pico-memory-adapter.md) | Installed Pico plugin and MemoryBackend mapping |
 | [`plan/tasks/v02-003-pico-integration-evidence.md`](plan/tasks/v02-003-pico-integration-evidence.md) | Joint installed continuity, isolation, and paired evidence |
 | [`plan/pico-memory-adapter-implementation-goal.md`](plan/pico-memory-adapter-implementation-goal.md) | Codex Goal that executes `v02-001` and `v02-002` serially and produces the Pico handoff |
 
-These documents are post-v0.1 plans. Until their tasks merge,
-[`runtime/operations.md`](runtime/operations.md) remains the implementation
-truth.
+The CodeCairn-owned `v02-001` and `v02-002` deliveries are implemented.
+Pico's default switch, EverOS removal, continuity evidence, and paired
+evaluation remain blocked downstream.
 
 ## Runtime and operations
 

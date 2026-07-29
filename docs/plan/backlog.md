@@ -23,7 +23,7 @@ implementation detail.
 | Order | Task | State | Exit signal |
 |---:|---|---|---|
 | 12 | [`v02-001`](tasks/v02-001-pico-trace-import.md) | done | Pico journal replay and evidence-preserving import pass |
-| 13 | [`v02-002`](tasks/v02-002-pico-memory-adapter.md) | ready | Resolvable installed plugin exposes the CodeCairn backend |
+| 13 | [`v02-002`](tasks/v02-002-pico-memory-adapter.md) | done | Resolvable installed plugin exposes the CodeCairn backend |
 | 14 | Pico `codecairn-001` and `codecairn-002` | blocked | Pico pins CodeCairn, removes EverOS, and retains Local Skills |
 | 15 | [`v02-003`](tasks/v02-003-pico-integration-evidence.md) | blocked | Installed continuity, isolation, and paired artifacts are complete |
 

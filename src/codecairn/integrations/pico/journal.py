@@ -71,6 +71,9 @@ class PicoSourceJournal:
             state = self._read_journal(directory)
             checkpoint = importer.import_checkpoint(self.path, repo_key=self.repo_key)
             self._verify_committed_prefix(state, checkpoint)
+            if not state.records:
+                _create_atomic(directory, self.path.name, self._header_line())
+                state = self._read_journal(directory)
             if state.trailing:
                 raise PicoJournalError("Pico journal has an unterminated record without a staged batch")
             committed_changes = checkpoint.resume_file_change_fact_count if checkpoint is not None else 0
@@ -92,6 +95,38 @@ class PicoSourceJournal:
                 raise PicoJournalError("Pico journal exceeds the import byte limit")
             _create_atomic(directory, self.staged_path.name, staged)
             return self._recover_locked(importer, directory)
+
+    @classmethod
+    def recover_pending(cls, runtime_root: Path, *, repo_key: str, importer: PicoJournalImporter[Any]) -> int:
+        """Recover every staged journal bound to one repository namespace."""
+        root = Path(os.path.abspath(runtime_root)).resolve()
+        normalized_key = _identity(repo_key, field="repo_key", maximum=_MAX_IDENTITY_CHARS)
+        namespace_hash = hashlib.sha256(normalized_key.encode()).hexdigest()
+        directory = _open_directory(root, ("sources", "pico", namespace_hash))
+        pending: list[tuple[str, str]] = []
+        try:
+            names = set(os.listdir(directory))
+            for staged_name in sorted(name for name in names if name.startswith(".") and name.endswith(".stage.jsonl")):
+                journal_name = staged_name[1 : -len(".stage.jsonl")] + ".jsonl"
+                if journal_name not in names:
+                    raise PicoJournalError("Pico staged batch has no bound journal header")
+                source = _read_regular(directory, journal_name, maximum=MAX_SESSION_BYTES)
+                header = source.splitlines(keepends=True)[0] if source else b""
+                record = _decode_canonical_line(header, label="Pico journal header")
+                raw_session_id = record.get("session_id")
+                if not isinstance(raw_session_id, str):
+                    raise PicoJournalError("Pico journal header session identity is invalid")
+                session_id = _identity(raw_session_id, field="session_id", maximum=256)
+                journal = cls(root, repo_key=normalized_key, session_id=session_id)
+                if journal.path.name != journal_name or journal.staged_path.name != staged_name:
+                    raise PicoJournalError("Pico staged batch path does not match its journal identity")
+                journal._validate_header(header)
+                pending.append((session_id, staged_name))
+        finally:
+            os.close(directory)
+        for session_id, _staged_name in pending:
+            cls(root, repo_key=normalized_key, session_id=session_id).recover(importer=importer)
+        return len(pending)
 
     def recover(self, *, importer: PicoJournalImporter[_T]) -> _T | None:
         with self._locked_directory() as directory:

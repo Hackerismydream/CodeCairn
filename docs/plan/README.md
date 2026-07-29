@@ -150,15 +150,14 @@ v02-003 joint installed evidence and paired evaluation
 | ID | Outcome | Depends on | State |
 |---|---|---|---|
 | [`v02-001`](tasks/v02-001-pico-trace-import.md) | Pico source and provider `pico` Agent Trace | current CodeCairn main | done |
-| [`v02-002`](tasks/v02-002-pico-memory-adapter.md) | Installed Pico plugin and MemoryBackend mapping | v02-001 | ready |
+| [`v02-002`](tasks/v02-002-pico-memory-adapter.md) | Installed Pico plugin and MemoryBackend mapping | v02-001 | done |
 | [`v02-003`](tasks/v02-003-pico-integration-evidence.md) | Cross-process, cross-repository, and paired evidence | v02-002 plus Pico codecairn-002 | blocked |
 
 The maintained version 0.2 contract is
-[`../v0.2/README.md`](../v0.2/README.md). CodeCairn implements its adapter
-first. Pico then pins a resolvable versioned CodeCairn distribution, selects the
-backend, removes EverOS product coupling, and runs Pico-owned continuity and
-PicoBench tracks. The final evidence task starts only after both implementation
-commits are fixed.
+[`../v0.2/README.md`](../v0.2/README.md). CodeCairn now implements the
+installed adapter. Pico must consume the immutable handoff, select the backend,
+remove EverOS product coupling, and run Pico-owned continuity and PicoBench
+tracks. The final evidence task remains blocked until those Pico changes merge.
 
 Version 0.2 tasks follow the same evidence discipline as version 0.1. Fixture
 import is not a live Pico result, package discovery is not task-effect

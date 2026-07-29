@@ -61,6 +61,9 @@ dev = [
 codecairn = "codecairn.bootstrap:main"
 codecairn-mcp = "codecairn.bootstrap:mcp_main"
 
+[project.entry-points."pico.plugins"]
+codecairn = "codecairn.integrations.pico"
+
 [tool.hatch.build]
 exclude = [
   "**/__pycache__",
@@ -149,3 +152,16 @@ name = "Entrypoints depend on contracts, not adapters"
 type = "forbidden"
 source_modules = ["codecairn.entrypoints"]
 forbidden_modules = ["codecairn.importers", "codecairn.storage"]
+
+[[tool.importlinter.contracts]]
+name = "Core does not depend on the Pico Integration Module"
+type = "forbidden"
+source_modules = [
+  "codecairn.bootstrap",
+  "codecairn.entrypoints",
+  "codecairn.importers",
+  "codecairn.memory",
+  "codecairn.service",
+  "codecairn.storage",
+]
+forbidden_modules = ["codecairn.integrations.pico"]
