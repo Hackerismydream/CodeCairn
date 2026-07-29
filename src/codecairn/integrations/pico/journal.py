@@ -12,7 +12,8 @@ from typing import Any, Protocol, TypeVar, cast
 
 from filelock import FileLock
 
-from codecairn.importers.pico import PICO_SOURCE_SCHEMA
+from codecairn.importers.jsonl import MAX_RAW_EVENTS, MAX_SESSION_BYTES
+from codecairn.importers.pico import MAX_PICO_BATCH_BYTES, MAX_PICO_BATCH_EVENTS, MAX_PICO_SESSION_FILE_CHANGES, PICO_SOURCE_SCHEMA
 from codecairn.memory.errors import SourceRewritten
 from codecairn.memory.models import ImportCheckpoint
 from codecairn.memory.schema import SchemaInvalid, canonical_json, normalize_path_key, normalize_text
@@ -21,9 +22,6 @@ from codecairn.memory.trace import EMPTY_RAW_PREFIX_SHA256, extend_raw_prefix_sh
 _T = TypeVar("_T", covariant=True)
 
 _MAX_IDENTITY_CHARS = 512
-_MAX_BATCH_EVENTS = 2_048
-_MAX_BATCH_BYTES = 4 * 1024 * 1024
-_MAX_SESSION_BYTES = 64 * 1024 * 1024
 _MAX_TEXT_CHARS = 32_768
 _MAX_ARGUMENT_BYTES = 256 * 1024
 _MAX_UNTRUSTED_BYTES = 256 * 1024
@@ -53,7 +51,7 @@ class PicoSourceJournal:
     """Commit bounded Pico after-Turn batches behind one recovery interface."""
 
     def __init__(self, runtime_root: Path, *, repo_key: str, session_id: str, source_generation: int = 1) -> None:
-        self._runtime_root = Path(os.path.abspath(runtime_root))
+        self._runtime_root = Path(os.path.abspath(runtime_root)).resolve()
         self.repo_key = _identity(repo_key, field="repo_key", maximum=_MAX_IDENTITY_CHARS)
         self.session_id = _identity(session_id, field="session_id", maximum=256)
         if type(source_generation) is not int or source_generation != 1:
@@ -67,14 +65,20 @@ class PicoSourceJournal:
 
     def commit(self, events: Sequence[Mapping[str, object]], *, importer: PicoJournalImporter[_T]) -> _T:
         normalized_events = _canonical_events(events)
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._prepare_directory()
         with self._lock:
             if self.staged_path.exists():
                 self._recover_locked(importer)
             state = self._read_journal()
-            self._verify_committed_prefix(state, importer.import_checkpoint(self.path, repo_key=self.repo_key))
+            checkpoint = importer.import_checkpoint(self.path, repo_key=self.repo_key)
+            self._verify_committed_prefix(state, checkpoint)
             if state.trailing:
                 raise PicoJournalError("Pico journal has an unterminated record without a staged batch")
+            committed_changes = checkpoint.resume_file_change_fact_count if checkpoint is not None else 0
+            if committed_changes + _file_change_count(normalized_events) > MAX_PICO_SESSION_FILE_CHANGES:
+                raise PicoJournalError("Pico session file changes exceed the import limit")
+            if len(state.records) >= MAX_RAW_EVENTS:
+                raise PicoJournalError("Pico journal exceeds the import event limit")
             batch = {
                 "batch_id": f"{_BATCH_ID_PREFIX}{secrets.token_hex(32)}",
                 "batch_ordinal": max(1, len(state.records)),
@@ -83,20 +87,22 @@ class PicoSourceJournal:
                 "schema": PICO_SOURCE_SCHEMA,
             }
             staged = _canonical_line(batch)
-            if len(staged) > _MAX_BATCH_BYTES:
-                raise PicoJournalError(f"Pico batch exceeds the {_MAX_BATCH_BYTES}-byte limit")
-            _create_fsynced(self.staged_path, staged)
+            if len(staged) > MAX_PICO_BATCH_BYTES:
+                raise PicoJournalError(f"Pico batch exceeds the {MAX_PICO_BATCH_BYTES}-byte limit")
+            if state.complete_bytes + len(staged) > MAX_SESSION_BYTES:
+                raise PicoJournalError("Pico journal exceeds the import byte limit")
+            _create_staged(self.staged_path, staged)
             return self._recover_locked(importer)
 
     def recover(self, *, importer: PicoJournalImporter[_T]) -> _T | None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._prepare_directory()
         with self._lock:
             if not self.staged_path.exists():
                 return None
             return self._recover_locked(importer)
 
     def _recover_locked(self, importer: PicoJournalImporter[_T]) -> _T:
-        staged = _read_regular(self.staged_path, maximum=_MAX_BATCH_BYTES)
+        staged = _read_regular(self.staged_path, maximum=MAX_PICO_BATCH_BYTES)
         staged_record = _decode_canonical_line(staged, label="staged Pico batch")
         _validate_batch_record(staged_record)
         state = self._read_journal()
@@ -121,7 +127,7 @@ class PicoSourceJournal:
     def _read_journal(self) -> _JournalState:
         if not self.path.exists():
             return _JournalState((), b"", 0)
-        source = _read_regular(self.path, maximum=_MAX_SESSION_BYTES)
+        source = _read_regular(self.path, maximum=MAX_SESSION_BYTES)
         records: list[bytes] = []
         cursor = 0
         while True:
@@ -198,6 +204,15 @@ class PicoSourceJournal:
         if line != self._header_line():
             raise PicoJournalError("Pico journal header does not match its bound repository and session")
 
+    def _prepare_directory(self) -> None:
+        directory = self._runtime_root
+        directory.mkdir(parents=True, exist_ok=True)
+        for component in self.path.parent.relative_to(directory).parts:
+            directory /= component
+            if directory.is_symlink():
+                raise PicoJournalError("Pico journal directory must not traverse symbolic links")
+            directory.mkdir(exist_ok=True)
+
 
 class _JournalState:
     __slots__ = ("complete_bytes", "records", "trailing")
@@ -209,12 +224,23 @@ class _JournalState:
 
 
 def _canonical_events(events: Sequence[Mapping[str, object]]) -> list[dict[str, object]]:
-    if isinstance(events, (str, bytes)) or not 1 <= len(events) <= _MAX_BATCH_EVENTS:
-        raise PicoJournalError(f"Pico batch must contain 1 to {_MAX_BATCH_EVENTS} events")
+    if isinstance(events, (str, bytes)) or not 1 <= len(events) <= MAX_PICO_BATCH_EVENTS:
+        raise PicoJournalError(f"Pico batch must contain 1 to {MAX_PICO_BATCH_EVENTS} events")
     normalized = [_canonical_event(dict(event)) for event in events]
-    if not any(event.get("kind") == "message" and event.get("role") == "user" for event in normalized):
-        raise PicoJournalError("Pico batch must contain a user task opening")
+    openings = sum(event.get("kind") == "message" and event.get("role") == "user" for event in normalized)
+    if openings != 1:
+        raise PicoJournalError("Pico batch must contain exactly one user task opening")
+    if _file_change_count(normalized) > MAX_PICO_SESSION_FILE_CHANGES:
+        raise PicoJournalError("Pico batch file changes exceed the import limit")
     return normalized
+
+
+def _file_change_count(events: Sequence[Mapping[str, object]]) -> int:
+    return sum(
+        len(terminal.get("file_changes") or ())
+        for event in events
+        if isinstance((terminal := event.get("terminal_observation")), Mapping)
+    )
 
 
 def _canonical_event(event: dict[str, object]) -> dict[str, object]:
@@ -249,7 +275,7 @@ def _canonical_event(event: dict[str, object]) -> dict[str, object]:
         raise PicoJournalError(f"Unknown Pico event fields must be nested under untrusted_payload: {sorted(unknown)!r}")
     if "untrusted_payload" in event:
         _bounded_json(event["untrusted_payload"], field="untrusted_payload", maximum=_MAX_UNTRUSTED_BYTES)
-    _bounded_json(event, field="event", maximum=_MAX_BATCH_BYTES)
+    _bounded_json(event, field="event", maximum=MAX_PICO_BATCH_BYTES)
     return cast(dict[str, object], json.loads(canonical_json(event)))
 
 
@@ -303,8 +329,8 @@ def _validate_batch_record(record: dict[str, Any]) -> None:
     if not isinstance(events, list):
         raise PicoJournalError("Staged Pico batch events are invalid")
     _canonical_events(events)
-    if len(_canonical_line(record)) > _MAX_BATCH_BYTES:
-        raise PicoJournalError(f"Pico batch exceeds the {_MAX_BATCH_BYTES}-byte limit")
+    if len(_canonical_line(record)) > MAX_PICO_BATCH_BYTES:
+        raise PicoJournalError(f"Pico batch exceeds the {MAX_PICO_BATCH_BYTES}-byte limit")
 
 
 def _identity(value: str, *, field: str, maximum: int) -> str:
@@ -396,10 +422,20 @@ def _create_fsynced(path: Path, content: bytes) -> None:
     _fsync_directory(path.parent)
 
 
+def _create_staged(path: Path, content: bytes) -> None:
+    temporary = path.with_suffix(".tmp")
+    temporary.unlink(missing_ok=True)
+    _create_fsynced(temporary, content)
+    os.replace(temporary, path)
+    _fsync_directory(path.parent)
+
+
 def _append_fsynced(path: Path, content: bytes) -> None:
     flags = os.O_WRONLY | os.O_APPEND | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     descriptor = os.open(path, flags)
     try:
+        if os.fstat(descriptor).st_size + len(content) > MAX_SESSION_BYTES:
+            raise PicoJournalError("Pico journal exceeds the import byte limit")
         with os.fdopen(descriptor, "ab", closefd=False) as handle:
             handle.write(content)
             handle.flush()

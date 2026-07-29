@@ -215,6 +215,47 @@ def test_pico_import_rejects_duplicate_call_identifiers(tmp_path: Path) -> None:
         SessionImporter().read(source)
 
 
+def test_pico_import_does_not_pair_calls_across_turn_batches(tmp_path: Path) -> None:
+    source = tmp_path / "pico.jsonl"
+    _write_journal(
+        source,
+        {"kind": "message", "role": "user", "text": "Start the check."},
+        {"kind": "tool_call", "call_id": "cross-turn", "tool_name": "shell", "arguments": {}, "command": "make check"},
+    )
+    records = [json.loads(line) for line in source.read_text(encoding="utf-8").splitlines()]
+    records.append(
+        {
+            "batch_id": f"batch_{'2' * 64}",
+            "batch_ordinal": 2,
+            "events": [
+                {"kind": "message", "role": "user", "text": "Observe the old call."},
+                {"kind": "tool_result", "call_id": "cross-turn", "status": "success", "terminal_observation": {"exit_code": 0}},
+            ],
+            "record_type": "batch",
+            "schema": "codecairn.pico.source.v1",
+        }
+    )
+    source.write_text("".join(f"{json.dumps(record, sort_keys=True, separators=(',', ':'))}\n" for record in records))
+
+    trace = SessionImporter().read(source)
+    result = trace.events[-1]
+
+    assert result.tool_name is None
+    assert result.command is None
+    assert result.exit_code is None
+    assert result.observed_outcome is None
+
+
+def test_pico_import_rejects_multiple_user_openings_in_one_batch(tmp_path: Path) -> None:
+    source = tmp_path / "pico.jsonl"
+    _write_journal(
+        source, {"kind": "message", "role": "user", "text": "First."}, {"kind": "message", "role": "user", "text": "Second."}
+    )
+
+    with pytest.raises(TraceParseError, match="exactly one user task opening"):
+        SessionImporter().read(source)
+
+
 @pytest.mark.parametrize("source_generation", [2, True])
 def test_pico_import_rejects_unsupported_source_generation(tmp_path: Path, source_generation: object) -> None:
     source = tmp_path / "pico.jsonl"

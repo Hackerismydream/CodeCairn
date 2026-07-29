@@ -12,9 +12,9 @@ from codecairn.memory.schema import Provider, SchemaInvalid, normalize_path_key,
 from codecairn.memory.trace import stable_id
 
 PICO_SOURCE_SCHEMA = "codecairn.pico.source.v1"
-_MAX_SESSION_FILE_CHANGE_FACTS = 10_000
-_MAX_BATCH_EVENTS = 2_048
-_MAX_BATCH_BYTES = 4 * 1024 * 1024
+MAX_PICO_SESSION_FILE_CHANGES = 10_000
+MAX_PICO_BATCH_EVENTS = 2_048
+MAX_PICO_BATCH_BYTES = 4 * 1024 * 1024
 _MAX_TEXT_CHARS = 32_768
 _MAX_ARGUMENT_BYTES = 256 * 1024
 _MAX_PATH_CHARS = 4_096
@@ -43,7 +43,7 @@ class PicoImporter:
 
     def _from_scan(self, scan: JsonlScan, *, checkpoint: ImportCheckpoint | None) -> AgentTrace:
         context = checkpoint_context(
-            scan, checkpoint, provider=self.provider, label="Pico", max_file_changes=_MAX_SESSION_FILE_CHANGE_FACTS
+            scan, checkpoint, provider=self.provider, label="Pico", max_file_changes=MAX_PICO_SESSION_FILE_CHANGES
         )
         resumed_from, raw_prefix_call_ids, raw_prefix_file_change_fact_count = context
         records = scan.records
@@ -120,6 +120,7 @@ def _metadata_event(
 def _batch_events(
     record: dict[str, Any], *, source_path: Path, session_id: str, raw_event_index: int, raw_event_sha256: str, state: _NormalizeState
 ) -> tuple[TraceEvent, ...]:
+    state.pending_calls.clear()
     if (
         set(record) != {"schema", "record_type", "batch_id", "batch_ordinal", "events"}
         or record.get("schema") != PICO_SOURCE_SCHEMA
@@ -130,12 +131,13 @@ def _batch_events(
     ):
         raise TraceParseError("Pico source journal batch is invalid")
     source_events = record.get("events")
-    if not isinstance(source_events, list) or not 1 <= len(source_events) <= _MAX_BATCH_EVENTS:
-        raise TraceParseError(f"Pico source journal batch must contain 1 to {_MAX_BATCH_EVENTS} events")
-    if not any(event.get("kind") == "message" and event.get("role") == "user" for event in source_events if isinstance(event, dict)):
-        raise TraceParseError("Pico source journal batch must contain a user task opening")
-    if len(json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()) > _MAX_BATCH_BYTES:
-        raise TraceParseError(f"Pico source journal batch exceeds the {_MAX_BATCH_BYTES}-byte limit")
+    if not isinstance(source_events, list) or not 1 <= len(source_events) <= MAX_PICO_BATCH_EVENTS:
+        raise TraceParseError(f"Pico source journal batch must contain 1 to {MAX_PICO_BATCH_EVENTS} events")
+    openings = sum(event.get("kind") == "message" and event.get("role") == "user" for event in source_events if isinstance(event, dict))
+    if openings != 1:
+        raise TraceParseError("Pico source journal batch must contain exactly one user task opening")
+    if len(json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()) > MAX_PICO_BATCH_BYTES:
+        raise TraceParseError(f"Pico source journal batch exceeds the {MAX_PICO_BATCH_BYTES}-byte limit")
     events: list[TraceEvent] = []
     for event_ordinal, source_event in enumerate(source_events):
         if not isinstance(source_event, dict):
@@ -218,7 +220,7 @@ def _normalize_event(
                 terminal.get("file_changes"),
                 event_id=event_id,
                 evidence=evidence,
-                remaining=_MAX_SESSION_FILE_CHANGE_FACTS - state.file_change_fact_count,
+                remaining=MAX_PICO_SESSION_FILE_CHANGES - state.file_change_fact_count,
             )
             if isinstance(terminal, dict)
             else ()

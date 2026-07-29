@@ -8,6 +8,9 @@ from typing import Any
 import pytest
 
 from codecairn.importers import SessionImporter
+from codecairn.importers import jsonl as jsonl_importer
+from codecairn.importers import pico as pico_importer
+from codecairn.integrations.pico import journal as pico_journal
 from codecairn.integrations.pico.journal import PicoJournalError, PicoSourceJournal
 from codecairn.memory.errors import SourceRewritten
 from codecairn.memory.models import ImportCheckpoint
@@ -198,6 +201,94 @@ def test_unterminated_tail_without_stage_fails_closed(tmp_path: Path) -> None:
 
     with pytest.raises(PicoJournalError, match="unterminated record"):
         journal.commit(({"kind": "message", "role": "user", "text": "New."},), importer=runtime)
+
+
+def test_stage_is_published_atomically_and_orphan_temp_is_replaced(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id="session-1")
+    journal._prepare_directory()
+    temporary = journal.staged_path.with_suffix(".tmp")
+    temporary.write_bytes(b'{"partial":')
+
+    with pytest.raises(RuntimeError, match="injected import failure"):
+        journal.commit(({"kind": "message", "role": "user", "text": "Recoverable."},), importer=_FailingImporter())
+
+    assert json.loads(journal.staged_path.read_text())["events"][0]["text"] == "Recoverable."
+    assert temporary.exists() is False
+
+
+def test_namespace_symlink_is_rejected_before_external_files_are_created(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (root / "sources").mkdir(parents=True)
+    (root / "sources" / "pico").symlink_to(outside, target_is_directory=True)
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id="session-1")
+
+    with pytest.raises(PicoJournalError, match="symbolic links"):
+        journal.commit(({"kind": "message", "role": "user", "text": "Stay inside."},), importer=_FailingImporter())
+
+    assert tuple(outside.iterdir()) == ()
+
+
+def test_writer_rejects_importer_bounds_before_staging(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root = tmp_path / "runtime"
+    runtime = _runtime(root)
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id="session-1")
+    journal.commit(({"kind": "message", "role": "user", "text": "Committed."},), importer=runtime)
+    current_size = journal.path.stat().st_size
+    monkeypatch.setattr(pico_journal, "MAX_SESSION_BYTES", current_size + 64)
+    monkeypatch.setattr(jsonl_importer, "MAX_SESSION_BYTES", current_size + 64)
+
+    with pytest.raises(PicoJournalError, match="byte limit"):
+        journal.commit(({"kind": "message", "role": "user", "text": "x" * 128},), importer=runtime)
+
+    assert journal.staged_path.exists() is False
+    assert journal.path.stat().st_size == current_size
+
+
+def test_writer_rejects_cumulative_file_changes_before_staging(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root = tmp_path / "runtime"
+    runtime = _runtime(root)
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id="session-1")
+    change = {"operation": "update", "path": "one.py"}
+    event = {"kind": "tool_result", "call_id": "call", "terminal_observation": {"file_changes": [change]}}
+    monkeypatch.setattr(pico_journal, "MAX_PICO_SESSION_FILE_CHANGES", 1)
+    monkeypatch.setattr(pico_importer, "MAX_PICO_SESSION_FILE_CHANGES", 1)
+    journal.commit(
+        (
+            {"kind": "message", "role": "user", "text": "First."},
+            {"kind": "tool_call", "call_id": "call", "tool_name": "edit", "arguments": {}},
+            event,
+        ),
+        importer=runtime,
+    )
+
+    with pytest.raises(PicoJournalError, match="file changes"):
+        journal.commit(
+            (
+                {"kind": "message", "role": "user", "text": "Second."},
+                {"kind": "tool_call", "call_id": "call-2", "tool_name": "edit", "arguments": {}},
+                event | {"call_id": "call-2"},
+            ),
+            importer=runtime,
+        )
+
+    assert journal.staged_path.exists() is False
+    assert len(runtime.list_memories(repo_key="acme/widgets")) == 1
+
+
+def test_writer_rejects_multiple_user_openings_before_staging(tmp_path: Path) -> None:
+    journal = PicoSourceJournal(tmp_path / "runtime", repo_key="acme/widgets", session_id="session-1")
+
+    with pytest.raises(PicoJournalError, match="exactly one user task opening"):
+        journal.commit(
+            ({"kind": "message", "role": "user", "text": "First."}, {"kind": "message", "role": "user", "text": "Second."}),
+            importer=_FailingImporter(),
+        )
+
+    assert journal.path.exists() is False
+    assert journal.staged_path.exists() is False
 
 
 @pytest.mark.parametrize(
