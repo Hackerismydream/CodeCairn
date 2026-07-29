@@ -74,6 +74,7 @@ external tracker when tasks are published or assigned.
 | [`plan/tasks/v02-001-pico-trace-import.md`](plan/tasks/v02-001-pico-trace-import.md) | Pico source journal and evidence-preserving importer |
 | [`plan/tasks/v02-002-pico-memory-adapter.md`](plan/tasks/v02-002-pico-memory-adapter.md) | Installed Pico plugin and MemoryBackend mapping |
 | [`plan/tasks/v02-003-pico-integration-evidence.md`](plan/tasks/v02-003-pico-integration-evidence.md) | Joint installed continuity, isolation, and paired evidence |
+| [`plan/pico-memory-adapter-implementation-goal.md`](plan/pico-memory-adapter-implementation-goal.md) | Codex Goal that executes `v02-001` and `v02-002` serially and produces the Pico handoff |
 
 These documents are post-v0.1 plans. Until their tasks merge,
 [`runtime/operations.md`](runtime/operations.md) remains the implementation

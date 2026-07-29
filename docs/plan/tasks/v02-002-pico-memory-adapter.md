@@ -144,18 +144,35 @@ Installed acceptance must prove:
 
 Produce a machine-readable handoff containing:
 
+- `schema_version = 1`;
+- `kind = "codecairn.pico.adapter.handoff"`;
 - CodeCairn commit;
-- resolvable CodeCairn distribution name and version;
-- wheel filename and SHA-256;
+- canonical immutable `install_spec`, using the exact 40-character Git
+  revision until a registry release exists;
+- CodeCairn distribution name and version;
+- locally built wheel filename and SHA-256;
 - Python and platform identity;
-- Pico commit/wheel used by installed smoke;
+- frozen Pico repository and commit/wheel used by installed smoke;
 - plugin entry-point inventory;
 - focused and authoritative check outcomes;
 - known limitations from the version 0.2 contract.
 
 This handoff is package evidence, not task-effect evidence.
-It must reference a published or otherwise resolvable versioned wheel. A local
-path dependency is not an acceptable Pico default.
+Write it to:
+
+```text
+.codecairn/evidence/pico-memory/<codecairn-commit>/handoff.json
+```
+
+The directory is ignored and the generated artifact is not committed. Copy a
+redacted field summary and its SHA-256 into the final task report. A local path
+dependency is not an acceptable Pico default.
+
+Because repository PRs are squash-merged, generate the authoritative handoff
+only after Delivery 2 lands. Fetch the final `origin/main` squash commit,
+rebuild and re-run the installed smoke from that exact commit, and use its full
+40-character identity in both the directory name and `install_spec`. A
+pre-squash feature-branch commit is not a valid final handoff.
 
 ## Exit criteria
 
@@ -164,4 +181,5 @@ path dependency is not an acceptable Pico default.
 - the Integration Module contains translation only and delegates memory policy
   to `CodeCairnApplication`;
 - all installed, dependency-direction, and authoritative checks pass;
-- Pico receives an exact wheel identity for its default-switch task.
+- Pico receives one immutable install specification and the exact locally
+  verified wheel identity for its default-switch task.

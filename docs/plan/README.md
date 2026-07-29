@@ -163,3 +163,8 @@ commits are fixed.
 Version 0.2 tasks follow the same evidence discipline as version 0.1. Fixture
 import is not a live Pico result, package discovery is not task-effect
 evidence, and a completed negative A/B remains negative.
+
+The executable Codex Goal for the CodeCairn-owned implementation sequence is
+[`pico-memory-adapter-implementation-goal.md`](pico-memory-adapter-implementation-goal.md).
+It lands `v02-001` before starting `v02-002`, produces the exact wheel handoff
+for Pico, and stops before the joint `v02-003` evidence campaign.
