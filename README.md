@@ -1,130 +1,161 @@
-# CodeCairn
+<h1 align="center">CodeCairn</h1>
 
-CodeCairn is a local, auditable long-term memory runtime for coding agents. It
-turns owned Codex and Claude Code sessions into inspectable repository memory,
-keeps Markdown as durable truth, evolves stale knowledge without deleting
-history, and returns bounded attributed context to later sessions.
+<p align="center">
+  <strong>Local, auditable memory for Codex and Claude Code.</strong>
+</p>
 
-CodeCairn owns memory. Codex and Claude Code remain independent clients that
-own planning, tool use, and code changes. CodeCairn is not an agent runner,
-cloud knowledge service, hidden prompt injector, or IDE.
+<p align="center">
+  CodeCairn turns completed coding sessions into repository memory that survives
+  the session, the context window, and the agent that created it.
+</p>
 
-## Status
+<p align="center">
+  <a href="https://github.com/Hackerismydream/CodeCairn/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/Hackerismydream/CodeCairn/ci.yml?branch=main&style=flat-square&label=CI"></a>
+  <a href="https://github.com/Hackerismydream/CodeCairn/releases/tag/v0.1.0-rc1"><img alt="Release candidate" src="https://img.shields.io/badge/release-v0.1.0--rc1-6d5dfc?style=flat-square"></a>
+  <img alt="Python 3.12" src="https://img.shields.io/badge/python-3.12-3776ab?style=flat-square">
+  <img alt="MCP" src="https://img.shields.io/badge/MCP-7_tools_%2B_1_resource-00a67e?style=flat-square">
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-f5c542?style=flat-square"></a>
+</p>
 
-Version 0.1 is a release candidate, not a published package. The current
-implementation includes incremental Codex/Claude import, four memory types,
-immutable supersession and restore, active-only hybrid recall, CLI, seven MCP
-tools plus one resource, explicit session-end hooks, and reproducible
-evaluation gates. Final real-client and candidate-bound paid evidence remain
-release blockers.
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#evidence-backed-results">Evidence</a> ·
+  <a href="docs/INDEX.md">Documentation</a>
+</p>
 
-The built release-candidate wheel can be installed persistently today. The registry command
-below becomes the normal path only after the first publication:
+---
+
+Coding agents do useful work, then lose the details when a session ends.
+CodeCairn keeps the goal, decisions, outcomes, repository knowledge, working
+preferences, and unfinished state close to the repository. A later Codex or
+Claude Code session can recall that history as bounded context with links back
+to the source.
+
+CodeCairn owns memory independently from the coding agent. Your agent still
+owns planning, tool use, and code changes. The memory remains local,
+inspectable, portable, and available when you switch clients.
+
+## Why CodeCairn
+
+| What you need | What CodeCairn does |
+|---|---|
+| Memory that survives a session | Captures owned Codex and Claude Code transcripts through explicit session-end hooks or manual import |
+| Context you can trust | Derives provenance, roles, command outcomes, file changes, and quotes from normalized events rather than model output |
+| Knowledge that can change | Supersedes stale repository knowledge and work state without deleting history |
+| Recall that fits the task | Combines lexical and vector candidates, filters to active memory, reranks results, and compiles a token-bounded context |
+| Data you can inspect | Keeps durable memory in Markdown, operational state in SQLite, and a rebuildable search projection in LanceDB |
+| One product across clients | Exposes the same application service through CLI, seven MCP tools, one MCP resource, and Codex or Claude Code hooks |
+
+## Quick start
+
+CodeCairn 0.1 requires Python 3.12 and
+[`uv`](https://docs.astral.sh/uv/). The release candidate is not published on
+PyPI yet, so install it from a checkout or the built wheel.
 
 ```bash
-uv tool install codecairn==0.1.0
+git clone https://github.com/Hackerismydream/CodeCairn.git
+cd CodeCairn
+uv tool install .
 ```
 
-For a local release artifact, replace the package name with the downloaded
-wheel path:
+Move to the Git repository whose memory CodeCairn should own:
 
 ```bash
-uv tool install ./codecairn-0.1.0-py3-none-any.whl
-```
-
-CodeCairn requires Python 3.12. `uv tool install` creates an isolated persistent
-environment and puts `codecairn` and `codecairn-mcp` on `PATH`.
-
-## Five-minute memory loop
-
-Run these commands inside the Git repository whose memory CodeCairn should
-own:
-
-```bash
+cd /path/to/your/repository
 codecairn init
-codecairn import /path/to/owned-codex-or-claude-session.jsonl --finalize
-codecairn recall "What happened in the last repository task?" --format markdown
 codecairn doctor
 ```
 
-`init` writes a strict non-secret binding into the Git common directory and
-defaults runtime data to `~/.codecairn`. It chooses the pinned local FastEmbed
-retrieval profile unless DashScope is explicitly configured. Semantic
-extraction is independent and defaults visibly to `none`; deterministic Task
-Experience capture still works without it.
+`init` writes a non-secret repository binding into the Git common directory.
+Runtime data defaults to `~/.codecairn`. The default retrieval profile is local
+FastEmbed unless DashScope is explicitly configured, and semantic extraction is
+visibly disabled by default.
 
-Manual EOF does not close the final task unless `--finalize` is present. A
-Codex Stop or Claude Code SessionEnd hook supplies its explicit boundary.
-Repeated imports and repeated hooks are idempotent.
-
-## Connect one coding agent
-
-Register the explicit stdio MCP server:
+### Connect Codex
 
 ```bash
-claude mcp add codecairn -- codecairn-mcp
-# or
 codex mcp add codecairn -- codecairn-mcp
-```
 
-Preview the exact hook edit before installing it:
-
-```bash
-codecairn hook install --claude --dry-run
-codecairn hook install --claude
-
-# or
 codecairn hook install --codex --dry-run
 codecairn hook install --codex
 ```
 
-The installer preserves unrelated settings, writes atomically, and reports the
-exact handler command. For Codex, reopen the repository and complete Codex's
-normal trust review after inspecting the generated hook configuration;
-CodeCairn does not bypass or modify client trust.
+Inspect the generated hook settings, reopen the repository, and complete
+Codex's normal trust review.
 
-Then:
+### Connect Claude Code
 
-```text
-doctor -> complete one coding task -> let the hook capture it
-       -> start the next task -> call recall through MCP
+```bash
+claude mcp add codecairn -- codecairn-mcp
+
+codecairn hook install --claude --dry-run
+codecairn hook install --claude
 ```
 
-The complete timed install, MCP, hook, trust, doctor, task, and next-recall
-checklist is in
-[`docs/runtime/installation.md`](docs/runtime/installation.md). Reviewable
-`AGENTS.md` and `CLAUDE.md` snippets are in
-[`docs/runtime/agent-instructions.md`](docs/runtime/agent-instructions.md);
-CodeCairn never edits those files automatically.
+Finish one coding task and let the supported Stop or SessionEnd boundary
+capture it. In the next task, call the MCP `recall` tool. Repeated hook delivery
+and repeated transcript import are idempotent.
 
-## What is stored
+You can also test the loop without a client integration:
 
-Version 0.1 has five layers but only four durable Coding Memory types:
+```bash
+codecairn import /path/to/owned-session.jsonl --finalize
+codecairn recall "What should I know before the next task?" --format markdown
+codecairn doctor
+```
 
-| Layer | Responsibility | Durable memory types |
+The complete install, trust, privacy, rollback, and acceptance path is in
+[`docs/runtime/installation.md`](docs/runtime/installation.md).
+
+## How it works
+
+```mermaid
+flowchart LR
+    A["Codex or Claude Code"] -->|"owned transcript"| S["Source<br/>normalized trace and evidence"]
+    S --> X["Experience<br/>task episodes"]
+    X --> K["Knowledge<br/>repository facts, preferences, work state"]
+    K --> E["Evolution<br/>supersession and restore"]
+    E --> R["Recall<br/>active, attributed context"]
+    R -->|"MCP or CLI"| A
+
+    X --> M[("Markdown<br/>durable truth")]
+    K --> M
+    E --> Q[("SQLite<br/>state and ledger")]
+    M --> L[("LanceDB<br/>rebuildable index")]
+    Q --> L
+    L --> R
+```
+
+The five layers separate source authority from interpretation and retrieval:
+
+| Layer | Responsibility | Version 0.1 output |
 |---|---|---|
-| Source | Normalize owned traces and derive provenance facts | none |
-| Experience | Bound one user task and observed outcome | Task Experience |
-| Knowledge | Keep reusable repository facts and current work | Repository Knowledge, Repository Working Preference, Work State |
-| Evolution | Append supersession decisions and derive active status | none |
-| Recall | Compile bounded task-shaped context and a sidecar | none |
+| Source | Normalize provider transcripts and derive provenance facts | Agent Trace and Evidence References |
+| Experience | Bound one user task, its actions, and observed outcome | Task Experience |
+| Knowledge | Keep reusable repository facts and active state | Repository Knowledge, Repository Working Preference, Work State |
+| Evolution | Append lifecycle decisions without rewriting old memory | Supersession and forward-only restore |
+| Recall | Select active memory and compile task-shaped context | Markdown Recall Context plus JSON sidecar |
 
-Source and Recall are boundaries, not extra memory types. Evolution records
-relationships between immutable revisions. A restored historical memory is a
-new forward revision; CodeCairn never rewrites the old memory or reverses
-history.
+Source and Recall are boundaries, not extra memory types. Task Experience is
+append-only. Repository Knowledge, Repository Working Preference, and Work
+State can evolve through an immutable supersession ledger.
 
-Markdown under the runtime root is durable truth. SQLite owns operational
-cursors, mirrors, recovery intents, lifecycle projection, and queues. LanceDB
-is a disposable lexical/vector search projection. A model may summarize or
-propose knowledge, but it may not author provenance, message roles, exact
-quotes, command outcomes, changed files, or verification facts.
+### Storage has one authority per job
 
-## Public surfaces
+```text
+Markdown  durable, human-readable memory
+SQLite    cursors, mirrors, queues, write intents, lifecycle projection
+LanceDB   disposable lexical and vector search projection
+```
 
-The CLI supports setup, import, direct Knowledge/Work State, recall, history,
-restore, queues, index operations, doctor, export/reset, hooks, and evidence
-verification. The stdio MCP server exposes exactly:
+Delete the index and CodeCairn can rebuild it from Markdown. A model may
+summarize a task or propose knowledge, but it cannot author provenance, exact
+quotes, message roles, command outcomes, changed files, or verification facts.
+
+## What the agent can use
+
+The stdio MCP server exposes seven tools and one resource template:
 
 ```text
 recall
@@ -138,67 +169,57 @@ doctor
 codecairn://memory/{memory_id}
 ```
 
-CLI, MCP, and hooks call the same application service. There is no version 0.1
-HTTP server. Exact commands and failure behavior are documented in
-[`docs/runtime/operations.md`](docs/runtime/operations.md).
+`recall` returns task-shaped context. `remember` accepts durable repository
+knowledge, working preferences, and work state. Session import owns Task
+Experience, so an agent cannot manufacture one through `remember`.
 
-## Evaluation and evidence
+CLI, MCP, and hooks call the same application service. CodeCairn 0.1 has no
+HTTP server, remote MCP transport, hidden prompt injection, or background
+watcher.
 
-The authoritative repository gates are:
+The full command and failure contract is documented in
+[`docs/runtime/operations.md`](docs/runtime/operations.md). Reviewable
+`AGENTS.md` and `CLAUDE.md` snippets live in
+[`docs/runtime/agent-instructions.md`](docs/runtime/agent-instructions.md).
+CodeCairn never edits those instruction files automatically.
+
+## Evidence-backed results
+
+Every number below comes from the checked-in
+[`v0.1-rc1 evidence bundle`](evidence/v0.1-rc1/RELEASE_NOTES.md), which binds
+the result to implementation commit
+[`f2358a7`](https://github.com/Hackerismydream/CodeCairn/commit/f2358a77696f38283a237d9be67ec514885aff76).
+
+| Evaluation | Result | Raw evidence |
+|---|---|---|
+| LoCoMo full | **1,264 / 1,540, 82.08%** with zero final infrastructure failures | [`aggregate.json`](evidence/v0.1-rc1/raw/locomo/full/aggregate.json) |
+| CodingMemoryBench-20 | **80% memory-off to 100% memory-on**, a 20 percentage-point increase across 120 isolated Codex runs | [`summary.json`](evidence/v0.1-rc1/raw/coding/summary.json) |
+| Retrieval | **97% Recall@5**, 100% provenance coverage, 0 stale-memory leakage, 39.48 ms P95 | [`aggregate.json`](evidence/v0.1-rc1/raw/offline/retrieval/aggregate.json) |
+| Scale and idempotency | **1,000 sessions and 100,000 events**, 1,000 unique Episodes, 0 duplicates on repeat import, 55.03 s | [`aggregate.json`](evidence/v0.1-rc1/raw/offline/scale/aggregate.json) |
+| Real clients | Native Codex and Claude Code hook trigger, receipt, repeat delivery, and next-session recall verified | [`real-clients.json`](evidence/v0.1-rc1/raw/reports/real-clients.json) |
+| Recovery | All eight release-critical write-intent crash boundaries passed | [`recovery.json`](evidence/v0.1-rc1/raw/reports/recovery.json) |
+
+The bundle also records provider identity, cost boundaries, manifests, raw
+question results, client versions, artifact hashes, and known limitations.
+`codecairn evidence verify` recomputes the public reports without provider
+credentials.
 
 ```bash
-make eval-smoke
-make eval-scale
-make eval-retrieval
-make eval-locomo-200 HELP=1
-make eval-locomo-full HELP=1
-make eval-coding-ab HELP=1
-make evidence-verify
-make source-budget
+codecairn evidence verify evidence/v0.1-rc1
 ```
 
-The offline retrieval protocol currently executes 100 queries against the
-public recall path. The scale gate imports 1,000 sessions and 100,000 events
-twice. The HELP plans resolve paid inputs, immutable output paths, credentials,
-and spend boundaries without calling a provider.
+Historical benchmark bundles remain under `evidence/benchmark-v*` and are not
+presented as current release-candidate evidence.
 
-The current [`evidence/v0.1-rc1`](evidence/v0.1-rc1/metrics.json) bundle binds
-the version 0.1 implementation to 1,264/1,540 LoCoMo answers (82.08%), a
-memory-off 80% to memory-on 100% CodingMemoryBench result across 120 isolated
-Codex runs, and the offline, packaging, and real-client gates described below.
-The preferred 85% to 86% LoCoMo ship band was not reached. Historical bundles
-remain under `evidence/benchmark-v*` and are not presented as current
-candidate evidence.
+## Built to be learned
 
-Packaging and documentation gates are:
+CodeCairn keeps the system small enough to read as a project:
 
-```bash
-uv build --clear
-make artifact-check
-make docs-check
-make installed-smoke
-make artifact-repro
-```
-
-`artifact-repro` builds twice from separate clean checkouts with a frozen
-source epoch and compares both archive hashes and unpacked inventories.
-
-## Learn the architecture
-
-Read from product behavior inward:
-
-1. [`CONTEXT.md`](CONTEXT.md) — canonical vocabulary.
-2. [`docs/v0.1/walkthrough.md`](docs/v0.1/walkthrough.md) — one trace through
-   capture, evolution, recall, and history.
-3. [`docs/architecture.md`](docs/architecture.md) — ownership and dependency
-   direction.
-4. [`docs/v0.1/learning-path.md`](docs/v0.1/learning-path.md) — guided
-   source-reading order.
-5. [`docs/runtime/operations.md`](docs/runtime/operations.md) — commands that
-   exist on current `main`.
-6. [`docs/adr/README.md`](docs/adr/README.md) — why the design changed.
-
-The full maintained index is [`docs/INDEX.md`](docs/INDEX.md).
+| Source budget | Current release |
+|---|---:|
+| Product core | 9,700 Python lines |
+| Complete package, including evaluation | 13,978 Python lines |
+| Automated tests | 188 |
 
 Dependencies point inward:
 
@@ -209,6 +230,27 @@ entrypoints -> service -> memory
              importers   storage adapters
 ```
 
+Start with the
+[`version 0.1 walkthrough`](docs/v0.1/walkthrough.md), then follow the
+[`learning path`](docs/v0.1/learning-path.md) through the domain, service,
+storage, integrations, and evidence code. The complete maintained document map
+is in [`docs/INDEX.md`](docs/INDEX.md).
+
+## Configuration and privacy
+
+The default FastEmbed profile keeps embedding local but may download pinned
+model artifacts. The optional DashScope profile sends embedding input to the
+configured endpoint. Semantic extraction uses a separate explicit profile and
+is disabled by default.
+
+Repository bindings never store provider keys. Runtime roots, namespace
+exports, hook receipts, imported transcripts, and benchmark artifacts can
+contain source material and should not be committed.
+
+Run `codecairn doctor` to see the active namespace, Markdown state, cursor
+state, queue health, index parity, retrieval profile, and provider posture
+without exposing credentials.
+
 ## Development
 
 ```bash
@@ -216,17 +258,21 @@ uv sync --locked --all-groups
 make format
 make check
 make docs-check
+make evidence-verify EVIDENCE_BUNDLE=evidence/v0.1-rc1
 ```
 
-Contribution and security boundaries are in
+CI also enforces the source budget, architecture dependency rules, type checks,
+artifact contents, and evidence integrity.
+
+Contribution and security boundaries are documented in
 [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
 
-## Scope
+## Version 0.1 scope
 
-Version 0.1 deliberately excludes Raven integration, UI/dashboard, cloud
-tenancy, background watcher, remote MCP transport, dynamic profiles, and
-standalone memory verification. Those are later product decisions, not hidden
-release work.
+CodeCairn 0.1 includes one complete coding-first product profile. Raven
+integration, UI or dashboard work, cloud tenancy, remote MCP transport,
+dynamic profiles, background skill evolution, and standalone memory
+verification remain outside this release.
 
 ## License
 
