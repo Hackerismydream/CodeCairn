@@ -1,0 +1,28 @@
+{
+  "bundle_id": "v0.1-rc1",
+  "contract": "codecairn-v01-release-evidence-v1",
+  "evidence_sha": null,
+  "implementation_sha": "f2358a77696f38283a237d9be67ec514885aff76",
+  "limitations": [
+    "Provider-managed answer and judge model aliases are not immutable revisions.",
+    "Evidence verification proves integrity and thresholds, not semantic truth by provider replay.",
+    "Raven integration is outside version 0.1."
+  ],
+  "reports": {
+    "artifact_repro": "raw/reports/artifact-repro.json",
+    "installed_smoke": "raw/reports/installed-smoke.json",
+    "quality": "raw/reports/quality.json",
+    "real_clients": "raw/reports/real-clients.json",
+    "recovery_junit": "raw/reports/recovery.json",
+    "source_budget": "raw/reports/source-budget.json"
+  },
+  "runs": {
+    "coding": "raw/coding",
+    "locomo_200": "raw/locomo/diagnostic",
+    "locomo_full": "raw/locomo/full",
+    "retrieval": "raw/offline/retrieval",
+    "scale": "raw/offline/scale",
+    "smoke": "raw/offline/smoke"
+  },
+  "schema_version": 1
+}

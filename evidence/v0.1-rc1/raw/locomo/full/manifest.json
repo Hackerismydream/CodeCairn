@@ -1,0 +1,127 @@
+{
+  "budget": {
+    "answer_attempts": 2,
+    "judge_attempts": 2,
+    "judge_votes": 3,
+    "max_call_cost_usd": 0.0125,
+    "max_completion_tokens": 512,
+    "spend_ceiling_usd": 154.0
+  },
+  "dataset_sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+  "execution": {
+    "contract": "bounded-question-parallelism-v1",
+    "workers": 2
+  },
+  "implementation_sha": "f2358a77696f38283a237d9be67ec514885aff76",
+  "protocol": {
+    "contract": {
+      "answer": {
+        "adapter": "openai-compatible-chat-v1",
+        "instruction_contract": "memory-evidence-multihop-v2",
+        "max_completion_tokens": 512,
+        "maximum_attempts": 2,
+        "prompt_delivery": "system-and-user-prefix-v1",
+        "provider_identity": "recorded-in-run-manifest",
+        "response_contract": "json-object-with-string-answer",
+        "temperature": 0
+      },
+      "dataset": {
+        "path": "benchmarks/locomo/data/locomo10.json",
+        "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
+      },
+      "diagnostic_promotion": {
+        "category_weights": {
+          "1": 282,
+          "2": 321,
+          "3": 96,
+          "4": 841
+        },
+        "maximum_infrastructure_failures": 0,
+        "maximum_retrieval_p95_ms": 8000,
+        "metric": "natural-category-weighted-accuracy-v1",
+        "minimum_accuracy": 0.82
+      },
+      "execution": {
+        "contract": "bounded-question-parallelism-v1",
+        "workers": "recorded-in-run-manifest"
+      },
+      "failure_policy": "provider-or-runtime-failure-is-infrastructure-failure-and-never-a-scored-answer",
+      "journal": "exclusive-started-and-finished-record-per-provider-attempt-v1",
+      "judge": {
+        "adapter": "openai-compatible-chat-v1",
+        "contract": "generous-semantic-equivalence-v1",
+        "instruction_contract": "generous-semantic-equivalence-v1",
+        "max_completion_tokens": 512,
+        "maximum_attempts_per_vote": 2,
+        "prompt_delivery": "system-and-user-prefix-v1",
+        "provider_identity": "recorded-in-run-manifest",
+        "temperature": 0,
+        "votes": 3
+      },
+      "memory_ingest": {
+        "contract": "session-as-repository-knowledge-v1",
+        "namespace": "locomo/<sample-id>",
+        "session_max_utf8_bytes": 32768
+      },
+      "protocol_id": "codecairn-locomo-v01",
+      "question_sets": {
+        "diagnostic_200": {
+          "path": "benchmarks/locomo/diagnostic-200-v24.json",
+          "sha256": "1b93d43b51ca20bf012e8d3221e82749777fdaeda123a9a38e72bf097a91a18f"
+        },
+        "full_1540": {
+          "path": "benchmarks/locomo/full-1540-v24.json",
+          "sha256": "29d7166a090571d4460dade52b0382967936989cf60a6dfbde568494368fc3f4"
+        }
+      },
+      "recall": {
+        "contract": "public-active-only-hybrid-v01",
+        "limit": 40,
+        "retrieval_profile": "recorded-in-run-manifest",
+        "token_budget": 8192
+      },
+      "repair_policy": "exact-infrastructure-failure-set-with-unchanged-protocol-dataset-and-providers-v1",
+      "schema_version": 1,
+      "selection_contract": "V24 files supply deterministic question identities only; this file owns the v0.1 execution protocol."
+    },
+    "id": "codecairn-locomo-v01",
+    "path": "/private/tmp/codecairn-main-land/benchmarks/locomo/v01-protocol.json",
+    "sha256": "657ae457fd9924e2b825f776a90175a95e632d02de21f025f1391f778b0be432"
+  },
+  "providers": {
+    "answer": {
+      "adapter": "openai-compatible-chat-v1",
+      "endpoint": "https://api.deepseek.com",
+      "model": "deepseek-v4-flash",
+      "revision": "provider-managed",
+      "role": "answer"
+    },
+    "judge": {
+      "adapter": "openai-compatible-chat-v1",
+      "endpoint": "https://api.deepseek.com",
+      "model": "deepseek-v4-flash",
+      "revision": "provider-managed",
+      "role": "judge"
+    },
+    "retrieval": {
+      "adapter_version": "codecairn-retrieval-v1",
+      "dimension": 1024,
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "model": "qwen3.7-text-embedding",
+      "profile": "dashscope",
+      "projection": "codecairn-memory-line-snippets-v1",
+      "reranker_model": "Xenova/ms-marco-MiniLM-L-6-v2",
+      "reranker_revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
+      "revision": "provider-managed"
+    }
+  },
+  "question_set": {
+    "path": "/private/tmp/codecairn-main-land/benchmarks/locomo/full-1540-v24.json",
+    "question_count": 1540,
+    "selection_id": "locomo-full-1540-v24",
+    "selection_sha256": "caf55b45f266fe5738025333400331c92a660a5a607d107a2141e10f729e4b37"
+  },
+  "run_id": "locomo-full-f2358a7-qwen37-dsv4flash-w2-v1",
+  "schema_version": 1,
+  "suite": "locomo-full"
+}

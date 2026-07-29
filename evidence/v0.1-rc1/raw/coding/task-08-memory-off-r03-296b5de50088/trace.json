@@ -1,0 +1,104 @@
+{
+  "events": [
+    {
+      "exit_code": null,
+      "kind": "message",
+      "step": 1
+    },
+    {
+      "command_sha256": "1542c538d1e520992e79f1b6ceaa0983aab838e92ab2dc77dd183d29756e7537",
+      "exit_code": 0,
+      "kind": "command",
+      "step": 2
+    },
+    {
+      "command_sha256": "a4aab757ef81620a7c414c4c81f6116b64ba69f5ecec37126e6c26c1252f88d5",
+      "exit_code": 128,
+      "kind": "command",
+      "step": 3
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "31df69700556e1007bac18c2314a074becc909df17a718cf320509447c1c15f1",
+      "step": 4
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "73e7b6f86214bc78ee505fb5f7d4fb97cfa99924a67ca3105113c9a3d52f8fef",
+      "step": 5
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "5a5000a3f3ff868603876ea774d1d272912a4949e738597a944cfc6050b8d097",
+      "step": 6
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "5110e6bf0a7dc46c60dea15bbbf2381c7a2ea3a420ca05fec79b29806431b068",
+      "step": 7
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "53272ec28b105e727f21446f37b29cd5eff29bd9d580db5bcf35fec93df090e5",
+      "step": 8
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "cbe5cfdf7c2118a9c3d78ef1d684f3afa089201352886449a06a6511cfef74a7",
+      "step": 9
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "646964943fd2271187dbe29287f57e0238491c029cc6d8ce76f25ae240474294",
+      "step": 10
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "73e7b6f86214bc78ee505fb5f7d4fb97cfa99924a67ca3105113c9a3d52f8fef",
+      "step": 11
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "9a881b9b9f23849475296a8cd768ea1965bc3152df7118e60c145975af6aa58a",
+      "step": 12
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "073c1634c496cdb649d1afe0a312bbb4b7e1741b271542e4a436c3b8824b1761",
+      "step": 13
+    },
+    {
+      "exit_code": null,
+      "kind": "message",
+      "step": 14
+    },
+    {
+      "exit_code": null,
+      "kind": "file_change",
+      "path_sha256": "5ebb1473ebd0d7fd302199abc5ad7f3f0290709e3b19430d6037b16c40e0f2e8",
+      "step": 15
+    },
+    {
+      "command_sha256": "38c0b056561a9b5bfcb8d486f464bc0a510d55a565610329b420dbbce514e0e2",
+      "exit_code": 0,
+      "kind": "command",
+      "step": 16
+    },
+    {
+      "exit_code": null,
+      "kind": "message",
+      "step": 17
+    }
+  ],
+  "schema_version": 1
+}

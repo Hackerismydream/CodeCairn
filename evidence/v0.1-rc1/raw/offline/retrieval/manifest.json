@@ -1,0 +1,8 @@
+{
+  "aggregate_sha256": "42ccd101570810efac027d7bb2165ab175bd1b0246700cc02beb9b5eb591264f",
+  "implementation_sha": "f2358a77696f38283a237d9be67ec514885aff76",
+  "outcome_count": 100,
+  "run_id": "retrieval-f2358a7-v1",
+  "schema_version": 1,
+  "suite": "retrieval"
+}

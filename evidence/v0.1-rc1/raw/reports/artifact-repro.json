@@ -1,0 +1,1211 @@
+{
+  "builds": [
+    {
+      "artifacts": {
+        "sdist": {
+          "filename": "codecairn-0.1.0.tar.gz",
+          "inventory_sha256": "51f87b9640cc57b0ec12666e19116972e4a03ae2f446947dfb3936571e5c7067",
+          "member_count": 59,
+          "members": [
+            {
+              "path": ".gitignore",
+              "sha256": "05821e62595e3bbea056433d563c0a8ed22aa34d238b675f6058a4faf07d288e",
+              "size_bytes": 236
+            },
+            {
+              "path": "CHANGELOG.md",
+              "sha256": "3fe9f6487885fea5ee9f13bcbe374b08f1245a20dd48468f5cbba557a09c1a9b",
+              "size_bytes": 1414
+            },
+            {
+              "path": "CODE_OF_CONDUCT.md",
+              "sha256": "ab0177dc07ef0ac7c8b2e1c339d8868ce1d927d064c1fbb3d5e1571296fdfdfe",
+              "size_bytes": 1073
+            },
+            {
+              "path": "CONTRIBUTING.md",
+              "sha256": "fac5c6b7e2391a6d9166bc6eb9d705ac7d6945932890ce239812586a45072e79",
+              "size_bytes": 1599
+            },
+            {
+              "path": "LICENSE",
+              "sha256": "517279ae4342c9e95200b94e1c067b8dd05e56063cd5768293cb523cfd35bc39",
+              "size_bytes": 1063
+            },
+            {
+              "path": "PKG-INFO",
+              "sha256": "5b72f8eee2792367478f15592a23f7fe2cbf7fb7aa2dde4c27b9be496fac3988",
+              "size_bytes": 9113
+            },
+            {
+              "path": "README.md",
+              "sha256": "3e24a30573e16cab1efcd0867ffb509378834aa306ba829635fd43a0a9104fd8",
+              "size_bytes": 7753
+            },
+            {
+              "path": "SECURITY.md",
+              "sha256": "732874208864e97fbdc0d71be045ca5a00f00c84330444a0dee6e58074464da1",
+              "size_bytes": 1087
+            },
+            {
+              "path": "pyproject.toml",
+              "sha256": "5441d4705d9536aec3aa4f06bf2d3742a928f26d6c018cbe1c9a51402c1e7787",
+              "size_bytes": 3409
+            },
+            {
+              "path": "src/codecairn/__init__.py",
+              "sha256": "d02edb2747a4d731db8b5512660f26a905dc3811b97fefcd6c7d76942582e7e0",
+              "size_bytes": 95
+            },
+            {
+              "path": "src/codecairn/bootstrap.py",
+              "sha256": "b05183e3836920815ba4b9af17c515fb9db9de086e19188a7dd3b0e0ecaf5274",
+              "size_bytes": 15237
+            },
+            {
+              "path": "src/codecairn/configuration.py",
+              "sha256": "f4af535741df7fdbafffcf855f2750e00ec54fa5ac09ff4e3d9b096b68c7ed96",
+              "size_bytes": 13697
+            },
+            {
+              "path": "src/codecairn/entrypoints/__init__.py",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size_bytes": 0
+            },
+            {
+              "path": "src/codecairn/entrypoints/cli.py",
+              "sha256": "3014b9325150c751054e7c0299fe5898f31ae083563bf66d6b3784b43ceb32c9",
+              "size_bytes": 23110
+            },
+            {
+              "path": "src/codecairn/entrypoints/hooks.py",
+              "sha256": "f90705f4d5f26a1d71fae99a323ec6f444ceb603b0eeff44334a2f7546f5d04e",
+              "size_bytes": 6271
+            },
+            {
+              "path": "src/codecairn/entrypoints/mcp.py",
+              "sha256": "cb08538c8c48cfcaef8b90ee2ba6b2f6e4d3282e0f9ae515c84ea80301243d99",
+              "size_bytes": 12748
+            },
+            {
+              "path": "src/codecairn/evaluation/__init__.py",
+              "sha256": "67642ecf1faf1accc9f691bf1cbcf37d5ae16f985bab988a8861615d9f86b950",
+              "size_bytes": 72
+            },
+            {
+              "path": "src/codecairn/evaluation/artifacts.py",
+              "sha256": "a2b87033e61807dce1a560ff07d836fc34f704dc2e1b02c2972bc213bfd9d179",
+              "size_bytes": 1557
+            },
+            {
+              "path": "src/codecairn/evaluation/coding.py",
+              "sha256": "c231ea94627f13dd22f632fc90ff228b2d76e8c924f72e3d86dddc816e1667e3",
+              "size_bytes": 27479
+            },
+            {
+              "path": "src/codecairn/evaluation/coding_cli.py",
+              "sha256": "e59054cbebe22a84ae6d22ec2004a9285aef5e680dc6f6818d66e60653734aae",
+              "size_bytes": 1538
+            },
+            {
+              "path": "src/codecairn/evaluation/evidence_bundle.py",
+              "sha256": "070b4e7df005710743cf0ae8a38d97c088473281a7d2872b5fb18cf97d93c2c9",
+              "size_bytes": 56138
+            },
+            {
+              "path": "src/codecairn/evaluation/gates.py",
+              "sha256": "95f44af39fab6fae7ae7f432781f3e85ca71be99289fba70903304f6f52936ed",
+              "size_bytes": 26211
+            },
+            {
+              "path": "src/codecairn/evaluation/historical_reader.py",
+              "sha256": "98da0fe27831b58035b7b4a505164b547fae4fac7539009b1851089d35c2e9b6",
+              "size_bytes": 18897
+            },
+            {
+              "path": "src/codecairn/evaluation/locomo.py",
+              "sha256": "19098f73d0f55c02f67119f2ba2fe9eb1dcfba5833314e112488d69c66c03f1b",
+              "size_bytes": 27249
+            },
+            {
+              "path": "src/codecairn/evaluation/release_bundle.py",
+              "sha256": "5ff72e6ba3ee95d407327390259c9f14a52f7479aad4301cf970fd9d9c9805c1",
+              "size_bytes": 26089
+            },
+            {
+              "path": "src/codecairn/evaluation/templates/resume.zh-CN.md",
+              "sha256": "0bb3834c542ba9393f45a9df311f479c1af898ddd94e635e507db7305c80f1f2",
+              "size_bytes": 905
+            },
+            {
+              "path": "src/codecairn/evaluation/worker_process.py",
+              "sha256": "41f480bc55fd9d0eb05776df555882d126c9d52fc364f03d2d9c4bbf52de6b4a",
+              "size_bytes": 4931
+            },
+            {
+              "path": "src/codecairn/importers/__init__.py",
+              "sha256": "5af0e280c02a39fc04a4feccb926c0bb8c796e857fb3b0bf5b11fcf47fbbff06",
+              "size_bytes": 403
+            },
+            {
+              "path": "src/codecairn/importers/claude.py",
+              "sha256": "22cef8c55a1c79e572406c32d1bd728ab319ef4492c618781a1d4a35f70b6cc7",
+              "size_bytes": 13700
+            },
+            {
+              "path": "src/codecairn/importers/codex.py",
+              "sha256": "03941df59e284129453a9b821bc9e5417496945cb083268119cb133a71d20fd6",
+              "size_bytes": 13992
+            },
+            {
+              "path": "src/codecairn/importers/jsonl.py",
+              "sha256": "ab5214e77e544b7cf79aacce5a213b6862851e3b58eb2842061c6050ac4d42a3",
+              "size_bytes": 9754
+            },
+            {
+              "path": "src/codecairn/importers/session.py",
+              "sha256": "93b657e0beb060274d30684072ed81fffc9891a62b3683b7bdc44e921eab82b3",
+              "size_bytes": 1953
+            },
+            {
+              "path": "src/codecairn/memory/__init__.py",
+              "sha256": "7e165b0288a50ed3a412a2c7c7a6e721dfc65e7fbf984a6a798824b8fb87f1ef",
+              "size_bytes": 173
+            },
+            {
+              "path": "src/codecairn/memory/capture.py",
+              "sha256": "9aea9c80964d0303ac8d9a145a16d726e65126a5bac9825c42fe62fe79f96a63",
+              "size_bytes": 9129
+            },
+            {
+              "path": "src/codecairn/memory/config.py",
+              "sha256": "94f95823aca945b029b557cbef4b498457328199a07b09e58677114fb95928f9",
+              "size_bytes": 4049
+            },
+            {
+              "path": "src/codecairn/memory/context.py",
+              "sha256": "fa9e8c310d563213c65fb21babfa1d83f8a25f02cf58d2acf7669220a8f3e7b6",
+              "size_bytes": 3542
+            },
+            {
+              "path": "src/codecairn/memory/episode.py",
+              "sha256": "b4a4f58bf744ded51eb6adb271bfddf78102f82d0f88bcef2820fbd14c2f0c55",
+              "size_bytes": 4746
+            },
+            {
+              "path": "src/codecairn/memory/errors.py",
+              "sha256": "73933b41240003d038485a10de1d5a4611abd936b3db9b00d54782e8922ab071",
+              "size_bytes": 752
+            },
+            {
+              "path": "src/codecairn/memory/evidence.py",
+              "sha256": "7fa075edd89080eda7f5e71e786f4ad8267c2853c9e7cec7d972b570d0284c91",
+              "size_bytes": 6513
+            },
+            {
+              "path": "src/codecairn/memory/evolution.py",
+              "sha256": "164f1def90ec7ea78778803ae70aa2d8e971f09247162e0e696cbf9c8ffe1f0e",
+              "size_bytes": 20198
+            },
+            {
+              "path": "src/codecairn/memory/models.py",
+              "sha256": "ffb5368be73b8e5c9ddb08fbc75ff50f6239291e137b2720d274c8dbc77ec7e6",
+              "size_bytes": 6416
+            },
+            {
+              "path": "src/codecairn/memory/projection.py",
+              "sha256": "c5b8ba74b3c28d3139a21dbc8196073303ec9d0ceba27ac03f22c4dce52e4325",
+              "size_bytes": 1810
+            },
+            {
+              "path": "src/codecairn/memory/providers.py",
+              "sha256": "41dc44cda585a699f815e67f8ff24468f82813ecf7a86590af34a3b1efe41826",
+              "size_bytes": 8684
+            },
+            {
+              "path": "src/codecairn/memory/retrieval.py",
+              "sha256": "b194af0ae1469e2880cf92dfc8a91e55451b0281c56872bee986654ddc37e05f",
+              "size_bytes": 831
+            },
+            {
+              "path": "src/codecairn/memory/schema.py",
+              "sha256": "05136aa712b1ff4297595e1484802053ef69c2cd515f58a2a5c5cf64b7e2ae7d",
+              "size_bytes": 38265
+            },
+            {
+              "path": "src/codecairn/memory/semantic.py",
+              "sha256": "f8183d02e08d8fd4e7138dbe6fcbf5244f8b3915bbca819400a08a5a2fff76a0",
+              "size_bytes": 18018
+            },
+            {
+              "path": "src/codecairn/memory/semantic_provider.py",
+              "sha256": "23fee9bef68798e0d3e0736390655e8aebbe1772b6f5d9fa2da2c39306116a9a",
+              "size_bytes": 4847
+            },
+            {
+              "path": "src/codecairn/memory/trace.py",
+              "sha256": "cc75816a920485334d5ae1d16253ff575c4b36e75475b91b1ff670e4e6e2d30e",
+              "size_bytes": 2509
+            },
+            {
+              "path": "src/codecairn/namespace_ops.py",
+              "sha256": "e75966afbc9ae91a37191a61915a2f5d4fbd6b55b179f55e856f44d492e30d30",
+              "size_bytes": 2845
+            },
+            {
+              "path": "src/codecairn/py.typed",
+              "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+              "size_bytes": 1
+            },
+            {
+              "path": "src/codecairn/service/__init__.py",
+              "sha256": "9b78628d8e8d42017734caa59d79d534c569d66baee90f529e93131e7e07e3af",
+              "size_bytes": 138
+            },
+            {
+              "path": "src/codecairn/service/application.py",
+              "sha256": "cabe0b34fca92d17391a8ff576b15e8314c0e90a80352103613e1d132942c9fc",
+              "size_bytes": 13109
+            },
+            {
+              "path": "src/codecairn/service/cascade.py",
+              "sha256": "7b6c39aab2347850d0f678afa3cb47788166a3e1d7838d608905bf59ed8381ef",
+              "size_bytes": 5443
+            },
+            {
+              "path": "src/codecairn/service/recall.py",
+              "sha256": "9fbeab94f0e117121d6c5e1a37ad780a05c3d2e7817f410ff63738927533cb90",
+              "size_bytes": 13012
+            },
+            {
+              "path": "src/codecairn/service/runtime.py",
+              "sha256": "60312f5a71b2769cef26c9c2c0ecc49d3830734a0f6c55f88715d28ac6c1ad74",
+              "size_bytes": 35209
+            },
+            {
+              "path": "src/codecairn/storage/__init__.py",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size_bytes": 0
+            },
+            {
+              "path": "src/codecairn/storage/lance.py",
+              "sha256": "b150e0ce05189c68ecae3304274d9dda49ad5065125086f07d7a68a8d249cc65",
+              "size_bytes": 7492
+            },
+            {
+              "path": "src/codecairn/storage/markdown.py",
+              "sha256": "d4a7183ac34157c77670ed433afb2bb6d959778d07c2b9b1dc2c5af513c46c3c",
+              "size_bytes": 13223
+            },
+            {
+              "path": "src/codecairn/storage/sqlite.py",
+              "sha256": "ae7761c24fe214fdcaf79436fafa22052f6b33f7fb97a8e17540c31bd8c14c4c",
+              "size_bytes": 76892
+            }
+          ],
+          "sha256": "3936ab3534a13a8b8d32a06e701dd348049e968838c7417f4421b08809046e26",
+          "size_bytes": 130871
+        },
+        "wheel": {
+          "filename": "codecairn-0.1.0-py3-none-any.whl",
+          "inventory_sha256": "54f1ffd493f23b5d5c12a2a1b06b3bbbe9c59ee23bb6fde626f7b00b3c757629",
+          "member_count": 55,
+          "members": [
+            {
+              "path": "codecairn-0.1.0.dist-info/METADATA",
+              "sha256": "5b72f8eee2792367478f15592a23f7fe2cbf7fb7aa2dde4c27b9be496fac3988",
+              "size_bytes": 9113
+            },
+            {
+              "path": "codecairn-0.1.0.dist-info/RECORD",
+              "sha256": "1fa0c65c3e5fbb54fa115321b9959bfcc684ce3f96e3e95a4e0ed88c3ee2c41c",
+              "size_bytes": 4731
+            },
+            {
+              "path": "codecairn-0.1.0.dist-info/WHEEL",
+              "sha256": "942926c567d0b1273d09f20295879abd37507845f6b683eab9f87d808df91100",
+              "size_bytes": 87
+            },
+            {
+              "path": "codecairn-0.1.0.dist-info/entry_points.txt",
+              "sha256": "e3d2b306dd274afb6614a0fd531d54a0395e72026ef8b7ed8eb0de2741c9094d",
+              "size_bytes": 100
+            },
+            {
+              "path": "codecairn-0.1.0.dist-info/licenses/LICENSE",
+              "sha256": "517279ae4342c9e95200b94e1c067b8dd05e56063cd5768293cb523cfd35bc39",
+              "size_bytes": 1063
+            },
+            {
+              "path": "codecairn/__init__.py",
+              "sha256": "d02edb2747a4d731db8b5512660f26a905dc3811b97fefcd6c7d76942582e7e0",
+              "size_bytes": 95
+            },
+            {
+              "path": "codecairn/bootstrap.py",
+              "sha256": "b05183e3836920815ba4b9af17c515fb9db9de086e19188a7dd3b0e0ecaf5274",
+              "size_bytes": 15237
+            },
+            {
+              "path": "codecairn/configuration.py",
+              "sha256": "f4af535741df7fdbafffcf855f2750e00ec54fa5ac09ff4e3d9b096b68c7ed96",
+              "size_bytes": 13697
+            },
+            {
+              "path": "codecairn/entrypoints/__init__.py",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size_bytes": 0
+            },
+            {
+              "path": "codecairn/entrypoints/cli.py",
+              "sha256": "3014b9325150c751054e7c0299fe5898f31ae083563bf66d6b3784b43ceb32c9",
+              "size_bytes": 23110
+            },
+            {
+              "path": "codecairn/entrypoints/hooks.py",
+              "sha256": "f90705f4d5f26a1d71fae99a323ec6f444ceb603b0eeff44334a2f7546f5d04e",
+              "size_bytes": 6271
+            },
+            {
+              "path": "codecairn/entrypoints/mcp.py",
+              "sha256": "cb08538c8c48cfcaef8b90ee2ba6b2f6e4d3282e0f9ae515c84ea80301243d99",
+              "size_bytes": 12748
+            },
+            {
+              "path": "codecairn/evaluation/__init__.py",
+              "sha256": "67642ecf1faf1accc9f691bf1cbcf37d5ae16f985bab988a8861615d9f86b950",
+              "size_bytes": 72
+            },
+            {
+              "path": "codecairn/evaluation/artifacts.py",
+              "sha256": "a2b87033e61807dce1a560ff07d836fc34f704dc2e1b02c2972bc213bfd9d179",
+              "size_bytes": 1557
+            },
+            {
+              "path": "codecairn/evaluation/coding.py",
+              "sha256": "c231ea94627f13dd22f632fc90ff228b2d76e8c924f72e3d86dddc816e1667e3",
+              "size_bytes": 27479
+            },
+            {
+              "path": "codecairn/evaluation/coding_cli.py",
+              "sha256": "e59054cbebe22a84ae6d22ec2004a9285aef5e680dc6f6818d66e60653734aae",
+              "size_bytes": 1538
+            },
+            {
+              "path": "codecairn/evaluation/evidence_bundle.py",
+              "sha256": "070b4e7df005710743cf0ae8a38d97c088473281a7d2872b5fb18cf97d93c2c9",
+              "size_bytes": 56138
+            },
+            {
+              "path": "codecairn/evaluation/gates.py",
+              "sha256": "95f44af39fab6fae7ae7f432781f3e85ca71be99289fba70903304f6f52936ed",
+              "size_bytes": 26211
+            },
+            {
+              "path": "codecairn/evaluation/historical_reader.py",
+              "sha256": "98da0fe27831b58035b7b4a505164b547fae4fac7539009b1851089d35c2e9b6",
+              "size_bytes": 18897
+            },
+            {
+              "path": "codecairn/evaluation/locomo.py",
+              "sha256": "19098f73d0f55c02f67119f2ba2fe9eb1dcfba5833314e112488d69c66c03f1b",
+              "size_bytes": 27249
+            },
+            {
+              "path": "codecairn/evaluation/release_bundle.py",
+              "sha256": "5ff72e6ba3ee95d407327390259c9f14a52f7479aad4301cf970fd9d9c9805c1",
+              "size_bytes": 26089
+            },
+            {
+              "path": "codecairn/evaluation/templates/resume.zh-CN.md",
+              "sha256": "0bb3834c542ba9393f45a9df311f479c1af898ddd94e635e507db7305c80f1f2",
+              "size_bytes": 905
+            },
+            {
+              "path": "codecairn/evaluation/worker_process.py",
+              "sha256": "41f480bc55fd9d0eb05776df555882d126c9d52fc364f03d2d9c4bbf52de6b4a",
+              "size_bytes": 4931
+            },
+            {
+              "path": "codecairn/importers/__init__.py",
+              "sha256": "5af0e280c02a39fc04a4feccb926c0bb8c796e857fb3b0bf5b11fcf47fbbff06",
+              "size_bytes": 403
+            },
+            {
+              "path": "codecairn/importers/claude.py",
+              "sha256": "22cef8c55a1c79e572406c32d1bd728ab319ef4492c618781a1d4a35f70b6cc7",
+              "size_bytes": 13700
+            },
+            {
+              "path": "codecairn/importers/codex.py",
+              "sha256": "03941df59e284129453a9b821bc9e5417496945cb083268119cb133a71d20fd6",
+              "size_bytes": 13992
+            },
+            {
+              "path": "codecairn/importers/jsonl.py",
+              "sha256": "ab5214e77e544b7cf79aacce5a213b6862851e3b58eb2842061c6050ac4d42a3",
+              "size_bytes": 9754
+            },
+            {
+              "path": "codecairn/importers/session.py",
+              "sha256": "93b657e0beb060274d30684072ed81fffc9891a62b3683b7bdc44e921eab82b3",
+              "size_bytes": 1953
+            },
+            {
+              "path": "codecairn/memory/__init__.py",
+              "sha256": "7e165b0288a50ed3a412a2c7c7a6e721dfc65e7fbf984a6a798824b8fb87f1ef",
+              "size_bytes": 173
+            },
+            {
+              "path": "codecairn/memory/capture.py",
+              "sha256": "9aea9c80964d0303ac8d9a145a16d726e65126a5bac9825c42fe62fe79f96a63",
+              "size_bytes": 9129
+            },
+            {
+              "path": "codecairn/memory/config.py",
+              "sha256": "94f95823aca945b029b557cbef4b498457328199a07b09e58677114fb95928f9",
+              "size_bytes": 4049
+            },
+            {
+              "path": "codecairn/memory/context.py",
+              "sha256": "fa9e8c310d563213c65fb21babfa1d83f8a25f02cf58d2acf7669220a8f3e7b6",
+              "size_bytes": 3542
+            },
+            {
+              "path": "codecairn/memory/episode.py",
+              "sha256": "b4a4f58bf744ded51eb6adb271bfddf78102f82d0f88bcef2820fbd14c2f0c55",
+              "size_bytes": 4746
+            },
+            {
+              "path": "codecairn/memory/errors.py",
+              "sha256": "73933b41240003d038485a10de1d5a4611abd936b3db9b00d54782e8922ab071",
+              "size_bytes": 752
+            },
+            {
+              "path": "codecairn/memory/evidence.py",
+              "sha256": "7fa075edd89080eda7f5e71e786f4ad8267c2853c9e7cec7d972b570d0284c91",
+              "size_bytes": 6513
+            },
+            {
+              "path": "codecairn/memory/evolution.py",
+              "sha256": "164f1def90ec7ea78778803ae70aa2d8e971f09247162e0e696cbf9c8ffe1f0e",
+              "size_bytes": 20198
+            },
+            {
+              "path": "codecairn/memory/models.py",
+              "sha256": "ffb5368be73b8e5c9ddb08fbc75ff50f6239291e137b2720d274c8dbc77ec7e6",
+              "size_bytes": 6416
+            },
+            {
+              "path": "codecairn/memory/projection.py",
+              "sha256": "c5b8ba74b3c28d3139a21dbc8196073303ec9d0ceba27ac03f22c4dce52e4325",
+              "size_bytes": 1810
+            },
+            {
+              "path": "codecairn/memory/providers.py",
+              "sha256": "41dc44cda585a699f815e67f8ff24468f82813ecf7a86590af34a3b1efe41826",
+              "size_bytes": 8684
+            },
+            {
+              "path": "codecairn/memory/retrieval.py",
+              "sha256": "b194af0ae1469e2880cf92dfc8a91e55451b0281c56872bee986654ddc37e05f",
+              "size_bytes": 831
+            },
+            {
+              "path": "codecairn/memory/schema.py",
+              "sha256": "05136aa712b1ff4297595e1484802053ef69c2cd515f58a2a5c5cf64b7e2ae7d",
+              "size_bytes": 38265
+            },
+            {
+              "path": "codecairn/memory/semantic.py",
+              "sha256": "f8183d02e08d8fd4e7138dbe6fcbf5244f8b3915bbca819400a08a5a2fff76a0",
+              "size_bytes": 18018
+            },
+            {
+              "path": "codecairn/memory/semantic_provider.py",
+              "sha256": "23fee9bef68798e0d3e0736390655e8aebbe1772b6f5d9fa2da2c39306116a9a",
+              "size_bytes": 4847
+            },
+            {
+              "path": "codecairn/memory/trace.py",
+              "sha256": "cc75816a920485334d5ae1d16253ff575c4b36e75475b91b1ff670e4e6e2d30e",
+              "size_bytes": 2509
+            },
+            {
+              "path": "codecairn/namespace_ops.py",
+              "sha256": "e75966afbc9ae91a37191a61915a2f5d4fbd6b55b179f55e856f44d492e30d30",
+              "size_bytes": 2845
+            },
+            {
+              "path": "codecairn/py.typed",
+              "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+              "size_bytes": 1
+            },
+            {
+              "path": "codecairn/service/__init__.py",
+              "sha256": "9b78628d8e8d42017734caa59d79d534c569d66baee90f529e93131e7e07e3af",
+              "size_bytes": 138
+            },
+            {
+              "path": "codecairn/service/application.py",
+              "sha256": "cabe0b34fca92d17391a8ff576b15e8314c0e90a80352103613e1d132942c9fc",
+              "size_bytes": 13109
+            },
+            {
+              "path": "codecairn/service/cascade.py",
+              "sha256": "7b6c39aab2347850d0f678afa3cb47788166a3e1d7838d608905bf59ed8381ef",
+              "size_bytes": 5443
+            },
+            {
+              "path": "codecairn/service/recall.py",
+              "sha256": "9fbeab94f0e117121d6c5e1a37ad780a05c3d2e7817f410ff63738927533cb90",
+              "size_bytes": 13012
+            },
+            {
+              "path": "codecairn/service/runtime.py",
+              "sha256": "60312f5a71b2769cef26c9c2c0ecc49d3830734a0f6c55f88715d28ac6c1ad74",
+              "size_bytes": 35209
+            },
+            {
+              "path": "codecairn/storage/__init__.py",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size_bytes": 0
+            },
+            {
+              "path": "codecairn/storage/lance.py",
+              "sha256": "b150e0ce05189c68ecae3304274d9dda49ad5065125086f07d7a68a8d249cc65",
+              "size_bytes": 7492
+            },
+            {
+              "path": "codecairn/storage/markdown.py",
+              "sha256": "d4a7183ac34157c77670ed433afb2bb6d959778d07c2b9b1dc2c5af513c46c3c",
+              "size_bytes": 13223
+            },
+            {
+              "path": "codecairn/storage/sqlite.py",
+              "sha256": "ae7761c24fe214fdcaf79436fafa22052f6b33f7fb97a8e17540c31bd8c14c4c",
+              "size_bytes": 76892
+            }
+          ],
+          "sha256": "2c01808600f43e8d9d9c4778bd5c61f6096ec474d931fd7cfa8b7872247899f8",
+          "size_bytes": 156155
+        }
+      },
+      "schema_version": 1
+    },
+    {
+      "artifacts": {
+        "sdist": {
+          "filename": "codecairn-0.1.0.tar.gz",
+          "inventory_sha256": "51f87b9640cc57b0ec12666e19116972e4a03ae2f446947dfb3936571e5c7067",
+          "member_count": 59,
+          "members": [
+            {
+              "path": ".gitignore",
+              "sha256": "05821e62595e3bbea056433d563c0a8ed22aa34d238b675f6058a4faf07d288e",
+              "size_bytes": 236
+            },
+            {
+              "path": "CHANGELOG.md",
+              "sha256": "3fe9f6487885fea5ee9f13bcbe374b08f1245a20dd48468f5cbba557a09c1a9b",
+              "size_bytes": 1414
+            },
+            {
+              "path": "CODE_OF_CONDUCT.md",
+              "sha256": "ab0177dc07ef0ac7c8b2e1c339d8868ce1d927d064c1fbb3d5e1571296fdfdfe",
+              "size_bytes": 1073
+            },
+            {
+              "path": "CONTRIBUTING.md",
+              "sha256": "fac5c6b7e2391a6d9166bc6eb9d705ac7d6945932890ce239812586a45072e79",
+              "size_bytes": 1599
+            },
+            {
+              "path": "LICENSE",
+              "sha256": "517279ae4342c9e95200b94e1c067b8dd05e56063cd5768293cb523cfd35bc39",
+              "size_bytes": 1063
+            },
+            {
+              "path": "PKG-INFO",
+              "sha256": "5b72f8eee2792367478f15592a23f7fe2cbf7fb7aa2dde4c27b9be496fac3988",
+              "size_bytes": 9113
+            },
+            {
+              "path": "README.md",
+              "sha256": "3e24a30573e16cab1efcd0867ffb509378834aa306ba829635fd43a0a9104fd8",
+              "size_bytes": 7753
+            },
+            {
+              "path": "SECURITY.md",
+              "sha256": "732874208864e97fbdc0d71be045ca5a00f00c84330444a0dee6e58074464da1",
+              "size_bytes": 1087
+            },
+            {
+              "path": "pyproject.toml",
+              "sha256": "5441d4705d9536aec3aa4f06bf2d3742a928f26d6c018cbe1c9a51402c1e7787",
+              "size_bytes": 3409
+            },
+            {
+              "path": "src/codecairn/__init__.py",
+              "sha256": "d02edb2747a4d731db8b5512660f26a905dc3811b97fefcd6c7d76942582e7e0",
+              "size_bytes": 95
+            },
+            {
+              "path": "src/codecairn/bootstrap.py",
+              "sha256": "b05183e3836920815ba4b9af17c515fb9db9de086e19188a7dd3b0e0ecaf5274",
+              "size_bytes": 15237
+            },
+            {
+              "path": "src/codecairn/configuration.py",
+              "sha256": "f4af535741df7fdbafffcf855f2750e00ec54fa5ac09ff4e3d9b096b68c7ed96",
+              "size_bytes": 13697
+            },
+            {
+              "path": "src/codecairn/entrypoints/__init__.py",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size_bytes": 0
+            },
+            {
+              "path": "src/codecairn/entrypoints/cli.py",
+              "sha256": "3014b9325150c751054e7c0299fe5898f31ae083563bf66d6b3784b43ceb32c9",
+              "size_bytes": 23110
+            },
+            {
+              "path": "src/codecairn/entrypoints/hooks.py",
+              "sha256": "f90705f4d5f26a1d71fae99a323ec6f444ceb603b0eeff44334a2f7546f5d04e",
+              "size_bytes": 6271
+            },
+            {
+              "path": "src/codecairn/entrypoints/mcp.py",
+              "sha256": "cb08538c8c48cfcaef8b90ee2ba6b2f6e4d3282e0f9ae515c84ea80301243d99",
+              "size_bytes": 12748
+            },
+            {
+              "path": "src/codecairn/evaluation/__init__.py",
+              "sha256": "67642ecf1faf1accc9f691bf1cbcf37d5ae16f985bab988a8861615d9f86b950",
+              "size_bytes": 72
+            },
+            {
+              "path": "src/codecairn/evaluation/artifacts.py",
+              "sha256": "a2b87033e61807dce1a560ff07d836fc34f704dc2e1b02c2972bc213bfd9d179",
+              "size_bytes": 1557
+            },
+            {
+              "path": "src/codecairn/evaluation/coding.py",
+              "sha256": "c231ea94627f13dd22f632fc90ff228b2d76e8c924f72e3d86dddc816e1667e3",
+              "size_bytes": 27479
+            },
+            {
+              "path": "src/codecairn/evaluation/coding_cli.py",
+              "sha256": "e59054cbebe22a84ae6d22ec2004a9285aef5e680dc6f6818d66e60653734aae",
+              "size_bytes": 1538
+            },
+            {
+              "path": "src/codecairn/evaluation/evidence_bundle.py",
+              "sha256": "070b4e7df005710743cf0ae8a38d97c088473281a7d2872b5fb18cf97d93c2c9",
+              "size_bytes": 56138
+            },
+            {
+              "path": "src/codecairn/evaluation/gates.py",
+              "sha256": "95f44af39fab6fae7ae7f432781f3e85ca71be99289fba70903304f6f52936ed",
+              "size_bytes": 26211
+            },
+            {
+              "path": "src/codecairn/evaluation/historical_reader.py",
+              "sha256": "98da0fe27831b58035b7b4a505164b547fae4fac7539009b1851089d35c2e9b6",
+              "size_bytes": 18897
+            },
+            {
+              "path": "src/codecairn/evaluation/locomo.py",
+              "sha256": "19098f73d0f55c02f67119f2ba2fe9eb1dcfba5833314e112488d69c66c03f1b",
+              "size_bytes": 27249
+            },
+            {
+              "path": "src/codecairn/evaluation/release_bundle.py",
+              "sha256": "5ff72e6ba3ee95d407327390259c9f14a52f7479aad4301cf970fd9d9c9805c1",
+              "size_bytes": 26089
+            },
+            {
+              "path": "src/codecairn/evaluation/templates/resume.zh-CN.md",
+              "sha256": "0bb3834c542ba9393f45a9df311f479c1af898ddd94e635e507db7305c80f1f2",
+              "size_bytes": 905
+            },
+            {
+              "path": "src/codecairn/evaluation/worker_process.py",
+              "sha256": "41f480bc55fd9d0eb05776df555882d126c9d52fc364f03d2d9c4bbf52de6b4a",
+              "size_bytes": 4931
+            },
+            {
+              "path": "src/codecairn/importers/__init__.py",
+              "sha256": "5af0e280c02a39fc04a4feccb926c0bb8c796e857fb3b0bf5b11fcf47fbbff06",
+              "size_bytes": 403
+            },
+            {
+              "path": "src/codecairn/importers/claude.py",
+              "sha256": "22cef8c55a1c79e572406c32d1bd728ab319ef4492c618781a1d4a35f70b6cc7",
+              "size_bytes": 13700
+            },
+            {
+              "path": "src/codecairn/importers/codex.py",
+              "sha256": "03941df59e284129453a9b821bc9e5417496945cb083268119cb133a71d20fd6",
+              "size_bytes": 13992
+            },
+            {
+              "path": "src/codecairn/importers/jsonl.py",
+              "sha256": "ab5214e77e544b7cf79aacce5a213b6862851e3b58eb2842061c6050ac4d42a3",
+              "size_bytes": 9754
+            },
+            {
+              "path": "src/codecairn/importers/session.py",
+              "sha256": "93b657e0beb060274d30684072ed81fffc9891a62b3683b7bdc44e921eab82b3",
+              "size_bytes": 1953
+            },
+            {
+              "path": "src/codecairn/memory/__init__.py",
+              "sha256": "7e165b0288a50ed3a412a2c7c7a6e721dfc65e7fbf984a6a798824b8fb87f1ef",
+              "size_bytes": 173
+            },
+            {
+              "path": "src/codecairn/memory/capture.py",
+              "sha256": "9aea9c80964d0303ac8d9a145a16d726e65126a5bac9825c42fe62fe79f96a63",
+              "size_bytes": 9129
+            },
+            {
+              "path": "src/codecairn/memory/config.py",
+              "sha256": "94f95823aca945b029b557cbef4b498457328199a07b09e58677114fb95928f9",
+              "size_bytes": 4049
+            },
+            {
+              "path": "src/codecairn/memory/context.py",
+              "sha256": "fa9e8c310d563213c65fb21babfa1d83f8a25f02cf58d2acf7669220a8f3e7b6",
+              "size_bytes": 3542
+            },
+            {
+              "path": "src/codecairn/memory/episode.py",
+              "sha256": "b4a4f58bf744ded51eb6adb271bfddf78102f82d0f88bcef2820fbd14c2f0c55",
+              "size_bytes": 4746
+            },
+            {
+              "path": "src/codecairn/memory/errors.py",
+              "sha256": "73933b41240003d038485a10de1d5a4611abd936b3db9b00d54782e8922ab071",
+              "size_bytes": 752
+            },
+            {
+              "path": "src/codecairn/memory/evidence.py",
+              "sha256": "7fa075edd89080eda7f5e71e786f4ad8267c2853c9e7cec7d972b570d0284c91",
+              "size_bytes": 6513
+            },
+            {
+              "path": "src/codecairn/memory/evolution.py",
+              "sha256": "164f1def90ec7ea78778803ae70aa2d8e971f09247162e0e696cbf9c8ffe1f0e",
+              "size_bytes": 20198
+            },
+            {
+              "path": "src/codecairn/memory/models.py",
+              "sha256": "ffb5368be73b8e5c9ddb08fbc75ff50f6239291e137b2720d274c8dbc77ec7e6",
+              "size_bytes": 6416
+            },
+            {
+              "path": "src/codecairn/memory/projection.py",
+              "sha256": "c5b8ba74b3c28d3139a21dbc8196073303ec9d0ceba27ac03f22c4dce52e4325",
+              "size_bytes": 1810
+            },
+            {
+              "path": "src/codecairn/memory/providers.py",
+              "sha256": "41dc44cda585a699f815e67f8ff24468f82813ecf7a86590af34a3b1efe41826",
+              "size_bytes": 8684
+            },
+            {
+              "path": "src/codecairn/memory/retrieval.py",
+              "sha256": "b194af0ae1469e2880cf92dfc8a91e55451b0281c56872bee986654ddc37e05f",
+              "size_bytes": 831
+            },
+            {
+              "path": "src/codecairn/memory/schema.py",
+              "sha256": "05136aa712b1ff4297595e1484802053ef69c2cd515f58a2a5c5cf64b7e2ae7d",
+              "size_bytes": 38265
+            },
+            {
+              "path": "src/codecairn/memory/semantic.py",
+              "sha256": "f8183d02e08d8fd4e7138dbe6fcbf5244f8b3915bbca819400a08a5a2fff76a0",
+              "size_bytes": 18018
+            },
+            {
+              "path": "src/codecairn/memory/semantic_provider.py",
+              "sha256": "23fee9bef68798e0d3e0736390655e8aebbe1772b6f5d9fa2da2c39306116a9a",
+              "size_bytes": 4847
+            },
+            {
+              "path": "src/codecairn/memory/trace.py",
+              "sha256": "cc75816a920485334d5ae1d16253ff575c4b36e75475b91b1ff670e4e6e2d30e",
+              "size_bytes": 2509
+            },
+            {
+              "path": "src/codecairn/namespace_ops.py",
+              "sha256": "e75966afbc9ae91a37191a61915a2f5d4fbd6b55b179f55e856f44d492e30d30",
+              "size_bytes": 2845
+            },
+            {
+              "path": "src/codecairn/py.typed",
+              "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+              "size_bytes": 1
+            },
+            {
+              "path": "src/codecairn/service/__init__.py",
+              "sha256": "9b78628d8e8d42017734caa59d79d534c569d66baee90f529e93131e7e07e3af",
+              "size_bytes": 138
+            },
+            {
+              "path": "src/codecairn/service/application.py",
+              "sha256": "cabe0b34fca92d17391a8ff576b15e8314c0e90a80352103613e1d132942c9fc",
+              "size_bytes": 13109
+            },
+            {
+              "path": "src/codecairn/service/cascade.py",
+              "sha256": "7b6c39aab2347850d0f678afa3cb47788166a3e1d7838d608905bf59ed8381ef",
+              "size_bytes": 5443
+            },
+            {
+              "path": "src/codecairn/service/recall.py",
+              "sha256": "9fbeab94f0e117121d6c5e1a37ad780a05c3d2e7817f410ff63738927533cb90",
+              "size_bytes": 13012
+            },
+            {
+              "path": "src/codecairn/service/runtime.py",
+              "sha256": "60312f5a71b2769cef26c9c2c0ecc49d3830734a0f6c55f88715d28ac6c1ad74",
+              "size_bytes": 35209
+            },
+            {
+              "path": "src/codecairn/storage/__init__.py",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size_bytes": 0
+            },
+            {
+              "path": "src/codecairn/storage/lance.py",
+              "sha256": "b150e0ce05189c68ecae3304274d9dda49ad5065125086f07d7a68a8d249cc65",
+              "size_bytes": 7492
+            },
+            {
+              "path": "src/codecairn/storage/markdown.py",
+              "sha256": "d4a7183ac34157c77670ed433afb2bb6d959778d07c2b9b1dc2c5af513c46c3c",
+              "size_bytes": 13223
+            },
+            {
+              "path": "src/codecairn/storage/sqlite.py",
+              "sha256": "ae7761c24fe214fdcaf79436fafa22052f6b33f7fb97a8e17540c31bd8c14c4c",
+              "size_bytes": 76892
+            }
+          ],
+          "sha256": "3936ab3534a13a8b8d32a06e701dd348049e968838c7417f4421b08809046e26",
+          "size_bytes": 130871
+        },
+        "wheel": {
+          "filename": "codecairn-0.1.0-py3-none-any.whl",
+          "inventory_sha256": "54f1ffd493f23b5d5c12a2a1b06b3bbbe9c59ee23bb6fde626f7b00b3c757629",
+          "member_count": 55,
+          "members": [
+            {
+              "path": "codecairn-0.1.0.dist-info/METADATA",
+              "sha256": "5b72f8eee2792367478f15592a23f7fe2cbf7fb7aa2dde4c27b9be496fac3988",
+              "size_bytes": 9113
+            },
+            {
+              "path": "codecairn-0.1.0.dist-info/RECORD",
+              "sha256": "1fa0c65c3e5fbb54fa115321b9959bfcc684ce3f96e3e95a4e0ed88c3ee2c41c",
+              "size_bytes": 4731
+            },
+            {
+              "path": "codecairn-0.1.0.dist-info/WHEEL",
+              "sha256": "942926c567d0b1273d09f20295879abd37507845f6b683eab9f87d808df91100",
+              "size_bytes": 87
+            },
+            {
+              "path": "codecairn-0.1.0.dist-info/entry_points.txt",
+              "sha256": "e3d2b306dd274afb6614a0fd531d54a0395e72026ef8b7ed8eb0de2741c9094d",
+              "size_bytes": 100
+            },
+            {
+              "path": "codecairn-0.1.0.dist-info/licenses/LICENSE",
+              "sha256": "517279ae4342c9e95200b94e1c067b8dd05e56063cd5768293cb523cfd35bc39",
+              "size_bytes": 1063
+            },
+            {
+              "path": "codecairn/__init__.py",
+              "sha256": "d02edb2747a4d731db8b5512660f26a905dc3811b97fefcd6c7d76942582e7e0",
+              "size_bytes": 95
+            },
+            {
+              "path": "codecairn/bootstrap.py",
+              "sha256": "b05183e3836920815ba4b9af17c515fb9db9de086e19188a7dd3b0e0ecaf5274",
+              "size_bytes": 15237
+            },
+            {
+              "path": "codecairn/configuration.py",
+              "sha256": "f4af535741df7fdbafffcf855f2750e00ec54fa5ac09ff4e3d9b096b68c7ed96",
+              "size_bytes": 13697
+            },
+            {
+              "path": "codecairn/entrypoints/__init__.py",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size_bytes": 0
+            },
+            {
+              "path": "codecairn/entrypoints/cli.py",
+              "sha256": "3014b9325150c751054e7c0299fe5898f31ae083563bf66d6b3784b43ceb32c9",
+              "size_bytes": 23110
+            },
+            {
+              "path": "codecairn/entrypoints/hooks.py",
+              "sha256": "f90705f4d5f26a1d71fae99a323ec6f444ceb603b0eeff44334a2f7546f5d04e",
+              "size_bytes": 6271
+            },
+            {
+              "path": "codecairn/entrypoints/mcp.py",
+              "sha256": "cb08538c8c48cfcaef8b90ee2ba6b2f6e4d3282e0f9ae515c84ea80301243d99",
+              "size_bytes": 12748
+            },
+            {
+              "path": "codecairn/evaluation/__init__.py",
+              "sha256": "67642ecf1faf1accc9f691bf1cbcf37d5ae16f985bab988a8861615d9f86b950",
+              "size_bytes": 72
+            },
+            {
+              "path": "codecairn/evaluation/artifacts.py",
+              "sha256": "a2b87033e61807dce1a560ff07d836fc34f704dc2e1b02c2972bc213bfd9d179",
+              "size_bytes": 1557
+            },
+            {
+              "path": "codecairn/evaluation/coding.py",
+              "sha256": "c231ea94627f13dd22f632fc90ff228b2d76e8c924f72e3d86dddc816e1667e3",
+              "size_bytes": 27479
+            },
+            {
+              "path": "codecairn/evaluation/coding_cli.py",
+              "sha256": "e59054cbebe22a84ae6d22ec2004a9285aef5e680dc6f6818d66e60653734aae",
+              "size_bytes": 1538
+            },
+            {
+              "path": "codecairn/evaluation/evidence_bundle.py",
+              "sha256": "070b4e7df005710743cf0ae8a38d97c088473281a7d2872b5fb18cf97d93c2c9",
+              "size_bytes": 56138
+            },
+            {
+              "path": "codecairn/evaluation/gates.py",
+              "sha256": "95f44af39fab6fae7ae7f432781f3e85ca71be99289fba70903304f6f52936ed",
+              "size_bytes": 26211
+            },
+            {
+              "path": "codecairn/evaluation/historical_reader.py",
+              "sha256": "98da0fe27831b58035b7b4a505164b547fae4fac7539009b1851089d35c2e9b6",
+              "size_bytes": 18897
+            },
+            {
+              "path": "codecairn/evaluation/locomo.py",
+              "sha256": "19098f73d0f55c02f67119f2ba2fe9eb1dcfba5833314e112488d69c66c03f1b",
+              "size_bytes": 27249
+            },
+            {
+              "path": "codecairn/evaluation/release_bundle.py",
+              "sha256": "5ff72e6ba3ee95d407327390259c9f14a52f7479aad4301cf970fd9d9c9805c1",
+              "size_bytes": 26089
+            },
+            {
+              "path": "codecairn/evaluation/templates/resume.zh-CN.md",
+              "sha256": "0bb3834c542ba9393f45a9df311f479c1af898ddd94e635e507db7305c80f1f2",
+              "size_bytes": 905
+            },
+            {
+              "path": "codecairn/evaluation/worker_process.py",
+              "sha256": "41f480bc55fd9d0eb05776df555882d126c9d52fc364f03d2d9c4bbf52de6b4a",
+              "size_bytes": 4931
+            },
+            {
+              "path": "codecairn/importers/__init__.py",
+              "sha256": "5af0e280c02a39fc04a4feccb926c0bb8c796e857fb3b0bf5b11fcf47fbbff06",
+              "size_bytes": 403
+            },
+            {
+              "path": "codecairn/importers/claude.py",
+              "sha256": "22cef8c55a1c79e572406c32d1bd728ab319ef4492c618781a1d4a35f70b6cc7",
+              "size_bytes": 13700
+            },
+            {
+              "path": "codecairn/importers/codex.py",
+              "sha256": "03941df59e284129453a9b821bc9e5417496945cb083268119cb133a71d20fd6",
+              "size_bytes": 13992
+            },
+            {
+              "path": "codecairn/importers/jsonl.py",
+              "sha256": "ab5214e77e544b7cf79aacce5a213b6862851e3b58eb2842061c6050ac4d42a3",
+              "size_bytes": 9754
+            },
+            {
+              "path": "codecairn/importers/session.py",
+              "sha256": "93b657e0beb060274d30684072ed81fffc9891a62b3683b7bdc44e921eab82b3",
+              "size_bytes": 1953
+            },
+            {
+              "path": "codecairn/memory/__init__.py",
+              "sha256": "7e165b0288a50ed3a412a2c7c7a6e721dfc65e7fbf984a6a798824b8fb87f1ef",
+              "size_bytes": 173
+            },
+            {
+              "path": "codecairn/memory/capture.py",
+              "sha256": "9aea9c80964d0303ac8d9a145a16d726e65126a5bac9825c42fe62fe79f96a63",
+              "size_bytes": 9129
+            },
+            {
+              "path": "codecairn/memory/config.py",
+              "sha256": "94f95823aca945b029b557cbef4b498457328199a07b09e58677114fb95928f9",
+              "size_bytes": 4049
+            },
+            {
+              "path": "codecairn/memory/context.py",
+              "sha256": "fa9e8c310d563213c65fb21babfa1d83f8a25f02cf58d2acf7669220a8f3e7b6",
+              "size_bytes": 3542
+            },
+            {
+              "path": "codecairn/memory/episode.py",
+              "sha256": "b4a4f58bf744ded51eb6adb271bfddf78102f82d0f88bcef2820fbd14c2f0c55",
+              "size_bytes": 4746
+            },
+            {
+              "path": "codecairn/memory/errors.py",
+              "sha256": "73933b41240003d038485a10de1d5a4611abd936b3db9b00d54782e8922ab071",
+              "size_bytes": 752
+            },
+            {
+              "path": "codecairn/memory/evidence.py",
+              "sha256": "7fa075edd89080eda7f5e71e786f4ad8267c2853c9e7cec7d972b570d0284c91",
+              "size_bytes": 6513
+            },
+            {
+              "path": "codecairn/memory/evolution.py",
+              "sha256": "164f1def90ec7ea78778803ae70aa2d8e971f09247162e0e696cbf9c8ffe1f0e",
+              "size_bytes": 20198
+            },
+            {
+              "path": "codecairn/memory/models.py",
+              "sha256": "ffb5368be73b8e5c9ddb08fbc75ff50f6239291e137b2720d274c8dbc77ec7e6",
+              "size_bytes": 6416
+            },
+            {
+              "path": "codecairn/memory/projection.py",
+              "sha256": "c5b8ba74b3c28d3139a21dbc8196073303ec9d0ceba27ac03f22c4dce52e4325",
+              "size_bytes": 1810
+            },
+            {
+              "path": "codecairn/memory/providers.py",
+              "sha256": "41dc44cda585a699f815e67f8ff24468f82813ecf7a86590af34a3b1efe41826",
+              "size_bytes": 8684
+            },
+            {
+              "path": "codecairn/memory/retrieval.py",
+              "sha256": "b194af0ae1469e2880cf92dfc8a91e55451b0281c56872bee986654ddc37e05f",
+              "size_bytes": 831
+            },
+            {
+              "path": "codecairn/memory/schema.py",
+              "sha256": "05136aa712b1ff4297595e1484802053ef69c2cd515f58a2a5c5cf64b7e2ae7d",
+              "size_bytes": 38265
+            },
+            {
+              "path": "codecairn/memory/semantic.py",
+              "sha256": "f8183d02e08d8fd4e7138dbe6fcbf5244f8b3915bbca819400a08a5a2fff76a0",
+              "size_bytes": 18018
+            },
+            {
+              "path": "codecairn/memory/semantic_provider.py",
+              "sha256": "23fee9bef68798e0d3e0736390655e8aebbe1772b6f5d9fa2da2c39306116a9a",
+              "size_bytes": 4847
+            },
+            {
+              "path": "codecairn/memory/trace.py",
+              "sha256": "cc75816a920485334d5ae1d16253ff575c4b36e75475b91b1ff670e4e6e2d30e",
+              "size_bytes": 2509
+            },
+            {
+              "path": "codecairn/namespace_ops.py",
+              "sha256": "e75966afbc9ae91a37191a61915a2f5d4fbd6b55b179f55e856f44d492e30d30",
+              "size_bytes": 2845
+            },
+            {
+              "path": "codecairn/py.typed",
+              "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+              "size_bytes": 1
+            },
+            {
+              "path": "codecairn/service/__init__.py",
+              "sha256": "9b78628d8e8d42017734caa59d79d534c569d66baee90f529e93131e7e07e3af",
+              "size_bytes": 138
+            },
+            {
+              "path": "codecairn/service/application.py",
+              "sha256": "cabe0b34fca92d17391a8ff576b15e8314c0e90a80352103613e1d132942c9fc",
+              "size_bytes": 13109
+            },
+            {
+              "path": "codecairn/service/cascade.py",
+              "sha256": "7b6c39aab2347850d0f678afa3cb47788166a3e1d7838d608905bf59ed8381ef",
+              "size_bytes": 5443
+            },
+            {
+              "path": "codecairn/service/recall.py",
+              "sha256": "9fbeab94f0e117121d6c5e1a37ad780a05c3d2e7817f410ff63738927533cb90",
+              "size_bytes": 13012
+            },
+            {
+              "path": "codecairn/service/runtime.py",
+              "sha256": "60312f5a71b2769cef26c9c2c0ecc49d3830734a0f6c55f88715d28ac6c1ad74",
+              "size_bytes": 35209
+            },
+            {
+              "path": "codecairn/storage/__init__.py",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size_bytes": 0
+            },
+            {
+              "path": "codecairn/storage/lance.py",
+              "sha256": "b150e0ce05189c68ecae3304274d9dda49ad5065125086f07d7a68a8d249cc65",
+              "size_bytes": 7492
+            },
+            {
+              "path": "codecairn/storage/markdown.py",
+              "sha256": "d4a7183ac34157c77670ed433afb2bb6d959778d07c2b9b1dc2c5af513c46c3c",
+              "size_bytes": 13223
+            },
+            {
+              "path": "codecairn/storage/sqlite.py",
+              "sha256": "ae7761c24fe214fdcaf79436fafa22052f6b33f7fb97a8e17540c31bd8c14c4c",
+              "size_bytes": 76892
+            }
+          ],
+          "sha256": "2c01808600f43e8d9d9c4778bd5c61f6096ec474d931fd7cfa8b7872247899f8",
+          "size_bytes": 156155
+        }
+      },
+      "schema_version": 1
+    }
+  ],
+  "clean_checkout_count": 2,
+  "comparisons": {
+    "codecairn-0.1.0-py3-none-any.whl": {
+      "archive_metadata_variance_only": false,
+      "raw_equal": true,
+      "raw_sha256_1": "2c01808600f43e8d9d9c4778bd5c61f6096ec474d931fd7cfa8b7872247899f8",
+      "raw_sha256_2": "2c01808600f43e8d9d9c4778bd5c61f6096ec474d931fd7cfa8b7872247899f8",
+      "unpacked_content_sha256": "54f1ffd493f23b5d5c12a2a1b06b3bbbe9c59ee23bb6fde626f7b00b3c757629"
+    },
+    "codecairn-0.1.0.tar.gz": {
+      "archive_metadata_variance_only": false,
+      "raw_equal": true,
+      "raw_sha256_1": "3936ab3534a13a8b8d32a06e701dd348049e968838c7417f4421b08809046e26",
+      "raw_sha256_2": "3936ab3534a13a8b8d32a06e701dd348049e968838c7417f4421b08809046e26",
+      "unpacked_content_sha256": "51f87b9640cc57b0ec12666e19116972e4a03ae2f446947dfb3936571e5c7067"
+    }
+  },
+  "implementation_sha": "f2358a77696f38283a237d9be67ec514885aff76",
+  "schema_version": 1,
+  "source_date_epoch": 1785261583,
+  "source_worktree_clean": true
+}

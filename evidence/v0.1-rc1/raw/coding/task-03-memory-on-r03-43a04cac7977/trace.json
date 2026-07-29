@@ -1,0 +1,80 @@
+{
+  "events": [
+    {
+      "exit_code": null,
+      "kind": "message",
+      "step": 1
+    },
+    {
+      "command_sha256": "63d1f4c76bf4796e11dd803fdd4e1ec28df83302438e0d3dbfab8e8a11115894",
+      "exit_code": 1,
+      "kind": "command",
+      "step": 2
+    },
+    {
+      "command_sha256": "ec886bc93c144315d1dff70661583ad7f94cf040c25557b0377f9002e25cbb9d",
+      "exit_code": 0,
+      "kind": "command",
+      "step": 3
+    },
+    {
+      "command_sha256": "965084618ce66306e4a2d560e2cac6caed187d909ab027a16f27afd377ab5930",
+      "exit_code": 0,
+      "kind": "command",
+      "step": 4
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "31df69700556e1007bac18c2314a074becc909df17a718cf320509447c1c15f1",
+      "step": 5
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "73e7b6f86214bc78ee505fb5f7d4fb97cfa99924a67ca3105113c9a3d52f8fef",
+      "step": 6
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "5f53b0a2be22e28dc4b056f663910c046a33f9b2d779eaf997ea771fe1881a13",
+      "step": 7
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "6796a77d7d6aedd985d0ba32b86f44c1c12ec18b2a36b761320ff90075928a6f",
+      "step": 8
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "abd4bdc330e7320b8556d4455e07b7b7d25dd28d9cf0bfc0e88fae9ea9cb99eb",
+      "step": 9
+    },
+    {
+      "exit_code": null,
+      "kind": "file_change",
+      "path_sha256": "45335287a0633b2731101ef76352a96afa7948371a73ad77c8bf1f1d42e8164f",
+      "step": 10
+    },
+    {
+      "exit_code": null,
+      "kind": "message",
+      "step": 11
+    },
+    {
+      "command_sha256": "6fa9a5529c730fe3386954a324a161802d91f09a2951b1e7f885f778eb5e4052",
+      "exit_code": 129,
+      "kind": "command",
+      "step": 12
+    },
+    {
+      "exit_code": null,
+      "kind": "message",
+      "step": 13
+    }
+  ],
+  "schema_version": 1
+}

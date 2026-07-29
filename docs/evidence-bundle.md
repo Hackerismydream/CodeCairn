@@ -7,8 +7,9 @@ be repeated later with bit-for-bit vectors, identical model output, or the same
 score. Retained historical bundles can also expose verifier-compatibility drift;
 that state is reported below rather than hidden by editing immutable artifacts.
 
-The current published bundle is
-[`evidence/benchmark-v3`](../evidence/benchmark-v3/README.md).
+The current candidate bundle is
+[`evidence/v0.1-rc1`](../evidence/v0.1-rc1/metrics.json). It is the first bundle
+bound to the version 0.1 architecture and release contract.
 
 ## Bundle lineage
 
@@ -18,7 +19,8 @@ Earlier bundles remain immutable historical artifacts.
 |---|---|---|---|
 | [`benchmark-v1`](../evidence/benchmark-v1/README.md) | 10-question unscored smoke; no accuracy claim | 148 tests; generated coverage label 83.50% | First public bundle; retained historical smoke |
 | [`benchmark-v2`](../evidence/benchmark-v2/README.md) | First 1,540-question score: 47.73%; label-only category amendment | 171 tests; generated coverage label 83.53% | Historical full-run evidence; current verifier compatibility is broken |
-| [`benchmark-v3`](../evidence/benchmark-v3/README.md) | V23 exact-repair composite: 82.60% over 1,540 category 1-4 questions | 644 tests; combined line/branch coverage 81.53% | Current public evidence |
+| [`benchmark-v3`](../evidence/benchmark-v3/README.md) | V23 exact-repair composite: 82.60% over 1,540 category 1-4 questions | 644 tests; combined line/branch coverage 81.53% | Retained pre-v0.1 evidence |
+| [`v0.1-rc1`](../evidence/v0.1-rc1/metrics.json) | 82.08% over 1,540 category 1-4 questions | Current format, check, docs, artifact, install, and real-client gates pass | Current version 0.1 candidate |
 
 Bundle IDs describe artifact generations, not package releases.
 
@@ -163,7 +165,7 @@ trace exposes no cost observation.
 Verify the current bundle with:
 
 ```bash
-uv run codecairn evidence verify evidence/benchmark-v3
+uv run codecairn evidence verify evidence/v0.1-rc1
 ```
 
 Verification requires no provider credential, private trace, hidden workspace,
@@ -188,10 +190,11 @@ full experiment rerun.
 
 ## CI boundary
 
-Current CI runs `make check`, verifies `evidence/benchmark-v3` through the pure
-historical reader, and builds package artifacts. The verification recomputes
-public aggregates and inventory hashes without importing the product runtime
-or calling providers.
+The candidate verification command is
+`EVIDENCE_BUNDLE=evidence/v0.1-rc1 make evidence-verify`. It recomputes public
+aggregates and inventory hashes without importing the product runtime or
+calling providers. The default `make evidence-verify` target continues to
+exercise the retained historical bundle until the release default changes.
 
 ## Historical label-only amendment
 

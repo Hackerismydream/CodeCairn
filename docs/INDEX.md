@@ -44,7 +44,8 @@ permission to advertise target behavior as shipped.
 | [`v0.1/agent-integration.md`](v0.1/agent-integration.md) | CLI, seven MCP tools, resource, Claude/Codex hooks |
 | [`v0.1/onboarding-and-operations.md`](v0.1/onboarding-and-operations.md) | Init, config, providers, queues, doctor |
 | [`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md) | One-command evaluation, source budget, release gates |
-| [`v0.1/candidate-evaluation-646449b.md`](v0.1/candidate-evaluation-646449b.md) | Current candidate metrics, failure boundary, resume-safe wording |
+| [`v0.1/candidate-evaluation-f2358a7.md`](v0.1/candidate-evaluation-f2358a7.md) | Current passing candidate metrics, evidence boundaries, resume-safe wording |
+| [`v0.1/candidate-evaluation-646449b.md`](v0.1/candidate-evaluation-646449b.md) | Historical failed-candidate boundary |
 | [`v0.1/walkthrough.md`](v0.1/walkthrough.md) | Trace-to-recall narrative |
 | [`v0.1/learning-path.md`](v0.1/learning-path.md) | Outside-in code-reading path |
 | [`v0.1/review-brief.md`](v0.1/review-brief.md) | External architecture review prompt |
@@ -78,9 +79,11 @@ external tracker when tasks are published or assigned.
 |---|---|
 | [`evaluation/README.md`](evaluation/README.md) | Current suites, artifact truth, known limitations |
 | [`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md) | Target release commands and thresholds |
-| [`v0.1/candidate-evaluation-646449b.md`](v0.1/candidate-evaluation-646449b.md) | Candidate-bound positive and negative results |
+| [`v0.1/candidate-evaluation-f2358a7.md`](v0.1/candidate-evaluation-f2358a7.md) | Current candidate-bound positive and negative results |
+| [`v0.1/candidate-evaluation-646449b.md`](v0.1/candidate-evaluation-646449b.md) | Historical failed-candidate results |
 | [`evidence-bundle.md`](evidence-bundle.md) | Reducer and offline-verifier contract |
-| [`../evidence/benchmark-v3/README.md`](../evidence/benchmark-v3/README.md) | Current generated historical evidence |
+| [`../evidence/v0.1-rc1/metrics.json`](../evidence/v0.1-rc1/metrics.json) | Current generated version 0.1 release evidence |
+| [`../evidence/benchmark-v3/README.md`](../evidence/benchmark-v3/README.md) | Retained historical evidence |
 | [`../benchmarks/locomo/README.md`](../benchmarks/locomo/README.md) | Current LoCoMo execution protocol |
 | [`../benchmarks/coding/README.md`](../benchmarks/coding/README.md) | Coding A/B task and verifier contract |
 | [`../benchmarks/retrieval/README.md`](../benchmarks/retrieval/README.md) | Historical retrieval suite |

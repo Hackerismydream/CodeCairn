@@ -1,0 +1,15 @@
+{
+  "claude_session_count": 500,
+  "codex_session_count": 500,
+  "duplicate_episode_count": 0,
+  "duration_ms": 55028.45633402467,
+  "episode_count": 1000,
+  "first_import_created_count": 1000,
+  "generator_seed": 17,
+  "memory_count": 1000,
+  "protocol": "codecairn-scale-1000x100-v01",
+  "raw_event_count": 100000,
+  "repeat_created_count": 0,
+  "schema_version": 1,
+  "session_count": 1000
+}

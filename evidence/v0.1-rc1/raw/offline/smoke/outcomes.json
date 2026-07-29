@@ -1,0 +1,26 @@
+[
+  {
+    "committed_identity_preserved": true,
+    "continuation_created_memory_count": 1,
+    "created_memory_count": 1,
+    "freshness": "semantic_pending",
+    "initial_memory_ids": [
+      "mem_0c7786a54ecc6fa344be6b63958491b44ec0da08d223b650220918d23829a614"
+    ],
+    "provider": "codex",
+    "read_your_writes": true,
+    "repeat_created_memory_count": 0
+  },
+  {
+    "committed_identity_preserved": true,
+    "continuation_created_memory_count": 1,
+    "created_memory_count": 1,
+    "freshness": "semantic_pending",
+    "initial_memory_ids": [
+      "mem_89462c7eec0a4cf318315af278a62666d2d86f11efda44bf46b4ca5c61bc1999"
+    ],
+    "provider": "claude",
+    "read_your_writes": true,
+    "repeat_created_memory_count": 0
+  }
+]

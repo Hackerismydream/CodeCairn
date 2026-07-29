@@ -162,11 +162,13 @@ public recall path. The scale gate imports 1,000 sessions and 100,000 events
 twice. The HELP plans resolve paid inputs, immutable output paths, credentials,
 and spend boundaries without calling a provider.
 
-The historical [`evidence/benchmark-v3`](evidence/benchmark-v3/README.md)
-bundle reports 82.60% on 1,540 LoCoMo questions and verifies all 4,411
-inventory files. That number belongs to its frozen implementation and
-protocol. It is not a version 0.1 score. A skipped run, fixture, provider
-failure, or historical artifact is never presented as candidate evidence.
+The current [`evidence/v0.1-rc1`](evidence/v0.1-rc1/metrics.json) bundle binds
+the version 0.1 implementation to 1,264/1,540 LoCoMo answers (82.08%), a
+memory-off 80% to memory-on 100% CodingMemoryBench result across 120 isolated
+Codex runs, and the offline, packaging, and real-client gates described below.
+The preferred 85% to 86% LoCoMo ship band was not reached. Historical bundles
+remain under `evidence/benchmark-v*` and are not presented as current
+candidate evidence.
 
 Packaging and documentation gates are:
 

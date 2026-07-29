@@ -1,0 +1,10 @@
+{
+  "client_family_count": 2,
+  "continuation_success_rate": 1,
+  "duplicate_memory_count": 0,
+  "fresh_or_semantic_pending_count": 2,
+  "protocol": "codecairn-fixture-hook-smoke-v01",
+  "read_your_writes_rate": 1,
+  "schema_version": 1,
+  "trigger_count": 204
+}

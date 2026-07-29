@@ -1,0 +1,64 @@
+{
+  "manual_path_seconds": 17.101286542019807,
+  "one_client_path_seconds": 20.022249625006225,
+  "schema_version": 1,
+  "stages": [
+    {
+      "duration_seconds": 1.4546757909702137,
+      "name": "uv-tool-install",
+      "status": "pass"
+    },
+    {
+      "duration_seconds": 8.096646791964304,
+      "name": "cli-help",
+      "status": "pass"
+    },
+    {
+      "duration_seconds": 0.016436082951258868,
+      "name": "git-init",
+      "status": "pass"
+    },
+    {
+      "duration_seconds": 0.6166674999985844,
+      "name": "init",
+      "status": "pass"
+    },
+    {
+      "duration_seconds": 4.507329499989282,
+      "name": "import",
+      "status": "pass"
+    },
+    {
+      "duration_seconds": 0.5866021669935435,
+      "name": "list",
+      "status": "pass"
+    },
+    {
+      "duration_seconds": 1.821628707984928,
+      "name": "recall",
+      "status": "pass"
+    },
+    {
+      "name": "mcp-initialize",
+      "status": "pass"
+    },
+    {
+      "duration_seconds": 0.8450013750116341,
+      "name": "hook-dry-run",
+      "status": "pass"
+    },
+    {
+      "duration_seconds": 0.5770970419980586,
+      "name": "doctor",
+      "status": "pass"
+    },
+    {
+      "duration_seconds": 1.019320165971294,
+      "name": "evidence-verify",
+      "status": "pass"
+    }
+  ],
+  "total_seconds": 21.291346084035467,
+  "wheel": "codecairn-0.1.0-py3-none-any.whl",
+  "wheel_sha256": "2c01808600f43e8d9d9c4778bd5c61f6096ec474d931fd7cfa8b7872247899f8"
+}

@@ -1,0 +1,8 @@
+{
+  "aggregate_sha256": "d5e4383edeedf306bc8b671ecbfdf3261a700499b9dccc793ad8bf0d5021c8ab",
+  "implementation_sha": "f2358a77696f38283a237d9be67ec514885aff76",
+  "outcome_count": 2,
+  "run_id": "smoke-f2358a7-v1",
+  "schema_version": 1,
+  "suite": "smoke"
+}

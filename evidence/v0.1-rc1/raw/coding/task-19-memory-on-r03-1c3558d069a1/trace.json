@@ -1,0 +1,86 @@
+{
+  "events": [
+    {
+      "exit_code": null,
+      "kind": "message",
+      "step": 1
+    },
+    {
+      "command_sha256": "694b20ad79a25cd719e9d232835dd2bbef0e5a5ccfcb1dffefc1418d2d5f8f78",
+      "exit_code": 0,
+      "kind": "command",
+      "step": 2
+    },
+    {
+      "command_sha256": "5a21edff717e4dc41c146fad6c3a313997bf1d9530173f30394cb95ed9b51881",
+      "exit_code": 128,
+      "kind": "command",
+      "step": 3
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "31df69700556e1007bac18c2314a074becc909df17a718cf320509447c1c15f1",
+      "step": 4
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "73e7b6f86214bc78ee505fb5f7d4fb97cfa99924a67ca3105113c9a3d52f8fef",
+      "step": 5
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "9a881b9b9f23849475296a8cd768ea1965bc3152df7118e60c145975af6aa58a",
+      "step": 6
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "073c1634c496cdb649d1afe0a312bbb4b7e1741b271542e4a436c3b8824b1761",
+      "step": 7
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "73e7b6f86214bc78ee505fb5f7d4fb97cfa99924a67ca3105113c9a3d52f8fef",
+      "step": 8
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "9a881b9b9f23849475296a8cd768ea1965bc3152df7118e60c145975af6aa58a",
+      "step": 9
+    },
+    {
+      "exit_code": null,
+      "kind": "file_read",
+      "path_sha256": "836ff184e7b41b1e13cb5fd89fa1de98dbbab99e9d2918913ff43b86a5c7c213",
+      "step": 10
+    },
+    {
+      "exit_code": null,
+      "kind": "message",
+      "step": 11
+    },
+    {
+      "exit_code": null,
+      "kind": "file_change",
+      "path_sha256": "0fc897dd388dc2ddd0235fd3735c88ed3552bab4e05f4ae4ce81591e09ca49c5",
+      "step": 12
+    },
+    {
+      "command_sha256": "36903a8c8f81a20cf5d29542b08942ffcb7b3c1998bd8fef892ac74290be414f",
+      "exit_code": 0,
+      "kind": "command",
+      "step": 13
+    },
+    {
+      "exit_code": null,
+      "kind": "message",
+      "step": 14
+    }
+  ],
+  "schema_version": 1
+}

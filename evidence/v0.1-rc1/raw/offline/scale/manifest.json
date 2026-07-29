@@ -1,0 +1,8 @@
+{
+  "aggregate_sha256": "b6438abbcd2a1ca7152e75fccafac5c3b7a271b7f31e8d3e32565ea3be206807",
+  "implementation_sha": "f2358a77696f38283a237d9be67ec514885aff76",
+  "outcome_count": 1001,
+  "run_id": "scale-f2358a7-v1",
+  "schema_version": 1,
+  "suite": "scale"
+}

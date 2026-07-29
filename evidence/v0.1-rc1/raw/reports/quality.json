@@ -1,0 +1,43 @@
+{
+  "artifact_check": true,
+  "check": true,
+  "docs": true,
+  "format": true,
+  "implementation_sha": "f2358a77696f38283a237d9be67ec514885aff76",
+  "schema_version": 1,
+  "stages": [
+    {
+      "duration_seconds": 0.31205091695301235,
+      "name": "format",
+      "returncode": 0,
+      "status": "pass",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d0251fd49882a55e1f8fcd00c3f673dd09637620ac96f8939ad680a444f34f7d"
+    },
+    {
+      "duration_seconds": 28.99298204196384,
+      "name": "check",
+      "returncode": 0,
+      "status": "pass",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c97818179734096d8510f41824410a02d342590bfafe0f374ce2fdaf569429dc"
+    },
+    {
+      "duration_seconds": 6.249312457977794,
+      "name": "docs",
+      "returncode": 0,
+      "status": "pass",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "023a6bea788f9575e73349805deb521ffeebc9f5bd1b7e4536c96b7783aa5b21"
+    },
+    {
+      "duration_seconds": 0.054692333040293306,
+      "name": "artifact_check",
+      "returncode": 0,
+      "status": "pass",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "eaf1aa62b40830d8d192aa952af5ed2d4c4d7e46b2ba01e45a15b754b3a14037"
+    }
+  ],
+  "worktree_clean_after_gates": true
+}

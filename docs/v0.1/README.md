@@ -1,8 +1,10 @@
 # Version 0.1 Scope
 
-Status: implemented through installable learner packaging. Version 0.1 remains
-incomplete until the release-candidate task under
-[`../plan/tasks/`](../plan/tasks/) passes and merges.
+Status: release-candidate gates pass at implementation `f2358a7`. The current
+evidence and claim boundary are published in
+[`candidate-evaluation-f2358a7.md`](candidate-evaluation-f2358a7.md) and
+[`../../evidence/v0.1-rc1/metrics.json`](../../evidence/v0.1-rc1/metrics.json).
+Raven integration remains post-v0.1.
 
 ## Purpose and boundary
 

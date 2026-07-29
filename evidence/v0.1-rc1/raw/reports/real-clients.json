@@ -1,0 +1,58 @@
+{
+  "clients": {
+    "claude": {
+      "auth_mode": "api-key-env",
+      "client_version": "2.1.220 (Claude Code)",
+      "config_readback_verified": true,
+      "hook_installed": true,
+      "hook_removed": true,
+      "memory_count_after": 3,
+      "native_created_memory_count": 1,
+      "recall_verified": true,
+      "receipt_verified": true,
+      "repeat_created_memory_count": 0,
+      "transcript_removed": true,
+      "transcript_sha256": "c97a6a5ccb276e70611f6636227380b3a7ca144f11170836a24119108eaa5aad",
+      "trust_mode": "isolated-settings-print-mode-api-key-env"
+    },
+    "codex": {
+      "client_version": "codex-cli 0.144.6",
+      "config_readback_verified": true,
+      "hook_installed": true,
+      "hook_removed": true,
+      "memory_count_after": 2,
+      "native_created_memory_count": 2,
+      "recall_verified": true,
+      "receipt_verified": true,
+      "repeat_created_memory_count": 0,
+      "transcript_sha256": "c324b02656568e332999eaf248eb17220ed6e9fe22bd35fec226f0663b3bcb84",
+      "trust_mode": "isolated-home-vetted-hook-automation-bypass"
+    }
+  },
+  "configuration": {
+    "claude_after_sha256": "26028ba98c8ca6b920b6a70c3623d639113ce8a24642da6dd399f4ec0a734740",
+    "claude_before_sha256": "26028ba98c8ca6b920b6a70c3623d639113ce8a24642da6dd399f4ec0a734740",
+    "codex_after_sha256": "835ebdaad11cf79db45900077122021ff66145ffd446ee5b45f21aec9b7d9ce2",
+    "codex_before_sha256": "835ebdaad11cf79db45900077122021ff66145ffd446ee5b45f21aec9b7d9ce2",
+    "isolated": true
+  },
+  "duration_seconds": 212.57266237499425,
+  "implementation_sha": "f2358a77696f38283a237d9be67ec514885aff76",
+  "installed_hook_commands": {
+    "claude": {
+      "changed": true,
+      "command_sha256": "0eb6d4da1e926152a6c70c8e5012c2795ba15f57e57669fab6e88b745a5126bb"
+    },
+    "codex": {
+      "changed": true,
+      "command_sha256": "2882de854ccf1f87c42eab66679c83953b755336a39cb521e19001a1d9ea45a9"
+    }
+  },
+  "limitations": [
+    "Codex non-interactive automation used its explicit hook-trust bypass against an isolated, vetted hook file.",
+    "Claude print mode skips the interactive workspace trust dialog and used an isolated settings file."
+  ],
+  "schema_version": 1,
+  "wheel": "codecairn-0.1.0-py3-none-any.whl",
+  "wheel_sha256": "2c01808600f43e8d9d9c4778bd5c61f6096ec474d931fd7cfa8b7872247899f8"
+}

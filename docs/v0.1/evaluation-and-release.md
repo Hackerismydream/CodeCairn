@@ -219,14 +219,16 @@ inventory and directly descends from `implementation_sha`.
 
 ## Current evidence boundary
 
-`evidence/benchmark-v3` remains the current checked-in historical bundle. It
-reports 82.60% on 1,540 LoCoMo category 1–4 questions under its frozen
-architecture and protocol. The bundle remains valid if its verifier passes,
-but it cannot be attributed to the version 0.1 four-type/evolution design.
+`evidence/v0.1-rc1` is the current checked-in release-candidate bundle. It
+binds implementation `f2358a7` to 82.08% on 1,540 LoCoMo category 1–4
+questions, 120 completed CodingMemoryBench runs, the offline gates, package
+reproducibility, and real Codex/Claude Code smoke. See
+[`candidate-evaluation-f2358a7.md`](candidate-evaluation-f2358a7.md) for the
+claim boundary.
 
-A version 0.1 release candidate must generate a new run and bundle at the
-candidate commit. Until that run exists, release score rows are “not run,” not
-82.60%.
+`evidence/benchmark-v3` remains valid historical evidence under its frozen
+pre-v0.1 architecture and protocol. Its 82.60% result is not a version 0.1
+score.
 
 ## Release thresholds
 
