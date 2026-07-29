@@ -90,7 +90,7 @@ class PicoSourceJournal:
                 raise PicoJournalError(f"Pico batch exceeds the {MAX_PICO_BATCH_BYTES}-byte limit")
             if state.complete_bytes + len(staged) > MAX_SESSION_BYTES:
                 raise PicoJournalError("Pico journal exceeds the import byte limit")
-            _create_staged(directory, self.staged_path.name, staged)
+            _create_atomic(directory, self.staged_path.name, staged)
             return self._recover_locked(importer, directory)
 
     def recover(self, *, importer: PicoJournalImporter[_T]) -> _T | None:
@@ -107,7 +107,7 @@ class PicoSourceJournal:
         checkpoint = importer.import_checkpoint(self.path, repo_key=self.repo_key)
         self._verify_committed_prefix(state, checkpoint)
         if not state.records:
-            _create_fsynced(directory, self.path.name, self._header_line())
+            _create_atomic(directory, self.path.name, self._header_line())
             state = self._read_journal(directory)
         self._validate_header(state.records[0])
         self._install_staged_batch(directory, state, staged=staged, staged_record=staged_record, checkpoint=checkpoint)
@@ -205,19 +205,22 @@ class PicoSourceJournal:
     @contextmanager
     def _locked_directory(self) -> Iterator[int]:
         directory = _open_directory(self._runtime_root, self.path.parent.relative_to(self._runtime_root).parts)
-        lock = os.open(
-            self._lock_name,
-            os.O_RDWR | os.O_CREAT | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-            0o600,
-            dir_fd=directory,
-        )
+        lock: int | None = None
         try:
+            lock = os.open(
+                self._lock_name,
+                os.O_RDWR | os.O_CREAT | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+                0o600,
+                dir_fd=directory,
+            )
             fcntl.flock(lock, fcntl.LOCK_EX)
             yield directory
         finally:
-            fcntl.flock(lock, fcntl.LOCK_UN)
-            os.close(lock)
-            os.close(directory)
+            try:
+                if lock is not None:
+                    os.close(lock)
+            finally:
+                os.close(directory)
 
 
 class _JournalState:
@@ -406,8 +409,14 @@ def _open_directory(root: Path, components: tuple[str, ...]) -> int:
     directory = os.open(root, flags)
     try:
         for component in components:
-            with suppress(FileExistsError):
+            created = False
+            try:
                 os.mkdir(component, 0o700, dir_fd=directory)
+                created = True
+            except FileExistsError:
+                pass
+            if created:
+                os.fsync(directory)
             try:
                 child = os.open(component, flags, dir_fd=directory)
             except OSError as exc:
@@ -456,7 +465,7 @@ def _create_fsynced(directory: int, name: str, content: bytes) -> None:
     os.fsync(directory)
 
 
-def _create_staged(directory: int, name: str, content: bytes) -> None:
+def _create_atomic(directory: int, name: str, content: bytes) -> None:
     temporary = f"{name}.tmp"
     with suppress(FileNotFoundError):
         os.unlink(temporary, dir_fd=directory)

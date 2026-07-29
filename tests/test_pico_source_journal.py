@@ -218,6 +218,20 @@ def test_stage_is_published_atomically_and_orphan_temp_is_replaced(tmp_path: Pat
     assert temporary.exists() is False
 
 
+def test_partial_header_is_atomically_replaced_during_recovery(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id="session-1")
+    with pytest.raises(RuntimeError, match="injected import failure"):
+        journal.commit(({"kind": "message", "role": "user", "text": "Recoverable."},), importer=_FailingImporter())
+    journal.path.write_bytes(b'{"partial":')
+
+    result = journal.recover(importer=_runtime(root))
+
+    assert result is not None
+    assert result.created_memory_count == 1
+    assert json.loads(journal.path.read_text().splitlines()[0])["record_type"] == "header"
+
+
 def test_namespace_symlink_is_rejected_before_external_files_are_created(tmp_path: Path) -> None:
     root = tmp_path / "runtime"
     outside = tmp_path / "outside"
