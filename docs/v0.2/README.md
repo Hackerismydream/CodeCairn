@@ -104,8 +104,16 @@ imports Pico's public `Memory` carrier when it creates recall results because
 Pico's public contract requires concrete `Memory` instances. Importing
 CodeCairn core, the entry-point package, or CodeCairn without Pico installed
 must still succeed. Pico may and, when CodeCairn is its fresh-install default,
-must declare and pin a resolvable compatible CodeCairn distribution. Pico does
-not import CodeCairn storage or domain internals.
+must declare and pin a resolvable compatible CodeCairn distribution. Before a
+registry release exists, the accepted pre-release install identity is an exact
+40-character Git revision:
+
+```text
+codecairn @ git+https://github.com/Hackerismydream/CodeCairn.git@<commit>
+```
+
+A later published version may replace that VCS pin. Pico does not import
+CodeCairn storage or domain internals.
 
 The entry-point group is owned by Pico:
 
@@ -115,8 +123,10 @@ pico.plugins
 
 CodeCairn registers one entry named `codecairn`. The loaded plugin manifest ID
 is `codecairn-memory`, and its Memory Backend contribution key is `codecairn`.
-Pico distribution tests must load it from an installed, versioned CodeCairn
-wheel rather than from either source checkout or a local path dependency.
+Pico distribution tests must resolve the recorded install specification into
+an isolated environment rather than import from either source checkout or a
+local path dependency. The CodeCairn task also builds and inspects its wheel,
+but the pre-release Pico handoff is resolved by immutable Git identity.
 
 The entry-point value is the resource package
 `codecairn.integrations.pico`. That package contains a cheap `__init__.py` and
@@ -325,11 +335,11 @@ silently stale success.
 
 The handoff order is:
 
-1. publish or otherwise expose a resolvable, versioned CodeCairn wheel
-   containing the Pico Source Journal, importer, and Memory Adapter;
-2. provide the exact distribution version and wheel digest to Pico;
-3. let Pico declare and pin that compatible build, select `codecairn`, remove
-   EverOS product coupling, and update onboarding;
+1. merge the Pico Source Journal, importer, and Memory Adapter to CodeCairn;
+2. provide an immutable install specification pinned to that exact commit,
+   plus the locally built wheel digest and installed-smoke result;
+3. let Pico declare and pin that install specification, select `codecairn`,
+   remove EverOS product coupling, and update onboarding;
 4. run installed continuity and paired evidence against both exact commits.
 
 Existing EverOS state is left untouched. Version 0.2 neither imports nor
