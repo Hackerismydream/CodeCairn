@@ -1,7 +1,7 @@
 ---
 id: v02-002
 scope: installed Pico MemoryBackend adapter
-status: ready
+status: done
 depends-on: [v02-001]
 ---
 

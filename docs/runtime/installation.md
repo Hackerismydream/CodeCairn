@@ -7,6 +7,27 @@ remembered must already be a Git repository.
 Version 0.1 is not yet published. Until it is, use the release-candidate wheel
 path in place of `codecairn==0.1.0`.
 
+## Pico installed backend
+
+CodeCairn's wheel also exposes an installed Pico plugin. Initialize the target
+Git repository before Pico selects it:
+
+```bash
+cd /path/to/your/repository
+codecairn init --prefetch
+codecairn doctor --live
+```
+
+Pico discovers entry `codecairn`, manifest `codecairn-memory`, and backend
+contribution `codecairn`. The Pico repository must consume the immutable
+CodeCairn install specification from the post-merge handoff before making this
+the default. A local path or floating branch is not a supported default.
+
+Startup fails when the workspace is not an initialized Git repository, the
+runtime root is inside that repository, or provider/index health is not ready.
+The adapter never creates a binding, falls back to EverOS, or reads process
+cwd as the repository selector.
+
 ## Path A: manual memory loop, five-minute budget
 
 Start a timer before installation:

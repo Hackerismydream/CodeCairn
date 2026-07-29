@@ -441,6 +441,6 @@ delivery contract.
 |---|---|---|
 | Provider vocabulary includes evidence-preserving `pico` | Implemented | `v02-001` |
 | Staged append-only Pico Source Journal | Implemented | `v02-001` |
-| No Pico plugin entry point | Install entry `codecairn`, manifest `codecairn-memory`, backend contribution `codecairn` | `v02-002` |
-| CLI/MCP/hooks are the only clients | Add Pico as a live MemoryBackend client while retaining existing clients | `v02-002` |
+| Pico entry `codecairn`, manifest `codecairn-memory`, backend `codecairn` | Implemented | `v02-002` |
+| Pico installed MemoryBackend client plus existing CLI/MCP/hooks | Implemented | `v02-002` |
 | Coding A/B uses pre-retrieved context | Run live Pico store, fresh-process recall, and memory-off/on tasks | `v02-003` |

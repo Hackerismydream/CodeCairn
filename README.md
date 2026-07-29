@@ -49,7 +49,7 @@ inspectable, portable, and available when you switch clients.
 | Knowledge that can change | Supersedes stale repository knowledge and work state without deleting history |
 | Recall that fits the task | Combines lexical and vector candidates, filters to active memory, reranks results, and compiles a token-bounded context |
 | Data you can inspect | Keeps durable memory in Markdown, operational state in SQLite, and a rebuildable search projection in LanceDB |
-| One product across clients | Exposes the same application service through CLI, seven MCP tools, one MCP resource, and Codex or Claude Code hooks |
+| One product across clients | Exposes the same application service through CLI, seven MCP tools, one MCP resource, Codex or Claude Code hooks, and an installed Pico MemoryBackend |
 
 ## Quick start
 
@@ -108,6 +108,10 @@ codecairn import /path/to/owned-session.jsonl --finalize
 codecairn recall "What should I know before the next task?" --format markdown
 codecairn doctor
 ```
+
+For Pico, initialize the repository first; the installed CodeCairn wheel
+contributes backend `codecairn` through Pico's plugin registry. Pico's default
+switch and task-effect evaluation remain separate downstream deliveries.
 
 The complete install, trust, privacy, rollback, and acceptance path is in
 [`docs/runtime/installation.md`](docs/runtime/installation.md).

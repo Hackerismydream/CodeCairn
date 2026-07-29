@@ -1,9 +1,9 @@
 # Runtime Operations
 
-This document describes behavior implemented on current `main` after the
-`v02-001` Pico trace-import delivery. The installed Pico Memory Backend adapter
-remains unimplemented until `v02-002` merges. Real-client and candidate-bound
-paid evaluation remain specified under [`../v0.1/`](../v0.1/).
+This document describes behavior implemented on current `main`, including the
+`v02-001` Pico trace importer and `v02-002` installed Pico Memory Backend
+adapter. Pico default selection, EverOS removal, continuity evidence, and paid
+paired evaluation remain downstream work and are not claimed here.
 
 ## Current support matrix
 
@@ -22,6 +22,7 @@ paid evaluation remain specified under [`../v0.1/`](../v0.1/).
 | Index commands | `codecairn index ...` | Operates the lifecycle-aware LanceDB cascade and parity service |
 | Historical evidence | `codecairn evidence verify` | Verifies frozen evidence without loading the live runtime |
 | Distribution | `uv tool install` | Installs curated MIT-licensed wheel entrypoints into an isolated persistent tool environment |
+| Pico plugin | `memory.backend = "codecairn"` | Installed discovery exposes one repository-bound MemoryBackend; Pico must consume the final immutable handoff before selecting it by default |
 
 ## Capture lifecycle
 
@@ -218,7 +219,32 @@ Implemented:
   pagination, and protocol-clean packaged stdio.
 - Claude `SessionEnd` and Codex `Stop` import hooks, atomic/idempotent settings
   installation, bounded receipts, and hook-to-recall read-your-writes.
+- installed Pico plugin discovery, workspace-bound fail-closed startup,
+  after-Turn journal/import/index readiness, compiled-context user recall,
+  empty Agent-track recall, and no-op feedback.
 
-Not yet implemented: the installed Pico Memory Backend adapter, Pico plugin
-discovery, joint Pico continuity/effect evidence, real-client release smoke,
-publication/tagging, and candidate-bound release evidence.
+## Pico adapter
+
+The wheel registers entry point `codecairn` in `pico.plugins`. Its resource
+package contains manifest `codecairn-memory`, which contributes exactly one
+Memory Backend named `codecairn` and no tool or media capability.
+
+Pico startup uses `PluginContext.services.workspace` to resolve the target Git
+repository and requires a prior `codecairn init` with a runtime root outside
+that repository. It validates provider/index health, recovers staged Pico
+journals, and fails closed with stable remediation. Recall maps only Pico's
+user track to repository recall and returns one compiled context with
+system-derived sidecar metadata and score `0.0`; the Agent track returns `[]`.
+Store appends and imports one durable `pico_turn_end` batch, then requires index
+readiness before returning. All blocking CodeCairn calls are offloaded from
+Pico's event loop. A frozen-host subagent slice contains no user opening after
+Pico removes its synthetic announce; the adapter treats that Agent-only slice
+as an explicit no-op rather than inventing a user event or breaking the
+subagent Turn.
+
+The adapter does not own Local Skills, add a media tool, fall back to EverOS,
+or initialize repositories implicitly.
+
+Not yet implemented: Pico default selection and EverOS removal, joint Pico
+continuity/effect evidence, real-client release smoke, publication/tagging,
+and candidate-bound release evidence.

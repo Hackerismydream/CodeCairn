@@ -72,14 +72,15 @@ external tracker when tasks are published or assigned.
 |---|---|
 | [`v0.2/README.md`](v0.2/README.md) | Canonical Pico Source Journal, Memory Adapter, ownership, failure, and evidence contract |
 | [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) | Decision to replace Pico's long-term Memory Backend directly |
+| [`adr/0059-pico-adapter-targets-one-frozen-host-contract.md`](adr/0059-pico-adapter-targets-one-frozen-host-contract.md) | Frozen Pico plugin and MemoryBackend compatibility identity |
 | [`plan/tasks/v02-001-pico-trace-import.md`](plan/tasks/v02-001-pico-trace-import.md) | Pico source journal and evidence-preserving importer |
 | [`plan/tasks/v02-002-pico-memory-adapter.md`](plan/tasks/v02-002-pico-memory-adapter.md) | Installed Pico plugin and MemoryBackend mapping |
 | [`plan/tasks/v02-003-pico-integration-evidence.md`](plan/tasks/v02-003-pico-integration-evidence.md) | Joint installed continuity, isolation, and paired evidence |
 | [`plan/pico-memory-adapter-implementation-goal.md`](plan/pico-memory-adapter-implementation-goal.md) | Codex Goal that executes `v02-001` and `v02-002` serially and produces the Pico handoff |
 
-These documents are post-v0.1 plans. Until their tasks merge,
-[`runtime/operations.md`](runtime/operations.md) remains the implementation
-truth.
+The CodeCairn-owned `v02-001` and `v02-002` deliveries are implemented.
+Pico's default switch, EverOS removal, continuity evidence, and paired
+evaluation remain blocked downstream.
 
 ## Runtime and operations
 
@@ -118,6 +119,6 @@ contract.
 | [`0012`](adr/0012-hierarchical-recall-is-a-rebuildable-projection.md)–[`0027`](adr/0027-semantic-projection-rejects-foreign-citations-per-clause.md) | Retrieval and grounded projection |
 | [`0028`](adr/0028-embedding-transport-policy-is-artifact-identity.md)–[`0042`](adr/0042-ablation-gates-evaluate-natural-weighted-accuracy.md) | Evaluation protocols, exact repair, Fable baseline |
 | [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0056`](adr/0056-locomo-pressure-latency-is-not-product-latency.md) | Version 0.1 product, lifecycle, surfaces, source budget, and measurement limits |
-| [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md)–[`0058`](adr/0058-version-0-2-has-an-additive-pico-integration-budget.md) | Post-v0.1 Pico Memory Backend integration and its additive source budget |
+| [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md)–[`0059`](adr/0059-pico-adapter-targets-one-frozen-host-contract.md) | Post-v0.1 Pico Memory Backend integration, additive source budget, and frozen host contract |
 
 Use [`adr/README.md`](adr/README.md) for status and supersession rules.
