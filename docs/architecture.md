@@ -1,6 +1,7 @@
 # Architecture
 
-Status: accepted version 0.1 target. The implementation delta is tracked under
+Status: accepted version 0.1 target plus an accepted, unimplemented post-v0.1
+Pico Integration Module. The implementation delta is tracked under
 [`plan/`](plan/); this document must not be read as a claim that every target
 surface already exists on `main`.
 
@@ -12,8 +13,9 @@ agent runtime. Internally it has Memory OS authority; version 0.1 ships one
 implicit Coding Profile for repository-scoped work.
 
 CodeCairn does not execute an agent, inject hidden prompts, ingest arbitrary
-documents, run a cloud service, or provide a memory-editing UI. Raven
-integration is deliberately deferred until after version 0.1.
+documents, run a cloud service, or provide a memory-editing UI. Version 0.1 has
+no Raven or Pico integration. The accepted post-v0.1 Pico target is specified
+separately in [`v0.2/README.md`](v0.2/README.md).
 
 ## System context
 
@@ -95,6 +97,47 @@ The import-linter contracts remain:
 | `entrypoints` | CLI, MCP, and hook presentation | Alternative domain behavior |
 | `bootstrap` | Config loading and concrete composition | Durable rules |
 | `evaluation` | Thin suite adapters, immutable runs, reducers, verifier | Product-only duplicate runtime |
+
+## Planned post-v0.1 Pico Integration Module
+
+This section is target design, not current implementation truth.
+
+```text
+Pico Runtime
+  -> pico.plugins entry "codecairn"
+     -> manifest "codecairn-memory"
+        -> Memory Backend contribution "codecairn"
+           -> CodeCairn Pico Memory Adapter
+              -> CodeCairnApplication
+                 +-> Pico Source Journal
+                 |   -> Pico importer
+                 |      -> provider "pico" Agent Trace
+                 +-> repository Recall Context
+```
+
+The Integration Module implements the backend structurally and is loaded only
+through Pico discovery. It lazily imports Pico's public `Memory` result carrier
+to satisfy Pico's concrete contract. Importing CodeCairn core or the cheap
+entry-point resource package does not import Pico. Pico may declare and pin the
+CodeCairn distribution so a fresh default installation is resolvable, but it
+calls the Integration Module instead of storage or memory internals.
+
+| Owner | Responsibility |
+|---|---|
+| CodeCairn | Installed entry point, plugin manifest, Pico Memory Adapter, source journal, importer, repository identity, replay, and Recall mapping |
+| Pico | Backend selection, CodeCairn dependency pin, EverOS removal, Local Skills, onboarding, runtime failure visibility, continuity, and PicoBench |
+
+Pico Session storage remains Pico conversation truth. CodeCairn stores one
+append-only persisted after-Turn batch in its own source journal and normalizes
+it under the existing Agent Trace and evidence invariants. Boundary
+`pico_turn_end` closes the batch without asserting task success. User-track
+recall returns one compiled Recall Context as a concrete Pico `Memory`.
+Agent-track recall is empty, feedback is a compatibility no-op, and media
+understanding is not part of the adapter.
+
+The complete Interface, source, failure, and joint evidence contract is
+[`v0.2/README.md`](v0.2/README.md). ADR 0057 records why the integration is a
+direct Memory Backend rather than MCP or a Pico-owned duplicate.
 
 ## Durable records
 
@@ -391,3 +434,13 @@ not evade it.
 
 The task files under [`plan/tasks/`](plan/tasks/) are the agent-executable
 delivery contract.
+
+## Post-v0.1 implementation delta
+
+| Current version 0.1 behavior | Accepted version 0.2 target | Task |
+|---|---|---|
+| Provider vocabulary is Codex and Claude | Add evidence-preserving provider `pico` | `v02-001` |
+| No CodeCairn-owned Pico source | Add staged append-only Pico Source Journal | `v02-001` |
+| No Pico plugin entry point | Install entry `codecairn`, manifest `codecairn-memory`, backend contribution `codecairn` | `v02-002` |
+| CLI/MCP/hooks are the only clients | Add Pico as a live MemoryBackend client while retaining existing clients | `v02-002` |
+| Coding A/B uses pre-retrieved context | Run live Pico store, fresh-process recall, and memory-off/on tasks | `v02-003` |

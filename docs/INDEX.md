@@ -5,16 +5,18 @@ truth, historical decisions, and generated evidence.
 
 ## Read first
 
-1. [`../CONTEXT.md`](../CONTEXT.md) — canonical version 0.1 domain language.
+1. [`../CONTEXT.md`](../CONTEXT.md) — canonical maintained domain language.
 2. [`PRD.md`](PRD.md) — accepted product requirements and release outcome.
 3. [`architecture.md`](architecture.md) — target ownership, flows, and
    current-to-target delta.
 4. [`v0.1/walkthrough.md`](v0.1/walkthrough.md) — one concrete trace through
    capture, evolution, and recall.
-5. [`plan/README.md`](plan/README.md) — delivery order and agent-ready tasks.
-6. [`runtime/operations.md`](runtime/operations.md) — public behavior that
+5. [`v0.2/README.md`](v0.2/README.md) — accepted, unimplemented Pico Memory
+   Backend integration.
+6. [`plan/README.md`](plan/README.md) — delivery order and agent-ready tasks.
+7. [`runtime/operations.md`](runtime/operations.md) — public behavior that
    exists on current `main`.
-7. [`runtime/installation.md`](runtime/installation.md) — persistent install
+8. [`runtime/installation.md`](runtime/installation.md) — persistent install
    and one-client acceptance path.
 
 ## Authority
@@ -27,6 +29,7 @@ truth, historical decisions, and generated evidence.
 | What is the exact durable/operational schema? | [`v0.1/schema-contract.md`](v0.1/schema-contract.md) |
 | What is the lifecycle policy? | [`v0.1/memory-lifecycle.md`](v0.1/memory-lifecycle.md) |
 | What commands work on current `main`? | [`runtime/operations.md`](runtime/operations.md) |
+| What is the accepted Pico integration target? | [`v0.2/README.md`](v0.2/README.md) and [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) |
 | What should an implementation agent do next? | [`plan/README.md`](plan/README.md) and [`plan/tasks/`](plan/tasks/) |
 | Why did a design change? | [`adr/README.md`](adr/README.md) |
 | What does current public evidence prove? | [`evaluation/README.md`](evaluation/README.md) and [`evidence-bundle.md`](evidence-bundle.md) |
@@ -57,10 +60,24 @@ permission to advertise target behavior as shipped.
 | [`plan/README.md`](plan/README.md) | Baseline, dependency graph, task status |
 | [`plan/analysis/v0.1-delivery.md`](plan/analysis/v0.1-delivery.md) | Hotspots, deletion strategy, risk and source envelope |
 | [`plan/backlog.md`](plan/backlog.md) | Compact task index |
-| [`plan/tasks/`](plan/tasks/) | Twelve independently verifiable task specifications |
+| [`plan/tasks/`](plan/tasks/) | Versioned, independently verifiable task specifications |
 
 These files are the accepted local delivery plan. GitHub Issues remain the
 external tracker when tasks are published or assigned.
+
+## Version 0.2 accepted target
+
+| Document | Purpose |
+|---|---|
+| [`v0.2/README.md`](v0.2/README.md) | Canonical Pico Source Journal, Memory Adapter, ownership, failure, and evidence contract |
+| [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) | Decision to replace Pico's long-term Memory Backend directly |
+| [`plan/tasks/v02-001-pico-trace-import.md`](plan/tasks/v02-001-pico-trace-import.md) | Pico source journal and evidence-preserving importer |
+| [`plan/tasks/v02-002-pico-memory-adapter.md`](plan/tasks/v02-002-pico-memory-adapter.md) | Installed Pico plugin and MemoryBackend mapping |
+| [`plan/tasks/v02-003-pico-integration-evidence.md`](plan/tasks/v02-003-pico-integration-evidence.md) | Joint installed continuity, isolation, and paired evidence |
+
+These documents are post-v0.1 plans. Until their tasks merge,
+[`runtime/operations.md`](runtime/operations.md) remains the implementation
+truth.
 
 ## Runtime and operations
 
@@ -98,6 +115,7 @@ contract.
 | [`0001`](adr/0001-new-public-repository-with-selective-reimplementation.md)–[`0011`](adr/0011-import-resume-replays-only-the-active-suffix.md) | Foundation, evidence, storage, entrypoints, resume |
 | [`0012`](adr/0012-hierarchical-recall-is-a-rebuildable-projection.md)–[`0027`](adr/0027-semantic-projection-rejects-foreign-citations-per-clause.md) | Retrieval and grounded projection |
 | [`0028`](adr/0028-embedding-transport-policy-is-artifact-identity.md)–[`0042`](adr/0042-ablation-gates-evaluate-natural-weighted-accuracy.md) | Evaluation protocols, exact repair, Fable baseline |
-| [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0052`](adr/0052-version-0-1-retires-http-compatibility.md) | Version 0.1 product, lifecycle, surfaces, source budget |
+| [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0056`](adr/0056-locomo-pressure-latency-is-not-product-latency.md) | Version 0.1 product, lifecycle, surfaces, source budget, and measurement limits |
+| [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) | Accepted post-v0.1 Pico Memory Backend integration |
 
 Use [`adr/README.md`](adr/README.md) for status and supersession rules.

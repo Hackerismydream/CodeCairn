@@ -77,7 +77,8 @@ protocol files and every published V23 result keep their frozen contracts.
 
 ### Version 0.1 product and simplification
 
-ADRs 0043–0054 define the accepted version 0.1 target:
+ADRs 0043–0056 define the accepted version 0.1 target and its final measurement
+limits:
 
 - ADR 0043 removes mandatory verification from memory storage while retaining
   system-owned provenance;
@@ -101,6 +102,14 @@ ADRs 0043–0054 define the accepted version 0.1 target:
   ranked snippets.
 - ADR 0056 separates LoCoMo pressure latency from the product retrieval
   latency gate and records the v0.1 optimization stop band.
+
+### Post-v0.1 Pico integration
+
+ADR 0057 accepts CodeCairn as Pico's direct long-term Memory Backend. It adds a
+CodeCairn-owned Pico Source Journal, provider `pico` importer, and installed
+Pico Integration Module while preserving CodeCairn's independent Memory OS
+ownership. It is a target decision, not proof that the adapter or live
+evaluation has shipped.
 
 These decisions are specified for implementation under
 [`../plan/tasks/`](../plan/tasks/). Current shipped behavior remains
