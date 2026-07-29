@@ -1,4 +1,4 @@
-# Version 0.1 Backlog
+# Delivery Backlog
 
 This file is an index, not a second source of requirements. Task files own
 implementation detail.
@@ -18,9 +18,17 @@ implementation detail.
 | 10 | [`v01-009`](tasks/v01-009-packaging-learning.md) | Persistent install, license, package inventory, and docs pass |
 | 11 | [`v01-010`](tasks/v01-010-release-e2e.md) | One clean implementation/evidence SHA pair owns all artifacts |
 
-Post-v0.1—not backlog for this release:
+## Accepted post-v0.1 Pico integration
 
-- Raven profile/adapter;
+| Order | Task | Exit signal |
+|---:|---|---|
+| 12 | [`v02-001`](tasks/v02-001-pico-trace-import.md) | Pico journal replay and evidence-preserving import pass |
+| 13 | [`v02-002`](tasks/v02-002-pico-memory-adapter.md) | Resolvable installed plugin exposes the CodeCairn backend |
+| 14 | Pico `codecairn-001` and `codecairn-002` | Pico pins CodeCairn, removes EverOS, and retains Local Skills |
+| 15 | [`v02-003`](tasks/v02-003-pico-integration-evidence.md) | Installed continuity, isolation, and paired artifacts are complete |
+
+Post-v0.1 and still deferred:
+
 - dynamic profiles;
 - general Reflection, skills, or clustering;
 - watcher daemon;

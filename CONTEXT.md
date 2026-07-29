@@ -156,3 +156,28 @@ work is pending, leased, failed, or stale.
 **Evaluation Run**:
 One immutable benchmark or acceptance execution bound to explicit inputs,
 configuration, repository state, and generated artifacts.
+
+## Planned post-v0.1 Pico integration
+
+The following terms define an accepted version 0.2 target. They do not describe
+behavior shipped by version 0.1.
+
+**Pico Source Journal**:
+The CodeCairn-owned append-only source that records persisted Pico after-Turn
+batches under schema `codecairn.pico.source.v1`. It is separate from Pico
+Session storage and has its own staged append and replay protocol. Boundary
+`pico_turn_end` closes one imported batch without asserting task success.
+_Avoid_: Pico Session mirror, shared Session database
+
+**Pico Agent Trace**:
+The provider-independent Agent Trace produced by normalizing a Pico Source
+Journal with provider `pico`. Its Evidence Facts follow the same structured
+source rules as Codex and Claude traces.
+_Avoid_: Pico transcript summary
+
+**Pico Memory Adapter**:
+The installed CodeCairn Integration Module loaded from Pico entry
+`codecairn`, identified by plugin manifest `codecairn-memory`, and contributing
+Memory Backend key `codecairn`. It translates Pico's MemoryBackend Interface
+to `CodeCairnApplication` without owning memory policy.
+_Avoid_: MCP proxy, second memory runtime
