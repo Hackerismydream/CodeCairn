@@ -1,7 +1,7 @@
 ---
 id: v02-001
 scope: Pico Source Journal and Agent Trace import
-status: ready
+status: done
 depends-on: []
 ---
 

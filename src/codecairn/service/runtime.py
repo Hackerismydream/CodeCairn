@@ -11,6 +11,7 @@ from typing import Protocol, cast
 
 from codecairn.memory.capture import CaptureCheckpoint, ExpectedMemoryFile, PreparedMemoryCommit
 from codecairn.memory.episode import BoundaryKind, ClosedEpisode, close_trace_episodes, is_episode_signal
+from codecairn.memory.errors import TraceParseError
 from codecairn.memory.evidence import collect_evidence_facts
 from codecairn.memory.evolution import (
     EvolutionArtifact,
@@ -177,6 +178,8 @@ class MemoryRuntime:
         observed_path = str(Path(os.path.abspath(source_path)))
         checkpoint = self._state.get_checkpoint(repo_key=repo_key, source_path=observed_path)
         trace = self._importer.read(source_path, source_root=source_root, checkpoint=checkpoint)
+        if trace.source_repo_key is not None and trace.source_repo_key != repo_key:
+            raise TraceParseError("Trace source repository identity does not match the import namespace")
         existing_episodes = self._state.list_episodes(repo_key=repo_key, provider=trace.provider, session_id=trace.session_id)
         episodes = close_trace_episodes(trace, repo_key=repo_key, existing=existing_episodes, final_boundary=boundary_kind)
         facts = collect_evidence_facts(episodes, repo_key=repo_key)
@@ -268,6 +271,10 @@ class MemoryRuntime:
             skipped_memory_count=len(episodes) - created,
             repaired_memory_count=repaired,
         )
+
+    def import_checkpoint(self, source_path: Path, *, repo_key: str) -> ImportCheckpoint | None:
+        observed_path = str(Path(os.path.abspath(source_path)))
+        return self._state.get_checkpoint(repo_key=repo_key, source_path=observed_path)
 
     def store_memory(self, memory: CodingMemory) -> CodingMemory:
         self._recover_prepared_operations()

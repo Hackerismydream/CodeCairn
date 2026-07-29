@@ -8,6 +8,10 @@ CLI JSON, MCP schemas, rebuild, and evaluation fixtures must use these names
 and rules. A code agent may refine internal Python types, but it may not invent
 another public field, enum, default, identity input, or lifecycle state.
 
+Post-v0.1 amendment: `v02-001` extends the existing schema-version-1 provider
+and Episode-boundary enums with `pico` and `pico_turn_end`. No field shape,
+identity input, or version 0.1 record is otherwise changed.
+
 ## Versioning and compatibility
 
 - `schema_version` is the integer `1` for every top-level record in this
@@ -97,7 +101,7 @@ attempt ID, queue lease, score, and presentation fields never enter identity.
 | Field | Type | Required | Contract |
 |---|---|---:|---|
 | `fact_id` | typed ID | yes | Resolves in the Source Fact Registry |
-| `provider` | enum | yes | `codex` or `claude` |
+| `provider` | enum | yes | `codex`, `claude`, or post-v0.1 `pico` |
 | `session_id` | string | yes | Provider session identity |
 | `source_generation` | positive integer | yes | Monotonic generation for the owned source |
 | `event_index` | non-negative integer | yes | Normalized event index |
@@ -175,7 +179,7 @@ source references.
 | Field | Type | Required | Contract |
 |---|---|---:|---|
 | `trusted_timestamp_ms` | non-negative integer or null | yes | Source time only when the importer marks it trustworthy |
-| `provider` | enum | yes | `codex` or `claude` |
+| `provider` | enum | yes | `codex`, `claude`, or post-v0.1 `pico` |
 | `session_id` | string | yes | Stable source session |
 | `source_generation` | positive integer | yes | Source generation |
 | `event_index` | non-negative integer | yes | Normalized event position |
@@ -193,13 +197,13 @@ recency cannot be proven, automatic Preference or Knowledge evolution chooses
 | `schema_version` | integer | yes | `1` |
 | `episode_id` | typed ID | yes | Stable span identity |
 | `repo_key` | string | yes | Memory Namespace |
-| `provider` | enum | yes | `codex` or `claude` |
+| `provider` | enum | yes | `codex`, `claude`, or post-v0.1 `pico` |
 | `session_id` | string | yes | Provider session |
 | `source_generation` | positive integer | yes | Source generation |
 | `start_event_index` | non-negative integer | yes | Inclusive |
 | `end_event_index_exclusive` | positive integer | yes | Greater than start |
 | `opening_event_id` | string | yes | Stable first user event |
-| `boundary_kind` | enum | yes | `next_user`, `codex_stop`, `claude_session_end`, `manual_finalize` |
+| `boundary_kind` | enum | yes | `next_user`, `codex_stop`, `claude_session_end`, `manual_finalize`, or post-v0.1 `pico_turn_end` |
 | `continues_episode_id` | typed ID or null | yes | Linked only under the continuation rule |
 | `source_order_key` | object | yes | Opening-task order |
 | `prefix_sha256` | 64-char hex | yes | Normalized source prefix through the end cursor |

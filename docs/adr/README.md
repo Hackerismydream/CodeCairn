@@ -111,6 +111,10 @@ Pico Integration Module while preserving CodeCairn's independent Memory OS
 ownership. It is a target decision, not proof that the adapter or live
 evaluation has shipped.
 
+ADR 0058 amends ADR 0049 only for post-v0.1 delivery. It preserves every
+version 0.1 source ceiling and gives `v02-001` and `v02-002` explicit additive
+integration budgets.
+
 These decisions are specified for implementation under
 [`../plan/tasks/`](../plan/tasks/). Current shipped behavior remains
 [`../runtime/operations.md`](../runtime/operations.md) until the relevant task

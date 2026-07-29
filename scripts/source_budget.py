@@ -21,10 +21,13 @@ STAGE_LIMITS = {
     "v01-006": {"core": 13_200, "total": 34_091},
     "v01-007": {"core": 10_000, "total": 34_091},
     "v01-008": {"core": 9_700, "total": 14_100},
+    "v02-001": {"core": 10_550, "total": 14_850},
+    "v02-002": {"core": 11_000, "total": 15_300},
     "release": {"core": 9_700, "total": 14_100},
 }
 
 INTERNAL_TARGETS = {"core": 9_700, "total": 14_100}
+V02_INTERNAL_TARGETS = {"v02-001": STAGE_LIMITS["v02-001"], "v02-002": STAGE_LIMITS["v02-002"]}
 
 
 @dataclass(frozen=True, slots=True)
@@ -93,7 +96,7 @@ def build_report(root: Path, *, stage: str) -> SourceBudgetReport:
         evaluation=evaluation,
         total=total,
         limits=dict(limits),
-        internal_targets=dict(INTERNAL_TARGETS),
+        internal_targets=dict(V02_INTERNAL_TARGETS.get(stage, INTERNAL_TARGETS)),
         accepted_baseline=dict(ACCEPTED_BASELINE),
         passed=not violations,
         violations=violations,

@@ -105,6 +105,8 @@ def _source_location(event: TraceEvent) -> SourceLocation:
 
 
 def _event_outcome(event: TraceEvent) -> str:
+    if event.observed_outcome is not None:
+        return event.observed_outcome
     if event.exit_code is not None:
         return "success" if event.exit_code == 0 else "failure"
     if event.tool_status in {"success", "completed"}:

@@ -10,7 +10,7 @@ from typing import Any, Literal, Protocol
 
 from codecairn.memory.episode import BoundaryKind
 from codecairn.memory.evolution import EvolutionProposer, EvolutionRecord, MemoryHistory
-from codecairn.memory.models import CodingMemory, HookReceipt, ImportResult, IndexHealth, RebuildReport, RecallResult
+from codecairn.memory.models import CodingMemory, HookReceipt, ImportCheckpoint, ImportResult, IndexHealth, RebuildReport, RecallResult
 from codecairn.memory.schema import (
     MemoryType,
     RepositoryKnowledgePayload,
@@ -125,6 +125,9 @@ class CodeCairnApplication:
             source_path, repo_key=repo_key, source_root=source_root, boundary_kind=boundary_kind
         )
         return ImportOutcome(result=result, index=self._drain_index(requested=index))
+
+    def import_checkpoint(self, source_path: Path, *, repo_key: str) -> ImportCheckpoint | None:
+        return self._memory_runtime().import_checkpoint(source_path, repo_key=repo_key)
 
     def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
         return self._memory_runtime().list_memories(repo_key=repo_key)

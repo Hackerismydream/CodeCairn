@@ -6,6 +6,7 @@ from typing import Protocol
 from codecairn.importers.claude import ClaudeImporter
 from codecairn.importers.codex import CodexImporter
 from codecairn.importers.jsonl import JsonlScan, read_import_scan
+from codecairn.importers.pico import PICO_SOURCE_SCHEMA, PicoImporter
 from codecairn.memory.errors import TraceParseError
 from codecairn.memory.models import AgentTrace, ImportCheckpoint
 from codecairn.memory.schema import Provider
@@ -21,7 +22,11 @@ class SessionImporter:
     """Detect a supported JSONL provider and emit one shared Agent Trace."""
 
     def __init__(self) -> None:
-        self._adapters: dict[str, _JsonlAdapter] = {ClaudeImporter.provider: ClaudeImporter(), CodexImporter.provider: CodexImporter()}
+        self._adapters: dict[str, _JsonlAdapter] = {
+            ClaudeImporter.provider: ClaudeImporter(),
+            CodexImporter.provider: CodexImporter(),
+            PicoImporter.provider: PicoImporter(),
+        }
 
     def read(self, source_path: Path, *, source_root: Path | None = None, checkpoint: ImportCheckpoint | None = None) -> AgentTrace:
         scan = read_import_scan(source_path, source_root=source_root, checkpoint=checkpoint)
@@ -34,6 +39,8 @@ class SessionImporter:
 
 def _detect_provider(scan: JsonlScan) -> Provider:
     for record, _raw_event_sha256 in scan.records:
+        if record.get("schema") == PICO_SOURCE_SCHEMA and record.get("record_type") == "header":
+            return PicoImporter.provider
         if isinstance(record.get("sessionId"), str):
             return ClaudeImporter.provider
         if record.get("type") == "session_meta":

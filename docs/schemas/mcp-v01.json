@@ -352,7 +352,8 @@
               "provider": {
                 "enum": [
                   "codex",
-                  "claude"
+                  "claude",
+                  "pico"
                 ],
                 "title": "Provider",
                 "type": "string"
@@ -444,7 +445,8 @@
               "provider": {
                 "enum": [
                   "codex",
-                  "claude"
+                  "claude",
+                  "pico"
                 ],
                 "title": "Provider",
                 "type": "string"
@@ -1325,7 +1327,8 @@
               "provider": {
                 "enum": [
                   "codex",
-                  "claude"
+                  "claude",
+                  "pico"
                 ],
                 "title": "Provider",
                 "type": "string"
@@ -1523,7 +1526,8 @@
               "provider": {
                 "enum": [
                   "codex",
-                  "claude"
+                  "claude",
+                  "pico"
                 ],
                 "title": "Provider",
                 "type": "string"
@@ -1834,7 +1838,8 @@
               "provider": {
                 "enum": [
                   "codex",
-                  "claude"
+                  "claude",
+                  "pico"
                 ],
                 "title": "Provider",
                 "type": "string"
@@ -2528,7 +2533,8 @@
               "provider": {
                 "enum": [
                   "codex",
-                  "claude"
+                  "claude",
+                  "pico"
                 ],
                 "title": "Provider",
                 "type": "string"
@@ -2620,7 +2626,8 @@
               "provider": {
                 "enum": [
                   "codex",
-                  "claude"
+                  "claude",
+                  "pico"
                 ],
                 "title": "Provider",
                 "type": "string"
