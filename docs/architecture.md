@@ -439,8 +439,8 @@ delivery contract.
 
 | Current version 0.1 behavior | Accepted version 0.2 target | Task |
 |---|---|---|
-| Provider vocabulary is Codex and Claude | Add evidence-preserving provider `pico` | `v02-001` |
-| No CodeCairn-owned Pico source | Add staged append-only Pico Source Journal | `v02-001` |
+| Provider vocabulary includes evidence-preserving `pico` | Implemented | `v02-001` |
+| Staged append-only Pico Source Journal | Implemented | `v02-001` |
 | No Pico plugin entry point | Install entry `codecairn`, manifest `codecairn-memory`, backend contribution `codecairn` | `v02-002` |
 | CLI/MCP/hooks are the only clients | Add Pico as a live MemoryBackend client while retaining existing clients | `v02-002` |
 | Coding A/B uses pre-retrieved context | Run live Pico store, fresh-process recall, and memory-off/on tasks | `v02-003` |

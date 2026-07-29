@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: accepted and amended by ADR 0058 for version 0.2
 ---
 
 # Version 0.1 Has a Source Budget
@@ -18,3 +18,7 @@ The reduction removes obsolete Evidence Gate/type-specific paths and collapses
 historical benchmark orchestration while retaining four public evaluation
 commands and immutable historical evidence. Moving code to another installable
 package or generated file does not satisfy the budget.
+
+ADR 0058 preserves these version 0.1 limits and introduces explicit additive
+stages for the post-v0.1 Pico integration. The version 0.1 release stage and
+historical evidence remain unchanged.

@@ -15,7 +15,7 @@ from typing import Any, Literal, cast, get_args, get_origin, get_type_hints
 
 SCHEMA_VERSION = 1
 
-Provider = Literal["codex", "claude"]
+Provider = Literal["codex", "claude", "pico"]
 MemoryType = Literal["task_experience", "repository_knowledge", "user_preference", "work_state"]
 MemoryOrigin = Literal["capture", "agent_asserted", "restored"]
 ExperienceOutcome = Literal["success", "failure", "partial", "unknown"]
@@ -29,7 +29,7 @@ WorkstreamState = Literal["open", "closed"]
 _HEX_64 = re.compile(r"[0-9a-f]{64}\Z")
 _TYPED_ID = re.compile(r"[a-z][a-z_]*_[0-9a-f]{64}\Z")
 _MEMORY_TYPES = frozenset({"task_experience", "repository_knowledge", "user_preference", "work_state"})
-_PROVIDERS = frozenset({"codex", "claude"})
+_PROVIDERS = frozenset({"codex", "claude", "pico"})
 _FACT_KINDS = frozenset({"message", "command", "command_result", "file_change", "tool_call", "tool_result", "verification"})
 _ROLES = frozenset({"user", "assistant", "tool", "system"})
 _ORIGINS = frozenset({"capture", "agent_asserted", "restored"})
@@ -223,7 +223,7 @@ class TaskEpisode:
     start_event_index: int
     end_event_index_exclusive: int
     opening_event_id: str
-    boundary_kind: Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize"]
+    boundary_kind: Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize", "pico_turn_end"]
     continues_episode_id: str | None
     source_order_key: SourceOrderKey
     prefix_sha256: str
@@ -239,7 +239,7 @@ class TaskEpisode:
         if type(self.end_event_index_exclusive) is not int or self.end_event_index_exclusive <= self.start_event_index:
             raise SchemaInvalid("Episode end must be greater than its start")
         _bounded(self.opening_event_id, field="opening_event_id", maximum=256)
-        if self.boundary_kind not in {"next_user", "codex_stop", "claude_session_end", "manual_finalize"}:
+        if self.boundary_kind not in {"next_user", "codex_stop", "claude_session_end", "manual_finalize", "pico_turn_end"}:
             raise SchemaInvalid(f"Unknown Episode boundary: {self.boundary_kind!r}")
         if self.continues_episode_id is not None:
             _typed_id(self.continues_episode_id, prefix="ep")
@@ -266,7 +266,7 @@ class TaskEpisode:
         start_event_index: int,
         end_event_index_exclusive: int,
         opening_event_id: str,
-        boundary_kind: Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize"],
+        boundary_kind: Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize", "pico_turn_end"],
         continues_episode_id: str | None,
         source_order_key: SourceOrderKey,
         prefix_sha256: str,

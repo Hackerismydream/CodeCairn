@@ -149,8 +149,8 @@ v02-003 joint installed evidence and paired evaluation
 
 | ID | Outcome | Depends on | State |
 |---|---|---|---|
-| [`v02-001`](tasks/v02-001-pico-trace-import.md) | Pico source and provider `pico` Agent Trace | current CodeCairn main | ready |
-| [`v02-002`](tasks/v02-002-pico-memory-adapter.md) | Installed Pico plugin and MemoryBackend mapping | v02-001 | blocked |
+| [`v02-001`](tasks/v02-001-pico-trace-import.md) | Pico source and provider `pico` Agent Trace | current CodeCairn main | done |
+| [`v02-002`](tasks/v02-002-pico-memory-adapter.md) | Installed Pico plugin and MemoryBackend mapping | v02-001 | ready |
 | [`v02-003`](tasks/v02-003-pico-integration-evidence.md) | Cross-process, cross-repository, and paired evidence | v02-002 plus Pico codecairn-002 | blocked |
 
 The maintained version 0.2 contract is

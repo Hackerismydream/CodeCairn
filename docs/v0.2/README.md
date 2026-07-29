@@ -1,8 +1,9 @@
 # Version 0.2 Pico Memory Integration
 
-Status: accepted post-v0.1 target. None of the behavior in this document is
-implemented or shipped until the referenced tasks merge and the joint evidence
-gate passes.
+Status: accepted post-v0.1 target. The Pico Source Journal and provider `pico`
+Agent Trace importer are implemented by `v02-001`; the installed Memory Backend
+adapter and joint effect evidence remain unimplemented until their referenced
+tasks merge. Fixture import is not live Pico integration evidence.
 
 ## Outcome
 

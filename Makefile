@@ -1,6 +1,7 @@
 .PHONY: artifact-check artifact-repro check docs-check eval-coding-ab eval-locomo-200 eval-locomo-full eval-retrieval eval-scale eval-smoke evidence-verify format imports installed-smoke lint source-budget test typecheck
 
 EVAL_OUTPUT_ROOT ?= benchmark_results
+SOURCE_BUDGET_STAGE ?= v02-001
 
 format:
 	uv run ruff check --fix .
@@ -17,7 +18,7 @@ imports:
 	uv run lint-imports
 
 source-budget:
-	uv run python scripts/source_budget.py --stage v01-008
+	uv run python scripts/source_budget.py --stage "$(SOURCE_BUDGET_STAGE)"
 
 eval-smoke:
 	uv run pytest -q \

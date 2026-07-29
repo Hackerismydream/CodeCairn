@@ -1,14 +1,15 @@
 # Runtime Operations
 
-This document describes behavior implemented on current `main` after
-`v01-009`. Real-client and candidate-bound paid evaluation remain specified
-under [`../v0.1/`](../v0.1/).
+This document describes behavior implemented on current `main` after the
+`v02-001` Pico trace-import delivery. The installed Pico Memory Backend adapter
+remains unimplemented until `v02-002` merges. Real-client and candidate-bound
+paid evaluation remain specified under [`../v0.1/`](../v0.1/).
 
 ## Current support matrix
 
 | Capability | Command | Current behavior |
 |---|---|---|
-| Import session | `codecairn import` | Incrementally normalizes Codex or Claude JSONL, closes eligible Task Episodes, and commits one deterministic Task Experience per closed Episode |
+| Import session | `codecairn import` | Incrementally normalizes Codex, Claude, or CodeCairn-owned Pico JSONL, closes eligible Task Episodes, and commits one deterministic Task Experience per closed Episode |
 | Initialize repository | `codecairn init` | Derives and freezes repository identity, writes strict non-secret config, and constructs an explicit retrieval profile |
 | Process queued work | `codecairn process` | Leases bounded semantic and index jobs; disabled semantic extraction remains visibly pending |
 | Direct memory | `codecairn remember` | Creates Repository Knowledge, Repository Working Preference, or Work State; direct Task Experience is rejected |
@@ -193,7 +194,8 @@ visible and bounded. `--strict` makes degraded state fail automation.
 Implemented:
 
 - four durable Coding Memory types;
-- incremental Codex/Claude capture;
+- incremental Codex/Claude capture plus the CodeCairn-owned Pico Source Journal
+  and provider `pico` importer;
 - stable half-open Episode identity and continuation;
 - deterministic bounded Task Experience;
 - Write Intent recovery and eight capture fault boundaries;
@@ -217,5 +219,6 @@ Implemented:
 - Claude `SessionEnd` and Codex `Stop` import hooks, atomic/idempotent settings
   installation, bounded receipts, and hook-to-recall read-your-writes.
 
-Not yet implemented: real-client release smoke, publication/tagging, and
-candidate-bound release evidence.
+Not yet implemented: the installed Pico Memory Backend adapter, Pico plugin
+discovery, joint Pico continuity/effect evidence, real-client release smoke,
+publication/tagging, and candidate-bound release evidence.

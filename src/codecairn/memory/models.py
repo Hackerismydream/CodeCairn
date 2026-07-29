@@ -53,6 +53,7 @@ class TraceEvent:
     tool_status: str | None = None
     file_changes: tuple[FileChangeFact, ...] = ()
     is_command_result: bool = False
+    observed_outcome: TraceEpisodeOutcome | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,6 +70,7 @@ class AgentTrace:
     raw_prefix_file_change_fact_count: int
     raw_suffix_event_sha256s: tuple[str, ...]
     events: tuple[TraceEvent, ...]
+    source_repo_key: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

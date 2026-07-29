@@ -2,7 +2,8 @@
 
 from codecairn.importers.claude import ClaudeImporter
 from codecairn.importers.codex import CodexImporter
+from codecairn.importers.pico import PicoImporter
 from codecairn.importers.session import SessionImporter
 from codecairn.memory.errors import SourceRewritten, TraceParseError
 
-__all__ = ["ClaudeImporter", "CodexImporter", "SessionImporter", "SourceRewritten", "TraceParseError"]
+__all__ = ["ClaudeImporter", "CodexImporter", "PicoImporter", "SessionImporter", "SourceRewritten", "TraceParseError"]

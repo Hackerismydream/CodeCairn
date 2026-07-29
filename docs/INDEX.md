@@ -11,8 +11,9 @@ truth, historical decisions, and generated evidence.
    current-to-target delta.
 4. [`v0.1/walkthrough.md`](v0.1/walkthrough.md) — one concrete trace through
    capture, evolution, and recall.
-5. [`v0.2/README.md`](v0.2/README.md) — accepted, unimplemented Pico Memory
-   Backend integration.
+5. [`v0.2/README.md`](v0.2/README.md) — accepted Pico Memory Backend
+   integration; trace import is implemented and the installed adapter remains
+   pending.
 6. [`plan/README.md`](plan/README.md) — delivery order and agent-ready tasks.
 7. [`runtime/operations.md`](runtime/operations.md) — public behavior that
    exists on current `main`.
@@ -26,7 +27,7 @@ truth, historical decisions, and generated evidence.
 | What does a term mean? | [`../CONTEXT.md`](../CONTEXT.md) |
 | What product are we building? | [`PRD.md`](PRD.md) |
 | Which component owns a target behavior? | [`architecture.md`](architecture.md) |
-| What is the exact durable/operational schema? | [`v0.1/schema-contract.md`](v0.1/schema-contract.md) |
+| What is the exact durable/operational schema? | [`v0.1/schema-contract.md`](v0.1/schema-contract.md), including its marked post-v0.1 enum amendments |
 | What is the lifecycle policy? | [`v0.1/memory-lifecycle.md`](v0.1/memory-lifecycle.md) |
 | What commands work on current `main`? | [`runtime/operations.md`](runtime/operations.md) |
 | What is the accepted Pico integration target? | [`v0.2/README.md`](v0.2/README.md) and [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) |
@@ -117,6 +118,6 @@ contract.
 | [`0012`](adr/0012-hierarchical-recall-is-a-rebuildable-projection.md)–[`0027`](adr/0027-semantic-projection-rejects-foreign-citations-per-clause.md) | Retrieval and grounded projection |
 | [`0028`](adr/0028-embedding-transport-policy-is-artifact-identity.md)–[`0042`](adr/0042-ablation-gates-evaluate-natural-weighted-accuracy.md) | Evaluation protocols, exact repair, Fable baseline |
 | [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0056`](adr/0056-locomo-pressure-latency-is-not-product-latency.md) | Version 0.1 product, lifecycle, surfaces, source budget, and measurement limits |
-| [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) | Accepted post-v0.1 Pico Memory Backend integration |
+| [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md)–[`0058`](adr/0058-version-0-2-has-an-additive-pico-integration-budget.md) | Post-v0.1 Pico Memory Backend integration and its additive source budget |
 
 Use [`adr/README.md`](adr/README.md) for status and supersession rules.

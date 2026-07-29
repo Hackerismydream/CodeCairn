@@ -9,7 +9,7 @@ from codecairn.memory.models import AgentTrace, TraceEpisodeOutcome, TraceEvent
 from codecairn.memory.schema import SourceOrderKey, TaskEpisode
 from codecairn.memory.trace import extend_raw_prefix_sha256
 
-BoundaryKind = Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize"]
+BoundaryKind = Literal["next_user", "codex_stop", "claude_session_end", "manual_finalize", "pico_turn_end"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -121,11 +121,17 @@ def _prefix_at(trace: AgentTrace, cursor: int) -> str:
 
 def _outcome(events: tuple[TraceEvent, ...]) -> TraceEpisodeOutcome:
     results = tuple(
-        event.exit_code for event in events if event.kind == "tool_result" and event.is_command_result and event.exit_code is not None
+        event.observed_outcome for event in events if event.kind == "tool_result" and event.observed_outcome in {"success", "failure"}
     )
     if not results:
+        results = tuple(
+            "success" if event.exit_code == 0 else "failure"
+            for event in events
+            if event.kind == "tool_result" and event.is_command_result and event.exit_code is not None
+        )
+    if not results:
         return "unknown"
-    successes = sum(code == 0 for code in results)
+    successes = sum(outcome == "success" for outcome in results)
     if successes == len(results):
         return "success"
     if successes == 0:

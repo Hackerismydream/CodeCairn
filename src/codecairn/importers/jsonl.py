@@ -101,7 +101,13 @@ def checkpoint_context(
 
 
 def agent_trace(
-    scan: JsonlScan, *, provider: Provider, session_id: str, context: tuple[int, tuple[str, ...], int], events: tuple[TraceEvent, ...]
+    scan: JsonlScan,
+    *,
+    provider: Provider,
+    session_id: str,
+    context: tuple[int, tuple[str, ...], int],
+    events: tuple[TraceEvent, ...],
+    source_repo_key: str | None = None,
 ) -> AgentTrace:
     resumed_from, call_ids, file_change_count = context
     return AgentTrace(
@@ -117,6 +123,7 @@ def agent_trace(
         raw_prefix_file_change_fact_count=file_change_count,
         raw_suffix_event_sha256s=tuple(item[1] for item in scan.records),
         events=events,
+        source_repo_key=source_repo_key,
     )
 
 
