@@ -14,7 +14,7 @@ claim; it is not relabeled as release evidence.
 | Initialize repository | `codecairn init` | Derives and freezes repository identity, writes strict non-secret config, and constructs an explicit retrieval profile |
 | Process queued work | `codecairn process` | Leases bounded semantic and index jobs; disabled semantic extraction remains visibly pending |
 | Direct memory | `codecairn remember` | Creates Repository Knowledge, Repository Working Preference, or Work State; direct Task Experience is rejected |
-| Session hooks | `codecairn hook install/run` | Claude `SessionEnd` and Codex `Stop` import owned transcripts without model calls or client blocking |
+| Session hooks | `codecairn hook install` | Claude `SessionEnd` and Codex `Stop` import owned transcripts through an installed internal callback without model calls or client blocking |
 | Evolve memory | `codecairn memory ...` | Applies validated immutable Supersession, returns deterministic history, and creates forward-only restore revisions |
 | List memory | `codecairn list` | Reads four-type durable memory in the resolved repository namespace |
 | Recall | `codecairn recall` | Drains a bounded namespace index batch, admits relevant active memory, and either compiles attributed context or explicitly abstains |
@@ -57,7 +57,7 @@ codecairn init [--root ROOT] [--repo-key REPO]
   [--prefetch] [--check-provider] [--force]
 codecairn import SOURCE [--finalize] [--no-index]
 codecairn process [--semantic/--no-semantic] [--index/--no-index]
-  [--worker-id ID] [--max-jobs N] [--retry-failed]
+  [--max-jobs N]
 codecairn list
 codecairn recall TASK [--limit N]
   [--include-superseded] [--workstream-key KEY] [--token-budget N]
@@ -69,7 +69,6 @@ codecairn memory restore MEMORY_ID
 codecairn namespace export --output DIR
 codecairn namespace reset [--dry-run] --confirm REPO
 codecairn hook install [--claude] [--codex] [--dry-run]
-codecairn hook run --client claude|codex
 codecairn doctor [--live] [--strict] [--format human|json]
 codecairn index status
 codecairn index sync
@@ -86,6 +85,8 @@ binding. Secrets are environment-only and unknown config keys fail startup.
 extractor it reports pending jobs and leaves the deterministic Task Experience
 intact. Provider or schema failures are bounded, retryable jobs; completed jobs
 reuse their immutable output fingerprint and never call the provider again.
+Eligible failures are retried by the normal command; there is no separate
+retry mode.
 
 Production composition constructs the recorded retrieval provider. `init`
 defaults to the pinned 384-dimension FastEmbed profile, or recommends the
@@ -135,12 +136,13 @@ verifies readback. A second install is byte-identical. The emitted `uninstall`
 field identifies the exact handler command to remove; removal is an explicit
 manual settings edit in v0.1.
 
-`codecairn hook run --client claude|codex` reads one bounded stdin JSON value,
+The hidden `codecairn hook run --client claude|codex` callback reads one bounded stdin JSON value,
 normalizes a Claude Code `SessionEnd` or Codex `Stop`, resolves the initialized
 repository namespace, and imports the owned transcript with the corresponding
 closure boundary. Codex may use its session ID only when exactly one source
 matches the supported local session layout. The hook does not compose semantic
-or retrieval providers and does not drain the full index.
+or retrieval providers and does not drain the full index. It is written and
+invoked by `hook install`, not a user-facing operation.
 
 Every invocation exits zero with empty stdout. Success, no-op, unsupported,
 and failure outcomes are recorded as bounded Hook Receipts; failures degrade

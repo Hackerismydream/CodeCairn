@@ -108,3 +108,19 @@ def test_cli_verifies_historical_bundle_without_runtime_provider() -> None:
 
     assert result.exit_code == 0, result.output
     assert json.loads(result.output)["verified"] is True
+
+
+def test_cli_help_exposes_only_user_facing_operations() -> None:
+    runner = CliRunner()
+    root_help = runner.invoke(app, ["--help"])
+    hook_help = runner.invoke(app, ["hook", "--help"])
+    process_help = runner.invoke(app, ["process", "--help"])
+
+    assert root_help.exit_code == hook_help.exit_code == process_help.exit_code == 0
+    assert "--install-completion" not in root_help.output
+    assert "--show-completion" not in root_help.output
+    assert "evidence " not in root_help.output
+    assert "run " not in hook_help.output
+    assert "install " in hook_help.output
+    assert "--worker-id" not in process_help.output
+    assert "--retry-failed" not in process_help.output

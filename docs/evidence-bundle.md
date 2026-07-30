@@ -26,21 +26,11 @@ Bundle IDs describe artifact generations, not package releases.
 
 ## Build contract
 
-`codecairn evidence build` consumes completed immutable run directories plus
-quality artifacts:
+The release builder consumes completed immutable run directories plus quality
+artifacts. It is an engineering script rather than an end-user memory command:
 
 ```bash
-uv run codecairn evidence build \
-  --bundle-id <new-bundle-id> \
-  --locomo-run /path/to/locomo-run-or-composite.json \
-  --retrieval-run /path/to/retrieval-run \
-  --recovery-run /path/to/recovery-run \
-  --coding-run /path/to/coding-run \
-  --quality-junit /path/to/junit.xml \
-  --quality-coverage /path/to/coverage.json \
-  --generator-commit <full-commit> \
-  --repository-root . \
-  --output-root evidence
+uv run python scripts/build_release_bundle.py --help
 ```
 
 The output path is exclusive; an existing bundle is never overwritten.

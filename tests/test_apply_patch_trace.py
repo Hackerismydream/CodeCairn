@@ -6,9 +6,14 @@ import pytest
 from codecairn.importers import CodexImporter, TraceParseError
 from codecairn.importers import codex as codex_module
 from codecairn.importers import jsonl as jsonl_module
-from codecairn.memory.trace import segment_tasks
+from codecairn.memory.episode import ClosedEpisode, close_trace_episodes
+from codecairn.memory.models import AgentTrace
 
 FIXTURE = Path(__file__).parent / "fixtures" / "codex" / "apply_patch_session.jsonl"
+
+
+def _episodes(trace: AgentTrace) -> tuple[ClosedEpisode, ...]:
+    return close_trace_episodes(trace, repo_key="acme/widgets", final_boundary="manual_finalize")
 
 
 def test_custom_apply_patch_calls_emit_evidence_backed_file_changes(tmp_path: Path) -> None:
@@ -61,14 +66,14 @@ def test_appended_task_preserves_earlier_episode_identity_and_outcome(tmp_path: 
     source.write_text("\n".join(lines[:8]) + "\n", encoding="utf-8")
     importer = CodexImporter()
 
-    before = segment_tasks(importer.read(source), repo_key="acme/widgets")
+    before = _episodes(importer.read(source))
     source.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    after = segment_tasks(importer.read(source), repo_key="acme/widgets")
+    after = _episodes(importer.read(source))
 
     assert len(before) == 1
     assert len(after) == 2
-    assert before[0].episode_id == after[0].episode_id
-    assert before[0].opening_event_id == after[0].opening_event_id
+    assert before[0].record.episode_id == after[0].record.episode_id
+    assert before[0].record.opening_event_id == after[0].record.opening_event_id
     assert [change.fact_id for change in before[0].events[1].file_changes] == [
         change.fact_id for change in after[0].events[1].file_changes
     ]
@@ -119,7 +124,7 @@ def test_function_output_cannot_claim_custom_call_or_episode_outcome(tmp_path: P
     source.write_text("".join(f"{json.dumps(record)}\n" for record in records), encoding="utf-8")
 
     trace = CodexImporter().read(source)
-    episode = segment_tasks(trace, repo_key="acme/widgets")[0]
+    episode = _episodes(trace)[0]
 
     assert trace.events[3].tool_name is None
     assert trace.events[4].tool_name == "apply_patch"
@@ -147,7 +152,7 @@ def test_custom_output_cannot_steal_function_call_pair(tmp_path: Path) -> None:
     source.write_text("".join(f"{json.dumps(record)}\n" for record in records), encoding="utf-8")
 
     trace = CodexImporter().read(source)
-    episode = segment_tasks(trace, repo_key="acme/widgets")[0]
+    episode = _episodes(trace)[0]
 
     assert trace.events[3].tool_name is None
     assert trace.events[4].tool_name == "exec_command"
@@ -175,7 +180,7 @@ def test_non_command_function_output_cannot_author_episode_outcome(tmp_path: Pat
     source.write_text("".join(f"{json.dumps(record)}\n" for record in records), encoding="utf-8")
 
     trace = CodexImporter().read(source)
-    episode = segment_tasks(trace, repo_key="acme/widgets")[0]
+    episode = _episodes(trace)[0]
 
     assert trace.events[3].tool_name == "read_file"
     assert trace.events[3].command is None
@@ -205,7 +210,7 @@ def test_write_stdin_result_can_author_long_running_command_outcome(tmp_path: Pa
     source.write_text("".join(f"{json.dumps(record)}\n" for record in records), encoding="utf-8")
 
     trace = CodexImporter().read(source)
-    episode = segment_tasks(trace, repo_key="acme/widgets")[0]
+    episode = _episodes(trace)[0]
 
     assert trace.events[3].command is None
     assert trace.events[3].is_command_result
@@ -218,13 +223,13 @@ def test_appending_a_result_extends_only_the_active_episode(tmp_path: Path) -> N
     source.write_text("\n".join(lines[:7]) + "\n", encoding="utf-8")
     importer = CodexImporter()
 
-    before = segment_tasks(importer.read(source), repo_key="acme/widgets")
+    before = _episodes(importer.read(source))
     source.write_text("\n".join(lines[:8]) + "\n", encoding="utf-8")
-    after = segment_tasks(importer.read(source), repo_key="acme/widgets")
+    after = _episodes(importer.read(source))
 
     assert len(before) == len(after) == 1
-    assert before[0].episode_id != after[0].episode_id
-    assert before[0].opening_event_id == after[0].opening_event_id
+    assert before[0].record.episode_id != after[0].record.episode_id
+    assert before[0].record.opening_event_id == after[0].record.opening_event_id
     assert before[0].outcome == "unknown"
     assert after[0].outcome == "success"
 
@@ -246,13 +251,13 @@ def test_late_session_metadata_does_not_rename_existing_evidence(tmp_path: Path)
     importer = CodexImporter()
 
     before = importer.read(source)
-    before_episodes = segment_tasks(before, repo_key="acme/widgets")
+    before_episodes = _episodes(before)
     source.write_text("\n".join([*lines, '{"type":"session_meta","payload":{"id":"late-id"}}']) + "\n", encoding="utf-8")
     after = importer.read(source)
-    after_episodes = segment_tasks(after, repo_key="acme/widgets")
+    after_episodes = _episodes(after)
 
     assert before.session_id == after.session_id == "fallback-session"
-    assert before_episodes[0].episode_id == after_episodes[0].episode_id
+    assert before_episodes[0].record.episode_id == after_episodes[0].record.episode_id
     assert before.events[1].file_changes[0].fact_id == after.events[1].file_changes[0].fact_id
 
 

@@ -113,11 +113,11 @@ class _LocalOperations(ApplicationOperations):
             ),
             "source_import": _doctor_row("ok", "codecairn import <source>"),
             "semantic_queue": _doctor_row(
-                "degraded" if semantic["failed"] or semantic_missing else "ok", "codecairn process --semantic --retry-failed"
+                "degraded" if semantic["failed"] or semantic_missing else "ok", "codecairn process --semantic --no-index"
             ),
             "markdown": _doctor_row("degraded" if truth_issues else "ok", "restore the latest namespace export"),
             "sqlite": _doctor_row("ok", "codecairn init"),
-            "index_queue": _doctor_row("degraded" if index.failed or index.stale else "ok", "codecairn process --index --retry-failed"),
+            "index_queue": _doctor_row("degraded" if index.failed or index.stale else "ok", "codecairn index sync"),
             "lancedb": _doctor_row("degraded" if index.pending or index.failed or index.stale else "ok", "codecairn index rebuild"),
             "hooks": _doctor_row(
                 "degraded" if hook_failed else "ok" if hooks else "not_configured",

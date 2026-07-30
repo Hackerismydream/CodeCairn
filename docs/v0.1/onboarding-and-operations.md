@@ -197,16 +197,19 @@ is not a content-privacy guarantee.
 |---|---|---|
 | Config | schema valid, root and namespace resolved | rerun `codecairn init` |
 | Source import | no failed receipts | `codecairn import <source>` |
-| Semantic queue | no failed jobs; pending is explicit degraded state | configure provider, then `codecairn process --semantic --retry-failed` |
+| Semantic queue | no failed jobs; pending is explicit degraded state | configure provider, then `codecairn process --semantic --no-index` |
 | Markdown | all files safe and valid | re-import owned trace or restore backup |
-| SQLite | schema current and mirrors consistent | `codecairn doctor --repair` only for supported projections |
-| Index queue | no failed or expired leases | `codecairn process --index --retry-failed` |
+| SQLite | schema current and mirrors consistent | restore the latest namespace export |
+| Index queue | no failed or expired leases | `codecairn index sync` |
 | LanceDB | fingerprint and document parity match | `codecairn index rebuild` |
 | Hooks | supported client schema and no unacknowledged failure | reinstall or retry exact source |
 | Privacy | configured egress matches the displayed posture | choose local profiles or explicitly configure network providers |
 
 Human text is the TTY default. `--format json` is stable for automation.
 `--strict` exits non-zero for degraded or unhealthy state.
+
+`process` and `index sync` automatically reclaim eligible failed or expired
+jobs within their bounded attempt limits; no separate retry flag is required.
 
 ## Queue rules
 

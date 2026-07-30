@@ -74,15 +74,6 @@ class AgentTrace:
 
 
 @dataclass(frozen=True, slots=True)
-class TraceEpisode:
-    episode_id: str
-    trace_id: str
-    opening_event_id: str
-    events: tuple[TraceEvent, ...]
-    outcome: TraceEpisodeOutcome
-
-
-@dataclass(frozen=True, slots=True)
 class ImportCheckpoint:
     provider: str
     session_id: str

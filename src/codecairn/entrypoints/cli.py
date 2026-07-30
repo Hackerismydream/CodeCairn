@@ -53,20 +53,24 @@ class _FailClosedGroup(TyperGroup):
 def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner | None = None) -> typer.Typer:
     """Build the CLI against an injected runtime composition function."""
     app = typer.Typer(
-        name="codecairn", cls=_FailClosedGroup, help="Auditable long-term memory runtime for coding agents.", no_args_is_help=True
+        name="codecairn",
+        cls=_FailClosedGroup,
+        help="Auditable long-term memory runtime for coding agents.",
+        no_args_is_help=True,
+        add_completion=False,
     )
-    evidence_app = typer.Typer(help="Build or verify a public benchmark evidence bundle.")
-    hook_app = typer.Typer(help="Install or run coding-agent session hooks.")
+    evidence_app = typer.Typer(help="Verify a public benchmark evidence bundle.")
+    hook_app = typer.Typer(help="Install coding-agent session hooks.")
     index_app = typer.Typer(help="Operate the rebuildable search index.")
     memory_app = typer.Typer(help="Inspect and evolve durable memory.")
     namespace_app = typer.Typer(help="Export or reset one memory namespace.")
-    app.add_typer(evidence_app, name="evidence")
+    app.add_typer(evidence_app, name="evidence", hidden=True)
     app.add_typer(hook_app, name="hook")
     app.add_typer(index_app, name="index")
     app.add_typer(memory_app, name="memory")
     app.add_typer(namespace_app, name="namespace")
 
-    @hook_app.command("run")
+    @hook_app.command("run", hidden=True)
     def hook_run_command(client: Annotated[HookClient, typer.Option("--client")]) -> None:
         """Import one client event without blocking the client."""
         try:
@@ -150,10 +154,6 @@ def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner |
                 "recall": 'codecairn recall "<task>"',
                 "doctor": "codecairn doctor",
             },
-            "agent_docs": {
-                "AGENTS.md": "Use `codecairn recall` before repository work.",
-                "CLAUDE.md": "Use `codecairn recall` before repository work.",
-            },
         }
         typer.echo(json.dumps(result, sort_keys=True))
 
@@ -218,14 +218,12 @@ def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner |
         repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
-        worker_id: Annotated[str, typer.Option("--worker-id")] = "cli",
+        worker_id: Annotated[str, typer.Option("--worker-id", hidden=True)] = "cli",
         max_jobs: Annotated[int, typer.Option("--max-jobs", min=1)] = 8,
         semantic: Annotated[bool, typer.Option("--semantic/--no-semantic")] = True,
         index: Annotated[bool, typer.Option("--index/--no-index")] = True,
-        retry_failed: Annotated[bool, typer.Option("--retry-failed")] = False,
     ) -> None:
         """Process bounded semantic and index queues."""
-        del retry_failed
         application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         report: dict[str, object] = {}
         if semantic:
@@ -283,6 +281,7 @@ def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner |
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
+        """Show one durable memory by ID."""
         application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         try:
             memory = application.get_memory(repo_key=resolved.repo_key, memory_id=memory_id).memory
@@ -297,6 +296,7 @@ def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner |
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
+        """Show the immutable evolution history around one memory."""
         application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         history = application.memory_history(repo_key=resolved.repo_key, memory_id=memory_id)
         typer.echo(json.dumps(asdict(history), sort_keys=True))
@@ -310,6 +310,7 @@ def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner |
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
+        """Make an existing successor replace one active memory."""
         application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         record = application.supersede(
             repo_key=resolved.repo_key, predecessor_id=predecessor_id, successor_id=successor_id, reason=reason, proposer="user"
@@ -323,6 +324,7 @@ def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner |
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
+        """Restore historical content as a new active revision."""
         application, resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         restored = application.restore(repo_key=resolved.repo_key, memory_id=memory_id)
         typer.echo(json.dumps(asdict(restored), sort_keys=True))
@@ -334,6 +336,7 @@ def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner |
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
+        """Export one namespace as a recoverable durable snapshot."""
         application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         typer.echo(json.dumps(application.export_namespace(output), sort_keys=True))
 
@@ -345,6 +348,7 @@ def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner |
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
     ) -> None:
+        """Back up and reset one namespace after explicit confirmation."""
         application, _resolved = _resolve_application(application_factory, config=config, root=root, repo_key=repo_key)
         typer.echo(json.dumps(application.reset_namespace(confirm=confirm, dry_run=dry_run), sort_keys=True))
 
@@ -361,7 +365,7 @@ def build_app(application_factory: ApplicationFactory, hook_runner: HookRunner |
         repo_key: Annotated[str | None, typer.Option("--repo-key")] = None,
         root: Annotated[Path | None, typer.Option("--root")] = None,
         config: Annotated[Path | None, typer.Option("--config")] = None,
-        worker_id: Annotated[str, typer.Option("--worker-id")] = "cli",
+        worker_id: Annotated[str, typer.Option("--worker-id", hidden=True)] = "cli",
         max_jobs: Annotated[int | None, typer.Option("--max-jobs", min=1)] = None,
     ) -> None:
         """Drain the index outbox until it is idle and report queue state."""

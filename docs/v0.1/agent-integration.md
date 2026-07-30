@@ -53,12 +53,11 @@ codecairn memory history <memory-id>
 codecairn memory supersede <old-id> <new-id>
 codecairn memory restore <memory-id>
 codecairn index status|sync|rebuild
-codecairn hook install|run
+codecairn hook install
 codecairn doctor
 codecairn namespace export --output PATH
 codecairn namespace reset --dry-run
 codecairn namespace reset --confirm <repo-key>
-codecairn eval ...
 codecairn evidence verify ...
 ```
 
@@ -266,8 +265,11 @@ still recallable and the Recall sidecar exposes `source_cursor`,
 The explicit full-drain command remains:
 
 ```text
-codecairn process [--semantic] [--index] [--retry-failed]
+codecairn process [--semantic] [--index]
 ```
+
+The normal command automatically retries eligible failed jobs up to their
+bounded attempt limit.
 
 `doctor` reports:
 
