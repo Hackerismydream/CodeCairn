@@ -124,6 +124,10 @@ mechanism found in EverOS, but makes abstention the CodeCairn default because
 Recall Context is an agent-facing product output rather than a search-results
 page.
 
+ADR 0061 adds a foreground loopback presentation for the concrete read-only Hub
+use case. It does not reverse ADR 0052: generic HTTP compatibility, network
+parity, remote access, and write operations remain excluded.
+
 Current shipped behavior is maintained in
 [`../runtime/operations.md`](../runtime/operations.md); the product sequence is
 maintained in [`../roadmap.md`](../roadmap.md).

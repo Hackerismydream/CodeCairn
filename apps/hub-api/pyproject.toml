@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "codecairn-hub-api"
+version = "0.1.0"
+description = "Foreground loopback adapter for the CodeCairn Memory Hub."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "codecairn",
+  "fastapi>=0.139,<0.140",
+  "uvicorn>=0.51,<0.52",
+]
+
+[project.scripts]
+codecairn-hub-api = "codecairn_hub_api.cli:main"
+
+[tool.uv.sources]
+codecairn = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/codecairn_hub_api"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true

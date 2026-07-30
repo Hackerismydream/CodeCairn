@@ -1,10 +1,10 @@
 # Runtime Operations
 
-This document describes behavior implemented on current `main`, including the
-`v02-001` Pico trace importer and `v02-002` installed Pico Memory Backend
-adapter. Pico now selects CodeCairn and has removed EverOS product coupling.
-The first joint campaign is a completed diagnostic with an ineligible positive
-claim; it is not relabeled as release evidence.
+This document describes the current local runtime, including the `v02-001`
+Pico trace importer, the `v02-002` installed Pico Memory Backend adapter, and
+the version 0.3 read-only Hub. Pico now selects CodeCairn and has removed
+EverOS product coupling. The first joint campaign is a completed diagnostic
+with an ineligible positive claim; it is not relabeled as release evidence.
 
 ## Current support matrix
 
@@ -24,6 +24,7 @@ claim; it is not relabeled as release evidence.
 | Historical evidence | `codecairn evidence verify` | Verifies frozen evidence without loading the live runtime |
 | Distribution | `uv tool install` | Installs curated MIT-licensed wheel entrypoints into an isolated persistent tool environment |
 | Pico plugin | `memory.backend = "codecairn"` | Installed discovery exposes one repository-bound MemoryBackend; Pico selects it as the current long-term memory backend |
+| Read-only Hub | `make hub-dev` | Runs the Chinese Memories, Recall, and System views against one foreground loopback adapter bound to the current repository |
 
 ## Capture lifecycle
 
@@ -94,6 +95,27 @@ defaults to the pinned 384-dimension FastEmbed profile, or recommends the
 score fusion adapters are test-only. `init --check-provider` and
 `doctor --live` perform an explicit live embedding check; an unchecked profile
 is only `configured`, never reported as live verified.
+
+## Read-only Hub
+
+`make hub-dev` generates one ephemeral session token and starts the Hub web
+application plus its Python loopback adapter. The browser uses only same-origin
+routes. The adapter binds the repository from the existing
+`<git-common-dir>/codecairn.toml`; the browser cannot pass a runtime root or
+switch namespaces. The gateway rejects non-loopback and forwarded authorities
+instead of turning its private token into a DNS-rebinding proxy.
+
+The Hub exposes only three read operations: combined memory page and
+inspection, explained recall, and a sanitized `doctor(live=False)` snapshot.
+The snapshot preserves Doctor's established unchecked `configured` meaning and
+adds a separate configuration-only recall-readiness field for missing network
+credentials.
+There is no fixture fallback. Recall may advance the rebuildable index through
+its existing preflight, but the Hub has no Coding Memory or Evolution mutation
+operation. Closing the foreground command closes both processes.
+
+The current Hub is source-checkout-only and is not bundled in the root wheel or
+sdist.
 
 ## MCP
 

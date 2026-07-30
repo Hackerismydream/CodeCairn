@@ -2,7 +2,8 @@
 
 Status: maintained implementation architecture. Version 0.1 is the local
 coding-first Memory OS foundation. Version 0.2 adds the installed Pico
-Integration Module and recall relevance admission.
+Integration Module and recall relevance admission. Version 0.3 adds a
+foreground read-only Hub presentation.
 
 ## Product boundary
 
@@ -12,7 +13,8 @@ agent runtime. Internally it has Memory OS authority; version 0.1 ships one
 implicit Coding Profile for repository-scoped work.
 
 CodeCairn does not execute an agent, inject hidden prompts, ingest arbitrary
-documents, run a cloud service, or provide a memory-editing UI. Pico remains a
+documents, run a cloud service, or provide a memory-editing UI. Its Hub is a
+local inspection surface, not a remote API or daemon. Pico remains a
 general agent harness and consumes CodeCairn through the installed integration
 specified in [`v0.2/README.md`](v0.2/README.md).
 
@@ -44,6 +46,10 @@ Source + Experience              Knowledge + Evolution            Recall
                                        |
                                        v
                                immutable artifacts
+
+Browser -> same-origin Hub route -> foreground Hub Read Interface
+                                      |
+                                      +-> service use cases
 ```
 
 Provider traces are untrusted input. Model output is an untrusted
@@ -96,6 +102,12 @@ The import-linter contracts remain:
 | `entrypoints` | CLI, MCP, and hook presentation | Alternative domain behavior |
 | `bootstrap` | Config loading and concrete composition | Durable rules |
 | `evaluation` | Thin suite adapters, immutable runs, reducers, verifier | Product-only duplicate runtime |
+| `apps/hub-api` | Three local view reads, token check, error envelope, Doctor projection | Storage access, remote API, mutation |
+| `apps/hub-web` | Chinese Memories, Recall, and System views | Durable policy, fixture fallback, provider configuration |
+
+The complete repository workspace map is [`workspace.md`](workspace.md). ADR
+0061 defines why the foreground Hub does not restore the generic HTTP
+compatibility surface removed by ADR 0052.
 
 ## Pico Integration Module
 

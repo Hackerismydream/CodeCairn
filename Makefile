@@ -1,4 +1,4 @@
-.PHONY: artifact-check artifact-repro check docs-check eval-coding-ab eval-locomo-200 eval-locomo-full eval-retrieval eval-scale eval-smoke evidence-verify format hub-check hub-contract-check hub-ui-check imports installed-smoke lint source-budget test typecheck
+.PHONY: artifact-check artifact-repro check docs-check eval-coding-ab eval-locomo-200 eval-locomo-full eval-retrieval eval-scale eval-smoke evidence-verify format hub-api-check hub-check hub-contract-check hub-dev hub-lifecycle-check hub-start hub-ui-check imports installed-smoke lint source-budget test typecheck
 
 EVAL_OUTPUT_ROOT ?= benchmark_results
 SOURCE_BUDGET_STAGE ?= v02-002
@@ -13,6 +13,7 @@ lint:
 
 typecheck:
 	uv run mypy
+	uv run mypy --config-file apps/hub-api/pyproject.toml apps/hub-api/src
 
 imports:
 	uv run lint-imports
@@ -61,16 +62,29 @@ docs-check:
 	uv run python scripts/check_docs.py --commands
 
 hub-contract-check:
-	uv run pytest -q tests/test_hub_contract.py
+	uv run pytest -q tests/test_hub_contract.py apps/hub-api/tests/test_hub_api.py
+
+hub-api-check:
+	uv run mypy --config-file apps/hub-api/pyproject.toml apps/hub-api/src
+	uv run pytest -q apps/hub-api/tests/test_hub_api.py
 
 hub-ui-check:
-	npm --prefix hub run lint
-	npm --prefix hub run typecheck
-	npm --prefix hub test
+	npm run hub:lint
+	npm run hub:typecheck
+	npm run hub:test
 
-hub-check: hub-contract-check hub-ui-check
+hub-lifecycle-check: hub-ui-check
+	uv run pytest -q tests/hub_lifecycle_check.py
+
+hub-check: hub-contract-check hub-api-check hub-lifecycle-check
+
+hub-dev:
+	uv run --package codecairn-hub-api python scripts/run_hub.py
+
+hub-start: hub-ui-check
+	uv run --package codecairn-hub-api python scripts/run_hub.py --production
 
 test:
 	uv run pytest --cov --cov-report=term-missing
 
-check: lint typecheck imports source-budget test hub-ui-check
+check: lint typecheck imports source-budget test hub-lifecycle-check

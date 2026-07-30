@@ -97,9 +97,16 @@ include = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/codecairn"]
 
+[tool.uv.workspace]
+members = ["apps/hub-api"]
+
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "apps/hub-api/tests"]
 addopts = "-q --strict-markers"
+pythonpath = ["."]
+filterwarnings = [
+  "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
+]
 
 [tool.coverage.run]
 branch = true
