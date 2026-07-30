@@ -29,3 +29,8 @@ needs before extracting a daemon. Stabilize local ownership before adding
 remote collaboration. Version 0.3 is also the deliberate readability pass:
 remove obsolete compatibility paths and recover code headroom without hiding
 domain behavior behind abstractions.
+
+The checked-in [`Hub prototype`](../hub/README.md) freezes the version 0.3
+information architecture and validates its example-data shape against current
+read contracts. It is not the version 0.3 completion signal because the
+browser does not yet use a local presentation adapter.

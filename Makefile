@@ -1,4 +1,4 @@
-.PHONY: artifact-check artifact-repro check docs-check eval-coding-ab eval-locomo-200 eval-locomo-full eval-retrieval eval-scale eval-smoke evidence-verify format imports installed-smoke lint source-budget test typecheck
+.PHONY: artifact-check artifact-repro check docs-check eval-coding-ab eval-locomo-200 eval-locomo-full eval-retrieval eval-scale eval-smoke evidence-verify format hub-check hub-contract-check hub-ui-check imports installed-smoke lint source-budget test typecheck
 
 EVAL_OUTPUT_ROOT ?= benchmark_results
 SOURCE_BUDGET_STAGE ?= v02-002
@@ -60,7 +60,17 @@ installed-smoke:
 docs-check:
 	uv run python scripts/check_docs.py --commands
 
+hub-contract-check:
+	uv run pytest -q tests/test_hub_contract.py
+
+hub-ui-check:
+	npm --prefix hub run lint
+	npm --prefix hub run typecheck
+	npm --prefix hub test
+
+hub-check: hub-contract-check hub-ui-check
+
 test:
 	uv run pytest --cov --cov-report=term-missing
 
-check: lint typecheck imports source-budget test
+check: lint typecheck imports source-budget test hub-ui-check

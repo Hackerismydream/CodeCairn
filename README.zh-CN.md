@@ -245,6 +245,7 @@ Transcript 和评测 Artifact 可能包含源材料，不应提交到代码仓�
 
 ```bash
 uv sync --locked --all-groups
+npm ci --prefix hub
 make format
 make check
 make docs-check
@@ -262,6 +263,9 @@ CodeCairn 0.1 是完整的 Coding-first Memory OS 基础；0.2 增加 Pico 集�
 拒答。后续顺序是：0.3 只读 Memory Hub 与架构减重、0.4 人类记忆治理、0.5 本地 Daemon、
 0.6 Case/Skill 演进，以及 1.0 稳定的本地 Memory OS。远程协作放在本地语义和存储契约稳定
 之后。详见[`完整路线图`](docs/roadmap.md)。
+
+仓库中的[`Hub 原型`](hub/README.md)固定了 0.3 的信息架构，并通过当前只读契约校验。
+它仍然展示示例数据，不是已经接通本地运行时的 Hub，也不代表 0.3 已完成。
 
 ## 许可证
 

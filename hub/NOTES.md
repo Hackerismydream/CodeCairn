@@ -1,14 +1,14 @@
 # Prototype decision
 
-Question: what should the first read-only CodeCairn Memory Hub feel like?
+The fixed v0.3 prototype is an inspection tool, not a product presentation.
 
-Decision: converge the earlier directions instead of selecting one unchanged.
+- Keep only Memories, Recall, and System.
+- Default to the memory ledger and selected-memory inspector.
+- Keep all surfaces read-only.
+- Use two fixed Recall contract examples instead of a simulated query form.
+- Show Doctor only on the System page as a point-in-time snapshot.
+- Put architecture narratives, product boundaries, commit identities, and
+  evaluation claims in repository documentation rather than the product UI.
 
-- Use the causal task → evidence → memory → recall journey as the primary information architecture.
-- Keep evidence, evolution, and recall decisions visible in a permanent inspector.
-- Present health, synchronization, and agent connection as persistent OS state.
-- Keep the surface read-only for v0.3; governance remains a later product stage.
-
-The prototype answers a product-shape question. Its mock data and presentation
-code are not a production implementation or proof that CodeCairn already
-provides these Hub capabilities.
+Mock data demonstrates the current contracts. It is not evidence of a live Hub
+connection or task-effect improvement.

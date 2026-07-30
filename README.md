@@ -265,6 +265,7 @@ without exposing credentials.
 
 ```bash
 uv sync --locked --all-groups
+npm ci --prefix hub
 make format
 make check
 make docs-check
@@ -289,6 +290,10 @@ human memory governance, v0.5 local daemon, v0.6 Case and Skill evolution, and
 v1.0 stable local Memory OS. Remote collaboration follows only after the local
 semantic and storage contract is stable. See the
 [`maintained roadmap`](docs/roadmap.md).
+
+The checked-in [`Hub prototype`](hub/README.md) freezes the v0.3 information
+architecture and validates it against current read contracts. It still renders
+example data and is not a live local Hub adapter or a v0.3 completion claim.
 
 ## License
 
