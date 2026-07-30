@@ -244,8 +244,8 @@ Transcript 和评测 Artifact 可能包含源材料，不应提交到代码仓�
 ## 开发与验证
 
 ```bash
-uv sync --locked --all-groups
-npm ci --prefix hub
+uv sync --locked --all-packages --all-groups
+npm ci
 make format
 make check
 make docs-check
@@ -264,8 +264,10 @@ CodeCairn 0.1 是完整的 Coding-first Memory OS 基础；0.2 增加 Pico 集�
 0.6 Case/Skill 演进，以及 1.0 稳定的本地 Memory OS。远程协作放在本地语义和存储契约稳定
 之后。详见[`完整路线图`](docs/roadmap.md)。
 
-仓库中的[`Hub 原型`](hub/README.md)固定了 0.3 的信息架构，并通过当前只读契约校验。
-它仍然展示示例数据，不是已经接通本地运行时的 Hub，也不代表 0.3 已完成。
+仓库中的[`本地只读 Hub`](apps/hub-web/README.md)已经通过前台 Loopback Adapter
+接入真实 `CodeCairnApplication`。运行 `make hub-dev` 可查看当前仓库的记忆、真实召回解释
+和 Doctor 快照。它仍不是 Daemon、远程 API 或记忆治理界面；0.3 的非开发者理解验收信号
+仍需单独完成。当前 Hub 只支持从源码仓库运行，尚未打包进根目录的发布产物。
 
 ## 许可证
 

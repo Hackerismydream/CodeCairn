@@ -22,11 +22,11 @@ jobs:
         with:
           node-version: "22.13.0"
           cache: npm
-          cache-dependency-path: hub/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install locked dependencies
-        run: uv sync --locked --all-groups
+        run: uv sync --locked --all-packages --all-groups
       - name: Install locked Hub dependencies
-        run: npm ci --prefix hub
+        run: npm ci
       - name: Enforce the source budget
         run: make source-budget
       - name: Run architecture, type, runtime, and Hub gates

@@ -264,8 +264,8 @@ without exposing credentials.
 ## Development
 
 ```bash
-uv sync --locked --all-groups
-npm ci --prefix hub
+uv sync --locked --all-packages --all-groups
+npm ci
 make format
 make check
 make docs-check
@@ -277,6 +277,15 @@ artifact contents, and evidence integrity.
 
 Contribution and security boundaries are documented in
 [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
+
+Run the local read-only Memory Hub against the current repository binding:
+
+```bash
+make hub-dev
+```
+
+See the [`Hub application`](apps/hub-web/README.md) and
+[`workspace layout`](docs/workspace.md).
 
 ## Version 0.1 scope
 
@@ -291,9 +300,11 @@ v1.0 stable local Memory OS. Remote collaboration follows only after the local
 semantic and storage contract is stable. See the
 [`maintained roadmap`](docs/roadmap.md).
 
-The checked-in [`Hub prototype`](hub/README.md) freezes the v0.3 information
-architecture and validates it against current read contracts. It still renders
-example data and is not a live local Hub adapter or a v0.3 completion claim.
+The checked-in [`Hub application`](apps/hub-web/README.md) now connects its
+three views to a foreground local adapter and real `CodeCairnApplication`
+reads. The technical seam is implemented; the v0.3 non-developer comprehension
+acceptance signal and Hub distribution remain separate. The current Hub runs
+from a source checkout and is not bundled in the root release artifacts.
 
 ## License
 

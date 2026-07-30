@@ -23,6 +23,7 @@ COMMANDS = (
     ("uv", "run", "codecairn", "memory", "history", "--help"),
     ("uv", "run", "codecairn", "namespace", "export", "--help"),
     ("uv", "run", "codecairn", "namespace", "reset", "--help"),
+    ("uv", "run", "--package", "codecairn-hub-api", "codecairn-hub-api", "--help"),
     ("make", "eval-locomo-200", "HELP=1"),
     ("make", "eval-locomo-full", "HELP=1"),
     ("make", "eval-coding-ab", "HELP=1"),
@@ -38,6 +39,7 @@ def markdown_files() -> tuple[Path, ...]:
         ROOT / "CODE_OF_CONDUCT.md",
         ROOT / "CONTRIBUTING.md",
         ROOT / "SECURITY.md",
+        *sorted((ROOT / "apps").glob("*/*.md")),
         *sorted((ROOT / "docs").rglob("*.md")),
         *sorted((ROOT / "benchmarks").glob("*/README.md")),
     ]

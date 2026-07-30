@@ -164,6 +164,18 @@ work is pending, leased, failed, or stale.
 One immutable benchmark or acceptance execution bound to explicit inputs,
 configuration, repository state, and generated artifacts.
 
+## Version 0.3 local Hub
+
+**Hub Read Interface**:
+The three-operation, view-oriented local Interface used by the read-only Hub to
+inspect Memories, explain Recall, and project a point-in-time Doctor snapshot.
+It is bound to one resolved Memory Namespace and is not a general network API.
+
+**Foreground Hub Host**:
+The loopback-only process pair that serves the Hub web application and Hub Read
+Interface for the lifetime of one terminal command. It is not a daemon and
+does not imply remote availability.
+
 ## Version 0.2 Pico integration
 
 The following terms define the implemented CodeCairn side of the version 0.2

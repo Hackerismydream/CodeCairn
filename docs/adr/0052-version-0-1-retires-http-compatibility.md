@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted.
+Accepted. ADR 0061 later adds a separate foreground, loopback-only presentation
+for the concrete read-only Hub product use case. It does not restore generic
+HTTP compatibility or parity.
 
 ## Context
 

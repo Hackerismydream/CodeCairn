@@ -1,0 +1,25 @@
+{
+  "name": "codecairn-workspace",
+  "private": true,
+  "workspaces": [
+    "apps/hub-web"
+  ],
+  "overrides": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-server-dom-webpack": "19.2.8",
+    "next": {
+      "postcss": "8.5.25",
+      "sharp": "0.35.3"
+    },
+    "postcss": "8.5.25",
+    "sharp": "0.35.3"
+  },
+  "scripts": {
+    "hub:build": "npm run build --workspace @codecairn/hub-web",
+    "hub:dev": "npm run dev --workspace @codecairn/hub-web",
+    "hub:lint": "npm run lint --workspace @codecairn/hub-web",
+    "hub:test": "npm test --workspace @codecairn/hub-web",
+    "hub:typecheck": "npm run typecheck --workspace @codecairn/hub-web"
+  }
+}

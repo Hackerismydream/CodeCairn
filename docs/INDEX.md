@@ -95,11 +95,12 @@ implemented; the current exact pair still needs a joint rerun.
 | [`release-readiness.md`](release-readiness.md) | Current blockers and final release matrix |
 | [`reference-boundaries.md`](reference-boundaries.md) | Clean-room and external-reference boundaries |
 
-## Product prototype
+## Product workspace
 
 | Artifact | Purpose |
 |---|---|
-| [`../hub/README.md`](../hub/README.md) | Frozen version 0.3 Hub review artifact, deterministic CLI contract fixture, and explicit non-live boundary |
+| [`workspace.md`](workspace.md) | Monorepo applications, contracts, package ownership, and dependency direction |
+| [`../apps/hub-web/README.md`](../apps/hub-web/README.md) | Live local Hub behavior, commands, and explicit read-only boundary |
 
 ## Evaluation and evidence
 

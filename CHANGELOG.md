@@ -4,6 +4,18 @@ This project follows semantic versioning after the first public release.
 
 ## Unreleased
 
+### Version 0.3 Hub groundwork
+
+- Organizes the Memory OS, local Hub API, browser application, and versioned
+  read contract as one npm and uv workspace.
+- Adds a foreground, loopback-only Hub with real Memories, Recall, and System
+  views backed by the current repository namespace.
+- Keeps the browser read-only, the per-process API token outside rendered
+  HTML, operational responses uncached, and diagnostic output free of local
+  runtime paths.
+- Runs from a source checkout; Hub distribution and the non-developer
+  comprehension acceptance signal remain open version 0.3 release gates.
+
 ### Version 0.1 release candidate
 
 - Ships a local, auditable five-layer memory runtime with four durable Coding
