@@ -95,6 +95,12 @@ implemented; the current exact pair still needs a joint rerun.
 | [`release-readiness.md`](release-readiness.md) | Current blockers and final release matrix |
 | [`reference-boundaries.md`](reference-boundaries.md) | Clean-room and external-reference boundaries |
 
+## Product prototype
+
+| Artifact | Purpose |
+|---|---|
+| [`../hub/README.md`](../hub/README.md) | Frozen version 0.3 Hub review artifact, deterministic CLI contract fixture, and explicit non-live boundary |
+
 ## Evaluation and evidence
 
 | Document | Purpose |

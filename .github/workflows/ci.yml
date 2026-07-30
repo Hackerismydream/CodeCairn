@@ -17,11 +17,19 @@ jobs:
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
           enable-cache: true
+      - name: Install Node.js for the Hub
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+          cache: npm
+          cache-dependency-path: hub/package-lock.json
       - name: Install locked dependencies
         run: uv sync --locked --all-groups
+      - name: Install locked Hub dependencies
+        run: npm ci --prefix hub
       - name: Enforce the source budget
         run: make source-budget
-      - name: Run architecture, type, and test gates
+      - name: Run architecture, type, runtime, and Hub gates
         run: make check
       - name: Check maintained documentation
         run: make docs-check
