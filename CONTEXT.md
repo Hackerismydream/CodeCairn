@@ -124,6 +124,13 @@ The bounded Markdown context returned to an agent together with a structured
 sidecar describing selected memories, provenance, status, ranking, and omitted
 candidates.
 
+**Recall Admission**:
+The auditable decision that at least one retrieved memory is relevant enough
+to enter Recall Context. Ranking orders candidates after retrieval; it does not
+force CodeCairn to choose a memory. If no candidate is admitted, recall returns
+an empty ranked result and an explicit abstention.
+_Avoid_: Always return top-k, best available answer
+
 ## Durable and operational state
 
 **Markdown Truth**:
@@ -157,10 +164,12 @@ work is pending, leased, failed, or stale.
 One immutable benchmark or acceptance execution bound to explicit inputs,
 configuration, repository state, and generated artifacts.
 
-## Planned post-v0.1 Pico integration
+## Version 0.2 Pico integration
 
-The following terms define an accepted version 0.2 target. They do not describe
-behavior shipped by version 0.1.
+The following terms define the implemented CodeCairn side of the version 0.2
+Pico integration. Pico selects this backend on its current product line; exact
+cross-repository evidence remains bound to the Pico and CodeCairn commits that
+produced it.
 
 **Pico Source Journal**:
 The CodeCairn-owned append-only source that records persisted Pico after-Turn

@@ -1,9 +1,12 @@
 # Version 0.2 Pico Memory Integration
 
-Status: CodeCairn deliveries `v02-001` and `v02-002` are implemented. Pico's
-default switch, EverOS removal, installed continuity evidence, and joint effect
-evaluation remain blocked on their referenced Pico tasks. Fixture import and
-package discovery are not live task-effect evidence.
+Status: CodeCairn deliveries `v02-001` and `v02-002`, Pico's default switch,
+and EverOS product-coupling removal are implemented. The first joint campaign
+completed all 32 trials and all 16 paired tasks, but its positive-effect claim
+was ineligible because every hard-negative query received memory. ADR 0060
+adds auditable relevance admission; the current release pair still needs a
+joint rerun. Fixture and package-contract tests remain distinct from live
+integration evidence.
 
 ## Outcome
 
@@ -334,14 +337,15 @@ silently stale success.
 
 ## Installation and migration
 
-The handoff order is:
+The handoff order was:
 
 1. merge the Pico Source Journal, importer, and Memory Adapter to CodeCairn;
 2. provide an immutable install specification pinned to that exact commit,
    plus the locally built wheel digest and installed-smoke result;
-3. let Pico declare and pin that install specification, select `codecairn`,
-   remove EverOS product coupling, and update onboarding;
-4. run installed continuity and paired evidence against both exact commits.
+3. Pico declared and pinned the install specification, selected `codecairn`,
+   removed EverOS product coupling, and updated onboarding;
+4. the first installed continuity and paired campaign ran against Pico
+   `5318daa` and CodeCairn `a501fe2`.
 
 Existing EverOS state is left untouched. Version 0.2 neither imports nor
 deletes it automatically. Migration, if later required, needs a separate
@@ -405,6 +409,23 @@ raw trials, aggregate, and claim gate support it. Existing CodeCairn coding
 evidence and Pico EverOS experiments are historical baselines; neither is
 relabeled as live Pico-CodeCairn integration evidence.
 
+### First joint result
+
+The first campaign is retained as a diagnostic, not erased or promoted:
+
+- 32 of 32 trials and 16 of 16 pairs were valid;
+- treatment passed 16 of 16 memory-dependent tasks; memory-off passed 0 of 16;
+- expected-memory Recall@5 was 100%;
+- stale and cross-repository leakage were both zero;
+- every hard-negative task still received three memories.
+
+The last row makes the positive claim ineligible: the system demonstrated
+continuity, but also showed that top-k retrieval forced an answer. ADR 0060
+fixes that CodeCairn behavior and expands the local retrieval gate from 100
+positive queries to 100 positive plus 20 unrelated queries. A new Pico
+campaign, bound to the exact current dependency pin, is required before a
+positive v0.2 task-effect claim.
+
 ## Delivery order
 
 ```text
@@ -414,7 +435,11 @@ v02-002 installed Pico Memory Adapter
    |
 Pico codecairn-001 and codecairn-002
    |
-v02-003 joint installed evidence and paired evaluation
+v02-003 joint installed evidence and paired evaluation (completed diagnostic)
+   |
+ADR 0060 relevance admission
+   |
+current-pair installed rerun
 ```
 
 The executable task specifications are under [`../plan/tasks/`](../plan/tasks/).

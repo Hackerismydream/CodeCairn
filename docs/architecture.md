@@ -1,9 +1,8 @@
 # Architecture
 
-Status: accepted version 0.1 target plus an accepted, unimplemented post-v0.1
-Pico Integration Module. The implementation delta is tracked under
-[`plan/`](plan/); this document must not be read as a claim that every target
-surface already exists on `main`.
+Status: maintained implementation architecture. Version 0.1 is the local
+coding-first Memory OS foundation. Version 0.2 adds the installed Pico
+Integration Module and recall relevance admission.
 
 ## Product boundary
 
@@ -13,39 +12,38 @@ agent runtime. Internally it has Memory OS authority; version 0.1 ships one
 implicit Coding Profile for repository-scoped work.
 
 CodeCairn does not execute an agent, inject hidden prompts, ingest arbitrary
-documents, run a cloud service, or provide a memory-editing UI. Version 0.1 has
-no Raven or Pico integration. The accepted post-v0.1 Pico target is specified
-separately in [`v0.2/README.md`](v0.2/README.md).
+documents, run a cloud service, or provide a memory-editing UI. Pico remains a
+general agent harness and consumes CodeCairn through the installed integration
+specified in [`v0.2/README.md`](v0.2/README.md).
 
 ## System context
 
 ```text
-                         explicit recall / remember
-Codex -------------------------------+
-  |                                  |
-  | Stop hook                        v
-  +---------------------------> MCP / CLI
-                                      |
-Claude Code --------------------------+
-  |                                  |
-  | SessionEnd hook                  v
-  +--------------------------> service use cases
-                                      |
-       +------------------------------+-----------------------------+
-       |                              |                             |
-       v                              v                             v
- Source + Experience            Knowledge + Evolution              Recall
-       |                              |                             |
-       +------------------------------+-----------------------------+
-                                      |
-                    Markdown <----> SQLite ----> LanceDB
-                    durable truth     operations   rebuildable index
-                                      |
-                                      v
+Codex ----------- MCP / CLI -----------+
+  | Stop hook                          |
+  +------------------------------------+
+                                       v
+Claude Code ------ MCP / CLI ---> service use cases
+  | SessionEnd hook                    ^
+  +------------------------------------|
+                                       |
+Pico ------ installed MemoryBackend ---+
+                                       |
+       +-------------------------------+----------------------------+
+       |                               |                            |
+       v                               v                            v
+Source + Experience              Knowledge + Evolution            Recall
+       |                               |                            |
+       +-------------------------------+----------------------------+
+                                       |
+                     Markdown <----> SQLite ----> LanceDB
+                     durable truth     operations   rebuildable index
+                                       |
+                                       v
                               evaluation adapters
-                                      |
-                                      v
-                              immutable artifacts
+                                       |
+                                       v
+                               immutable artifacts
 ```
 
 Provider traces are untrusted input. Model output is an untrusted
@@ -62,7 +60,7 @@ fields.
 | Experience | One Task Experience per Task Episode | Cross-task consolidation |
 | Knowledge | Repository Knowledge, User Preference, Work State | Source provenance |
 | Evolution | Immutable Supersession decisions and derived status | In-place edits |
-| Recall | Active-memory selection and bounded context | Durable truth |
+| Recall | Relevance admission, active-memory selection, and bounded context | Durable truth |
 
 The layer names describe authority and lifecycle, not Python packages. The
 canonical terms and invariants live in [`../CONTEXT.md`](../CONTEXT.md).
@@ -86,21 +84,20 @@ The import-linter contracts remain:
 3. service depends on ports, not concrete importers or storage;
 4. entrypoints do not reach through service to concrete adapters.
 
-### Target responsibility map
+### Responsibility map
 
-| Package | Version 0.1 responsibility | Excluded responsibility |
+| Package | Current responsibility | Excluded responsibility |
 |---|---|---|
 | `memory` | Four memory records, Source records, lifecycle invariants, provider ports, recall value objects | Filesystem, SQL, CLI |
 | `service` | Capture, evolution, import, process, index, recall, inspection, diagnostics | Provider JSONL branches or presentation |
-| `importers` | Codex/Claude source discovery and JSONL normalization | Capture policy or persistence |
+| `importers` | Codex, Claude, and Pico JSONL normalization | Capture policy or persistence |
+| `integrations/pico` | Installed Pico adapter and append-only source journal | Memory policy or Pico agent execution |
 | `storage` | Markdown, SQLite, and LanceDB adapters | Product workflow decisions |
 | `entrypoints` | CLI, MCP, and hook presentation | Alternative domain behavior |
 | `bootstrap` | Config loading and concrete composition | Durable rules |
 | `evaluation` | Thin suite adapters, immutable runs, reducers, verifier | Product-only duplicate runtime |
 
-## Planned post-v0.1 Pico Integration Module
-
-This section is target design, not current implementation truth.
+## Pico Integration Module
 
 ```text
 Pico Runtime
@@ -125,13 +122,18 @@ calls the Integration Module instead of storage or memory internals.
 | Owner | Responsibility |
 |---|---|
 | CodeCairn | Installed entry point, plugin manifest, Pico Memory Adapter, source journal, importer, repository identity, replay, and Recall mapping |
-| Pico | Backend selection, CodeCairn dependency pin, EverOS removal, Local Skills, onboarding, runtime failure visibility, continuity, and PicoBench |
+| Pico | Backend selection, CodeCairn dependency pin, Local Skills, onboarding, runtime failure visibility, continuity, and PicoBench |
 
 Pico Session storage remains Pico conversation truth. CodeCairn stores one
 append-only persisted after-Turn batch in its own source journal and normalizes
 it under the existing Agent Trace and evidence invariants. Boundary
 `pico_turn_end` closes the batch without asserting task success. User-track
 recall returns one compiled Recall Context as a concrete Pico `Memory`.
+
+An unrelated query is allowed to return no Pico memory. CodeCairn performs
+relevance admission before context compilation, records the decision in the
+sidecar, and preserves only an explicitly requested open Work State as a
+pinned exception.
 Agent-track recall is empty, feedback is a compatibility no-op, and media
 understanding is not part of the adapter.
 
@@ -435,12 +437,12 @@ not evade it.
 The task files under [`plan/tasks/`](plan/tasks/) are the agent-executable
 delivery contract.
 
-## Post-v0.1 implementation delta
+## Version 0.2 implementation status
 
-| Current version 0.1 behavior | Accepted version 0.2 target | Task |
+| Delivery | Current status | Evidence boundary |
 |---|---|---|
-| Provider vocabulary includes evidence-preserving `pico` | Implemented | `v02-001` |
-| Staged append-only Pico Source Journal | Implemented | `v02-001` |
-| Pico entry `codecairn`, manifest `codecairn-memory`, backend `codecairn` | Implemented | `v02-002` |
-| Pico installed MemoryBackend client plus existing CLI/MCP/hooks | Implemented | `v02-002` |
-| Coding A/B uses pre-retrieved context | Run live Pico store, fresh-process recall, and memory-off/on tasks | `v02-003` |
+| Provider `pico` and append-only Pico Source Journal | Implemented | `v02-001` |
+| Entry `codecairn`, manifest `codecairn-memory`, and installed adapter | Implemented | `v02-002` |
+| Pico default switch and EverOS product-coupling removal | Implemented in Pico | Exact Pico commit belongs in each handoff or campaign manifest |
+| Store, fresh-process recall, isolation, and paired tasks | Executed | The first campaign is measurement-valid but positive-claim-ineligible |
+| Unrelated-query abstention | Implemented | ADR 0060 and the 120-case local retrieval gate |

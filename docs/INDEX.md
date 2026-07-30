@@ -7,17 +7,16 @@ truth, historical decisions, and generated evidence.
 
 1. [`../CONTEXT.md`](../CONTEXT.md) — canonical maintained domain language.
 2. [`PRD.md`](PRD.md) — accepted product requirements and release outcome.
-3. [`architecture.md`](architecture.md) — target ownership, flows, and
-   current-to-target delta.
+3. [`architecture.md`](architecture.md) — current ownership and flows.
 4. [`v0.1/walkthrough.md`](v0.1/walkthrough.md) — one concrete trace through
    capture, evolution, and recall.
-5. [`v0.2/README.md`](v0.2/README.md) — accepted Pico Memory Backend
-   integration; trace import is implemented and the installed adapter remains
-   pending.
-6. [`plan/README.md`](plan/README.md) — delivery order and agent-ready tasks.
-7. [`runtime/operations.md`](runtime/operations.md) — public behavior that
+5. [`v0.2/README.md`](v0.2/README.md) — implemented Pico Memory Backend,
+   first joint result, and exact-pair rerun boundary.
+6. [`roadmap.md`](roadmap.md) — product sequence from v0.1 through v2.0.
+7. [`plan/README.md`](plan/README.md) — delivery state and agent-ready work.
+8. [`runtime/operations.md`](runtime/operations.md) — public behavior that
    exists on current `main`.
-8. [`runtime/installation.md`](runtime/installation.md) — persistent install
+9. [`runtime/installation.md`](runtime/installation.md) — persistent install
    and one-client acceptance path.
 
 ## Authority
@@ -31,6 +30,7 @@ truth, historical decisions, and generated evidence.
 | What is the lifecycle policy? | [`v0.1/memory-lifecycle.md`](v0.1/memory-lifecycle.md) |
 | What commands work on current `main`? | [`runtime/operations.md`](runtime/operations.md) |
 | What is the accepted Pico integration target? | [`v0.2/README.md`](v0.2/README.md) and [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) |
+| Where is the product going next? | [`roadmap.md`](roadmap.md) |
 | What should an implementation agent do next? | [`plan/README.md`](plan/README.md) and [`plan/tasks/`](plan/tasks/) |
 | Why did a design change? | [`adr/README.md`](adr/README.md) |
 | What does current public evidence prove? | [`evaluation/README.md`](evaluation/README.md) and [`evidence-bundle.md`](evidence-bundle.md) |
@@ -66,21 +66,23 @@ permission to advertise target behavior as shipped.
 These files are the accepted local delivery plan. GitHub Issues remain the
 external tracker when tasks are published or assigned.
 
-## Version 0.2 accepted target
+## Version 0.2 implementation and result
 
 | Document | Purpose |
 |---|---|
 | [`v0.2/README.md`](v0.2/README.md) | Canonical Pico Source Journal, Memory Adapter, ownership, failure, and evidence contract |
 | [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) | Decision to replace Pico's long-term Memory Backend directly |
 | [`adr/0059-pico-adapter-targets-one-frozen-host-contract.md`](adr/0059-pico-adapter-targets-one-frozen-host-contract.md) | Frozen Pico plugin and MemoryBackend compatibility identity |
+| [`adr/0060-recall-may-abstain.md`](adr/0060-recall-may-abstain.md) | Relevance admission and explicit no-memory result |
 | [`plan/tasks/v02-001-pico-trace-import.md`](plan/tasks/v02-001-pico-trace-import.md) | Pico source journal and evidence-preserving importer |
 | [`plan/tasks/v02-002-pico-memory-adapter.md`](plan/tasks/v02-002-pico-memory-adapter.md) | Installed Pico plugin and MemoryBackend mapping |
 | [`plan/tasks/v02-003-pico-integration-evidence.md`](plan/tasks/v02-003-pico-integration-evidence.md) | Joint installed continuity, isolation, and paired evidence |
 | [`plan/pico-memory-adapter-implementation-goal.md`](plan/pico-memory-adapter-implementation-goal.md) | Codex Goal that executes `v02-001` and `v02-002` serially and produces the Pico handoff |
 
-The CodeCairn-owned `v02-001` and `v02-002` deliveries are implemented.
-Pico's default switch, EverOS removal, continuity evidence, and paired
-evaluation remain blocked downstream.
+The CodeCairn-owned `v02-001` and `v02-002` deliveries, Pico's default switch,
+and EverOS product-coupling removal are implemented. The first joint campaign
+completed with a positive-claim-ineligible hard-negative result. ADR 0060 is
+implemented; the current exact pair still needs a joint rerun.
 
 ## Runtime and operations
 
@@ -120,5 +122,6 @@ contract.
 | [`0028`](adr/0028-embedding-transport-policy-is-artifact-identity.md)–[`0042`](adr/0042-ablation-gates-evaluate-natural-weighted-accuracy.md) | Evaluation protocols, exact repair, Fable baseline |
 | [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0056`](adr/0056-locomo-pressure-latency-is-not-product-latency.md) | Version 0.1 product, lifecycle, surfaces, source budget, and measurement limits |
 | [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md)–[`0059`](adr/0059-pico-adapter-targets-one-frozen-host-contract.md) | Post-v0.1 Pico Memory Backend integration, additive source budget, and frozen host contract |
+| [`0060`](adr/0060-recall-may-abstain.md) | Recall relevance admission and explicit abstention |
 
 Use [`adr/README.md`](adr/README.md) for status and supersession rules.

@@ -1967,6 +1967,57 @@
             "title": "RankedRecall",
             "type": "object"
           },
+          "RecallAdmissionTrace": {
+            "additionalProperties": false,
+            "properties": {
+              "max_vector_score": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Max Vector Score"
+              },
+              "outcome": {
+                "enum": [
+                  "admitted",
+                  "abstained"
+                ],
+                "title": "Outcome",
+                "type": "string"
+              },
+              "policy": {
+                "title": "Policy",
+                "type": "string"
+              },
+              "reason": {
+                "enum": [
+                  "relevant_candidate",
+                  "pinned_work_state",
+                  "no_candidates",
+                  "below_threshold"
+                ],
+                "title": "Reason",
+                "type": "string"
+              },
+              "vector_threshold": {
+                "title": "Vector Threshold",
+                "type": "number"
+              }
+            },
+            "required": [
+              "policy",
+              "outcome",
+              "reason",
+              "vector_threshold",
+              "max_vector_score"
+            ],
+            "title": "RecallAdmissionTrace",
+            "type": "object"
+          },
           "RecallContextTrace": {
             "additionalProperties": false,
             "properties": {
@@ -2051,6 +2102,7 @@
               "reason": {
                 "enum": [
                   "historical_filter",
+                  "relevance",
                   "type_cap",
                   "limit",
                   "token_budget"
@@ -2069,6 +2121,17 @@
           "RecallSidecar": {
             "additionalProperties": false,
             "properties": {
+              "admission_trace": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/RecallAdmissionTrace"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
               "context_trace": {
                 "anyOf": [
                   {

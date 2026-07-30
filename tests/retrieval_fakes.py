@@ -10,6 +10,7 @@ class HashingEmbedder:
     revision = "1"
     dimension = 128
     index_identity = "test-hashing-v1:128"
+    relevance_threshold = 0.25
 
     def embed_query(self, text: str) -> tuple[float, ...]:
         return self._embed(text)

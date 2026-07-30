@@ -40,6 +40,7 @@ class EvaluationEmbedder:
     revision = "1"
     dimension = 256
     index_identity = f"{model_id}:{dimension}"
+    relevance_threshold = 0.35
 
     def embed_query(self, text: str) -> tuple[float, ...]:
         return self._embed(text)
@@ -70,8 +71,9 @@ class EvaluationReranker:
 
 def run_retrieval(*, output_root: Path, run_id: str | None) -> dict[str, object]:
     corpus = _list(read_json(CORPUS), field="retrieval corpus")
-    groups = _dict(read_json(QUERIES), field="retrieval queries").get("groups")
-    query_groups = _list(groups, field="retrieval query groups")
+    query_manifest = _dict(read_json(QUERIES), field="retrieval queries")
+    query_groups = _list(query_manifest.get("groups"), field="retrieval query groups")
+    hard_negatives = _list(query_manifest.get("hard_negatives"), field="retrieval hard negatives")
     started = time.perf_counter()
     with tempfile.TemporaryDirectory(prefix="codecairn-retrieval-") as directory:
         runtime = create_runtime(Path(directory), retrieval_adapters=(EvaluationEmbedder(), EvaluationReranker()))
@@ -97,7 +99,7 @@ def run_retrieval(*, output_root: Path, run_id: str | None) -> dict[str, object]
                 payload=RepositoryKnowledgePayload(subject_key=key, claim=_string(item, "content")),
             )
             key_by_id[runtime.store_memory(memory).memory_id] = key
-        outcomes: list[dict[str, object]] = []
+        positive_outcomes: list[dict[str, object]] = []
         for raw_group in query_groups:
             group = _dict(raw_group, field="retrieval query group")
             relevant = set(_string_list(group.get("relevant_keys"), field="relevant keys"))
@@ -118,8 +120,9 @@ def run_retrieval(*, output_root: Path, run_id: str | None) -> dict[str, object]
                     for ranked in result.sidecar.ranked
                 ]
                 selected = {cast(str, item["key"]) for item in candidates}
-                outcomes.append(
+                positive_outcomes.append(
                     {
+                        "query_kind": "positive",
                         "query_id": _string(query, "query_id"),
                         "repo_key": repo_key,
                         "relevant_keys": sorted(relevant),
@@ -131,25 +134,50 @@ def run_retrieval(*, output_root: Path, run_id: str | None) -> dict[str, object]
                         "latency_ms": result.sidecar.latency_ms,
                     }
                 )
+        negative_outcomes: list[dict[str, object]] = []
+        for raw_query in hard_negatives:
+            query = _dict(raw_query, field="hard-negative query")
+            result = runtime.recall(_string(query, "text"), repo_key=_string(query, "repo_key"), limit=5, token_budget=2_048)
+            negative_outcomes.append(
+                {
+                    "query_kind": "hard_negative",
+                    "query_id": _string(query, "query_id"),
+                    "repo_key": _string(query, "repo_key"),
+                    "injected_memory_count": len(result.sidecar.ranked),
+                    "admission_outcome": (
+                        result.sidecar.admission_trace.outcome if result.sidecar.admission_trace is not None else None
+                    ),
+                    "latency_ms": result.sidecar.latency_ms,
+                }
+            )
+    outcomes = positive_outcomes + negative_outcomes
     latencies = [cast(float, item["latency_ms"]) for item in outcomes]
+    injected = [cast(int, item["injected_memory_count"]) for item in negative_outcomes]
     aggregate = {
         "schema_version": 1,
-        "protocol": "codecairn-retrieval-100-v01",
+        "protocol": "codecairn-retrieval-120-v02",
         "corpus_sha256": canonical_sha256(corpus),
-        "queries_sha256": canonical_sha256(_dict(read_json(QUERIES), field="retrieval queries")),
+        "queries_sha256": canonical_sha256(query_manifest),
         "query_count": len(outcomes),
-        "recall_at_5": mean(cast(bool, item["recall_at_5"]) for item in outcomes),
-        "precision_at_5": mean(cast(float, item["precision_at_5"]) for item in outcomes),
-        "provenance_coverage": mean(cast(bool, item["provenance_covered"]) for item in outcomes),
-        "stale_predecessor_leakage": sum(cast(int, item["stale_predecessor_count"]) for item in outcomes),
+        "positive_query_count": len(positive_outcomes),
+        "hard_negative_query_count": len(negative_outcomes),
+        "recall_at_5": mean(cast(bool, item["recall_at_5"]) for item in positive_outcomes),
+        "precision_at_5": mean(cast(float, item["precision_at_5"]) for item in positive_outcomes),
+        "provenance_coverage": mean(cast(bool, item["provenance_covered"]) for item in positive_outcomes),
+        "stale_predecessor_leakage": sum(cast(int, item["stale_predecessor_count"]) for item in positive_outcomes),
+        "hard_negative_any_injection_rate": mean(count > 0 for count in injected),
+        "mean_irrelevant_items_per_hard_negative": mean(injected),
         "p95_latency_ms": _percentile(latencies, 0.95),
         "duration_ms": (time.perf_counter() - started) * 1_000,
     }
     if (
-        aggregate["query_count"] != 100
+        aggregate["positive_query_count"] != 100
+        or aggregate["hard_negative_query_count"] != 20
         or cast(float, aggregate["recall_at_5"]) < 0.9
         or aggregate["provenance_coverage"] != 1
         or aggregate["stale_predecessor_leakage"] != 0
+        or cast(float, aggregate["hard_negative_any_injection_rate"]) > 0.05
+        or cast(float, aggregate["mean_irrelevant_items_per_hard_negative"]) > 0.05
         or cast(float, aggregate["p95_latency_ms"]) > 4_000
     ):
         raise RuntimeError(f"retrieval gate failed: {aggregate}")

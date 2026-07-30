@@ -1,11 +1,23 @@
 ---
 id: v02-003
 scope: joint Pico-CodeCairn installed and paired evidence
-status: blocked
+status: done-negative
 depends-on: [v02-002, pico:codecairn-002]
 ---
 
 # Bind the Pico-CodeCairn integration to installed and task evidence
+
+## Result
+
+The first joint campaign completed against Pico `5318daa` and CodeCairn
+`a501fe2`: 32/32 trials and 16/16 pairs were valid, treatment passed 16/16
+memory-dependent tasks versus 0/16 for memory-off, expected-memory Recall@5 was
+100%, and stale/cross-repository leakage was zero. The positive claim was
+ineligible because all hard-negative queries still received memory.
+
+This task is complete with a negative claim outcome. ADR 0060 is the follow-up
+product change; a new exact-pair campaign is a release binding, not a rewrite
+of this result.
 
 ## Objective
 

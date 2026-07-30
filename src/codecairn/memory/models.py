@@ -188,6 +188,7 @@ class IndexCandidate:
     memory_id: str
     document_id: str = ""
     content: str = ""
+    relevance_score: float | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -227,9 +228,18 @@ class RecallContextTrace:
 
 
 @dataclass(frozen=True, slots=True)
+class RecallAdmissionTrace:
+    policy: str
+    outcome: Literal["admitted", "abstained"]
+    reason: Literal["relevant_candidate", "pinned_work_state", "no_candidates", "below_threshold"]
+    vector_threshold: float
+    max_vector_score: float | None
+
+
+@dataclass(frozen=True, slots=True)
 class RecallOmission:
     memory_id: str
-    reason: Literal["historical_filter", "type_cap", "limit", "token_budget"]
+    reason: Literal["historical_filter", "relevance", "type_cap", "limit", "token_budget"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -242,6 +252,7 @@ class RecallSidecar:
     lexical_candidate_count: int
     ranked: tuple[RankedRecall, ...]
     context_trace: RecallContextTrace | None = None
+    admission_trace: RecallAdmissionTrace | None = None
     retrieval_profile: str = "unconfigured"
     include_superseded: bool = False
     workstream_key: str | None = None

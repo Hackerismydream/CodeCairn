@@ -16,6 +16,7 @@ from codecairn.memory.models import (
     IndexCandidate,
     MemoryStatus,
     RankedRecall,
+    RecallAdmissionTrace,
     RecallContextTrace,
     RecallOmission,
     RecallResult,
@@ -26,6 +27,7 @@ from codecairn.memory.retrieval import EmbeddingProvider, RerankingProvider, ret
 from codecairn.memory.schema import CodingMemory, MemoryType, canonical_json, coding_memory_to_dict
 
 _RRF_K = 60
+_ADMISSION_POLICY = "codecairn/relevance-admission-v1"
 _TYPE_PRIORITY: dict[MemoryType, int] = {"repository_knowledge": 0, "user_preference": 1, "work_state": 2, "task_experience": 3}
 _TYPE_CAPS: dict[MemoryType, int] = {"repository_knowledge": 40, "user_preference": 4, "work_state": 4, "task_experience": 8}
 
@@ -72,11 +74,15 @@ class RecallEngine:
         self._reranker = reranker
         self._preflight = preflight
         self._preflight_job_cap = preflight_job_cap
+        self._relevance_threshold = 0.0 if embedder is None else embedder.relevance_threshold
+        if not 0.0 <= self._relevance_threshold <= 1.0:
+            raise ValueError("Embedding relevance threshold must be between 0 and 1")
         self._profile_identity = "codecairn/v01-hybrid:" + retrieval_config_sha256(
             {
                 "embedding": None if embedder is None else embedder.index_identity,
                 "reranker": None if reranker is None else reranker.model_id,
                 "renderer": RENDERER_ID,
+                "admission": {"policy": _ADMISSION_POLICY, "vector_threshold_milli": round(self._relevance_threshold * 1_000)},
             }
         )
 
@@ -104,7 +110,7 @@ class RecallEngine:
         vector = self._embedder.embed_query(query)
         lexical = self._index.lexical_candidates(repo_key=repo_key, query=query, include_superseded=include_superseded, limit=cap)
         vectors = self._index.vector_candidates(repo_key=repo_key, vector=vector, include_superseded=include_superseded, limit=cap)
-        ranked, omissions = self._rank(
+        ranked, omissions, admission = self._rank(
             query,
             repo_key=repo_key,
             lexical=lexical,
@@ -134,6 +140,7 @@ class RecallEngine:
                 token_count=compiled.token_count,
                 token_limit=token_budget,
             ),
+            admission_trace=admission,
             retrieval_profile=self._profile_identity,
             include_superseded=include_superseded,
             workstream_key=workstream_key,
@@ -155,13 +162,16 @@ class RecallEngine:
         limit: int,
         include_superseded: bool,
         workstream_key: str | None,
-    ) -> tuple[tuple[RankedRecall, ...], list[RecallOmission]]:
+    ) -> tuple[tuple[RankedRecall, ...], list[RecallOmission], RecallAdmissionTrace]:
         sources: dict[str, set[CandidateSource]] = defaultdict(set)
         scores: dict[str, float] = defaultdict(float)
+        vector_scores: dict[str, float] = {}
         snippet_scores: dict[str, float] = defaultdict(float)
         snippet_candidates: dict[str, IndexCandidate] = {}
         for source, candidates in (("lexical", lexical), ("vector", vector)):
             for rank, candidate in enumerate(candidates, start=1):
+                if source == "vector" and candidate.relevance_score is not None:
+                    vector_scores[candidate.memory_id] = max(vector_scores.get(candidate.memory_id, -1.0), candidate.relevance_score)
                 if ":memory" not in candidate.document_id and candidate.document_id and candidate.content:
                     snippet_scores[candidate.document_id] += 1.0 / (_RRF_K + rank)
                     snippet_candidates[candidate.document_id] = candidate
@@ -189,6 +199,10 @@ class RecallEngine:
                 statuses[pinned_id] = "active"
                 scores[pinned_id] = max(scores.values(), default=0.0) + 1.0
                 sources[pinned_id].add("lexical")
+        relevant_ids = {candidate.memory_id for candidate in lexical}
+        relevant_ids.update(memory_id for memory_id, score in vector_scores.items() if score >= self._relevance_threshold)
+        if pinned_id is not None:
+            relevant_ids.add(pinned_id)
         ordered = sorted(
             valid.values(),
             key=lambda memory: (
@@ -203,7 +217,9 @@ class RecallEngine:
         admitted: list[CodingMemory] = []
         counts: dict[MemoryType, int] = defaultdict(int)
         for memory in ordered:
-            if counts[memory.memory_type] >= _TYPE_CAPS[memory.memory_type]:
+            if memory.memory_id not in relevant_ids:
+                omissions.append(RecallOmission(memory.memory_id, "relevance"))
+            elif counts[memory.memory_type] >= _TYPE_CAPS[memory.memory_type]:
                 omissions.append(RecallOmission(memory.memory_id, "type_cap"))
             elif len(admitted) >= limit:
                 omissions.append(RecallOmission(memory.memory_id, "limit"))
@@ -211,6 +227,22 @@ class RecallEngine:
                 admitted.append(memory)
                 counts[memory.memory_type] += 1
         ranked_snippets = self._rank_snippets(query, memories=tuple(admitted), candidates=snippet_candidates, scores=snippet_scores)
+        regular_admitted = any(memory.memory_id != pinned_id for memory in admitted)
+        admission = RecallAdmissionTrace(
+            policy=_ADMISSION_POLICY,
+            outcome="admitted" if admitted else "abstained",
+            reason=(
+                "relevant_candidate"
+                if regular_admitted
+                else "pinned_work_state"
+                if admitted
+                else "no_candidates"
+                if not valid
+                else "below_threshold"
+            ),
+            vector_threshold=self._relevance_threshold,
+            max_vector_score=max(vector_scores.values(), default=None),
+        )
         return (
             tuple(
                 self._ranked(
@@ -225,6 +257,7 @@ class RecallEngine:
                 for rank, memory in enumerate(admitted, start=1)
             ),
             omissions,
+            admission,
         )
 
     def _pinned_work_state(self, *, repo_key: str, workstream_key: str | None) -> str | None:

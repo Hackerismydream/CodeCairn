@@ -48,6 +48,7 @@ class DashScopeEmbedder:
     revision = property(lambda self: self._config.revision)
     dimension = property(lambda self: self._config.dimension)
     index_identity = property(lambda self: self._config.index_identity)
+    relevance_threshold = property(lambda self: self._config.relevance_threshold)
 
     def embed_query(self, text: str) -> tuple[float, ...]:
         return self._embed((text,))[0]
@@ -100,6 +101,7 @@ class FastEmbedder:
     revision = property(lambda self: self._config.revision)
     dimension = property(lambda self: self._config.dimension)
     index_identity = property(lambda self: self._config.index_identity)
+    relevance_threshold = property(lambda self: self._config.relevance_threshold)
 
     def embed_query(self, text: str) -> tuple[float, ...]:
         return _vector(next(iter(self._instance().query_embed(text))), dimension=self.dimension)

@@ -44,9 +44,9 @@ CodeCairn 独立管理记忆。Coding Agent 继续负责规划、工具调用和
 | 跨会话保留记忆 | 通过明确的会话结束 Hook 或手动导入，采集当前仓库拥有的 Codex 和 Claude Code Transcript |
 | 可以信任的上下文 | 从标准化事件中推导来源、角色、命令结果、文件变更和原始引用，不让模型自行编造证据 |
 | 能够持续演进的知识 | 在不删除历史的前提下，用替代关系更新过期的仓库知识和工作状态 |
-| 贴合当前任务的召回 | 合并关键词和向量候选，仅保留有效记忆，经过重排后编译为受 Token Budget 限制的上下文 |
+| 贴合当前任务的召回 | 对关键词和向量候选做相关性准入；没有相关记忆时明确返回空结果，否则编译为受 Token Budget 限制的上下文 |
 | 可以直接检查的数据 | 使用 Markdown 保存持久记忆，SQLite 管理运行状态，LanceDB 保存可重建的检索投影 |
-| 多种 Agent 共用一套记忆 | CLI、7 个 MCP Tools、1 个 MCP Resource 以及 Codex 和 Claude Code Hooks 复用同一套应用服务 |
+| 多种 Agent 共用一套记忆 | CLI、7 个 MCP Tools、1 个 MCP Resource、Codex/Claude Code Hooks 和 Pico MemoryBackend 复用同一套应用服务 |
 
 ## 快速开始
 
@@ -102,6 +102,10 @@ codecairn import /path/to/owned-session.jsonl --finalize
 codecairn recall "What should I know before the next task?" --format markdown
 codecairn doctor
 ```
+
+Pico 用户同样需要先初始化仓库；CodeCairn Wheel 会通过 Pico Plugin Registry 提供
+`codecairn` Backend。Pico 当前已选择 CodeCairn 作为长期记忆后端。第一次联合评测验证了
+跨进程续接，同时暴露了 Top-k 被迫返回的问题；当前 CodeCairn 遇到无关任务会明确不返回记忆。
 
 完整的安装、信任、隐私、回滚和验收流程见
 [`docs/runtime/installation.md`](docs/runtime/installation.md)。
@@ -252,11 +256,12 @@ CI 还会检查代码规模预算、架构依赖规则、类型、Artifact 内�
 贡献方式和安全边界见
 [`CONTRIBUTING.md`](CONTRIBUTING.md)与 [`SECURITY.md`](SECURITY.md)。
 
-## 0.1 版本边界
+## 版本与路线图
 
-CodeCairn 0.1 提供一个完整、面向 Coding Agent 的产品 Profile。Raven 集成、UI 或
-Dashboard、云端多租户、远程 MCP Transport、动态 Profile、后台 Skill 演进和独立记忆验证
-不在本次发布范围内。
+CodeCairn 0.1 是完整的 Coding-first Memory OS 基础；0.2 增加 Pico 集成与可审计的召回
+拒答。后续顺序是：0.3 只读 Memory Hub 与架构减重、0.4 人类记忆治理、0.5 本地 Daemon、
+0.6 Case/Skill 演进，以及 1.0 稳定的本地 Memory OS。远程协作放在本地语义和存储契约稳定
+之后。详见[`完整路线图`](docs/roadmap.md)。
 
 ## 许可证
 

@@ -14,6 +14,7 @@ class EmbeddingProvider(Protocol):
     revision: str
     dimension: int
     index_identity: str
+    relevance_threshold: float
 
     def embed_query(self, text: str) -> tuple[float, ...]: ...
 

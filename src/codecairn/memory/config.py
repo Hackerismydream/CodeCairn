@@ -19,6 +19,7 @@ FASTEMBED_REVISION = "52398278842ec682c6f32300af41344b1c0b0bb2"
 RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"
 RERANKER_REVISION = "a09144355adeed5f58c8ed011d209bf8ee5a1fec"
 RETRIEVAL_PROJECTION = "codecairn-memory-line-snippets-v1"
+_RELEVANCE_THRESHOLDS: dict[RetrievalProfile, float] = {"dashscope": 0.45, "fastembed": 0.62}
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,6 +68,10 @@ class RetrievalConfig:
         import hashlib
 
         return hashlib.sha256(canonical_json(self.public_config).encode()).hexdigest()
+
+    @property
+    def relevance_threshold(self) -> float:
+        return _RELEVANCE_THRESHOLDS[self.profile]
 
     @property
     def network(self) -> bool:

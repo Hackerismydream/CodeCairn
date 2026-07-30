@@ -37,12 +37,13 @@ With no `RUN_ID`, it uses a temporary root and prints the aggregate. Supplying
 `RUN_ID=<immutable-id>` writes an exclusive manifest, outcomes file, and
 aggregate under `benchmark_results/scale/<RUN_ID>`.
 
-`eval-retrieval` loads the checked-in 20-memory/100-query suite through the
-current Memory Runtime, Mini Cascade, LanceDB, Recall Engine, and context
-compiler. Its deterministic evaluation-only embedding/reranking adapters are
-named in the protocol and cannot be selected by product configuration. The
-gate requires Recall@5 at least 90%, provenance coverage 100%, no superseded
-candidate leakage, and P95 no greater than four seconds. It must not be
+`eval-retrieval` loads the checked-in 20-memory suite with 100 positive and 20
+unrelated queries through the current Memory Runtime, Mini Cascade, LanceDB,
+Recall Engine, and context compiler. Its deterministic evaluation-only
+embedding/reranking adapters are named in the protocol and cannot be selected
+by product configuration. The gate requires Recall@5 at least 90%, provenance
+coverage 100%, no superseded candidate leakage, P95 no greater than four
+seconds, and hard-negative injection metrics at most 5%. It must not be
 described as a DashScope or FastEmbed production-model score.
 
 ## Paid gates

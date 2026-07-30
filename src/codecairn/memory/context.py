@@ -51,8 +51,9 @@ def compile_context(query: str, ranked: tuple[RankedRecall, ...], *, token_limit
     markdown = _render(header, ranked, selected)
     rendered = tuple(memory.memory_id for memory in ranked if selected.get(memory.memory_id))
     omitted = tuple(memory.memory_id for memory in ranked if not selected.get(memory.memory_id))
-    if not rendered and count_tokens(markdown + "\nNo attributed memory matched within the context budget.\n") <= token_limit:
-        markdown += "\nNo attributed memory matched within the context budget.\n"
+    empty_message = "No relevant memory was admitted." if not ranked else "No attributed memory matched within the context budget."
+    if not rendered and count_tokens(markdown + f"\n{empty_message}\n") <= token_limit:
+        markdown += f"\n{empty_message}\n"
     return CompiledContext(
         markdown,
         rendered,

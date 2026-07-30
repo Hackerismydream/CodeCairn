@@ -19,9 +19,10 @@ codecairn doctor --live
 ```
 
 Pico discovers entry `codecairn`, manifest `codecairn-memory`, and backend
-contribution `codecairn`. The Pico repository must consume the immutable
-CodeCairn install specification from the post-merge handoff before making this
-the default. A local path or floating branch is not a supported default.
+contribution `codecairn`. Pico currently selects this backend through an
+immutable CodeCairn install specification. A local path or floating branch is
+not a supported default. Recall may return no memory when relevance admission
+finds no match.
 
 Startup fails when the workspace is not an initialized Git repository, the
 runtime root is inside that repository, or provider/index health is not ready.

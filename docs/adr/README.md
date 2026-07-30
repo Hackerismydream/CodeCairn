@@ -103,13 +103,14 @@ limits:
 - ADR 0056 separates LoCoMo pressure latency from the product retrieval
   latency gate and records the v0.1 optimization stop band.
 
-### Post-v0.1 Pico integration
+### Post-v0.1 Pico integration and recall admission
 
 ADR 0057 accepts CodeCairn as Pico's direct long-term Memory Backend. It adds a
 CodeCairn-owned Pico Source Journal, provider `pico` importer, and installed
 Pico Integration Module while preserving CodeCairn's independent Memory OS
-ownership. The CodeCairn-owned adapter is now implemented; Pico selection and
-live evaluation remain downstream evidence.
+ownership. The CodeCairn-owned adapter is implemented and the paired campaign
+has run; its positive-effect claim was ineligible because the original
+hard-negative track admitted unrelated memories.
 
 ADR 0058 amends ADR 0049 only for post-v0.1 delivery. It preserves every
 version 0.1 source ceiling and gives `v02-001` and `v02-002` explicit additive
@@ -118,10 +119,14 @@ integration budgets.
 ADR 0059 freezes the Pico plugin and `MemoryBackend` compatibility identity
 used to implement, install-test, and hand off the CodeCairn adapter.
 
-These decisions are specified for implementation under
-[`../plan/tasks/`](../plan/tasks/). Current shipped behavior remains
-[`../runtime/operations.md`](../runtime/operations.md) until the relevant task
-merges.
+ADR 0060 makes recall admission explicit. It follows the optional-threshold
+mechanism found in EverOS, but makes abstention the CodeCairn default because
+Recall Context is an agent-facing product output rather than a search-results
+page.
+
+Current shipped behavior is maintained in
+[`../runtime/operations.md`](../runtime/operations.md); the product sequence is
+maintained in [`../roadmap.md`](../roadmap.md).
 
 ## Adding a decision
 

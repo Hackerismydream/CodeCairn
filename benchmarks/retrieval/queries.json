@@ -221,5 +221,27 @@
       "repo_key": "acme/frontend"
     }
   ],
+  "hard_negatives": [
+    {"query_id": "n001", "repo_key": "acme/backend", "text": "cafeteria menu typography satellite telemetry"},
+    {"query_id": "n002", "repo_key": "acme/backend", "text": "orchid greenhouse humidity violin rehearsal seating"},
+    {"query_id": "n003", "repo_key": "acme/backend", "text": "marine biology coral spawning lighthouse paint"},
+    {"query_id": "n004", "repo_key": "acme/backend", "text": "mountain bicycle suspension astronomy telescope mirror"},
+    {"query_id": "n005", "repo_key": "acme/backend", "text": "ceramic glaze kiln jazz saxophone improvisation"},
+    {"query_id": "n006", "repo_key": "acme/backend", "text": "medieval tapestry wool dye castle banquet"},
+    {"query_id": "n007", "repo_key": "acme/backend", "text": "volcanic ash glacier penguin colony ice shelf"},
+    {"query_id": "n008", "repo_key": "acme/backend", "text": "sourdough starter fermentation bakery oven crust"},
+    {"query_id": "n009", "repo_key": "acme/backend", "text": "classical ballet choreography costume fabric lighting"},
+    {"query_id": "n010", "repo_key": "acme/backend", "text": "deep sea submarine sonar whale song"},
+    {"query_id": "n011", "repo_key": "acme/frontend", "text": "antique clock restoration brass pendulum workshop"},
+    {"query_id": "n012", "repo_key": "acme/frontend", "text": "desert camel caravan oasis archaeology pottery"},
+    {"query_id": "n013", "repo_key": "acme/frontend", "text": "rainforest canopy toucan nesting botanical expedition"},
+    {"query_id": "n014", "repo_key": "acme/frontend", "text": "spacecraft orbital mechanics lunar geology crater"},
+    {"query_id": "n015", "repo_key": "acme/frontend", "text": "watercolor landscape pigment paper gallery framing"},
+    {"query_id": "n016", "repo_key": "acme/frontend", "text": "beekeeping honeycomb queen hive meadow flowers"},
+    {"query_id": "n017", "repo_key": "acme/frontend", "text": "opera soprano libretto orchestra conductor encore"},
+    {"query_id": "n018", "repo_key": "acme/frontend", "text": "fossil excavation dinosaur skeleton museum exhibit"},
+    {"query_id": "n019", "repo_key": "acme/frontend", "text": "kayak river rapids paddle waterproof camping"},
+    {"query_id": "n020", "repo_key": "acme/frontend", "text": "coffee roasting altitude tasting aroma plantation"}
+  ],
   "schema_version": 1
 }

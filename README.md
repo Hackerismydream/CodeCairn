@@ -47,7 +47,7 @@ inspectable, portable, and available when you switch clients.
 | Memory that survives a session | Captures owned Codex and Claude Code transcripts through explicit session-end hooks or manual import |
 | Context you can trust | Derives provenance, roles, command outcomes, file changes, and quotes from normalized events rather than model output |
 | Knowledge that can change | Supersedes stale repository knowledge and work state without deleting history |
-| Recall that fits the task | Combines lexical and vector candidates, filters to active memory, reranks results, and compiles a token-bounded context |
+| Recall that fits the task | Admits relevant lexical or vector candidates, may return no memory, and compiles active results into a token-bounded context |
 | Data you can inspect | Keeps durable memory in Markdown, operational state in SQLite, and a rebuildable search projection in LanceDB |
 | One product across clients | Exposes the same application service through CLI, seven MCP tools, one MCP resource, Codex or Claude Code hooks, and an installed Pico MemoryBackend |
 
@@ -110,8 +110,10 @@ codecairn doctor
 ```
 
 For Pico, initialize the repository first; the installed CodeCairn wheel
-contributes backend `codecairn` through Pico's plugin registry. Pico's default
-switch and task-effect evaluation remain separate downstream deliveries.
+contributes backend `codecairn` through Pico's plugin registry. Pico selects
+CodeCairn as its current long-term memory backend. The first joint campaign
+proved continuity but exposed forced top-k recall; current CodeCairn may
+explicitly return no memory for an unrelated task.
 
 The complete install, trust, privacy, rollback, and acceptance path is in
 [`docs/runtime/installation.md`](docs/runtime/installation.md).
@@ -277,10 +279,16 @@ Contribution and security boundaries are documented in
 
 ## Version 0.1 scope
 
-CodeCairn 0.1 includes one complete coding-first product profile. Raven
-integration, UI or dashboard work, cloud tenancy, remote MCP transport,
-dynamic profiles, background skill evolution, and standalone memory
-verification remain outside this release.
+CodeCairn 0.1 is the complete coding-first Memory OS foundation. Version 0.2
+adds the Pico integration and auditable recall abstention.
+
+## Roadmap
+
+The product sequence is: v0.3 read-only Memory Hub and readability pass, v0.4
+human memory governance, v0.5 local daemon, v0.6 Case and Skill evolution, and
+v1.0 stable local Memory OS. Remote collaboration follows only after the local
+semantic and storage contract is stable. See the
+[`maintained roadmap`](docs/roadmap.md).
 
 ## License
 

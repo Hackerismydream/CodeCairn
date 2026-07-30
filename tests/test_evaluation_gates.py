@@ -33,10 +33,14 @@ def test_retrieval_gate_runs_current_recall_and_meets_release_thresholds(tmp_pat
     result = run_retrieval(output_root=tmp_path, run_id=None)
     aggregate = result["aggregate"]
     assert isinstance(aggregate, dict)
-    assert aggregate["query_count"] == 100
+    assert aggregate["query_count"] == 120
+    assert aggregate["positive_query_count"] == 100
+    assert aggregate["hard_negative_query_count"] == 20
     assert aggregate["recall_at_5"] >= 0.9
     assert aggregate["provenance_coverage"] == 1
     assert aggregate["stale_predecessor_leakage"] == 0
+    assert aggregate["hard_negative_any_injection_rate"] <= 0.05
+    assert aggregate["mean_irrelevant_items_per_hard_negative"] <= 0.05
     assert aggregate["p95_latency_ms"] <= 4_000
 
 

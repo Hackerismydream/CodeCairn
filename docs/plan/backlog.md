@@ -24,8 +24,9 @@ implementation detail.
 |---:|---|---|---|
 | 12 | [`v02-001`](tasks/v02-001-pico-trace-import.md) | done | Pico journal replay and evidence-preserving import pass |
 | 13 | [`v02-002`](tasks/v02-002-pico-memory-adapter.md) | done | Resolvable installed plugin exposes the CodeCairn backend |
-| 14 | Pico `codecairn-001` and `codecairn-002` | blocked | Pico pins CodeCairn, removes EverOS, and retains Local Skills |
-| 15 | [`v02-003`](tasks/v02-003-pico-integration-evidence.md) | blocked | Installed continuity, isolation, and paired artifacts are complete |
+| 14 | Pico `codecairn-001` and `codecairn-002` | done | Pico pins CodeCairn, removes EverOS product coupling, and retains Local Skills |
+| 15 | [`v02-003`](tasks/v02-003-pico-integration-evidence.md) | done-negative | Installed continuity and paired artifacts completed; positive claim was ineligible on hard negatives |
+| 16 | ADR 0060 exact-pair rerun | ready | Unrelated recall abstains and the current Pico pin consumes this CodeCairn release |
 
 Post-v0.1 and still deferred:
 

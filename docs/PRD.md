@@ -1,6 +1,9 @@
 # CodeCairn v0.1 Product Requirements
 
-Status: accepted for implementation on 2026-07-27.
+Status: version 0.1 historical product contract, accepted on 2026-07-27 and
+completed by `v0.1.0-rc1`. Current Pico behavior is in
+[`v0.2/README.md`](v0.2/README.md); future product scope is in
+[`roadmap.md`](roadmap.md).
 
 ## Product statement
 
@@ -222,9 +225,9 @@ Version 0.1 is releasable only when all of these pass for that pair:
 11. Clean wheel and sdist installation through a persistent tool environment.
 12. Documentation link, command, and terminology checks.
 
-## Out of scope
+## Version 0.1 out of scope
 
-- Raven integration.
+- Pico/Raven integration, delivered later in version 0.2.
 - Dynamic or user-selected profiles.
 - Agent Skill synthesis, clustering, or general background Reflection.
 - Hidden prompt injection or a resident watcher daemon.

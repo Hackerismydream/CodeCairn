@@ -1,10 +1,11 @@
 # Release Readiness
 
-Status: candidate `646449b` failed the full LoCoMo release gate. Product lifecycle, direct
-Memory Write Intent recovery, curated distribution, installed-artifact smoke,
-learner documentation, offline evaluation gates, and the version 0.1 evidence
-verifier are implemented. Candidate-bound real-client evidence, paid release
-runs, and the evidence commit remain.
+Status: version 0.1 release candidate `f2358a7` passed its frozen release gates
+and is published as tag `v0.1.0-rc1`. Version 0.2 Pico integration is
+implemented; the first joint campaign completed with an ineligible positive
+claim because unrelated queries received memory. ADR 0060 fixes that behavior.
+The remaining v0.2 release step is an exact-pair installed rerun and release
+binding.
 
 ## Baseline evidence
 
@@ -20,7 +21,7 @@ uv build                                          pass: wheel and sdist built
 
 This proves the baseline checkout, not version 0.1 release readiness.
 
-## Current matrix
+## Version 0.1 release matrix
 
 | Area | Current | Release requirement | Owner |
 |---|---|---|---|
@@ -30,20 +31,20 @@ This proves the baseline checkout, not version 0.1 release readiness.
 | Four-type capture | implemented | retained through release smoke | v01-001/002 |
 | Memory evolution | implemented | retained through release smoke | v01-003/004 |
 | Onboarding | installed wheel initializes an empty Git repository | retained through final smoke | v01-005/009 |
-| MCP | installed wheel initializes with seven tools and one resource | real-client smoke | v01-006/009/010 |
-| Client hooks | both fixtures import idempotently; installer is atomic | real Claude SessionEnd and Codex Stop smoke | v01-007/010 |
-| Evaluation commands | eight Make targets; offline lifecycle/scale/retrieval and paid plans pass | candidate-bound paid results | v01-008/010 |
-| Source budget | 9,700 core / 13,886 total before candidate freeze | internal gate at most 9,700 / 14,100 | v01-001–010 |
+| MCP | installed wheel exposes seven tools and one resource; real-client smoke passed | retained | v01-006/009/010 |
+| Client hooks | real Claude SessionEnd and Codex Stop smoke, receipts, idempotency, and recall passed | retained | v01-007/010 |
+| Evaluation commands | lifecycle, scale, retrieval, LoCoMo, coding A/B, and evidence verifier passed at the frozen candidate | retained; new protocols receive new identities | v01-008/010 |
+| Source budget | 9,700 core / 13,978 total at v0.1 candidate | historical v0.1 gate retained; v0.2 additive budget applies | v01-001–010 / ADR 0058 |
 | Package metadata | MIT, full metadata, curated 55-member wheel and 59-member sdist | retained | v01-009/010 |
 | Installed smoke | isolated `uv tool` CLI/MCP/import/recall/hook dry-run/evidence pass | real Claude/Codex UI and hook receipt | v01-009/010 |
-| Current evidence CI | benchmark-v3 verifier retained; v0.1 bundle builder/verifier implemented | selected candidate bundle verified | v01-008/010 |
-| Release benchmark | candidate `646449b`: diagnostic 85.58% natural-weighted; full run mathematically failed after 1,439/1,540 | new complete run at candidate commit, at least 82.00% | v01-010 |
+| Current evidence CI | v0.1 bundle builder/verifier and historical verifier pass | retained | v01-008/010 |
+| Release benchmark | candidate `f2358a7`: LoCoMo 1,264/1,540, 82.08%; CodingMemoryBench +20 points with zero regressions | passed frozen v0.1 minimum | v01-010 |
 | Governance | changelog, security, contribution, and conduct files present | retained | v01-009 |
-| Tag/publication | absent | verified implementation/evidence SHA pair and artifact inventory | v01-010 |
+| Tag/publication | `v0.1.0-rc1` | v0.2 exact-pair rerun before next release tag | release |
 
-## Final gate
+## Version 0.1 final gate
 
-A clean implementation/evidence SHA pair must pass:
+The frozen version 0.1 implementation/evidence pair passed:
 
 ```text
 make format
@@ -57,7 +58,7 @@ uv build
 fresh-environment installed-artifact smoke
 ```
 
-It must also own:
+It owns:
 
 - a full 1,540-question LoCoMo artifact at least 82.00%, target at least
   historical 82.60%;
@@ -76,6 +77,14 @@ The authoritative procedure is
 [`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md); the
 agent-executable final task is
 [`plan/tasks/v01-010-release-e2e.md`](plan/tasks/v01-010-release-e2e.md).
+
+## Version 0.2 release delta
+
+The next release must additionally pass the 120-case retrieval protocol with
+unrelated-query injection at most 5%, then rerun installed Pico continuity,
+isolation, and paired tasks against the exact CodeCairn dependency pin. The
+earlier diagnostic remains immutable and does not become passing evidence
+because the implementation changed.
 
 ## Evidence separation
 

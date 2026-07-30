@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import cast
 
@@ -96,11 +97,12 @@ class LanceMemoryIndex:
             rows = cast(
                 list[dict[str, object]],
                 table.search(list(vector), query_type="vector")
+                .metric("cosine")
                 .where(_filter(repo_key, include_superseded), prefilter=True)
                 .limit(limit)
                 .to_list(),
             )
-        return tuple(_candidate(row) for row in rows)
+        return tuple(_candidate(row, vector=True) for row in rows)
 
     def fingerprints(self, *, repo_key: str) -> set[tuple[str, str, str, str]]:
         with self._lock:
@@ -167,5 +169,15 @@ def _embedding_text(document: RecallDocument) -> str:
     return f"{document.title}\n{document.content}"
 
 
-def _candidate(row: dict[str, object]) -> IndexCandidate:
-    return IndexCandidate(memory_id=str(row["memory_id"]), document_id=str(row["document_id"]), content=str(row["content"]))
+def _candidate(row: dict[str, object], *, vector: bool = False) -> IndexCandidate:
+    score = None
+    if vector:
+        distance = row["_distance"]
+        if not isinstance(distance, int | float):
+            raise ValueError("Vector search returned an invalid distance")
+        score = 1.0 - distance
+        if not math.isfinite(score):
+            raise ValueError("Vector search returned a non-finite relevance score")
+    return IndexCandidate(
+        memory_id=str(row["memory_id"]), document_id=str(row["document_id"]), content=str(row["content"]), relevance_score=score
+    )

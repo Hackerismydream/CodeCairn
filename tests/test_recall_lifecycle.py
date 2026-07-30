@@ -107,6 +107,20 @@ def test_open_work_state_is_pinned_and_ambiguity_pins_none(tmp_path: Path) -> No
     assert not any(item.pinned for item in ambiguous.sidecar.ranked)
 
 
+def test_open_work_state_can_be_pinned_when_other_candidates_are_irrelevant(tmp_path: Path) -> None:
+    runtime = create_runtime(tmp_path / "runtime", retrieval_adapters=TEST_RETRIEVAL)
+    pinned = runtime.store_memory(_work_state(1, key="release"))
+    runtime.store_memory(_knowledge(1))
+
+    recalled = runtime.recall(
+        "cafeteria menu typography unrelated satellite telemetry", repo_key="acme/widgets", workstream_key="release"
+    )
+
+    assert tuple(item.memory_id for item in recalled.sidecar.ranked) == (pinned.memory_id,)
+    assert recalled.sidecar.admission_trace is not None
+    assert recalled.sidecar.admission_trace.reason == "pinned_work_state"
+
+
 def test_type_caps_and_total_token_budget_explain_omissions(tmp_path: Path) -> None:
     runtime = create_runtime(tmp_path / "runtime", retrieval_adapters=TEST_RETRIEVAL)
     for index in range(42):

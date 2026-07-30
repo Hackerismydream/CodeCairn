@@ -39,7 +39,28 @@ def test_recall_returns_ranked_context_with_source_uri(tmp_path: Path) -> None:
     assert result.sidecar.ranked[0].title == "Repository Checks"
     assert result.sidecar.ranked[0].candidate_sources == ("lexical", "vector")
     assert result.sidecar.ranked[0].source_uri.startswith("codecairn://memory/mem_")
+    assert result.sidecar.admission_trace is not None
+    assert result.sidecar.admission_trace.outcome == "admitted"
+    assert result.sidecar.admission_trace.reason == "relevant_candidate"
     assert "Run make check" in result.markdown
+
+
+def test_recall_abstains_when_no_memory_is_relevant(tmp_path: Path) -> None:
+    runtime = create_runtime(tmp_path / "runtime", retrieval_adapters=TEST_RETRIEVAL)
+    runtime.store_memory(_knowledge(subject="repository-checks", content="Run make check before committing changes.", created_at_ms=1))
+    runtime.store_memory(
+        _knowledge(subject="database-migrations", content="SQLite migrations run during initialization.", created_at_ms=2)
+    )
+
+    result = runtime.recall("cafeteria menu typography unrelated satellite telemetry", repo_key="acme/widgets")
+
+    assert result.sidecar.ranked == ()
+    assert result.sidecar.context_trace is not None
+    assert result.sidecar.context_trace.rendered_memory_ids == ()
+    assert result.sidecar.admission_trace is not None
+    assert result.sidecar.admission_trace.outcome == "abstained"
+    assert result.sidecar.admission_trace.reason == "below_threshold"
+    assert "No relevant memory was admitted." in result.markdown
 
 
 def test_recall_is_namespace_scoped_and_validates_limits(tmp_path: Path) -> None:

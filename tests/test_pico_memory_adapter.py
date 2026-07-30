@@ -75,6 +75,7 @@ def test_store_then_recall_and_fresh_backend_use_workspace_repository(tmp_path: 
             [{"role": "user", "content": "Remember that releases require make check."}, {"role": "assistant", "content": "Recorded."}],
         )
         hits = await backend.recall("How are releases checked?", user_id="default", top_k=5)
+        assert await backend.recall("cafeteria menu typography unrelated satellite telemetry", user_id="default", top_k=5) == []
         await backend.stop()
 
         context = SimpleNamespace(config={}, services=SimpleNamespace(workspace=repository / "workspace"))

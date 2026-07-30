@@ -2,8 +2,9 @@
 
 This document describes behavior implemented on current `main`, including the
 `v02-001` Pico trace importer and `v02-002` installed Pico Memory Backend
-adapter. Pico default selection, EverOS removal, continuity evidence, and paid
-paired evaluation remain downstream work and are not claimed here.
+adapter. Pico now selects CodeCairn and has removed EverOS product coupling.
+The first joint campaign is a completed diagnostic with an ineligible positive
+claim; it is not relabeled as release evidence.
 
 ## Current support matrix
 
@@ -16,13 +17,13 @@ paired evaluation remain downstream work and are not claimed here.
 | Session hooks | `codecairn hook install/run` | Claude `SessionEnd` and Codex `Stop` import owned transcripts without model calls or client blocking |
 | Evolve memory | `codecairn memory ...` | Applies validated immutable Supersession, returns deterministic history, and creates forward-only restore revisions |
 | List memory | `codecairn list` | Reads four-type durable memory in the resolved repository namespace |
-| Recall | `codecairn recall` | Drains a bounded namespace index batch, then compiles active-only hybrid retrieval with optional explicit history |
+| Recall | `codecairn recall` | Drains a bounded namespace index batch, admits relevant active memory, and either compiles attributed context or explicitly abstains |
 | Diagnostics | `codecairn doctor` | Reports imports, memories, Write Intent recovery, semantic jobs, and queued index projections |
 | Namespace operations | `codecairn namespace ...` | Creates a consistent export or performs a confirmation-gated, backup-first reset |
 | Index commands | `codecairn index ...` | Operates the lifecycle-aware LanceDB cascade and parity service |
 | Historical evidence | `codecairn evidence verify` | Verifies frozen evidence without loading the live runtime |
 | Distribution | `uv tool install` | Installs curated MIT-licensed wheel entrypoints into an isolated persistent tool environment |
-| Pico plugin | `memory.backend = "codecairn"` | Installed discovery exposes one repository-bound MemoryBackend; Pico must consume the final immutable handoff before selecting it by default |
+| Pico plugin | `memory.backend = "codecairn"` | Installed discovery exposes one repository-bound MemoryBackend; Pico selects it as the current long-term memory backend |
 
 ## Capture lifecycle
 
@@ -242,9 +243,14 @@ Pico removes its synthetic announce; the adapter treats that Agent-only slice
 as an explicit no-op rather than inventing a user event or breaking the
 subagent Turn.
 
+User-track recall may also return `[]` when CodeCairn abstains. Vector
+admission uses the active profile threshold; lexical matches and an explicitly
+requested open Work State remain eligible. The sidecar reports the admission
+policy, outcome, reason, threshold, and maximum vector score.
+
 The adapter does not own Local Skills, add a media tool, fall back to EverOS,
 or initialize repositories implicitly.
 
-Not yet implemented: Pico default selection and EverOS removal, joint Pico
-continuity/effect evidence, real-client release smoke, publication/tagging,
-and candidate-bound release evidence.
+Remaining release work: rerun joint Pico continuity/effect evidence against the
+current exact dependency pair after ADR 0060, then bind publication/tagging and
+candidate evidence to that pair.

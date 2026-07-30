@@ -1,9 +1,9 @@
 # Runtime Scope
 
-This document separates the implemented baseline from the accepted version 0.1
-runtime. For behavior available now, [`operations.md`](operations.md) is
-authoritative. For the target lifecycle, use
-[`../v0.1/`](../v0.1/README.md).
+This document summarizes the implemented runtime. For exact commands and
+failure behavior, [`operations.md`](operations.md) is authoritative. Version
+0.1 lifecycle documents remain the historical foundation; version 0.2 adds
+Pico and recall admission.
 
 ## Owned boundary
 
@@ -23,7 +23,7 @@ entrypoints -> service -> memory
 `bootstrap` composes adapters. `evaluation` calls product/service contracts
 with isolated roots.
 
-## Implemented runtime through `v01-009`
+## Implemented runtime
 
 Current `main` implements the local memory lifecycle:
 
@@ -36,8 +36,9 @@ Current `main` implements the local memory lifecycle:
   state, and recoverable crash boundaries;
 - Supersession, active/superseded projection, history, and forward-only
   restore;
-- active-only hybrid recall over LanceDB with bounded preflight, pinned open
-  Work State, provenance, ranking, omission, and token-budget sidecars;
+- active-only hybrid recall over LanceDB with bounded preflight, relevance
+  admission and explicit abstention, pinned open Work State, provenance,
+  ranking, omission, and token-budget sidecars;
 - repository initialization, explicit provider profiles, doctor,
   export/reset, CLI, seven MCP tools, and one MCP resource;
 - Claude Code `SessionEnd` and Codex `Stop` hooks with atomic/idempotent
@@ -49,8 +50,11 @@ Current `main` implements the local memory lifecycle:
   installed CLI/MCP/lifecycle/evidence smoke, artifact inventory checks, and a
   maintained learner path.
 
-Real Claude/Codex client smoke and candidate-bound release evidence remain in
-`v01-010`.
+- installed Pico Source Journal, importer, and repository-bound MemoryBackend.
+
+Version 0.1 release evidence and the first Pico campaign retain their original
+commit bindings. The next product stages are maintained in
+[`../roadmap.md`](../roadmap.md).
 
 ## Current write paths
 

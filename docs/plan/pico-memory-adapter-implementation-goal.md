@@ -1,6 +1,10 @@
 # Codex Goal: ship the CodeCairn side of Pico Memory
 
-Status: executable implementation goal.
+Status: completed historical execution goal. It intentionally stopped before
+the joint campaign; current integration and evidence state is maintained in
+[`../v0.2/README.md`](../v0.2/README.md).
+
+Document type: historical executable implementation goal.
 
 ## Objective
 
