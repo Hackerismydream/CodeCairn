@@ -38,11 +38,11 @@ research. They are recommendations until an accepted ADR changes a contract.
    evidence-backed portable Candidates, while each Runtime owns installation,
    permissions, and execution. Pico Local Skills remain Pico-owned today.
 5. Improve the v0.3 empty state with an isolated Guided Demo and truthful
-   connection instructions. Do not put discovery, import, or hook mutations
-   behind the current read-only Hub contract.
-6. Design historical discovery, preview, consent, import reporting, and
-   continuous capture as one future Onboarding use case with a per-client
-   support matrix.
+   connection instructions. ADR 0063 keeps discovery, import, and Hook mutation
+   outside the read-only Hub contract.
+6. Version 0.4 owns historical discovery, no-write Preview, consent-bound
+   Apply, import reporting, and explicit continuous capture as one local
+   Onboarding use case with a per-client support matrix.
 
 ## Conversation record
 
@@ -91,7 +91,7 @@ Source -> Experience -> Knowledge -> Evolution -> Recall
 Version 0.1 exposes four durable Coding Memory types: Task Experience,
 Repository Knowledge, User Preference, and Work State. Source material and
 Evidence Facts are not additional memory types, while Recall Context is a
-derived task-shaped view. Version 0.6, not version 0.3, is the current roadmap
+derived task-shaped view. Version 0.7, not version 0.3, is the current roadmap
 location for Case and Skill growth.
 
 ## Working product hypothesis before research
@@ -580,8 +580,8 @@ feedback is a no-op. A future CodeCairn portable Candidate therefore must not
 be presented as an installed Pico Local Skill. Other Harnesses likewise own
 their installation and execution contracts.
 
-Version 0.6 needs an ADR before implementation. It must decide whether Case is
-mandatory, what evidence threshold can create a Candidate, which component
+Version 0.7 needs an ADR before implementation. It must decide whether Case is
+mandatory, what evidence threshold can create a Candidate, which Module
 owns immutable versions and rollback, and how client compatibility is
 represented. EverOS and OpenViking prove that Skill deserves a separate
 boundary; they do not provide one universal promotion algorithm for CodeCairn
@@ -617,8 +617,9 @@ acceptance fixture is not automatically a product Demo. A product Demo needs a
 separate namespace or static artifact, explicit Demo labeling, and a reset or
 no-write boundary.
 
-A future **Onboarding** use case can add source discovery and import. It is not
-part of the current Hub Read Interface. Its scan preview should show, before
+A separate version 0.4 **Onboarding** use case adds source discovery and import.
+It is not part of the current Hub Read Interface. Its no-write Preview should
+show, before
 any durable write:
 
 - detected client: Codex, Claude Code, or Pico;
@@ -628,7 +629,7 @@ any durable write:
 - duplicate or already-imported state; and
 - whether a continuous hook is available.
 
-After confirmation, that future onboarding journey is:
+After confirmation, the accepted target onboarding journey is:
 
 ```text
 discover
@@ -680,22 +681,22 @@ The Adapter, not the user, authors `provider`, client version, native session,
 event index, locator, digest, and import mode. A memory may show "from Codex"
 as a provenance badge, but the user should never have to type that label.
 
-There is a current roadmap tension: the accepted version 0.3 Hub is read-only.
-A separate static or disposable Demo link can fit that boundary. Local source
-discovery, scan previews, import, and hook installation are not among the three
-Hub Read operations, even when a scan itself does not mutate Memory. They
-require a separate Onboarding use case and reviewed interface contract before
-a UI button performs them.
+ADR 0063 resolves the earlier roadmap tension. The accepted version 0.3 Hub
+remains read-only. A separate static or disposable Demo link can fit that
+boundary, while local source discovery, no-write Preview, consent-bound Apply,
+and explicit Hook installation use the separate two-operation Hub Onboarding
+Interface. The browser still cannot supply arbitrary paths or mutate a plan
+after consent.
 
 ### Delivery map
 
 | Recommendation | Roadmap placement | Contract consequence |
 |---|---|---|
 | Explanatory v0.3 empty state and separate Guided Demo | v0.3 product refinement | No Memory-domain change; Demo isolation and packaging still need an explicit artifact boundary |
-| Source discovery, preview, consent, import report, and hook offer | Unassigned Onboarding slice; do not silently fold into v0.3 | New service/interface ADR and per-client support contract |
-| Hub mutation and lifecycle governance | v0.4 | Use the same application service as CLI and MCP |
-| Source health backed by a continuously available service | v0.5 | Daemon, event stream, recovery, and stable local API |
-| Case and portable Skill Candidate | v0.6 | New ontology, quality, ownership, compatibility, and rollback ADR |
+| Source discovery, Preview, consent-bound Apply, import report, and explicit Hook offer | v0.4 local onboarding | ADR 0063 and the per-client product/acceptance contract |
+| Hub mutation and lifecycle governance | v0.5 | Use the same application service as CLI and MCP |
+| Source health backed by a continuously available service | v0.6 | Daemon, event stream, recovery, and stable local Interface |
+| Case and portable Skill Candidate | v0.7 | New ontology, quality, ownership, compatibility, and rollback ADR |
 | Personal cross-project scope | Unassigned before stable v1.0 semantics | Namespace and migration ADR |
 | Remote accounts, sync, and teams | v2.0 | Authentication, encryption, isolation, conflict, and deletion contracts |
 
@@ -758,17 +759,17 @@ that make the Memory trustworthy.
 
 The research narrows the next conversation but does not eliminate it:
 
-1. **Onboarding placement:** decide whether source discovery and preview form a
-   v0.3.x companion, begin v0.4, or become a separately named milestone. It
-   must not be treated as already present in the Hub.
+1. **Onboarding evidence:** ADR 0063 places source discovery and Preview in
+   version 0.4, but formal completion still requires the sealed real-client
+   artifact defined by the version 0.4 acceptance contract.
 2. **Personal scope:** decide which Preferences belong above repository scope
    and how an installation-local owner migrates without introducing login into
    the local product.
 3. **Source retention:** decide whether CodeCairn ever offers an optional,
    encrypted Source Archive, including redaction, expiry, deletion, export,
    and machine-migration behavior.
-4. **Skill authority:** for v0.6, decide whether Case is mandatory, how a
-   Candidate is qualified, and which component owns portable versions and
+4. **Skill authority:** for v0.7, decide whether Case is mandatory, how a
+   Candidate is qualified, and which Module owns portable versions and
    rollback while Runtimes own installed executable Skills.
 5. **Remote authority:** before v2.0, choose migration, backup, or hosted
    authority semantics explicitly; do not infer transparent two-way sync.

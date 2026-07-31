@@ -39,3 +39,17 @@ export function memoryPaginationDisabled(
 export function retryFromFirstPage(errorCode: string | undefined): boolean {
   return errorCode === "cursor_invalid";
 }
+
+export function isUnfilteredNamespaceEmpty(
+  itemCount: number,
+  typeFilter: string,
+  statusFilter: string,
+  hasPageCursor: boolean,
+): boolean {
+  return (
+    itemCount === 0 &&
+    typeFilter === "all" &&
+    statusFilter === "all" &&
+    !hasPageCursor
+  );
+}

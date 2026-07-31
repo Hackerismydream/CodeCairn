@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   HubApiError,
@@ -14,6 +15,7 @@ import {
 } from "../../../lib/hub/format";
 import {
   createRequestGate,
+  isUnfilteredNamespaceEmpty,
   memoryFilterDisabled,
   memoryPaginationDisabled,
   retryFromFirstPage,
@@ -187,6 +189,12 @@ export default function MemoriesView({
   }
 
   const selectedId = data?.selected?.detail.memory.memory_id;
+  const showOnboarding = isUnfilteredNamespaceEmpty(
+    data?.page.items.length ?? 0,
+    typeFilter,
+    statusFilter,
+    cursor !== undefined || cursorHistory.length > 0,
+  );
   const selectionWasRemoved =
     error instanceof HubApiError && error.code === "memory_not_found";
   const recoveryProps = selectionWasRemoved
@@ -305,8 +313,24 @@ export default function MemoriesView({
                 ))
               ) : (
                 <div className="empty-state">
-                  <strong>当前筛选下没有记忆</strong>
-                  <p>Hub 不会用示例数据填充空命名空间。</p>
+                  <strong>
+                    {showOnboarding ? "还没有真实记忆" : "当前筛选下没有记忆"}
+                  </strong>
+                  <p>
+                    {showOnboarding
+                      ? "接入当前仓库的本机历史，或先在隔离示例中了解 Memory OS。"
+                      : "调整筛选条件后重新查看。"}
+                  </p>
+                  {showOnboarding ? (
+                    <div className="empty-actions">
+                      <Link className="primary-action" href="/?view=onboarding">
+                        接入历史
+                      </Link>
+                      <Link className="secondary-action" href="/?view=demo">
+                        查看示例
+                      </Link>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </div>

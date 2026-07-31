@@ -5,6 +5,9 @@ Pico trace importer, the `v02-002` installed Pico Memory Backend adapter, and
 the version 0.3 read-only Hub. Pico now selects CodeCairn and has removed
 EverOS product coupling. The first joint campaign is a completed diagnostic
 with an ineligible positive claim; it is not relabeled as release evidence.
+The accepted version 0.4 Onboarding contract is described separately below;
+until its implementation and evidence land, it is not part of this current
+support matrix.
 
 ## Current support matrix
 
@@ -132,6 +135,47 @@ The receipt exposes the loopback origin, selected ports, launcher PID, and
 child process-group identities but not the random session token. It is a
 readiness and cleanup receipt for the same foreground Host. It does not keep
 the Hub running after the launcher exits.
+
+## Version 0.4 target: local onboarding
+
+ADR 0063 authorizes a separate Hub Onboarding Interface without changing any
+of the three Hub Read operations:
+
+```text
+POST /hub-onboarding/v1/preview
+POST /hub-onboarding/v1/apply
+```
+
+Preview discovers only bounded regular files under compiled Codex and Claude
+Code history roots. It accepts no browser-supplied path and makes only sources
+whose provider-native project identity exactly matches the bound Git common
+directory selectable. It can plan selected opaque source IDs and optional
+Codex or Claude Hook installation, then return a short-lived consent token.
+Preview does not initialize or mutate CodeCairn, edit settings, write receipts,
+call a model, or use the network.
+
+Apply accepts only that consent token. It validates all source, repository,
+settings, client, Adapter, retention, egress, and expiry bindings before the
+first write. After the stale preflight, each source imports through the existing
+application Interface and each explicitly selected Hook produces its own
+result. Already-imported work is a no-op; a later failure is an itemized partial
+result rather than rollback or false success. Durable import success and index
+readiness are separate.
+
+The target support matrix is deliberately asymmetric:
+
+| Client | History through Onboarding | Continuous capture through Onboarding |
+|---|---|---|
+| Codex | Fixed-root, exact-repository, owned JSONL Preview and Apply | Optional explicit `Stop` Hook plan |
+| Claude Code | Fixed-root, exact-repository, owned JSONL Preview and Apply | Optional explicit `SessionEnd` Hook plan |
+| Pico | Unsupported; no pre-integration Pico Session backfill | Explain or observe the installed CodeCairn Memory Backend; do not modify Pico-owned configuration |
+
+The exact retention disclosure, request/response example, failure contract, and
+implementation-versus-formal-acceptance gates are in
+[`../v0.4/onboarding.md`](../v0.4/onboarding.md). A Guided Demo remains isolated
+from the real Namespace and cannot satisfy this target. The Module uses no LLM;
+any version 0.4 path selecting DeepSeek must use exactly
+`deepseek-v4-flash` or fail closed.
 
 ## Version 0.3 Hub acceptance infrastructure
 

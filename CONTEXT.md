@@ -195,6 +195,49 @@ that Supersession excludes the predecessor from default recall, and that the
 immutable relation identifies its active successor. Version 0.3 does not use
 time expiry as a Memory Status.
 
+## Version 0.4 local onboarding
+
+**Hub Onboarding Interface**:
+The separate two-operation local Interface used to preview supported owned
+coding-session sources and apply one consent-bound import and continuous-capture
+plan. It is bound to one server-selected repository and does not add writes to
+the Hub Read Interface.
+_Avoid_: Writable Hub Read Interface, filesystem browser
+
+**Onboarding Preview**:
+A no-write, bounded observation of fixed Codex and Claude Code history roots,
+their exact repository match, current import state, supported Hook plans, and
+the versioned Retention Disclosure. It may produce a Consent Token for one
+valid selected plan. It is not evidence that an import occurred.
+
+**Opaque Source ID**:
+A path-free selection handle for one source discovered in an Onboarding
+Preview. It is valid only inside that bound preview and is neither a source
+locator nor repository authority.
+
+**Retention Disclosure**:
+The versioned explanation of which normalized source identity, bounded Evidence
+Facts, Coding Memories, operational receipts, and configured data egress an
+Onboarding plan will create, and which provider-native content CodeCairn will
+not silently copy or preserve.
+
+**Consent Token**:
+A short-lived opaque capability binding one repository, preview revision,
+selected source digests, planned Hook writes, settings digests, retention
+revision, egress posture, and expiry. Apply accepts the token instead of paths
+or a second mutable selection.
+
+**Onboarding Apply Report**:
+The itemized result of applying a Consent Token after a complete stale
+preflight. It distinguishes created, skipped, failed, partial, and index
+readiness outcomes; it never rolls back a prior durable import or converts a
+partial result into success.
+
+**Live Onboarding**:
+The real-source journey from Preview through explicit consent and Apply into
+the existing Memories and Recall views. A Guided Demo is isolated and cannot
+substitute for Live Onboarding or formal version 0.4 acceptance.
+
 ## Version 0.2 Pico integration
 
 The following terms define the implemented CodeCairn side of the version 0.2

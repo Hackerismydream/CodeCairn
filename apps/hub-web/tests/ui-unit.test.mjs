@@ -48,6 +48,327 @@ function response(payload, status = 200) {
   );
 }
 
+async function onboardingResponses() {
+  const url = new URL(
+    "../../../contracts/hub-onboarding/v1.example.json",
+    import.meta.url,
+  );
+  return JSON.parse(await readFile(url, "utf8")).responses;
+}
+
+test("the loopback proxy bounds declared and streamed request and response bodies", async () => {
+  const { proxyLoopbackRequest } = await load("/lib/server/loopback-proxy.ts");
+  const base = {
+    method: "POST",
+    nextUrl: new URL("http://localhost/api/hub-onboarding/v1/preview"),
+  };
+  const context = { params: Promise.resolve({ operation: "preview" }) };
+  const invoke = (request, fetcher) => proxyLoopbackRequest(request, context, {
+    operations: { preview: { method: "POST", upstreamPath: "/preview", timeoutMs: 1000, maxResponseBytes: 1024 * 1024 } },
+    unknownMessage: "unknown",
+    unavailableMessage: "unavailable",
+    fetcher,
+  });
+  const headers = (extra = {}) => new Headers({ host: "localhost", ...extra });
+  process.env.CODECAIRN_HUB_TOKEN = "test-token";
+  process.env.CODECAIRN_HUB_API_URL = "http://127.0.0.1:9000";
+  try {
+    let calls = 0;
+    const fetcher = async () => {
+      calls += 1;
+      return response({ ok: true });
+    };
+    const declared = await invoke({ ...base, headers: headers({ "content-length": "65537" }), body: null }, fetcher);
+    assert.equal(declared.status, 413);
+    assert.equal(calls, 0);
+
+    const requestBody = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new Uint8Array(65537));
+        controller.close();
+      },
+    });
+    const streamed = await invoke({ ...base, headers: headers(), body: requestBody }, fetcher);
+    assert.equal(streamed.status, 413);
+    assert.equal(calls, 0);
+
+    const declaredUpstream = await invoke(
+      { ...base, headers: headers(), body: null },
+      async () => new Response(null, { headers: { "content-length": "1048577" } }),
+    );
+    assert.equal(declaredUpstream.status, 502);
+    const streamedUpstream = await invoke(
+      { ...base, headers: headers(), body: null },
+      async () => new Response(new Uint8Array(1048577)),
+    );
+    assert.equal(streamedUpstream.status, 502);
+
+    const read = await proxyLoopbackRequest(
+      { ...base, method: "GET", headers: headers(), body: null },
+      { params: Promise.resolve({ operation: "memories" }) },
+      {
+        operations: { memories: { method: "GET", upstreamPath: "/memories", timeoutMs: 1000 } },
+        unknownMessage: "unknown",
+        unavailableMessage: "unavailable",
+        fetcher: async () => new Response(new Uint8Array(1048577)),
+      },
+    );
+    assert.equal(read.status, 200);
+    assert.equal((await read.arrayBuffer()).byteLength, 1048577);
+  } finally {
+    delete process.env.CODECAIRN_HUB_TOKEN;
+    delete process.env.CODECAIRN_HUB_API_URL;
+  }
+});
+
+test("the onboarding client previews only selected source IDs and capture clients", async () => {
+  const { createHttpOnboardingClient } = await load(
+    "/lib/onboarding/http-client.ts",
+  );
+  const { preview: fixture } = await onboardingResponses();
+  let requested;
+  const client = createHttpOnboardingClient(async (input, init) => {
+    requested = { input: String(input), init };
+    return response(fixture);
+  });
+
+  const preview = await client.preview({
+    selectedSourceIds: ["source_codex_01"],
+    installCaptureFor: ["codex"],
+  });
+
+  assert.equal(requested.input, "/api/hub-onboarding/v1/preview");
+  assert.equal(requested.init.method, "POST");
+  assert.deepEqual(JSON.parse(requested.init.body), {
+    selected_source_ids: ["source_codex_01"],
+    install_capture_for: ["codex"],
+  });
+  assert.equal(preview.sources[0].candidates[0].selected, true);
+  assert.equal(
+    preview.sources.find((source) => source.client === "pico").historical_state,
+    "unsupported",
+  );
+});
+
+test("the onboarding client applies only an opaque consent token", async () => {
+  const { createHttpOnboardingClient } = await load(
+    "/lib/onboarding/http-client.ts",
+  );
+  const { apply: fixture, preview } = await onboardingResponses();
+  let requested;
+  const client = createHttpOnboardingClient(async (input, init) => {
+    requested = { input: String(input), init };
+    return response(fixture);
+  });
+
+  const result = await client.apply(preview);
+
+  assert.equal(requested.input, "/api/hub-onboarding/v1/apply");
+  assert.deepEqual(JSON.parse(requested.init.body), {
+    consent_token: preview.consent_token,
+  });
+  assert.equal(result.totals.created_memories, fixture.totals.created_memories);
+});
+
+test("an explicitly selected already-imported source remains an itemized noop", async () => {
+  const { createHttpOnboardingClient } = await load(
+    "/lib/onboarding/http-client.ts",
+  );
+  const { apply, preview } = structuredClone(await onboardingResponses());
+  preview.sources[0].candidates[0].import_state = "already_imported";
+  apply.imports[0].outcome = "noop";
+  apply.imports[0].created_memory_count = 0;
+  apply.imports[0].skipped_memory_count = 1;
+  apply.totals.imported_sessions = 1;
+  apply.totals.created_memories = 1;
+  apply.totals.skipped_sessions = 1;
+  const client = createHttpOnboardingClient(async (input) =>
+    response(String(input).endsWith("/preview") ? preview : apply),
+  );
+
+  const active = await client.preview();
+  const result = await client.apply(active);
+
+  assert.equal(result.imports[0].outcome, "noop");
+  assert.equal(result.totals.skipped_sessions, 1);
+});
+
+test("the onboarding client rejects unknown states and leaked source paths", async () => {
+  const { createHttpOnboardingClient } = await load(
+    "/lib/onboarding/http-client.ts",
+  );
+  const { preview: fixture } = await onboardingResponses();
+  const malformed = [
+    (() => {
+      const value = structuredClone(fixture);
+      value.sources[0].historical_state = "scanned_everything";
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.sources[0].candidates[0].source_path = "/private/history.jsonl";
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.sources[1].capture_selected = true;
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.sources[0].candidates[0].session_label = "x".repeat(200);
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.retention.retained[0] = "provider-authored display text";
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.planned_writes[0] = "write anywhere";
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.sources[2].historical_state = "none_found";
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.sources[2].continuous_state = "unsupported";
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.sources[0].historical_state = "none_found";
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.sources[0].candidates[0].selected = false;
+      return value;
+    })(),
+    (() => {
+      const value = structuredClone(fixture);
+      value.sources[0].candidates = Array.from({ length: 257 }, (_, index) => {
+        const suffix = index.toString(16).padStart(64, "0");
+        return {
+          ...structuredClone(fixture.sources[0].candidates[0]),
+          source_id: `src_${suffix}`,
+          session_label: `Codex session ${suffix.slice(-8)}`,
+          selected: false,
+        };
+      });
+      return value;
+    })(),
+  ];
+
+  for (const payload of malformed) {
+    const client = createHttpOnboardingClient(async () => response(payload));
+    await assert.rejects(client.preview(), (error) => {
+      assert.equal(error.code, "invalid_response");
+      assert.doesNotMatch(error.message, /private|history/);
+      return true;
+    });
+  }
+});
+
+test("the onboarding client rejects inconsistent apply reports", async () => {
+  const { createHttpOnboardingClient } = await load(
+    "/lib/onboarding/http-client.ts",
+  );
+  const { apply: fixture, preview } = await onboardingResponses();
+  const malformed = [
+    (value) => { value.totals.created_memories += 1; },
+    (value) => { value.outcome = "noop"; },
+    (value) => { value.requires_new_preview = true; },
+    (value) => { value.imports.push(structuredClone(value.imports[0])); },
+    (value) => { value.imports[0].source_id = "source-path"; },
+    (value) => { value.repo_key = "foreign/repository"; },
+    (value) => { value.snapshot_id = `onb_${"f".repeat(64)}`; },
+    (value) => { value.imports[0].source_id = `src_${"f".repeat(64)}`; },
+    (value) => { value.imports[0].client = "claude"; },
+    (value) => {
+      value.imports = [];
+      value.totals.imported_sessions = 0;
+      value.totals.created_memories = 0;
+    },
+  ];
+
+  for (const mutate of malformed) {
+    const payload = structuredClone(fixture);
+    mutate(payload);
+    const client = createHttpOnboardingClient(async () => response(payload));
+    await assert.rejects(client.apply(preview), (error) => {
+      assert.equal(error.code, "invalid_response");
+      return true;
+    });
+  }
+});
+
+test("continuous capture is selectable only when the backend reports available", async () => {
+  const { canInstallCapture } = await load("/lib/onboarding/client.ts");
+
+  assert.equal(canInstallCapture("available"), true);
+  for (const state of ["installed", "not_detected", "manual_setup_required", "unsupported"]) {
+    assert.equal(canInstallCapture(state), false);
+  }
+});
+
+test("same-page navigation keeps the shell's local view aligned with the URL", async () => {
+  const { default: Home } = await load("/app/page.tsx");
+  const memories = await Home({ searchParams: Promise.resolve({}) });
+  const demo = await Home({ searchParams: Promise.resolve({ view: "demo" }) });
+
+  assert.equal(memories.key, "memories");
+  assert.equal(demo.key, "demo");
+  assert.notEqual(memories.key, demo.key);
+  assert.equal(demo.props.initialView, "demo");
+});
+
+test("a partial onboarding report offers a real rescan action and separates index state", async () => {
+  const { ResultView } = await load(
+    "/app/features/onboarding/OnboardingView.tsx",
+  );
+  const { apply: fixture } = await onboardingResponses();
+  const complete = renderToStaticMarkup(
+    React.createElement(ResultView, { result: fixture, onRescan() {} }),
+  );
+  const partial = structuredClone(fixture);
+  partial.outcome = "partial";
+  partial.requires_new_preview = true;
+  partial.index_state = "failed";
+  const recoverable = renderToStaticMarkup(
+    React.createElement(ResultView, { result: partial, onRescan() {} }),
+  );
+
+  assert.doesNotMatch(complete, />重新扫描</);
+  assert.match(recoverable, />重新扫描</);
+  assert.match(recoverable, /记忆已保存，检索索引未就绪/);
+});
+
+test("onboarding errors render stable Chinese copy without backend English", async () => {
+  const [{ presentableError }, { HubApiError }, { default: RequestError }] =
+    await Promise.all([
+      load("/app/features/onboarding/OnboardingView.tsx"),
+      load("/lib/hub/client.ts"),
+      load("/app/components/RequestError.tsx"),
+    ]);
+  const safe = presentableError(
+    new HubApiError("A selected source changed", {
+      code: "snapshot_stale",
+      remediation: "Run onboarding preview again.",
+      requestId: "hubreq_test",
+    }),
+  );
+  const html = renderToStaticMarkup(React.createElement(RequestError, { error: safe }));
+
+  assert.match(html, /接入预览已变化/);
+  assert.match(html, /请重新扫描/);
+  assert.doesNotMatch(html, /selected source|Run onboarding/);
+});
+
 async function capturedMemoryResponse({
   provider = "pico",
   sessionId = "pico:test",
@@ -335,6 +656,7 @@ test("RequestError removes retry controls for permanent errors", async () => {
 test("memory controls suppress no-op filters, in-flight paging, and stale responses", async () => {
   const {
     createRequestGate,
+    isUnfilteredNamespaceEmpty,
     memoryFilterDisabled,
     memoryPaginationDisabled,
     retryFromFirstPage,
@@ -346,6 +668,14 @@ test("memory controls suppress no-op filters, in-flight paging, and stale respon
   assert.equal(memoryPaginationDisabled(false, false, true), false);
   assert.equal(retryFromFirstPage("cursor_invalid"), true);
   assert.equal(retryFromFirstPage("hub_unavailable"), false);
+  assert.equal(isUnfilteredNamespaceEmpty(0, "all", "all", false), true);
+  assert.equal(
+    isUnfilteredNamespaceEmpty(0, "task_experience", "all", false),
+    false,
+  );
+  assert.equal(isUnfilteredNamespaceEmpty(0, "all", "active", false), false);
+  assert.equal(isUnfilteredNamespaceEmpty(0, "all", "all", true), false);
+  assert.equal(isUnfilteredNamespaceEmpty(1, "all", "all", false), false);
 
   const gate = createRequestGate();
   const first = gate.begin();
@@ -388,8 +718,12 @@ test("navigation, unknown timestamps, and system labels stay human-readable", as
   ]);
 
   assert.equal(navigation.parseHubView("recall"), "recall");
+  assert.equal(navigation.parseHubView("onboarding"), "onboarding");
+  assert.equal(navigation.parseHubView("demo"), "demo");
   assert.equal(navigation.parseHubView("unknown"), "memories");
   assert.equal(navigation.hubViewHref("memories"), "/");
+  assert.equal(navigation.hubViewHref("onboarding"), "/?view=onboarding");
+  assert.equal(navigation.hubViewHref("demo"), "/?view=demo");
   assert.equal(navigation.hubViewHref("system"), "/?view=system");
   assert.equal(format.formatTime(0), "源事件未提供可信时间");
   assert.equal(format.dateTimeValue(0), undefined);

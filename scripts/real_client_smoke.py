@@ -16,6 +16,8 @@ import uuid
 from pathlib import Path
 from typing import Any, cast
 
+from codecairn.memory.config import require_supported_deepseek_model
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -364,6 +366,7 @@ def _claude_provider(key_env: str | None, base_env: str | None, model_env: str |
     model = os.environ.get(cast(str, model_env))
     if not key or not base or not model:
         raise ValueError("one or more Claude provider environment values are missing")
+    require_supported_deepseek_model(profile=None, model=model, endpoint=base)
     return {"ANTHROPIC_API_KEY": key, "ANTHROPIC_BASE_URL": base.removesuffix("/v1").rstrip("/"), "ANTHROPIC_MODEL": model}
 
 

@@ -4,7 +4,9 @@ Status: maintained implementation architecture. Version 0.1 is the local
 coding-first Memory OS foundation. Version 0.2 adds the installed Pico
 Integration Module and recall relevance admission. Version 0.3 adds a
 foreground read-only Hub presentation plus acceptance infrastructure. The Hub
-has not yet completed its configured-LLM and blind-human campaign.
+has not yet completed its configured-LLM and blind-human campaign. ADR 0063
+defines the version 0.4 local Onboarding Module and its separate consent-bound
+Interface; implementation and formal installed-product evidence remain distinct.
 
 ## Product boundary
 
@@ -14,10 +16,12 @@ agent runtime. Internally it has Memory OS authority; version 0.1 ships one
 implicit Coding Profile for repository-scoped work.
 
 CodeCairn does not execute an agent, inject hidden prompts, ingest arbitrary
-documents, run a cloud service, or provide a memory-editing UI. Its Hub is a
-local inspection surface, not a remote API or daemon. Pico remains a
-general agent harness and consumes CodeCairn through the installed integration
-specified in [`v0.2/README.md`](v0.2/README.md).
+documents, run a cloud service, or provide a memory-editing UI. Version 0.4
+allows only fixed, supported Codex and Claude Code history discovery; it is not
+a general document importer or filesystem browser. Its Hub is a local product
+surface, not a remote API or daemon. Pico remains a general agent harness and
+consumes CodeCairn through the installed integration specified in
+[`v0.2/README.md`](v0.2/README.md).
 
 ## System context
 
@@ -51,6 +55,11 @@ Source + Experience              Knowledge + Evolution            Recall
 Browser -> same-origin Hub route -> foreground Hub Read Interface
                                       |
                                       +-> service use cases
+
+Browser -> exact same-origin onboarding routes -> Hub Onboarding Interface
+                                                  +-> fixed history adapters
+                                                  +-> import use case
+                                                  +-> explicit Hook installer
 
 v0.3 acceptance runner
   +-> installed Pico subprocess adapter
@@ -103,21 +112,23 @@ The import-linter contracts remain:
 | Package | Current responsibility | Excluded responsibility |
 |---|---|---|
 | `memory` | Four memory records, Source records, lifecycle invariants, provider ports, recall value objects | Filesystem, SQL, CLI |
-| `service` | Capture, evolution, import, process, index, recall, inspection, diagnostics | Provider JSONL branches or presentation |
-| `importers` | Codex, Claude, and Pico JSONL normalization | Capture policy or persistence |
+| `service` | Capture, evolution, import, process, index, recall, inspection, diagnostics, and consent-bound onboarding orchestration | Provider JSONL branches or presentation |
+| `importers` | Codex, Claude, and Pico JSONL normalization plus fixed-root Codex/Claude source discovery | Capture policy, consent policy, or persistence |
 | `integrations/pico` | Installed Pico adapter and append-only source journal | Memory policy or Pico agent execution |
 | `storage` | Markdown, SQLite, and LanceDB adapters | Product workflow decisions |
 | `entrypoints` | CLI, MCP, and hook presentation | Alternative domain behavior |
 | `bootstrap` | Config loading and concrete composition | Durable rules |
 | `evaluation` | Thin suite adapters, immutable runs, reducers, verifier | Product-only duplicate runtime |
-| `apps/hub-api` | Three local view reads, token check, error envelope, Doctor projection | Storage access, remote API, mutation |
-| `apps/hub-web` | Chinese Memories, Recall, and System views | Durable policy, fixture fallback, provider configuration |
+| `apps/hub-api` | Three local view reads, separate two-operation Onboarding transport, token check, error envelope, Doctor projection, and foreground injection of a read-only import-progress Adapter | Direct storage access from transport handlers, remote API, or alternative Memory behavior |
+| `apps/hub-web` | Chinese Memories, Recall, System, and local Onboarding journey | Durable policy, fixture fallback, arbitrary local paths, or provider configuration |
 | `tools/v03-acceptance` | Frozen scenario, Runtime/read adapters, questionnaires, strict reducer, sealing, offline verification | Product memory policy, LLM judging, release claims without formal evidence |
 
 The complete repository workspace map is [`workspace.md`](workspace.md). ADR
 0061 defines why the foreground Hub does not restore the generic HTTP
 compatibility surface removed by ADR 0052. ADR 0062 defines why the Hub's
-technical seam and its product acceptance are separate.
+technical seam and its product acceptance are separate. ADR 0063 keeps
+Onboarding behind another narrow Interface rather than adding mutation to the
+Hub Read Interface.
 
 ## Pico Integration Module
 
@@ -393,6 +404,52 @@ Version 0.1 retires the unpublished HTTP compatibility adapter under ADR 0052.
 Exact CLI, MCP, and hook contracts are in
 [`v0.1/agent-integration.md`](v0.1/agent-integration.md).
 
+## Version 0.4 Onboarding Module
+
+The Hub Onboarding Interface is a second deep Module beside, not inside, the
+Hub Read Module:
+
+```text
+POST preview(selection?)
+  -> fixed Codex/Claude roots
+  -> bounded secure source observation
+  -> exact Git common-directory match
+  -> opaque source IDs
+  -> retention and planned-write disclosure
+  -> short-lived consent token
+
+POST apply(consent_token)
+  -> all-plan stale preflight before the first write
+  -> CodeCairnApplication import for each selected source
+  -> optional explicit Codex/Claude Hook installation
+  -> typed preflight error or itemized complete, partial, failed, and index result
+```
+
+Preview accepts no local path. Its implementation may inspect fixed local
+roots, current config, Import Checkpoints, and Hook settings, but it cannot
+write any of them or call a network or model dependency. A selectable source
+must prove an exact match to the foreground Host's Git common directory.
+Unresolved and foreign-repository observations are non-selectable.
+
+The Consent Token binds the target identity, selected source digests, Adapter
+and retention revisions, selected Hook plans and settings digests, configured
+egress posture, and expiry. Apply accepts only the token and repeats every
+bound check before writing. After that preflight, imports remain independent
+Write Intent operations: a later failure produces an honest partial report and
+does not roll back an earlier durable Coding Memory.
+
+Internally, source discovery is a real seam because Codex and Claude Code have
+distinct Adapters. Their outputs compile into a closed set of core-owned
+operations: import an owned session or install a supported Hook. Adapters do
+not receive direct storage access and cannot define arbitrary browser forms,
+commands, write kinds, or provider labels. Pico exposes no historical Adapter;
+its installed Memory Backend remains the continuous-capture path.
+
+The checked-in product and acceptance contract is
+[`v0.4/onboarding.md`](v0.4/onboarding.md). Guided Demo remains a separately
+labeled static or disposable artifact and never writes to the real Memory
+Namespace.
+
 ## Configuration and provider boundary
 
 `codecairn init` writes non-secret configuration to `codecairn.toml`. Runtime
@@ -411,6 +468,11 @@ an explicitly selected profile:
 There is no silent network-to-local fallback. Hashing is test-only. A retrieval
 profile change invalidates the disposable index; a missing semantic model only
 defers semantic capture.
+
+The Onboarding Module performs deterministic discovery and import and never
+calls a semantic LLM. Any version 0.4 implementation, integration, or
+acceptance path that selects DeepSeek must fail closed unless its exact model
+identifier is `deepseek-v4-flash`.
 
 ## Evaluation boundary
 
@@ -434,6 +496,14 @@ separate human blind review. It has no LLM judge. A source-checkout machine
 pilot is not a formal release result; see
 [`v0.3/hub-acceptance.md`](v0.3/hub-acceptance.md).
 
+Version 0.4 also separates implementation from product acceptance. Contract,
+security, Adapter, consent, idempotency, and partial-failure tests establish an
+implementation candidate. Formal completion requires a sealed exact-candidate
+artifact from an installed product using real owned Codex and Claude sources,
+real selected Hook capture, the first source-linked Memory, explained Recall,
+and Pico's continuous-only behavior without fixture fallback; see
+[`v0.4/onboarding.md`](v0.4/onboarding.md).
+
 ## Readability budget
 
 At implementation baseline `954f728`, `src/codecairn` has 34,091 physical
@@ -452,6 +522,12 @@ Hub launcher, maintained Hub Web TypeScript/TSX/CSS sources, and the acceptance
 runner. Hub code counts as core and the acceptance runner as evaluation. ADR
 0062 sets ceilings of 16,200 core and 25,000 total physical source lines
 without changing the frozen version 0.1 or version 0.2 stages.
+
+The additive `v04-onboarding` stage counts the same maintained roots and raises
+the ceilings to 18,300 core and 27,500 total physical source lines for the
+Onboarding implementation. These are additive implementation ceilings. They do
+not rewrite the historical `v03-acceptance` gate or any frozen version 0.1 and
+version 0.2 budget.
 
 ## Current-to-target delta
 

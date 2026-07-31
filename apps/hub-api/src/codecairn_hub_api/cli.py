@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
+import shutil
 from pathlib import Path
 from typing import Literal
 
@@ -9,11 +11,15 @@ import uvicorn
 from fastapi import FastAPI
 
 from codecairn.bootstrap import create_application
-from codecairn.configuration import resolve_runtime_config
+from codecairn.configuration import discover_repository, resolve_runtime_config
+from codecairn.entrypoints.hooks import LocalHookCaptureAdapter
+from codecairn.importers.history import LocalAgentHistory
 from codecairn.memory.evolution import MemoryHistory
 from codecairn.memory.models import RecallResult
 from codecairn.memory.schema import MemoryType
 from codecairn.service.application import CodeCairnApplication, MemoryDetail, MemoryPage
+from codecairn.service.onboarding import OnboardingModule
+from codecairn.storage.sqlite import SQLiteImportProgress
 from codecairn_hub_api.app import create_hub_app
 from codecairn_hub_api.queries import RecallReadiness
 
@@ -65,7 +71,7 @@ class LiveHubApplication:
         return self._configured.doctor(live=live)
 
 
-def build_live_hub(repository: Path, *, session_token: str) -> FastAPI:
+def build_live_hub(repository: Path, *, session_token: str, client_home: Path | None = None, executable: Path | None = None) -> FastAPI:
     config = resolve_runtime_config(start=repository)
     reads = create_application(config.runtime_root, repo_key=config.repo_key)
     configured = create_application(config.runtime_root, repo_key=config.repo_key, retrieval=config.retrieval, semantic=config.semantic)
@@ -78,11 +84,32 @@ def build_live_hub(repository: Path, *, session_token: str) -> FastAPI:
         live_checked=False,
         remediation=("Set CODECAIRN_EMBEDDING_API_KEY or DASHSCOPE_API_KEY and restart the Hub." if missing_key else None),
     )
+    home = (client_home or Path.home()).resolve()
+    discovered_executable = shutil.which("codecairn") if executable is None else None
+    selected_executable = executable or (Path(discovered_executable).resolve() if discovered_executable is not None else None)
+    captures: tuple[LocalHookCaptureAdapter, ...] = ()
+    if selected_executable is not None and selected_executable.is_file():
+        captures = (
+            LocalHookCaptureAdapter(client="codex", target=home / ".codex/hooks.json", executable=selected_executable),
+            LocalHookCaptureAdapter(client="claude", target=home / ".claude/settings.json", executable=selected_executable),
+        )
+    onboarding = OnboardingModule(
+        application=configured,
+        repo_key=config.repo_key,
+        repository_common_dir=discover_repository(repository).common_dir,
+        history=LocalAgentHistory(
+            home=home, identity_secret=hashlib.sha256(f"codecairn-onboarding\0{session_token}".encode()).digest()
+        ),
+        captures=captures,
+        import_progress=SQLiteImportProgress(path=config.runtime_root / "state.sqlite3", repo_key=config.repo_key),
+        source_content_egress="memory_text_to_embedding" if config.retrieval.network else "none",
+    )
     return create_hub_app(
         application=LiveHubApplication(reads=reads, configured=configured),
         repo_key=config.repo_key,
         session_token=session_token,
         recall_readiness=recall_readiness,
+        onboarding=onboarding,
     )
 
 

@@ -7,6 +7,7 @@ import json
 import os
 import stat
 import unicodedata
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -22,6 +23,9 @@ MAX_RAW_EVENTS = 100_000
 MAX_SESSION_ID_CHARS = 512
 
 
+class SourceByteLimitExceeded(TraceParseError): ...
+
+
 @dataclass(frozen=True, slots=True)
 class JsonlScan:
     source_path: Path
@@ -29,15 +33,24 @@ class JsonlScan:
     records: tuple[RawRecord, ...]
     raw_event_count: int
     prefix_sha256: str
+    source_byte_count: int
 
 
-def read_import_scan(source_path: Path, *, source_root: Path | None, checkpoint: ImportCheckpoint | None) -> JsonlScan:
+def read_import_scan(
+    source_path: Path,
+    *,
+    source_root: Path | None,
+    checkpoint: ImportCheckpoint | None,
+    max_session_bytes: int | None = None,
+    on_source_read: Callable[[int], None] | None = None,
+) -> JsonlScan:
     return read_jsonl(
         source_path,
         source_root=source_root,
         start_raw_event_index=checkpoint.resume_raw_event_index if checkpoint is not None else 0,
-        max_session_bytes=MAX_SESSION_BYTES,
+        max_session_bytes=MAX_SESSION_BYTES if max_session_bytes is None else max_session_bytes,
         max_raw_events=MAX_RAW_EVENTS,
+        on_source_read=on_source_read,
     )
 
 
@@ -59,13 +72,23 @@ def text_content(value: object, *, json_fallback: bool = False) -> str | None:
 
 
 def read_jsonl(
-    source_path: Path, *, source_root: Path | None, start_raw_event_index: int, max_session_bytes: int, max_raw_events: int
+    source_path: Path,
+    *,
+    source_root: Path | None,
+    start_raw_event_index: int,
+    max_session_bytes: int,
+    max_raw_events: int,
+    on_source_read: Callable[[int], None] | None = None,
 ) -> JsonlScan:
     observed_path = Path(os.path.abspath(source_path))
     if source_root is None:
         source = _read_source_bytes(observed_path, max_session_bytes=max_session_bytes)
     else:
         source = _read_source_beneath_root(observed_path, source_root=source_root, max_session_bytes=max_session_bytes)
+    if on_source_read is not None:
+        on_source_read(len(source))
+    if len(source) > max_session_bytes:
+        raise SourceByteLimitExceeded(f"Trace source exceeds the {max_session_bytes}-byte import limit: {source_path}")
     records, raw_event_count, prefix_sha256 = _scan_records(
         source, source_path=observed_path, start_raw_event_index=start_raw_event_index, max_raw_events=max_raw_events
     )
@@ -75,6 +98,7 @@ def read_jsonl(
         records=records,
         raw_event_count=raw_event_count,
         prefix_sha256=prefix_sha256,
+        source_byte_count=len(source),
     )
 
 
@@ -128,9 +152,7 @@ def agent_trace(
 
 
 def _read_source_bytes(source_path: Path, *, max_session_bytes: int) -> bytes:
-    flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0)
-    flags |= getattr(os, "O_CLOEXEC", 0)
-    flags |= getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
         descriptor = os.open(source_path, flags)
     except OSError as exc:
@@ -149,19 +171,12 @@ def _read_source_beneath_root(source_path: Path, *, source_root: Path, max_sessi
         raise TraceParseError(f"Trace source is outside configured root: {source_path}") from exc
     if not relative.parts:
         raise TraceParseError(f"Trace source is not a file: {source_path}")
-    if os.open not in os.supports_dir_fd:
-        raise TraceParseError("Secure source-root traversal is unsupported on this platform")
-
-    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
-    directory_flags |= getattr(os, "O_CLOEXEC", 0)
-    directory_flags |= getattr(os, "O_NOFOLLOW", 0)
-    file_flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0)
-    file_flags |= getattr(os, "O_CLOEXEC", 0)
-    file_flags |= getattr(os, "O_NOFOLLOW", 0)
+    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    file_flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
 
     descriptors: list[int] = []
     try:
-        descriptors.append(os.open(root, directory_flags))
+        descriptors.append(open_directory_no_symlinks(root))
         for component in relative.parts[:-1]:
             descriptors.append(os.open(component, directory_flags, dir_fd=descriptors[-1]))
         file_descriptor = os.open(relative.parts[-1], file_flags, dir_fd=descriptors[-1])
@@ -176,16 +191,35 @@ def _read_source_beneath_root(source_path: Path, *, source_root: Path, max_sessi
     return _read_regular_descriptor(file_descriptor, source_path=source_path, max_session_bytes=max_session_bytes)
 
 
+def open_directory_no_symlinks(path: Path) -> int:
+    """Open one absolute directory path without following any component symlink."""
+    if os.open not in os.supports_dir_fd:
+        raise TraceParseError("Secure source-root traversal is unsupported on this platform")
+    absolute = Path(os.path.abspath(path))
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(absolute.anchor, flags)
+    try:
+        for component in absolute.parts[1:]:
+            child = os.open(component, flags, dir_fd=descriptor)
+            os.close(descriptor)
+            descriptor = child
+        return descriptor
+    except Exception:
+        os.close(descriptor)
+        raise
+
+
 def _read_regular_descriptor(descriptor: int, *, source_path: Path, max_session_bytes: int) -> bytes:
     try:
-        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode):
             raise TraceParseError(f"Trace source is not a regular file: {source_path}")
+        if metadata.st_size > max_session_bytes:
+            raise SourceByteLimitExceeded(f"Trace source exceeds the {max_session_bytes}-byte import limit: {source_path}")
         with os.fdopen(descriptor, "rb", closefd=False) as handle:
             source = handle.read(max_session_bytes + 1)
     finally:
         os.close(descriptor)
-    if len(source) > max_session_bytes:
-        raise TraceParseError(f"Trace source exceeds the {max_session_bytes}-byte import limit: {source_path}")
     return source
 
 

@@ -203,6 +203,17 @@ def test_locomo_provider_caps_completion_output(monkeypatch: Any) -> None:
     assert messages[1] == {"role": "user", "content": "system\n\nprompt"}
 
 
+def test_locomo_deepseek_provider_is_pinned_to_v4_flash() -> None:
+    common = {"CODECAIRN_ANSWER_BASE_URL": "https://api.deepseek.com", "CODECAIRN_ANSWER_API_KEY": "secret"}
+
+    for model in ("deepseek-chat", "vendor/deepseek-chat", "deepseek-ai/DeepSeek-V3"):
+        with pytest.raises(ValueError, match="DeepSeek V4 Flash"):
+            TextProvider("ANSWER", environment={**common, "CODECAIRN_ANSWER_MODEL": model})
+
+    provider = TextProvider("ANSWER", environment={**common, "CODECAIRN_ANSWER_MODEL": "deepseek-v4-flash"})
+    provider._client.close()
+
+
 def test_locomo_judge_instruction_implements_frozen_generous_contract() -> None:
     for clause in (
         "essential reference information",

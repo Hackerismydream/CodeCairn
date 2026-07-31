@@ -55,7 +55,8 @@ def test_source_budget_counts_newline_delimited_physical_lines(tmp_path: Path) -
     assert report.total == 1
 
 
-def test_v03_budget_counts_hub_launcher_api_and_acceptance_tool(tmp_path: Path) -> None:
+@pytest.mark.parametrize("stage", ("v03-acceptance", "v04-onboarding"))
+def test_product_budget_counts_hub_launcher_api_and_acceptance_tool(tmp_path: Path, stage: str) -> None:
     module = _load_script()
     _write_source(tmp_path, "memory.py", b"core\n")
     _write_source(tmp_path, "evaluation/report.py", b"evaluation\n")
@@ -69,7 +70,7 @@ def test_v03_budget_counts_hub_launcher_api_and_acceptance_tool(tmp_path: Path) 
     _write_path(tmp_path, "scripts/run_hub.py", b"launcher\n")
     _write_path(tmp_path, "tools/v03-acceptance/src/codecairn_v03_acceptance/campaign.py", b"acceptance\n")
 
-    report = module.build_report(tmp_path, stage="v03-acceptance")
+    report = module.build_report(tmp_path, stage=stage)
 
     assert report.core == 9
     assert report.evaluation == 2

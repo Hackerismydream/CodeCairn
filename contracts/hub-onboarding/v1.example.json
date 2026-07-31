@@ -1,0 +1,167 @@
+{
+  "contract": "codecairn/hub-onboarding-v1",
+  "evidence_boundary": {
+    "browser_connected_to_runtime": false,
+    "fixture_kind": "static contract example",
+    "formal_v0_4_acceptance": false,
+    "note": "The values illustrate the closed transport contract; they do not prove local discovery, consent, import, Hook installation, or Recall."
+  },
+  "idempotency_semantics": {
+    "already_imported": "A new Preview keeps the candidate visible but unselected by default; explicit selection makes Apply report noop, increments skipped_sessions, and creates no duplicate Memory.",
+    "incremental": "Apply imports only the uncommitted source suffix and preserves prior durable Memory.",
+    "same_token_replay": "A repeated Apply with the same token returns the same itemized report rather than executing the plan again."
+  },
+  "requests": {
+    "apply": {
+      "consent_token": "example_consent_token_not_valid_at_runtime"
+    },
+    "preview": {},
+    "preview_explicit_hook": {
+      "install_capture_for": [
+        "codex"
+      ]
+    },
+    "preview_explicit_none": {
+      "install_capture_for": [],
+      "selected_source_ids": []
+    },
+    "preview_explicit_subset": {
+      "install_capture_for": [
+        "codex"
+      ],
+      "selected_source_ids": [
+        "src_05b2f3c626192740a26550a7255f1bbf0463252eb27b85817e8dd0d724a17a37"
+      ]
+    }
+  },
+  "selection_semantics": {
+    "explicit_empty": "An empty selected_source_ids array selects no historical source and returns no consent token unless at least one Hook is explicitly selected.",
+    "hooks": "Omitted or empty install_capture_for never selects a Hook.",
+    "omitted_or_null": "Preview selects every safely attributable new or incremental candidate for the bound repository; already_imported candidates remain visible but unselected. The response below illustrates that default.",
+    "write_boundary": "Default selection is a proposed plan only. Preview writes nothing, and Apply still requires explicit human confirmation with the returned token."
+  },
+  "responses": {
+    "apply": {
+      "capture": [],
+      "imports": [
+        {
+          "client": "codex",
+          "created_memory_count": 1,
+          "error_code": null,
+          "outcome": "imported",
+          "skipped_memory_count": 0,
+          "source_id": "src_05b2f3c626192740a26550a7255f1bbf0463252eb27b85817e8dd0d724a17a37"
+        },
+        {
+          "client": "claude",
+          "created_memory_count": 1,
+          "error_code": null,
+          "outcome": "imported",
+          "skipped_memory_count": 0,
+          "source_id": "src_8a2bf62312a8a86ac3dc28600d9f4a67eb8d59fdf5e5a1e42ada50b89ab542f4"
+        }
+      ],
+      "index_state": "ready",
+      "outcome": "complete",
+      "repo_key": "github.com/Hackerismydream/CodeCairn",
+      "requires_new_preview": false,
+      "schema_version": 1,
+      "snapshot_id": "onb_152856d919c3dd67c082f24f471dd0716c8c7ca9b910453a002ef953af1ed383",
+      "totals": {
+        "created_memories": 2,
+        "failed_actions": 0,
+        "imported_sessions": 2,
+        "skipped_sessions": 0
+      }
+    },
+    "preview": {
+      "consent_token": "example_consent_token_not_valid_at_runtime",
+      "expires_at_ms": 1785559200000,
+      "planned_writes": [
+        "Import 2 owned historical sessions"
+      ],
+      "repo_key": "github.com/Hackerismydream/CodeCairn",
+      "retention": {
+        "omitted": [
+          "provider credentials",
+          "full provider-native transcript copy"
+        ],
+        "retained": [
+          "local source locator and import cursor",
+          "normalized Agent Trace facts",
+          "bounded Evidence Facts",
+          "derived Coding Memory"
+        ],
+        "revision": "codecairn.onboarding.retention.v1",
+        "source_content_egress": "none"
+      },
+      "schema_version": 1,
+      "selected_import_count": 2,
+      "snapshot_id": "onb_152856d919c3dd67c082f24f471dd0716c8c7ca9b910453a002ef953af1ed383",
+      "sources": [
+        {
+          "candidates": [
+            {
+              "estimated_bytes": 4821,
+              "import_state": "new",
+              "latest_activity_ms": 1785558000000,
+              "raw_event_count": 18,
+              "selected": true,
+              "session_label": "Codex session 24a17a37",
+              "source_id": "src_05b2f3c626192740a26550a7255f1bbf0463252eb27b85817e8dd0d724a17a37"
+            }
+          ],
+          "capture_selected": false,
+          "client": "codex",
+          "continuous_state": "available",
+          "historical_state": "available",
+          "invalid_count": 0,
+          "remediation": null,
+          "unresolved_count": 1
+        },
+        {
+          "candidates": [
+            {
+              "estimated_bytes": 7138,
+              "import_state": "new",
+              "latest_activity_ms": 1785558300000,
+              "raw_event_count": 27,
+              "selected": true,
+              "session_label": "Claude session 9ab542f4",
+              "source_id": "src_8a2bf62312a8a86ac3dc28600d9f4a67eb8d59fdf5e5a1e42ada50b89ab542f4"
+            }
+          ],
+          "capture_selected": false,
+          "client": "claude",
+          "continuous_state": "not_detected",
+          "historical_state": "available",
+          "invalid_count": 0,
+          "remediation": null,
+          "unresolved_count": 0
+        },
+        {
+          "candidates": [],
+          "capture_selected": false,
+          "client": "pico",
+          "continuous_state": "manual_setup_required",
+          "historical_state": "unsupported",
+          "invalid_count": 0,
+          "remediation": "Configure Pico Memory Backend `codecairn`; pre-integration Pico Session history is not imported.",
+          "unresolved_count": 0
+        }
+      ],
+      "truncated": false
+    },
+    "snapshot_stale": {
+      "error": {
+        "code": "snapshot_stale",
+        "message": "A selected history source changed after preview.",
+        "remediation": "Run onboarding preview again.",
+        "request_id": "hubreq_example_not_a_runtime_receipt",
+        "retryable": true
+      },
+      "schema_version": 1
+    }
+  },
+  "schema_version": 1
+}

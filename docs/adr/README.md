@@ -103,7 +103,7 @@ limits:
 - ADR 0056 separates LoCoMo pressure latency from the product retrieval
   latency gate and records the v0.1 optimization stop band.
 
-### Post-v0.1 Pico integration, recall admission, and Hub acceptance
+### Post-v0.1 Pico integration, recall admission, Hub acceptance, and onboarding
 
 ADR 0057 accepts CodeCairn as Pico's direct long-term Memory Backend. It adds a
 CodeCairn-owned Pico Source Journal, provider `pico` importer, and installed
@@ -138,6 +138,19 @@ pass the technical machine gate but cannot promote a release. Formal acceptance
 still requires an installed Hub artifact and raw collector, a Pico process run
 against the declared configured LLM, the human study, and a sealed
 offline-verifiable bundle.
+
+ADR 0063 changes the next product outcome to version 0.4 local onboarding. It
+adds a separate two-operation Hub Onboarding Interface rather than mutating the
+Hub Read Interface. Preview scans fixed Codex and Claude Code roots, exposes
+only exact-repository opaque source IDs, performs no write or model call, and
+binds selected imports, optional Hooks, retention, egress, settings digests,
+and expiry into one Consent Token. Apply accepts only that token, rejects a
+stale plan before its first write, then reports idempotent per-item and partial
+outcomes. Pico remains continuous-only, Guided Demo remains isolated, and any
+version 0.4 path selecting DeepSeek must pin `deepseek-v4-flash` exactly.
+The ADR also adds the 18,300-core / 27,500-total `v04-onboarding` source ceiling
+without rewriting historical stage budgets. Formal acceptance remains
+separate from an implementation candidate.
 
 Current shipped behavior is maintained in
 [`../runtime/operations.md`](../runtime/operations.md); the product sequence is

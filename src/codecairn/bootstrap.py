@@ -9,11 +9,14 @@ from dataclasses import asdict
 from hashlib import sha256
 from pathlib import Path
 
-from codecairn.configuration import resolve_runtime_config
+from codecairn.configuration import discover_repository, resolve_runtime_config
 from codecairn.entrypoints.cli import build_app
 from codecairn.entrypoints.hooks import HookClient, detect_client_version, parse_hook_event
+from codecairn.importers.history import history_source_root, source_matches_repository
+from codecairn.importers.jsonl import read_import_scan
 from codecairn.importers.session import SessionImporter
 from codecairn.memory.config import RetrievalConfig, SemanticConfig
+from codecairn.memory.errors import TraceImportError
 from codecairn.memory.models import HookOutcome, HookReceipt, IndexHealth, RebuildReport
 from codecairn.memory.providers import create_retrieval_adapters
 from codecairn.memory.retrieval import EmbeddingProvider, RerankingProvider
@@ -255,7 +258,7 @@ def create_application(
 def run_hook(client: HookClient, raw: bytes) -> HookReceipt:
     started_ns = time.time_ns()
     started = started_ns // 1_000_000
-    home = Path(os.environ.get("CODECAIRN_HOME", Path.home()))
+    home = Path(os.environ.get("CODECAIRN_HOME", Path.home())).resolve()
     event = None
     config = None
     version = "unknown"
@@ -267,14 +270,24 @@ def run_hook(client: HookClient, raw: bytes) -> HookReceipt:
         config = resolve_runtime_config(start=event.cwd)
         if event.cwd.is_relative_to(config.runtime_root):
             outcome = "noop"
-        elif not event.source_path.is_file():
-            raise ValueError("source_unavailable")
         else:
+            source_root = history_source_root(home, client)
+            try:
+                scan = read_import_scan(event.source_path, source_root=source_root, checkpoint=None)
+                trace = SessionImporter().from_scan(scan)
+            except (OSError, TraceImportError) as error:
+                raise ValueError("source_unavailable") from error
+            if trace.provider != client or not source_matches_repository(
+                client, scan.records, expected_common_dir=discover_repository(event.cwd).common_dir
+            ):
+                raise ValueError("source_unavailable")
             imported = create_application(config.runtime_root, repo_key=config.repo_key).import_session(
                 event.source_path,
                 repo_key=config.repo_key,
+                source_root=source_root,
                 index=False,
                 boundary_kind=("claude_session_end" if client == "claude" else "codex_stop"),
+                expected_source_sha256=trace.source_sha256,
             )
             outcome = "imported" if imported.result.created_memory_count else "noop"
     except Exception as error:

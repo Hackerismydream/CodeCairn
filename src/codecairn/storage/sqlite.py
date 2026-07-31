@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
+import stat
 from collections.abc import Callable, Iterator
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import asdict
 from pathlib import Path
-from typing import cast
+from typing import Literal, cast
 
 from codecairn.memory.capture import (
     CaptureCheckpoint,
@@ -62,6 +64,39 @@ from codecairn.memory.semantic import (
 )
 
 _SCHEMA_REVISION = "codecairn-v01-5"
+
+
+class SQLiteImportProgress:
+    """Read import cursors without initializing or mutating runtime state."""
+
+    def __init__(self, *, path: Path, repo_key: str) -> None:
+        self._path = path
+        self._repo_key = repo_key
+
+    def __call__(self, *, source_path: Path, raw_event_count: int) -> Literal["new", "incremental", "already_imported"]:
+        try:
+            metadata = self._path.lstat()
+        except FileNotFoundError:
+            return "new"
+        except OSError as error:
+            raise LegacyRootUnsupported("Unsupported SQLite state; use a fresh root and re-import") from error
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+            raise LegacyRootUnsupported("Unsupported SQLite state; use a fresh root and re-import")
+        try:
+            with closing(sqlite3.connect(f"{self._path.absolute().as_uri()}?mode=ro&immutable=1", uri=True)) as connection:
+                connection.execute("PRAGMA query_only = ON")
+                schema = connection.execute("SELECT value FROM codecairn_meta WHERE key = 'schema_revision'").fetchone()
+                if schema is None or schema[0] != _SCHEMA_REVISION:
+                    raise LegacyRootUnsupported("Unsupported SQLite schema; use a fresh root and re-import")
+                row = connection.execute(
+                    "SELECT committed_raw_event_index FROM imports WHERE repo_key = ? AND source_path = ?",
+                    (self._repo_key, str(Path(os.path.abspath(source_path)))),
+                ).fetchone()
+        except sqlite3.DatabaseError as error:
+            raise LegacyRootUnsupported("Unsupported SQLite schema; use a fresh root and re-import") from error
+        if row is None:
+            return "new"
+        return "already_imported" if int(row[0]) >= raw_event_count - 1 else "incremental"
 
 
 class SQLiteState:

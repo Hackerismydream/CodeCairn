@@ -14,11 +14,13 @@ truth, historical decisions, and generated evidence.
    first joint result, and exact-pair rerun boundary.
 6. [`v0.3/hub-acceptance.md`](v0.3/hub-acceptance.md) — implemented Hub
    acceptance infrastructure and the still-pending formal evidence.
-7. [`roadmap.md`](roadmap.md) — product sequence from v0.1 through v2.0.
-8. [`plan/README.md`](plan/README.md) — delivery state and agent-ready work.
-9. [`runtime/operations.md`](runtime/operations.md) — public behavior that
+7. [`v0.4/onboarding.md`](v0.4/onboarding.md) — accepted local Onboarding
+   product, Interface, support, retention, and acceptance contract.
+8. [`roadmap.md`](roadmap.md) — product sequence from v0.1 through v2.0.
+9. [`plan/README.md`](plan/README.md) — delivery state and agent-ready work.
+10. [`runtime/operations.md`](runtime/operations.md) — public behavior that
    exists on current `main`.
-10. [`runtime/installation.md`](runtime/installation.md) — persistent install
+11. [`runtime/installation.md`](runtime/installation.md) — persistent install
    and one-client acceptance path.
 
 ## Authority
@@ -33,6 +35,7 @@ truth, historical decisions, and generated evidence.
 | What commands work on current `main`? | [`runtime/operations.md`](runtime/operations.md) |
 | What is the accepted Pico integration target? | [`v0.2/README.md`](v0.2/README.md) and [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) |
 | What proves the version 0.3 Hub outcome? | [`v0.3/hub-acceptance.md`](v0.3/hub-acceptance.md) and [`adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md`](adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md) |
+| What is the accepted version 0.4 Onboarding contract? | [`v0.4/onboarding.md`](v0.4/onboarding.md) and [`adr/0063-v04-onboarding-is-a-separate-consent-bound-interface.md`](adr/0063-v04-onboarding-is-a-separate-consent-bound-interface.md) |
 | Where is the product going next? | [`roadmap.md`](roadmap.md) |
 | What should an implementation agent do next? | [`plan/README.md`](plan/README.md) and [`plan/tasks/`](plan/tasks/) |
 | Why did a design change? | [`adr/README.md`](adr/README.md) |
@@ -100,6 +103,19 @@ implemented. No checked-in result yet proves the required Pico process run
 against the declared configured LLM, five eligible first-time target learners,
 human blind reviews, or an installed Hub release artifact.
 
+## Version 0.4 local onboarding
+
+| Document | Purpose |
+|---|---|
+| [`v0.4/onboarding.md`](v0.4/onboarding.md) | Preview/Apply Interface, user journey, per-client support matrix, retention disclosure, safety contract, and implementation/formal acceptance gates |
+| [`v0.4/implementation-plan.md`](v0.4/implementation-plan.md) | Ordered implementation slices, invariants, per-slice checks, and the candidate-versus-formal evidence boundary |
+| [`adr/0063-v04-onboarding-is-a-separate-consent-bound-interface.md`](adr/0063-v04-onboarding-is-a-separate-consent-bound-interface.md) | Decision to keep Onboarding separate from Hub Read and bind every write to an exact no-write Preview |
+| [`../contracts/hub-onboarding/v1.example.json`](../contracts/hub-onboarding/v1.example.json) | Non-live contract example; never evidence of a local scan or import |
+
+ADR 0063 is an accepted target. Passing implementation tests may establish an
+implementation candidate, but no checked-in artifact currently proves formal
+installed-product acceptance with real Codex, Claude Code, and Pico evidence.
+
 ## Runtime and operations
 
 | Document | Purpose |
@@ -149,5 +165,6 @@ contract.
 | [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md)–[`0059`](adr/0059-pico-adapter-targets-one-frozen-host-contract.md) | Post-v0.1 Pico Memory Backend integration, additive source budget, and frozen host contract |
 | [`0060`](adr/0060-recall-may-abstain.md) | Recall relevance admission and explicit abstention |
 | [`0061`](adr/0061-read-only-hub-uses-a-foreground-loopback-presentation.md)–[`0062`](adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md) | Read-only Hub presentation and version 0.3 machine plus blind-human acceptance |
+| [`0063`](adr/0063-v04-onboarding-is-a-separate-consent-bound-interface.md) | Version 0.4 fixed-source, no-write Preview and consent-bound Apply |
 
 Use [`adr/README.md`](adr/README.md) for status and supersession rules.

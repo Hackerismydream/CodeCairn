@@ -5,7 +5,7 @@ import { parseHubView } from "../lib/hub/navigation";
 export const metadata: Metadata = {
   title: "CodeCairn 记忆中心",
   description:
-    "CodeCairn 本地 Memory OS 的只读记忆中心。",
+    "CodeCairn 本地 Memory OS 的记忆查看与接入中心。",
 };
 
 export default async function Home({
@@ -18,5 +18,5 @@ export default async function Home({
   const params = await searchParams;
   const initialView = parseHubView(params.view);
 
-  return <HubShell initialView={initialView} />;
+  return <HubShell key={initialView} initialView={initialView} />;
 }

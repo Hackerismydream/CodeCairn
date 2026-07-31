@@ -120,9 +120,14 @@ class CodeCairnApplication:
         source_root: Path | None = None,
         index: bool = True,
         boundary_kind: BoundaryKind | None = None,
+        expected_source_sha256: str | None = None,
     ) -> ImportOutcome:
         result = self._memory_runtime().import_session(
-            source_path, repo_key=repo_key, source_root=source_root, boundary_kind=boundary_kind
+            source_path,
+            repo_key=repo_key,
+            source_root=source_root,
+            boundary_kind=boundary_kind,
+            expected_source_sha256=expected_source_sha256,
         )
         return ImportOutcome(result=result, index=self._drain_index(requested=index))
 

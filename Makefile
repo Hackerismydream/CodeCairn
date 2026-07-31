@@ -1,7 +1,7 @@
 .PHONY: acceptance-v03-check artifact-check artifact-repro check docs-check eval-coding-ab eval-locomo-200 eval-locomo-full eval-retrieval eval-scale eval-smoke evidence-verify format hub-api-check hub-check hub-contract-check hub-dev hub-lifecycle-check hub-start hub-ui-check imports installed-smoke lint source-budget test typecheck
 
 EVAL_OUTPUT_ROOT ?= benchmark_results
-SOURCE_BUDGET_STAGE ?= v03-acceptance
+SOURCE_BUDGET_STAGE ?= v04-onboarding
 
 format:
 	uv run ruff check --fix .

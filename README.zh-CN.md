@@ -260,9 +260,10 @@ CI 还会检查代码规模预算、架构依赖规则、类型、Artifact 内�
 ## 版本与路线图
 
 CodeCairn 0.1 是完整的 Coding-first Memory OS 基础；0.2 增加 Pico 集成与可审计的召回
-拒答。后续顺序是：0.3 只读 Memory Hub 与架构减重、0.4 人类记忆治理、0.5 本地 Daemon、
-0.6 Case/Skill 演进，以及 1.0 稳定的本地 Memory OS。远程协作放在本地语义和存储契约稳定
-之后。详见[`完整路线图`](docs/roadmap.md)。
+拒答。后续顺序是：0.3 只读 Memory Hub 与架构减重、0.4 把用户拥有的 Codex/Claude Code
+历史带入本地 Memory OS、0.5 人类记忆治理、0.6 本地 Daemon、0.7 Case/Skill 演进，以及
+1.0 稳定的本地 Memory OS。远程协作放在本地语义和存储契约稳定之后。详见
+[`完整路线图`](docs/roadmap.md)。
 
 仓库中的[`本地只读 Hub`](apps/hub-web/README.md)已经通过前台 Loopback Adapter
 接入真实 `CodeCairnApplication`。运行 `make hub-dev` 可查看当前仓库的记忆、真实召回解释
@@ -274,6 +275,14 @@ CodeCairn 0.1 是完整的 Coding-first Memory OS 基础；0.2 增加 Pico 集�
 Hub 发布产物与原始证据 Collector、通过真实 Pico 进程调用已声明配置的 LLM、5 名符合条件
 的首次目标学习者、独立人类盲审，以及最终封存并离线复验的证据包。当前 Hub 也尚未打包进
 根目录的发布产物，并且仍不是 Daemon、远程 API 或记忆治理界面。
+
+已经接受的[`0.4 版本 Onboarding 契约`](docs/v0.4/onboarding.md)不会修改 Hub Read
+Interface，而是增加独立的本地 Preview/Apply Interface。它固定 Codex 与 Claude Code
+的扫描来源，只接纳精确匹配当前仓库的会话，使用不透明来源 ID，保证 Preview 不写入，并把
+导入选择、保留说明和显式 Hook 安装绑定到 Consent Token。Pico 仍然只支持接入后的持续采集，
+Guided Demo 与真实用户空间隔离；0.4 任何使用 DeepSeek 的路径都只能使用精确的
+`deepseek-v4-flash`。实现与测试通过只能称为候选版本；目前没有已提交证据证明 0.4 已完成
+正式的安装产物验收。
 
 ## 许可证
 

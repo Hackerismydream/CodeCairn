@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministically enforce CodeCairn's physical Python source budget."""
+"""Deterministically enforce CodeCairn's maintained physical source budget."""
 
 from __future__ import annotations
 
@@ -24,6 +24,7 @@ STAGE_LIMITS = {
     "v02-001": {"core": 10_625, "total": 14_900},
     "v02-002": {"core": 11_000, "total": 15_300},
     "v03-acceptance": {"core": 16_200, "total": 25_000},
+    "v04-onboarding": {"core": 18_300, "total": 27_500},
     "release": {"core": 9_700, "total": 14_100},
 }
 
@@ -32,6 +33,7 @@ POST_V01_INTERNAL_TARGETS = {
     "v02-001": STAGE_LIMITS["v02-001"],
     "v02-002": STAGE_LIMITS["v02-002"],
     "v03-acceptance": STAGE_LIMITS["v03-acceptance"],
+    "v04-onboarding": STAGE_LIMITS["v04-onboarding"],
 }
 
 
@@ -69,7 +71,7 @@ def build_report(root: Path, *, stage: str) -> SourceBudgetReport:
     included_roots: tuple[Path, ...] = (source_root,)
     evaluation_roots: tuple[Path, ...] = (source_root / "evaluation",)
     included_suffixes = {".py"}
-    if stage == "v03-acceptance":
+    if stage in {"v03-acceptance", "v04-onboarding"}:
         hub_api_root = repository_root / "apps" / "hub-api" / "src" / "codecairn_hub_api"
         hub_web_roots = (
             repository_root / "apps" / "hub-web" / "app",

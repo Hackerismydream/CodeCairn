@@ -2,15 +2,20 @@
 
 ## Product surface
 
-The read-only Hub has three primary views:
+The Hub has four primary views:
 
 - Memories lists durable records and inspects content, evidence, and evolution.
+- Onboarding discovers repository-owned Codex and Claude Code history, previews
+  retention and writes, and applies only an explicit consent token. Pico is a
+  manual Memory Backend setup, not a historical scanner.
 - Recall runs a real task and explains its admitted or abstained
   `RecallResult`.
 - System renders a point-in-time Doctor snapshot.
 
-The Hub defaults to Memories. It has no dashboard overview, product roadmap,
-account surface, remote state, or governance actions.
+The Hub defaults to Memories. Its empty namespace links to Onboarding and to a
+URL-only Guided Demo. The demo is static, visibly labeled, and isolated from
+all API calls, writes, and live statistics. The Hub has no dashboard overview,
+account surface, remote state, or general memory-governance actions.
 
 ## Visual direction
 
@@ -37,12 +42,15 @@ marketing cards, colored type tiles, and English eyebrow labels.
 
 Every button must perform one of these actions:
 
-1. navigate between Memories, Recall, and System;
+1. navigate between Memories, Onboarding, Recall, System, and the Guided Demo;
 2. filter the memory list;
 3. select one memory;
 4. switch the memory inspector tab;
 5. page a real memory list;
-6. run or retry a real read request.
+6. run or retry a real read request;
+7. select discovered history or an available capture adapter, regenerate the
+   exact write preview, give explicit consent, apply it, or rescan a failed
+   report.
 
 ## Evidence and contract rules
 
@@ -64,6 +72,13 @@ Every button must perform one of these actions:
   connection state.
 - Empty or disconnected state must remain visible; never fall back to fixture
   data.
+- Never render provider-authored retention, plan, remediation, error, path, or
+  identifier text as product copy. Validate the closed contract and map stable
+  fields to Chinese labels.
+- Only `continuous_state=available` offers capture installation. `installed`
+  is read-only, `not_detected` has no control, and Pico explains manual setup.
+- Import outcome and rebuildable index state are separate facts. A failed
+  index does not erase already-persisted memory.
 
 ## Responsive behavior
 

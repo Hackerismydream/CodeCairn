@@ -295,8 +295,9 @@ adds the Pico integration and auditable recall abstention.
 ## Roadmap
 
 The product sequence is: v0.3 read-only Memory Hub and readability pass, v0.4
-human memory governance, v0.5 local daemon, v0.6 Case and Skill evolution, and
-v1.0 stable local Memory OS. Remote collaboration follows only after the local
+local onboarding to carry owned Codex and Claude Code history, v0.5 human
+memory governance, v0.6 local daemon, v0.7 Case and Skill evolution, and v1.0
+stable local Memory OS. Remote collaboration follows only after the local
 semantic and storage contract is stable. See the
 [`maintained roadmap`](docs/roadmap.md).
 
@@ -315,6 +316,16 @@ distribution and raw collector, a real Pico process run against the declared
 configured LLM, five eligible first-time target learners, their blind human
 reviews, and a sealed verified artifact. The current Hub is not bundled in the
 root release artifacts.
+
+The accepted [`version 0.4 Onboarding contract`](docs/v0.4/onboarding.md) keeps
+the Hub Read Interface unchanged and adds a separate local Preview/Apply
+Interface. It specifies fixed Codex and Claude Code history roots, exact
+repository matching, opaque source IDs, no-write Preview, digest-bound consent,
+idempotent and partial Apply results, explicit Hook installation, Pico's
+continuous-only support, isolated Guided Demo, and exact
+`deepseek-v4-flash` use wherever a version 0.4 path selects DeepSeek. A passing
+implementation is only a candidate; no checked-in artifact currently proves
+formal installed-product version 0.4 acceptance.
 
 ## License
 
