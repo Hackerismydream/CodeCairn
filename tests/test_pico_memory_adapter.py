@@ -79,7 +79,7 @@ def _verified_outcome() -> tuple[str, dict[str, Any]]:
         "candidate_tree_sha": "c" * 40,
         "provider": "deepseek",
         "model": "deepseek/deepseek-v4-flash",
-        "observed_models": ["deepseek/deepseek-v4-flash"],
+        "observed_models": ["deepseek-v4-flash"],
         "runtime_commit": "2" * 40,
         "memory_backend": "codecairn",
         "memory_commit": "3" * 40,
@@ -342,9 +342,12 @@ def test_tool_shapes_are_normalized_without_inventing_outcome(tmp_path: Path) ->
     assert batch["events"][2] == {"call_id": "call-1", "kind": "tool_result", "text": "All tests passed."}
 
 
-def test_verified_outcome_is_structured_evidence_and_exact_retry_is_idempotent(tmp_path: Path) -> None:
+@pytest.mark.parametrize("observed_model", ("deepseek-v4-flash", "deepseek/deepseek-v4-flash"))
+def test_verified_outcome_is_structured_evidence_and_exact_retry_is_idempotent(tmp_path: Path, observed_model: str) -> None:
     backend, _, runtime = _fixture(tmp_path)
-    key, outcome = _verified_outcome()
+    _, outcome = _verified_outcome()
+    outcome["observed_models"] = [observed_model]
+    key = "coding-task-outcome:" + hashlib.sha256(canonical_json(outcome).encode()).hexdigest()
 
     async def scenario() -> None:
         await backend.start()
@@ -387,6 +390,11 @@ def test_verified_outcome_rejects_wrong_digest_failed_checks_and_reserved_store_
         failed_key = "coding-task-outcome:" + hashlib.sha256(canonical_json(failed).encode()).hexdigest()
         with pytest.raises(PicoAdapterError, match="verified_outcome_invalid"):
             await backend.store_verified_outcome(failed_key, failed)
+        mismatched_model = json.loads(json.dumps(outcome))
+        mismatched_model["observed_models"] = ["deepseek-v3.2"]
+        mismatched_model_key = "coding-task-outcome:" + hashlib.sha256(canonical_json(mismatched_model).encode()).hexdigest()
+        with pytest.raises(PicoAdapterError, match="verified_outcome_invalid"):
+            await backend.store_verified_outcome(mismatched_model_key, mismatched_model)
         incomplete = {
             "schema": "pico.coding-task.outcome.v1",
             "status": "verified",

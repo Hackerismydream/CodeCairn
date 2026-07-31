@@ -30,6 +30,11 @@ file changes, and an assistant summary. Only the recognized terminal fields
 author observed outcome and file-change evidence. The complete outcome is
 retained as untrusted payload.
 
+Provider-returned model names remain raw evidence. An observed name matches the
+configured model only when it is exact or differs solely by the configured
+provider prefix, such as `deepseek-v4-flash` for
+`deepseek/deepseek-v4-flash`.
+
 Under the journal lock, exact committed bytes are re-imported without append.
 Conflicting staged or committed bytes and unexpected extra batches fail
 closed. Ordinary `store` keeps its random batch identity and existing

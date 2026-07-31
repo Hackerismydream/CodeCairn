@@ -348,7 +348,7 @@ def _valid_verified_outcome(payload: Mapping[str, object]) -> bool:
     return (
         isinstance(observed, list)
         and bool(observed)
-        and all(model == payload["model"] for model in observed)
+        and all(isinstance(model, str) and payload["model"] in {model, f"{payload['provider']}/{model}"} for model in observed)
         and isinstance(skills, list)
         and all(
             isinstance(skill, Mapping) and set(skill) == {"id", "sha256"} and isinstance(skill["id"], str) and _hex(skill["sha256"], 64)
