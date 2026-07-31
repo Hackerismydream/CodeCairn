@@ -12,8 +12,8 @@ export const memoryTypeLabels: Record<MemoryType, string> = {
 };
 
 export const memoryStatusLabels: Record<MemoryStatus, string> = {
-  active: "有效",
-  superseded: "已替代",
+  active: "默认召回中",
+  superseded: "默认不召回",
 };
 
 export const memoryOriginLabels: Record<MemoryOrigin, string> = {
@@ -23,9 +23,9 @@ export const memoryOriginLabels: Record<MemoryOrigin, string> = {
 };
 
 export function formatTime(milliseconds: number): string {
-  if (!Number.isFinite(milliseconds) || milliseconds <= 0) return "时间未知";
+  if (!Number.isFinite(milliseconds) || milliseconds <= 0) return "源事件未提供可信时间";
   const date = new Date(milliseconds);
-  if (Number.isNaN(date.getTime())) return "时间未知";
+  if (Number.isNaN(date.getTime())) return "源事件未提供可信时间";
   return new Intl.DateTimeFormat("zh-CN", {
     year: "numeric",
     month: "2-digit",

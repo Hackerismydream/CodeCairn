@@ -48,6 +48,13 @@ Every button must perform one of these actions:
 
 - Keep `repo_key`, memory identifiers, resource URIs, status, and provenance
   visible but secondary.
+- Present recall lifecycle and event-evidence presence as separate facts.
+  `active` means that a memory participates in default recall; it does not
+  mean that the memory's content has been verified.
+- Lead source inspection with the Agent, session, observed command outcome,
+  and exit code. Keep fact identifiers and hashes in technical disclosure.
+- Name vector similarity and ranked-result score separately; never imply that
+  pending memory refinement means the current retrieval index is unfinished.
 - Present Doctor only as a snapshot, never as daemon presence.
 - Preserve `admission_trace`, `relevance` omissions, exact excerpt context, and
   renderer `codecairn/typed-excerpt-context-v2`.

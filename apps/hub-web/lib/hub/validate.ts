@@ -18,6 +18,12 @@ const MEMORY_TYPES = new Set<MemoryType>([
   "user_preference",
 ]);
 const MEMORY_STATUSES = new Set<MemoryStatus>(["active", "superseded"]);
+const PROVIDERS = new Set(["codex", "claude", "pico"]);
+const OUTCOMES = new Set(["success", "failure", "unknown"]);
+const FRESHNESS = new Set(["fresh", "semantic_pending"]);
+const SEMANTIC_STATES = new Set(["complete", "pending", "failed"]);
+const ADMISSION_REASONS = new Set(["relevant_candidate", "pinned_work_state", "no_candidates", "below_threshold"]);
+const OMISSION_REASONS = new Set(["historical_filter", "relevance", "type_cap", "limit", "token_budget"]);
 const MEMORY_ORIGINS = new Set<MemoryOrigin>([
   "capture",
   "agent_asserted",
@@ -117,7 +123,8 @@ function validateReference(value: unknown, requestId: string | null): void {
     "source_path_sha256",
     "event_sha256",
   ]) {
-    string(reference[key], requestId);
+    if (key === "provider") literal(reference[key], PROVIDERS, requestId);
+    else string(reference[key], requestId);
   }
   nonnegativeNumber(reference.source_generation, requestId);
   nonnegativeNumber(reference.event_index, requestId);
@@ -125,11 +132,15 @@ function validateReference(value: unknown, requestId: string | null): void {
 
 function validateFact(value: unknown, requestId: string | null): void {
   const fact = object(value, requestId);
+  const attributes = object(fact.attributes, requestId);
   string(fact.fact_id, requestId);
   string(fact.fact_kind, requestId);
   nullableString(fact.role, requestId);
   string(fact.value, requestId);
   validateReference(fact.reference, requestId);
+  if (fact.fact_kind === "command_result") string(attributes.command_fact_id, requestId);
+  if (fact.fact_kind === "command_result" || attributes.outcome !== undefined) literal(attributes.outcome, OUTCOMES, requestId);
+  if (attributes.exit_code !== undefined && !Number.isInteger(number(attributes.exit_code, requestId))) incompatible(requestId);
 }
 
 function validateMemory(value: unknown, requestId: string | null): void {
@@ -251,15 +262,16 @@ export function validateRecallView(
   string(sidecar.retrieval_profile, requestId);
   number(sidecar.source_cursor, requestId);
   number(sidecar.index_cursor, requestId);
-  string(sidecar.semantic_state, requestId);
-  string(sidecar.freshness, requestId);
+  const semanticState = literal(sidecar.semantic_state, SEMANTIC_STATES, requestId);
+  const freshness = literal(sidecar.freshness, FRESHNESS, requestId);
+  if ((semanticState === "complete") !== (freshness === "fresh")) incompatible(requestId);
   for (const candidate of array(sidecar.ranked, requestId)) {
     validateRankedRecall(candidate, requestId);
   }
   for (const omissionValue of array(sidecar.omissions, requestId)) {
     const omission = object(omissionValue, requestId);
     string(omission.memory_id, requestId);
-    string(omission.reason, requestId);
+    literal(omission.reason, OMISSION_REASONS, requestId);
   }
   if (sidecar.admission_trace !== null) {
     const admission = object(sidecar.admission_trace, requestId);
@@ -267,7 +279,7 @@ export function validateRecallView(
     if (admission.outcome !== "admitted" && admission.outcome !== "abstained") {
       incompatible(requestId);
     }
-    string(admission.reason, requestId);
+    literal(admission.reason, ADMISSION_REASONS, requestId);
     number(admission.vector_threshold, requestId);
     if (admission.max_vector_score !== null) {
       number(admission.max_vector_score, requestId);

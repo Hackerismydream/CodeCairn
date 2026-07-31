@@ -247,7 +247,7 @@ export default function MemoriesView({
                 ))}
               </div>
               <label>
-                状态
+                召回状态
                 <select
                   value={statusFilter}
                   disabled={loading || selecting}
@@ -257,8 +257,8 @@ export default function MemoriesView({
                   }}
                 >
                   <option value="all">全部</option>
-                  <option value="active">有效</option>
-                  <option value="superseded">已替代</option>
+                  <option value="active">默认召回中</option>
+                  <option value="superseded">默认不召回</option>
                 </select>
               </label>
             </div>
@@ -266,7 +266,7 @@ export default function MemoriesView({
               <span>记忆</span>
               <span>类型</span>
               <span>创建时间</span>
-              <span>状态</span>
+              <span>召回状态</span>
             </div>
             <div className="memory-table">
               {loading && !data ? (
