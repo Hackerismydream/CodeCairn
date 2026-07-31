@@ -116,6 +116,7 @@ human blind reviews, or an installed Hub release artifact.
 | Artifact | Purpose |
 |---|---|
 | [`workspace.md`](workspace.md) | Monorepo applications, contracts, package ownership, and dependency direction |
+| [`plans/portable-coding-memory-product-thesis.md`](plans/portable-coding-memory-product-thesis.md) | Working conversation record and evidence-labeled EverOS/OpenViking product research; not an accepted contract |
 | [`../apps/hub-web/README.md`](../apps/hub-web/README.md) | Live local Hub behavior, commands, and explicit read-only boundary |
 
 ## Evaluation and evidence
