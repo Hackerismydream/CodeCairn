@@ -24,6 +24,7 @@ COMMANDS = (
     ("uv", "run", "codecairn", "namespace", "export", "--help"),
     ("uv", "run", "codecairn", "namespace", "reset", "--help"),
     ("uv", "run", "--package", "codecairn-hub-api", "codecairn-hub-api", "--help"),
+    ("uv", "run", "--package", "codecairn-v03-acceptance", "codecairn-v03-acceptance", "--help"),
     ("make", "eval-locomo-200", "HELP=1"),
     ("make", "eval-locomo-full", "HELP=1"),
     ("make", "eval-coding-ab", "HELP=1"),

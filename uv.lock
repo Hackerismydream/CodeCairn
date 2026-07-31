@@ -6,6 +6,7 @@ requires-python = "==3.12.*"
 members = [
     "codecairn",
     "codecairn-hub-api",
+    "codecairn-v03-acceptance",
 ]
 
 [[package]]
@@ -176,6 +177,23 @@ requires-dist = [
     { name = "codecairn", editable = "." },
     { name = "fastapi", specifier = ">=0.139,<0.140" },
     { name = "uvicorn", specifier = ">=0.51,<0.52" },
+]
+
+[[package]]
+name = "codecairn-v03-acceptance"
+version = "0.1.0"
+source = { editable = "tools/v03-acceptance" }
+dependencies = [
+    { name = "codecairn" },
+    { name = "codecairn-hub-api" },
+    { name = "typer" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "codecairn", editable = "." },
+    { name = "codecairn-hub-api", editable = "apps/hub-api" },
+    { name = "typer", specifier = ">=0.15,<1.0" },
 ]
 
 [[package]]

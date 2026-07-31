@@ -266,8 +266,14 @@ CodeCairn 0.1 是完整的 Coding-first Memory OS 基础；0.2 增加 Pico 集�
 
 仓库中的[`本地只读 Hub`](apps/hub-web/README.md)已经通过前台 Loopback Adapter
 接入真实 `CodeCairnApplication`。运行 `make hub-dev` 可查看当前仓库的记忆、真实召回解释
-和 Doctor 快照。它仍不是 Daemon、远程 API 或记忆治理界面；0.3 的非开发者理解验收信号
-仍需单独完成。当前 Hub 只支持从源码仓库运行，尚未打包进根目录的发布产物。
+和 Doctor 快照。[`0.3 版本验收基础设施`](docs/v0.3/hub-acceptance.md)已经冻结重试策略场景，
+通过 CodeCairn 公共命令与 Hub Read 检查 Pico 跨新进程续接，把中文参与者回答绑定到候选版本
+与页面快照，并要求独立的人类盲审和可离线验证的封存证据包；它不使用 LLM Judge。
+
+这还不是已经完成的 0.3 版本验收。源码模式 Pilot 不能获得发布资格；正式验收仍缺少可安装的
+Hub 发布产物与原始证据 Collector、通过真实 Pico 进程调用已声明配置的 LLM、5 名符合条件
+的首次目标学习者、独立人类盲审，以及最终封存并离线复验的证据包。当前 Hub 也尚未打包进
+根目录的发布产物，并且仍不是 Daemon、远程 API 或记忆治理界面。
 
 ## 许可证
 

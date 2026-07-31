@@ -25,6 +25,7 @@ with an ineligible positive claim; it is not relabeled as release evidence.
 | Distribution | `uv tool install` | Installs curated MIT-licensed wheel entrypoints into an isolated persistent tool environment |
 | Pico plugin | `memory.backend = "codecairn"` | Installed discovery exposes one repository-bound MemoryBackend; Pico selects it as the current long-term memory backend |
 | Read-only Hub | `make hub-dev` | Runs the Chinese Memories, Recall, and System views against one foreground loopback adapter bound to the current repository |
+| Hub acceptance verifier | `codecairn-v03-acceptance verify` | Recomputes one sealed local campaign without provider credentials; no formal campaign has completed |
 
 ## Capture lifecycle
 
@@ -116,6 +117,48 @@ operation. Closing the foreground command closes both processes.
 
 The current Hub is source-checkout-only and is not bundled in the root wheel or
 sdist.
+
+Automated local callers may run the launcher directly with
+`--ready-file PATH`. The launcher rejects an existing path and writes the
+exclusive mode-`0600` receipt only after both child services are responsive:
+
+```bash
+uv run python scripts/run_hub.py \
+  --repository /path/to/bound/repository \
+  --ready-file /absolute/private/path/hub-ready.json
+```
+
+The receipt exposes the loopback origin, selected ports, launcher PID, and
+child process-group identities but not the random session token. It is a
+readiness and cleanup receipt for the same foreground Host. It does not keep
+the Hub running after the launcher exits.
+
+## Version 0.3 Hub acceptance infrastructure
+
+The `codecairn-v03-acceptance` workspace command freezes an exact CodeCairn and
+Pico candidate, derives strict machine observations, collects digest-bound
+Chinese participant answers and separate human reviews, seals the artifact,
+and recomputes its verdict offline:
+
+```bash
+uv run --package codecairn-v03-acceptance \
+  codecairn-v03-acceptance --help
+```
+
+CodeCairn owns this campaign; Pico is an invoked Runtime adapter. The frozen
+scenario changes a retry value from 2 to 4, verifies the task externally, and
+requires a distinct Pico process to consume the captured memory. Public
+`codecairn list` and `codecairn recall` output establish capture and recall;
+the Hub adapter reads Memories, Recall, and System; a scenario-seeded
+Supersession makes lifecycle visible.
+
+This is acceptance infrastructure, not a completed acceptance result. A
+source-checkout pilot cannot become release-eligible, and the formal path still
+requires an installed Hub distribution and raw collector, a real Pico process
+run against the declared configured LLM, five eligible first-time target
+learners, separate human blind review, and a sealed offline-verified bundle.
+The exact protocol and commands are in
+[`../v0.3/hub-acceptance.md`](../v0.3/hub-acceptance.md).
 
 ## MCP
 

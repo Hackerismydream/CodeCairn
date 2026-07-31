@@ -9,16 +9,19 @@ import {
 import type { MemoriesView } from "../../../lib/hub/types";
 
 type InspectorTab = "content" | "source" | "evolution";
+const INSPECTOR_TABS = [["content", "内容"], ["source", "来源"], ["evolution", "演化"]] as const;
 
-export default function MemoryInspector({
-  selected,
-}: {
-  selected: NonNullable<MemoriesView["selected"]>;
-}) {
+export default function MemoryInspector({ selected }: { selected: NonNullable<MemoriesView["selected"]> }) {
   const [tab, setTab] = useState<InspectorTab>("content");
   const { detail, history } = selected;
   const memory = detail.memory;
   const statuses = new Map(history.statuses);
+  const definitions = [
+    ["来源方式", memoryOriginLabels[memory.origin]],
+    ["分类", memory.category],
+    ["记忆 ID", memory.memory_id],
+    ["任务片段", memory.episode_id ?? "无"],
+  ] as const;
 
   return (
     <aside className="memory-inspector" aria-label="记忆详情">
@@ -27,9 +30,7 @@ export default function MemoryInspector({
           <code>{memory.memory_id.slice(0, 16)}</code>
           <small>{memoryTypeLabels[memory.memory_type]}</small>
         </span>
-        <span
-          className={`memory-status memory-status-${detail.status}`}
-        >
+        <span className={`memory-status memory-status-${detail.status}`}>
           {memoryStatusLabels[detail.status]}
         </span>
         <h2>{memory.title}</h2>
@@ -37,13 +38,7 @@ export default function MemoryInspector({
       </header>
 
       <div className="inspector-tabs" role="tablist">
-        {(
-          [
-            ["content", "内容"],
-            ["source", "来源"],
-            ["evolution", "演化"],
-          ] as const
-        ).map(([key, label]) => (
+        {INSPECTOR_TABS.map(([key, label]) => (
           <button
             key={key}
             type="button"
@@ -61,22 +56,12 @@ export default function MemoryInspector({
         <section className="inspector-section" role="tabpanel">
           <p className="memory-content">{memory.content}</p>
           <dl className="memory-definition">
-            <div>
-              <dt>来源方式</dt>
-              <dd>{memoryOriginLabels[memory.origin]}</dd>
-            </div>
-            <div>
-              <dt>分类</dt>
-              <dd>{memory.category}</dd>
-            </div>
-            <div>
-              <dt>记忆 ID</dt>
-              <dd>{memory.memory_id}</dd>
-            </div>
-            <div>
-              <dt>任务片段</dt>
-              <dd>{memory.episode_id ?? "无"}</dd>
-            </div>
+            {definitions.map(([term, value]) => (
+              <div key={term}>
+                <dt>{term}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
           </dl>
           <div className="payload-block">
             <h3>结构化内容</h3>
@@ -100,13 +85,8 @@ export default function MemoryInspector({
           </div>
         </section>
       ) : tab === "source" ? (
-        <section
-          className="inspector-section evidence-list"
-          role="tabpanel"
-        >
-          <p className="inspector-explainer">
-            证据事实由规范化事件确定性生成；模型不能编造这些字段。
-          </p>
+        <section className="inspector-section evidence-list" role="tabpanel">
+          <p className="inspector-explainer">证据事实由规范化事件确定性生成；模型不能编造这些字段。</p>
           {memory.facts.length ? (
             memory.facts.map((fact, index) => (
               <article className="evidence-item" key={fact.fact_id}>
@@ -139,10 +119,8 @@ export default function MemoryInspector({
           )}
         </section>
       ) : (
-        <section
-          className="inspector-section evolution-list"
-          role="tabpanel"
-        >
+        <section className="inspector-section evolution-list" role="tabpanel">
+          <p className="inspector-explainer">已替代记忆会保留在历史中，但不会参与默认召回；有效记忆会继续参与。</p>
           {history.memories.map((revision) => (
             <article
               className={`evolution-memory ${
@@ -164,8 +142,12 @@ export default function MemoryInspector({
               <small>{formatTime(record.created_at_ms)}</small>
               <p>{record.reason}</p>
               <code>
-                {record.relation_kind} · {record.proposer}
+                {record.predecessor_id.slice(0, 16)} →{" "}
+                {record.successor_id.slice(0, 16)}
               </code>
+              <small>
+                {record.relation_kind} · {record.proposer}
+              </small>
             </div>
           ))}
           {!history.evolutions.length ? (

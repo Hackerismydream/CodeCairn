@@ -1,4 +1,4 @@
-# Version 0.1 Evaluation
+# Evaluation and Product Acceptance
 
 CodeCairn has eight authoritative evaluation and release-gate commands:
 
@@ -111,3 +111,38 @@ aggregates, not current v0.1 behavior. Override with
 
 The release thresholds and implementation/evidence SHA relationship are in
 [`../v0.1/evaluation-and-release.md`](../v0.1/evaluation-and-release.md).
+
+## Version 0.3 Hub acceptance
+
+The Hub comprehension campaign is separate from version 0.1 benchmark scores
+and the version 0.2 paired task-effect campaign. It asks a product question:
+can an eligible first-time target learner understand one exact candidate's
+memory, provenance, recall admission, and Supersession lifecycle?
+
+The checked-in infrastructure has two joined gates:
+
+1. a machine gate across installed Pico, public CodeCairn list/recall evidence,
+   a fresh Pico process, all three Hub views, and scenario-seeded
+   Supersession; and
+2. four digest-bound answers from each of five eligible learners, scored by a
+   separate human blind reviewer without an LLM judge.
+
+Offline implementation checks are:
+
+```bash
+make acceptance-v03-check
+```
+
+They validate adapters, schemas, questionnaire behavior, reducer thresholds,
+sealing, and offline verification. They do not run Pico or any configured
+LLM/provider, recruit participants, or produce a formal campaign result.
+
+A source-checkout campaign may prove the technical machine gate but is
+categorically not release-eligible. Formal release still requires an installed
+Hub artifact and raw collector, a real Pico process run against the declared
+configured LLM, all five eligible participants, separate human blind reviews,
+and a sealed bundle whose inventory and verdict recompute offline. No current
+checked-in artifact proves those events occurred.
+
+See [`../v0.3/hub-acceptance.md`](../v0.3/hub-acceptance.md) for the frozen
+scenario, operator commands, verdict meanings, and current evidence boundary.

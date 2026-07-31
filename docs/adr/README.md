@@ -103,7 +103,7 @@ limits:
 - ADR 0056 separates LoCoMo pressure latency from the product retrieval
   latency gate and records the v0.1 optimization stop band.
 
-### Post-v0.1 Pico integration and recall admission
+### Post-v0.1 Pico integration, recall admission, and Hub acceptance
 
 ADR 0057 accepts CodeCairn as Pico's direct long-term Memory Backend. It adds a
 CodeCairn-owned Pico Source Journal, provider `pico` importer, and installed
@@ -126,7 +126,18 @@ page.
 
 ADR 0061 adds a foreground loopback presentation for the concrete read-only Hub
 use case. It does not reverse ADR 0052: generic HTTP compatibility, network
-parity, remote access, and write operations remain excluded.
+parity, remote access, and write operations remain excluded. Its amendment
+adds an exclusive, private, token-free ready receipt for automated foreground
+callers without turning the launcher into a daemon.
+
+ADR 0062 makes version 0.3 promotion depend on two joined gates: exact-candidate
+machine evidence across installed Pico, public CodeCairn reads, and all three
+Hub views; then digest-bound answers from five eligible first-time target
+learners scored by separate human blind review. A source-checkout pilot can
+pass the technical machine gate but cannot promote a release. Formal acceptance
+still requires an installed Hub artifact and raw collector, a Pico process run
+against the declared configured LLM, the human study, and a sealed
+offline-verifiable bundle.
 
 Current shipped behavior is maintained in
 [`../runtime/operations.md`](../runtime/operations.md); the product sequence is

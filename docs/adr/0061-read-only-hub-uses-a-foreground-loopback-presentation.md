@@ -2,7 +2,10 @@
 
 ## Status
 
-Accepted.
+Accepted and amended.
+
+The version 0.3 acceptance work adds an optional launcher-ready receipt. It
+does not change the foreground, loopback-only product boundary.
 
 ## Context
 
@@ -55,6 +58,14 @@ missing its credential and always says whether a live check occurred.
 The launcher owns both foreground processes. Closing it closes the Hub. This is
 not the version 0.5 daemon and does not promise background availability.
 
+For an automated local caller, the launcher may receive `--ready-file PATH`.
+It rejects an existing target before starting children, waits for both the API
+and web application, and then exclusively creates a mode-`0600` JSON receipt.
+The receipt contains only the loopback web origin, selected ports, launcher
+PID, and child process-group IDs. It never contains the random session token.
+The receipt is a bounded readiness and cleanup synchronization contract, not a
+service-discovery or liveness API.
+
 ## Consequences
 
 - ADR 0052 remains correct for generic compatibility HTTP and public network
@@ -66,6 +77,8 @@ not the version 0.5 daemon and does not promise background availability.
 - This slice runs from a source checkout. Existing root wheel and sdist
   artifacts still package the Memory OS only; shipping the Hub requires a
   separate distribution and installed-smoke decision.
+- The ready receipt lets the acceptance adapter discover and reap the exact
+  foreground Hub without parsing terminal output or exposing its token.
 - Remote access, accounts, teams, authentication products, event streams,
   write operations, and HTTP parity with CLI or MCP remain out of scope.
 - A future governance Interface requires another decision. A daemon may replace

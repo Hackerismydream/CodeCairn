@@ -15,7 +15,7 @@ ordered by user-visible closure rather than by internal component count.
 
 | Version | User outcome | Core delivery | Completion signal |
 |---|---|---|---|
-| v0.3 | People can understand memory | Local read-only Hub for memory list, type, source, evidence, status, recall explanation, evolution history, and health; simplify internal compatibility and evaluation code after the UI fixes the concepts people actually need | A non-developer can answer what was remembered, where it came from, why it was recalled, and whether it is stale |
+| v0.3 | People can understand memory | Local read-only Hub for memory list, type, source, evidence, status, recall explanation, evolution history, and health; machine plus blind-human acceptance campaign | The technical gate passes, then at least four of five eligible first-time target learners can answer what was remembered, where it came from, why it was recalled, and which active memory replaced the superseded predecessor |
 | v0.4 | People can govern memory | Remember, supersede, restore, archive, conflict handling, and retry through the same application service used by CLI, MCP, and Hub | Every mutation is attributable, auditable, reversible, and does not edit SQLite or Markdown behind the service |
 | v0.5 | Memory is continuously available | Local daemon, stable local API, background queue, automatic recovery, and event stream | Agent and Hub share one state after terminal closure or process restart |
 | v0.6 | Memory compounds into capability | Aggregate Task Experiences into Cases and repeated successful patterns into Skills, with quality gates and rollback | A new task demonstrably uses a derived Case or Skill rather than only replaying an old summary |
@@ -32,5 +32,14 @@ domain behavior behind abstractions.
 
 The checked-in [`Hub application`](../apps/hub-web/README.md) now uses a
 foreground local presentation adapter and real `CodeCairnApplication` reads.
-This closes the technical browser-to-runtime seam; version 0.3 still requires
-the non-developer comprehension acceptance signal in the table above.
+The checked-in
+[`acceptance infrastructure`](v0.3/hub-acceptance.md) adds the frozen
+retry-policy scenario, public CodeCairn and fresh-process Pico evidence
+collectors, Hub adapter, participant/reviewer forms, strict reducer, sealing,
+and offline verification.
+
+This closes the implementation seams, not the version 0.3 completion signal.
+No formal artifact yet proves an installed Hub distribution and raw collector,
+the real Pico scenario against the declared configured LLM, five eligible
+first-time target learners, separate human blind reviews, and a sealed
+offline-verified bundle.

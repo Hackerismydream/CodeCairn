@@ -8,6 +8,7 @@
 __pycache__/
 *.egg-info/
 benchmark_results/
+acceptance_results/
 benchmarks/locomo/data/
 dist/
 htmlcov/

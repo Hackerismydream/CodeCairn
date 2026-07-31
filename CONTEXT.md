@@ -176,6 +176,25 @@ The loopback-only process pair that serves the Hub web application and Hub Read
 Interface for the lifetime of one terminal command. It is not a daemon and
 does not imply remote availability.
 
+**Hub Comprehension Acceptance**:
+The version 0.3 product gate that joins one exact candidate's machine-derived
+Pico continuity and Hub-read evidence with separately collected, blindly
+reviewed answers from eligible first-time target learners. A source-checkout
+machine pilot, screenshot, fixture, or unreviewed answer is not formal
+acceptance.
+
+**Hub Presentation Snapshot**:
+The machine-frozen Memories, Recall, System, and lifecycle projection that the
+live Hub must match when a participant session opens and submits. Participant
+responses bind its digest and the campaign-manifest digest so answers cannot
+be reused for another candidate.
+
+**Lifecycle Comprehension**:
+Understanding that an older Coding Memory is either `active` or `superseded`,
+that Supersession excludes the predecessor from default recall, and that the
+immutable relation identifies its active successor. Version 0.3 does not use
+time expiry as a Memory Status.
+
 ## Version 0.2 Pico integration
 
 The following terms define the implemented CodeCairn side of the version 0.2

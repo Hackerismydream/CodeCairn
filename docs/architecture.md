@@ -3,7 +3,8 @@
 Status: maintained implementation architecture. Version 0.1 is the local
 coding-first Memory OS foundation. Version 0.2 adds the installed Pico
 Integration Module and recall relevance admission. Version 0.3 adds a
-foreground read-only Hub presentation.
+foreground read-only Hub presentation plus acceptance infrastructure. The Hub
+has not yet completed its configured-LLM and blind-human campaign.
 
 ## Product boundary
 
@@ -50,6 +51,13 @@ Source + Experience              Knowledge + Evolution            Recall
 Browser -> same-origin Hub route -> foreground Hub Read Interface
                                       |
                                       +-> service use cases
+
+v0.3 acceptance runner
+  +-> installed Pico subprocess adapter
+  +-> public CodeCairn CLI collector
+  +-> foreground Hub adapter
+  +-> human questionnaire + blind review
+  +-> sealed offline-verifiable campaign artifact
 ```
 
 Provider traces are untrusted input. Model output is an untrusted
@@ -104,10 +112,12 @@ The import-linter contracts remain:
 | `evaluation` | Thin suite adapters, immutable runs, reducers, verifier | Product-only duplicate runtime |
 | `apps/hub-api` | Three local view reads, token check, error envelope, Doctor projection | Storage access, remote API, mutation |
 | `apps/hub-web` | Chinese Memories, Recall, and System views | Durable policy, fixture fallback, provider configuration |
+| `tools/v03-acceptance` | Frozen scenario, Runtime/read adapters, questionnaires, strict reducer, sealing, offline verification | Product memory policy, LLM judging, release claims without formal evidence |
 
 The complete repository workspace map is [`workspace.md`](workspace.md). ADR
 0061 defines why the foreground Hub does not restore the generic HTTP
-compatibility surface removed by ADR 0052.
+compatibility surface removed by ADR 0052. ADR 0062 defines why the Hub's
+technical seam and its product acceptance are separate.
 
 ## Pico Integration Module
 
@@ -417,6 +427,13 @@ never relabeled as a result from the version 0.1 architecture. The exact command
 and release contract is
 [`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md).
 
+Version 0.3 Hub acceptance is a separate product gate. CodeCairn owns its
+campaign while Pico is an invoked Runtime adapter. It joins machine-derived
+fresh-process and public-read evidence to digest-bound participant answers and
+separate human blind review. It has no LLM judge. A source-checkout machine
+pilot is not a formal release result; see
+[`v0.3/hub-acceptance.md`](v0.3/hub-acceptance.md).
+
 ## Readability budget
 
 At implementation baseline `954f728`, `src/codecairn` has 34,091 physical
@@ -429,6 +446,12 @@ outside `evaluation` and 16,841 inside it. Version 0.1 accepts at most:
 The budget is checked by a deterministic repository script. Generated code,
 vendored code, or moving implementation into another installable package does
 not evade it.
+
+The additive `v03-acceptance` stage counts `src/codecairn`, the Hub API, the
+Hub launcher, maintained Hub Web TypeScript/TSX/CSS sources, and the acceptance
+runner. Hub code counts as core and the acceptance runner as evaluation. ADR
+0062 sets ceilings of 16,200 core and 25,000 total physical source lines
+without changing the frozen version 0.1 or version 0.2 stages.
 
 ## Current-to-target delta
 

@@ -74,6 +74,7 @@ exclude = [
   "/.pytest_cache",
   "/.ruff_cache",
   "/.venv",
+  "/acceptance_results",
   "/benchmark_results",
   "/benchmarks",
   "/dist",
@@ -98,10 +99,10 @@ include = [
 packages = ["src/codecairn"]
 
 [tool.uv.workspace]
-members = ["apps/hub-api"]
+members = ["apps/hub-api", "tools/v03-acceptance"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "apps/hub-api/tests"]
+testpaths = ["tests", "apps/hub-api/tests", "tools/v03-acceptance/tests"]
 addopts = "-q --strict-markers"
 pythonpath = ["."]
 filterwarnings = [
@@ -118,6 +119,9 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tools/v03-acceptance/**/*.py" = ["RUF001"]
 
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false

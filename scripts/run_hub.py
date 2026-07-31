@@ -12,10 +12,14 @@ import subprocess
 import sys
 import time
 import urllib.request
+from collections.abc import Sequence
 from contextlib import suppress
 from pathlib import Path
 
+from codecairn.evaluation.artifacts import write_json_exclusive
+
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+READY_RECEIPT_CONTRACT = "codecairn.hub.launcher-ready.v1"
 
 
 class ShutdownRequested(Exception):
@@ -53,6 +57,42 @@ def available_port(preferred: int) -> int:
     raise RuntimeError("Could not reserve a loopback port")
 
 
+def cli_port(requested: int | None, *, default: int) -> int:
+    if requested is None:
+        return available_port(default)
+    if requested == 0:
+        return available_port(0)
+    try:
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", requested))
+    except (OSError, OverflowError) as error:
+        raise RuntimeError(f"Requested loopback port {requested} is unavailable") from error
+    return requested
+
+
+def available_port_other_than(excluded: int) -> int:
+    for _attempt in range(100):
+        selected = available_port(0)
+        if selected != excluded:
+            return selected
+    raise RuntimeError("Could not select distinct loopback ports for the Hub API and Web app")
+
+
+def write_ready_receipt(path: Path, *, api_port: int, web_port: int, child_process_groups: dict[str, int]) -> None:
+    write_json_exclusive(
+        path,
+        {
+            "schema_version": 1,
+            "contract": READY_RECEIPT_CONTRACT,
+            "web_origin": f"http://127.0.0.1:{web_port}",
+            "api_port": api_port,
+            "web_port": web_port,
+            "launcher_pid": os.getpid(),
+            "child_process_groups": child_process_groups,
+        },
+    )
+
+
 def wait_for(url: str, *, headers: dict[str, str] | None = None, timeout: float = 20.0) -> None:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
@@ -81,16 +121,30 @@ def terminate(processes: list[subprocess.Popen[bytes]]) -> None:
                 process.wait()
 
 
-def main() -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repository", type=Path, default=REPOSITORY_ROOT)
-    parser.add_argument("--api-port", type=int, default=0)
-    parser.add_argument("--web-port", type=int, default=3000)
+    parser.add_argument("--api-port", type=int)
+    parser.add_argument("--web-port", type=int)
+    parser.add_argument("--ready-file", type=Path)
     parser.add_argument("--production", action="store_true")
-    arguments = parser.parse_args()
+    arguments = parser.parse_args(argv)
 
-    api_port = available_port(arguments.api_port)
-    web_port = available_port(arguments.web_port)
+    if arguments.ready_file is not None and os.path.lexists(arguments.ready_file):
+        parser.error(f"Ready file already exists: {arguments.ready_file}")
+    try:
+        api_port = cli_port(arguments.api_port, default=0)
+        web_port = cli_port(arguments.web_port, default=3000)
+    except RuntimeError as error:
+        parser.error(str(error))
+    if api_port == web_port:
+        if arguments.web_port in (None, 0):
+            web_port = available_port_other_than(api_port)
+        elif arguments.api_port in (None, 0):
+            api_port = available_port_other_than(web_port)
+        else:
+            parser.error("API and Web ports must be distinct")
+
     token = secrets.token_urlsafe(32)
     environment = {**os.environ, "CODECAIRN_HUB_API_URL": f"http://127.0.0.1:{api_port}", "CODECAIRN_HUB_TOKEN": token}
     processes: list[subprocess.Popen[bytes]] = []
@@ -99,6 +153,7 @@ def main() -> int:
         api = subprocess.Popen(
             [
                 sys.executable,
+                "-I",
                 "-m",
                 "codecairn_hub_api.cli",
                 "--repository",
@@ -122,6 +177,10 @@ def main() -> int:
         )
         processes.append(web)
         wait_for(f"http://127.0.0.1:{web_port}")
+        if arguments.ready_file is not None:
+            write_ready_receipt(
+                arguments.ready_file, api_port=api_port, web_port=web_port, child_process_groups={"api": api.pid, "web": web.pid}
+            )
         print(f"CodeCairn Hub: http://127.0.0.1:{web_port}", flush=True)
 
         while all(process.poll() is None for process in processes):

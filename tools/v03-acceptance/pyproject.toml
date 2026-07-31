@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "codecairn-v03-acceptance"
+version = "0.1.0"
+description = "Private evidence runner for the CodeCairn v0.3 Hub acceptance protocol."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "codecairn",
+  "codecairn-hub-api",
+  "typer>=0.15,<1.0",
+]
+
+[project.scripts]
+codecairn-v03-acceptance = "codecairn_v03_acceptance.cli:main"
+
+[tool.uv.sources]
+codecairn = { workspace = true }
+codecairn-hub-api = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/codecairn_v03_acceptance"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true

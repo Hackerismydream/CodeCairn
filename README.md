@@ -302,9 +302,19 @@ semantic and storage contract is stable. See the
 
 The checked-in [`Hub application`](apps/hub-web/README.md) now connects its
 three views to a foreground local adapter and real `CodeCairnApplication`
-reads. The technical seam is implemented; the v0.3 non-developer comprehension
-acceptance signal and Hub distribution remain separate. The current Hub runs
-from a source checkout and is not bundled in the root release artifacts.
+reads. The
+[`version 0.3 acceptance infrastructure`](docs/v0.3/hub-acceptance.md) now
+freezes a retry-policy scenario, checks fresh-process Pico continuity through
+public CodeCairn and Hub reads, binds Chinese participant answers to the exact
+snapshot, requires separate human blind review, and seals an offline-verifiable
+bundle. It does not use an LLM judge.
+
+This is not a completed version 0.3 result. A source-checkout pilot cannot be
+release-eligible. Formal acceptance still requires an installed Hub
+distribution and raw collector, a real Pico process run against the declared
+configured LLM, five eligible first-time target learners, their blind human
+reviews, and a sealed verified artifact. The current Hub is not bundled in the
+root release artifacts.
 
 ## License
 

@@ -12,11 +12,13 @@ truth, historical decisions, and generated evidence.
    capture, evolution, and recall.
 5. [`v0.2/README.md`](v0.2/README.md) — implemented Pico Memory Backend,
    first joint result, and exact-pair rerun boundary.
-6. [`roadmap.md`](roadmap.md) — product sequence from v0.1 through v2.0.
-7. [`plan/README.md`](plan/README.md) — delivery state and agent-ready work.
-8. [`runtime/operations.md`](runtime/operations.md) — public behavior that
+6. [`v0.3/hub-acceptance.md`](v0.3/hub-acceptance.md) — implemented Hub
+   acceptance infrastructure and the still-pending formal evidence.
+7. [`roadmap.md`](roadmap.md) — product sequence from v0.1 through v2.0.
+8. [`plan/README.md`](plan/README.md) — delivery state and agent-ready work.
+9. [`runtime/operations.md`](runtime/operations.md) — public behavior that
    exists on current `main`.
-9. [`runtime/installation.md`](runtime/installation.md) — persistent install
+10. [`runtime/installation.md`](runtime/installation.md) — persistent install
    and one-client acceptance path.
 
 ## Authority
@@ -30,6 +32,7 @@ truth, historical decisions, and generated evidence.
 | What is the lifecycle policy? | [`v0.1/memory-lifecycle.md`](v0.1/memory-lifecycle.md) |
 | What commands work on current `main`? | [`runtime/operations.md`](runtime/operations.md) |
 | What is the accepted Pico integration target? | [`v0.2/README.md`](v0.2/README.md) and [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) |
+| What proves the version 0.3 Hub outcome? | [`v0.3/hub-acceptance.md`](v0.3/hub-acceptance.md) and [`adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md`](adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md) |
 | Where is the product going next? | [`roadmap.md`](roadmap.md) |
 | What should an implementation agent do next? | [`plan/README.md`](plan/README.md) and [`plan/tasks/`](plan/tasks/) |
 | Why did a design change? | [`adr/README.md`](adr/README.md) |
@@ -84,6 +87,19 @@ and EverOS product-coupling removal are implemented. The first joint campaign
 completed with a positive-claim-ineligible hard-negative result. ADR 0060 is
 implemented; the current exact pair still needs a joint rerun.
 
+## Version 0.3 Hub acceptance
+
+| Document | Purpose |
+|---|---|
+| [`v0.3/hub-acceptance.md`](v0.3/hub-acceptance.md) | Machine gate, learner study, artifact commands, verdict semantics, and remaining formal gates |
+| [`adr/0061-read-only-hub-uses-a-foreground-loopback-presentation.md`](adr/0061-read-only-hub-uses-a-foreground-loopback-presentation.md) | Foreground loopback Hub and optional token-free ready receipt |
+| [`adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md`](adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md) | Decision to require joined technical and blindly reviewed human evidence |
+
+The protocol, adapters, questionnaires, reducer, seal, and offline verifier are
+implemented. No checked-in result yet proves the required Pico process run
+against the declared configured LLM, five eligible first-time target learners,
+human blind reviews, or an installed Hub release artifact.
+
 ## Runtime and operations
 
 | Document | Purpose |
@@ -107,6 +123,7 @@ implemented; the current exact pair still needs a joint rerun.
 | Document | Purpose |
 |---|---|
 | [`evaluation/README.md`](evaluation/README.md) | Current suites, artifact truth, known limitations |
+| [`v0.3/hub-acceptance.md`](v0.3/hub-acceptance.md) | Separate version 0.3 product acceptance protocol and evidence boundary |
 | [`v0.1/evaluation-and-release.md`](v0.1/evaluation-and-release.md) | Target release commands and thresholds |
 | [`v0.1/candidate-evaluation-f2358a7.md`](v0.1/candidate-evaluation-f2358a7.md) | Current candidate-bound positive and negative results |
 | [`v0.1/candidate-evaluation-646449b.md`](v0.1/candidate-evaluation-646449b.md) | Historical failed-candidate results |
@@ -130,5 +147,6 @@ contract.
 | [`0043`](adr/0043-memory-capture-does-not-require-verification.md)–[`0056`](adr/0056-locomo-pressure-latency-is-not-product-latency.md) | Version 0.1 product, lifecycle, surfaces, source budget, and measurement limits |
 | [`0057`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md)–[`0059`](adr/0059-pico-adapter-targets-one-frozen-host-contract.md) | Post-v0.1 Pico Memory Backend integration, additive source budget, and frozen host contract |
 | [`0060`](adr/0060-recall-may-abstain.md) | Recall relevance admission and explicit abstention |
+| [`0061`](adr/0061-read-only-hub-uses-a-foreground-loopback-presentation.md)–[`0062`](adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md) | Read-only Hub presentation and version 0.3 machine plus blind-human acceptance |
 
 Use [`adr/README.md`](adr/README.md) for status and supersession rules.
