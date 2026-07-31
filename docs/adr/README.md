@@ -128,6 +128,11 @@ ADR 0061 adds a foreground loopback presentation for the concrete read-only Hub
 use case. It does not reverse ADR 0052: generic HTTP compatibility, network
 parity, remote access, and write operations remain excluded.
 
+ADR 0062 adds a narrow, caller-keyed Verified Outcome Delivery operation for
+Pico Coding Tasks. It preserves ordinary `store` semantics, converts only
+structured terminal observations into outcome evidence, and adds the bounded
+`v02-004` source stage.
+
 Current shipped behavior is maintained in
 [`../runtime/operations.md`](../runtime/operations.md); the product sequence is
 maintained in [`../roadmap.md`](../roadmap.md).

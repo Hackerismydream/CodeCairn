@@ -455,6 +455,7 @@ delivery contract.
 |---|---|---|
 | Provider `pico` and append-only Pico Source Journal | Implemented | `v02-001` |
 | Entry `codecairn`, manifest `codecairn-memory`, and installed adapter | Implemented | `v02-002` |
+| Caller-keyed Verified Outcome Delivery | Implemented | `v02-004`; exact retries do not append |
 | Pico default switch and EverOS product-coupling removal | Implemented in Pico | Exact Pico commit belongs in each handoff or campaign manifest |
 | Store, fresh-process recall, isolation, and paired tasks | Executed | The first campaign is measurement-valid but positive-claim-ineligible |
 | Unrelated-query abstention | Implemented | ADR 0060 and the 120-case local retrieval gate |

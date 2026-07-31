@@ -63,10 +63,24 @@ class PicoSourceJournal:
         self.staged_path = self.path.with_name(f".{session_hash}.stage.jsonl")
         self._lock_name = f".{session_hash}.lock"
 
-    def commit(self, events: Sequence[Mapping[str, object]], *, importer: PicoJournalImporter[_T]) -> _T:
+    def commit(
+        self, events: Sequence[Mapping[str, object]], *, importer: PicoJournalImporter[_T], idempotency_key: str | None = None
+    ) -> _T:
         normalized_events = _canonical_events(events)
+        stable_batch_id = None
+        if idempotency_key is not None:
+            normalized_key = _identity(idempotency_key, field="idempotency_key", maximum=_MAX_IDENTITY_CHARS)
+            if normalized_key != self.session_id:
+                raise PicoJournalError("Pico stable batch key must match the journal session")
+            stable_batch_id = f"{_BATCH_ID_PREFIX}{hashlib.sha256(normalized_key.encode()).hexdigest()}"
         with self._locked_directory() as directory:
             if _exists(directory, self.staged_path.name):
+                if stable_batch_id is not None:
+                    expected = self._batch_line(normalized_events, batch_id=stable_batch_id, batch_ordinal=1)
+                    staged = _read_regular(directory, self.staged_path.name, maximum=MAX_PICO_BATCH_BYTES)
+                    if staged != expected:
+                        raise PicoJournalError("Pico stable batch identity conflicts with staged bytes")
+                    return self._recover_locked(importer, directory)
                 self._recover_locked(importer, directory)
             state = self._read_journal(directory)
             checkpoint = importer.import_checkpoint(self.path, repo_key=self.repo_key)
@@ -76,19 +90,20 @@ class PicoSourceJournal:
                 state = self._read_journal(directory)
             if state.trailing:
                 raise PicoJournalError("Pico journal has an unterminated record without a staged batch")
+            self._validate_header(state.records[0])
+            if stable_batch_id is not None:
+                expected = self._batch_line(normalized_events, batch_id=stable_batch_id, batch_ordinal=1)
+                if len(state.records) == 2 and state.records[1] == expected:
+                    return self._import_committed(importer, directory)
+                if len(state.records) != 1:
+                    raise PicoJournalError("Pico stable batch identity conflicts with committed bytes")
             committed_changes = checkpoint.resume_file_change_fact_count if checkpoint is not None else 0
             if committed_changes + _file_change_count(normalized_events) > MAX_PICO_SESSION_FILE_CHANGES:
                 raise PicoJournalError("Pico session file changes exceed the import limit")
             if len(state.records) >= MAX_RAW_EVENTS:
                 raise PicoJournalError("Pico journal exceeds the import event limit")
-            batch = {
-                "batch_id": f"{_BATCH_ID_PREFIX}{secrets.token_hex(32)}",
-                "batch_ordinal": max(1, len(state.records)),
-                "events": normalized_events,
-                "record_type": "batch",
-                "schema": PICO_SOURCE_SCHEMA,
-            }
-            staged = _canonical_line(batch)
+            batch_id = stable_batch_id or f"{_BATCH_ID_PREFIX}{secrets.token_hex(32)}"
+            staged = self._batch_line(normalized_events, batch_id=batch_id, batch_ordinal=max(1, len(state.records)))
             if len(staged) > MAX_PICO_BATCH_BYTES:
                 raise PicoJournalError(f"Pico batch exceeds the {MAX_PICO_BATCH_BYTES}-byte limit")
             if state.complete_bytes + len(staged) > MAX_SESSION_BYTES:
@@ -146,6 +161,12 @@ class PicoSourceJournal:
             state = self._read_journal(directory)
         self._validate_header(state.records[0])
         self._install_staged_batch(directory, state, staged=staged, staged_record=staged_record, checkpoint=checkpoint)
+        result = self._import_committed(importer, directory)
+        os.unlink(self.staged_path.name, dir_fd=directory)
+        os.fsync(directory)
+        return result
+
+    def _import_committed(self, importer: PicoJournalImporter[_T], directory: int) -> _T:
         result = importer.import_session(
             self.path, repo_key=self.repo_key, source_root=self._runtime_root, boundary_kind="pico_turn_end"
         )
@@ -153,9 +174,19 @@ class PicoSourceJournal:
         current = self._read_journal(directory)
         if committed is None or committed.committed_raw_event_index != len(current.records) - 1 or current.trailing:
             raise PicoJournalError("Pico import did not commit the complete journal")
-        os.unlink(self.staged_path.name, dir_fd=directory)
-        os.fsync(directory)
         return result
+
+    @staticmethod
+    def _batch_line(events: list[dict[str, object]], *, batch_id: str, batch_ordinal: int) -> bytes:
+        return _canonical_line(
+            {
+                "batch_id": batch_id,
+                "batch_ordinal": batch_ordinal,
+                "events": events,
+                "record_type": "batch",
+                "schema": PICO_SOURCE_SCHEMA,
+            }
+        )
 
     def _read_journal(self, directory: int) -> _JournalState:
         if not _exists(directory, self.path.name):

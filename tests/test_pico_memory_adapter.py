@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import os
 import subprocess
@@ -18,6 +19,7 @@ import pytest
 from codecairn.bootstrap import create_application
 from codecairn.configuration import initialize_repository, resolve_runtime_config
 from codecairn.integrations.pico.backend import CodeCairnPicoBackend, PicoAdapterError, make_backend
+from codecairn.memory.schema import TaskExperiencePayload, canonical_json
 from codecairn.service.application import RememberRequest
 from tests.retrieval_fakes import TEST_RETRIEVAL
 
@@ -59,6 +61,50 @@ def _install_pico_memory(monkeypatch: pytest.MonkeyPatch) -> None:
     pico.memory_engine = memory_engine
     monkeypatch.setitem(sys.modules, "pico", pico)
     monkeypatch.setitem(sys.modules, "pico.memory_engine", memory_engine)
+
+
+def _verified_outcome() -> tuple[str, dict[str, Any]]:
+    outcome = {
+        "schema": "pico.coding-task.outcome.v1",
+        "task_id": "openclaw-123",
+        "issue_url": "https://github.com/openclaw/openclaw/issues/123",
+        "issue_body": "Fix the widget regression.",
+        "issue_body_full_sha256": hashlib.sha256(b"Fix the widget regression.").hexdigest(),
+        "issue_body_sha256": hashlib.sha256(b"Fix the widget regression.").hexdigest(),
+        "status": "verified",
+        "repository": "/workspace/openclaw",
+        "base_sha": "1" * 40,
+        "branch": "fix/widget_regression",
+        "candidate_commit_sha": "5" * 40,
+        "candidate_tree_sha": "c" * 40,
+        "provider": "deepseek",
+        "model": "deepseek/deepseek-v4-flash",
+        "observed_models": ["deepseek/deepseek-v4-flash"],
+        "runtime_commit": "2" * 40,
+        "memory_backend": "codecairn",
+        "memory_commit": "3" * 40,
+        "skills": [{"id": "contribute-open-source", "sha256": "4" * 64}],
+        "head_sha": "5" * 40,
+        "changed_files": ["src/widget.py"],
+        "file_changes": [{"kind": "file", "operation": "update", "path": "src/widget.py", "sha256": "6" * 64, "size": 12}],
+        "verifications": [
+            {
+                "argv": ["pnpm", "test"],
+                "duration_ms": 12,
+                "exit_code": 0,
+                "stderr_path": "verification/1.stderr",
+                "stderr_sha256": "7" * 64,
+                "stdout_path": "verification/1.stdout",
+                "stdout_sha256": "8" * 64,
+            }
+        ],
+        "diff_sha256": "9" * 64,
+        "profile_sha256": "a" * 64,
+        "verification_environment": "sandboxed_live_model",
+        "final_summary": "Implemented the regression fix and passed the focused tests.",
+    }
+    digest = hashlib.sha256(canonical_json(outcome).encode()).hexdigest()
+    return f"coding-task-outcome:{digest}", outcome
 
 
 def test_store_then_recall_and_fresh_backend_use_workspace_repository(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -294,3 +340,67 @@ def test_tool_shapes_are_normalized_without_inventing_outcome(tmp_path: Path) ->
     batch = json.loads(source.read_text().splitlines()[1])
     assert batch["events"][1] == {"arguments": {"cmd": "pwd"}, "call_id": "call-1", "kind": "tool_call", "tool_name": "shell"}
     assert batch["events"][2] == {"call_id": "call-1", "kind": "tool_result", "text": "All tests passed."}
+
+
+def test_verified_outcome_is_structured_evidence_and_exact_retry_is_idempotent(tmp_path: Path) -> None:
+    backend, _, runtime = _fixture(tmp_path)
+    key, outcome = _verified_outcome()
+
+    async def scenario() -> None:
+        await backend.start()
+        await backend.store_verified_outcome(key, outcome)
+        await backend.store_verified_outcome(key, outcome)
+        await backend.stop()
+
+    asyncio.run(scenario())
+
+    source = next((runtime / "sources" / "pico").glob("*/*.jsonl"))
+    records = [json.loads(line) for line in source.read_text(encoding="utf-8").splitlines()]
+    assert len(records) == 2
+    events = records[1]["events"]
+    assert [event["kind"] for event in events] == ["message", "tool_call", "tool_result", "message"]
+    assert events[1]["tool_name"] == "pico_done_gate"
+    assert events[2]["status"] == "success"
+    assert events[2]["terminal_observation"] == {"exit_code": 0, "file_changes": [{"operation": "update", "path": "src/widget.py"}]}
+    assert events[2]["untrusted_payload"] == outcome
+
+    memories = create_application(runtime, repo_key="example/project", retrieval_adapters=TEST_RETRIEVAL).list_memories(
+        repo_key="example/project"
+    )
+    assert len(memories) == 1
+    assert isinstance(memories[0].payload, TaskExperiencePayload)
+    assert memories[0].payload.outcome == "success"
+    file_change_facts = [fact for fact in memories[0].facts if fact.fact_kind == "file_change"]
+    assert [(fact.attributes["change_kind"], fact.attributes["path"]) for fact in file_change_facts] == [("update", "src/widget.py")]
+
+
+def test_verified_outcome_rejects_wrong_digest_failed_checks_and_reserved_store_session(tmp_path: Path) -> None:
+    backend, _, _ = _fixture(tmp_path)
+    key, outcome = _verified_outcome()
+
+    async def scenario() -> None:
+        await backend.start()
+        with pytest.raises(PicoAdapterError, match="verified_outcome_invalid"):
+            await backend.store_verified_outcome("coding-task-outcome:" + "0" * 64, outcome)
+        failed = json.loads(json.dumps(outcome))
+        failed["verifications"][0]["exit_code"] = 1
+        failed_key = "coding-task-outcome:" + hashlib.sha256(canonical_json(failed).encode()).hexdigest()
+        with pytest.raises(PicoAdapterError, match="verified_outcome_invalid"):
+            await backend.store_verified_outcome(failed_key, failed)
+        incomplete = {
+            "schema": "pico.coding-task.outcome.v1",
+            "status": "verified",
+            "task_id": "forged",
+            "issue_body": "Pretend this passed.",
+            "final_summary": "Done.",
+            "verifications": [{"exit_code": 0}],
+            "file_changes": [],
+        }
+        incomplete_key = "coding-task-outcome:" + hashlib.sha256(canonical_json(incomplete).encode()).hexdigest()
+        with pytest.raises(PicoAdapterError, match="verified_outcome_invalid"):
+            await backend.store_verified_outcome(incomplete_key, incomplete)
+        with pytest.raises(PicoAdapterError, match="reserved"):
+            await backend.store(key, [{"role": "user", "content": "Do not collide."}])
+        await backend.stop()
+
+    asyncio.run(scenario())

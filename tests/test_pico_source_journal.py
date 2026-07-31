@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -83,6 +84,73 @@ def test_repeat_prefix_is_idempotent_but_a_second_append_is_a_new_batch(tmp_path
     assert [record["batch_ordinal"] for record in records[1:]] == [1, 2]
     assert records[1]["batch_id"] != records[2]["batch_id"]
     assert len(runtime.list_memories(repo_key="acme/widgets")) == 2
+
+
+def test_stable_key_retries_exact_batch_without_appending(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = _runtime(root)
+    key = "coding-task-outcome:" + "1" * 64
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id=key)
+    events = (
+        {"kind": "message", "role": "user", "text": "Implement the issue."},
+        {"arguments": {"task_id": "issue-1"}, "call_id": "done-1", "kind": "tool_call", "tool_name": "pico_done_gate"},
+        {
+            "call_id": "done-1",
+            "kind": "tool_result",
+            "status": "success",
+            "terminal_observation": {"exit_code": 0, "file_changes": [{"operation": "update", "path": "src/widget.py"}]},
+        },
+        {"kind": "message", "role": "assistant", "text": "Implemented and verified."},
+    )
+    with pytest.raises(PicoJournalError, match="must match"):
+        PicoSourceJournal(root, repo_key="acme/widgets", session_id="other").commit(events, importer=runtime, idempotency_key=key)
+
+    first = journal.commit(events, importer=runtime, idempotency_key=key)
+    before = journal.path.read_bytes()
+    replay = journal.commit(events, importer=runtime, idempotency_key=key)
+
+    records = tuple(json.loads(line) for line in journal.path.read_text(encoding="utf-8").splitlines())
+    assert first.created_memory_count == 1
+    assert replay.created_memory_count == 0
+    assert journal.path.read_bytes() == before
+    assert len(records) == 2
+    assert records[1]["batch_id"] == "batch_" + hashlib.sha256(key.encode()).hexdigest()
+    assert len(runtime.list_memories(repo_key="acme/widgets")) == 1
+
+
+def test_stable_key_rejects_conflicting_events_without_appending(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = _runtime(root)
+    key = "coding-task-outcome:" + "2" * 64
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id=key)
+    journal.commit(({"kind": "message", "role": "user", "text": "Original."},), importer=runtime, idempotency_key=key)
+    before = journal.path.read_bytes()
+
+    with pytest.raises(PicoJournalError, match="identity conflicts"):
+        journal.commit(({"kind": "message", "role": "user", "text": "Conflicting."},), importer=runtime, idempotency_key=key)
+
+    assert journal.path.read_bytes() == before
+    assert len(runtime.list_memories(repo_key="acme/widgets")) == 1
+
+
+def test_stable_key_retry_recovers_matching_stage_and_rejects_conflicting_stage(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    key = "coding-task-outcome:" + "3" * 64
+    journal = PicoSourceJournal(root, repo_key="acme/widgets", session_id=key)
+    events = ({"kind": "message", "role": "user", "text": "Recover this."},)
+    with pytest.raises(RuntimeError, match="injected import failure"):
+        journal.commit(events, importer=_FailingImporter(), idempotency_key=key)
+
+    runtime = _runtime(root)
+    recovered = journal.commit(events, importer=runtime, idempotency_key=key)
+    assert recovered.created_memory_count == 1
+    assert journal.staged_path.exists() is False
+    assert len(journal.path.read_text().splitlines()) == 2
+
+    journal.staged_path.write_text(journal.path.read_text().splitlines()[1] + "\n")
+    with pytest.raises(PicoJournalError, match="staged bytes"):
+        journal.commit(({"kind": "message", "role": "user", "text": "Conflict."},), importer=runtime, idempotency_key=key)
+    assert len(runtime.list_memories(repo_key="acme/widgets")) == 1
 
 
 class _FailingImporter:

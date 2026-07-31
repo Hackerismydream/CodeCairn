@@ -202,3 +202,10 @@ The installed CodeCairn Integration Module loaded from Pico entry
 Memory Backend key `codecairn`. It translates Pico's MemoryBackend Interface
 to `CodeCairnApplication` without owning memory policy.
 _Avoid_: MCP proxy, second memory runtime
+
+**Verified Outcome Delivery**:
+The optional Pico adapter operation that converts one verifier-backed Coding
+Task result into structured Pico Source Journal observations. Its canonical
+caller key makes exact retry idempotent; unrecognized result fields remain
+untrusted payload.
+_Avoid_: Verified Memory, trusted model summary

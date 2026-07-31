@@ -56,6 +56,7 @@ Version 0.2 includes:
 - normalization of Pico turn records into provider `pico` Agent Traces;
 - repository-derived Memory Namespace selection;
 - durable capture of persisted Pico after-Turn slices;
+- idempotent delivery of verifier-backed Coding Task outcomes with a stable caller key;
 - active CodeCairn recall injected through Pico's user-memory track;
 - installed, cross-process, cross-repository, and paired A/B evidence.
 
@@ -68,7 +69,7 @@ Version 0.2 does not include:
 - using MCP between Pico and CodeCairn;
 - automatic migration or deletion of existing EverOS data;
 - media understanding through the memory adapter;
-- arbitrary duplicate-write suppression without a stable caller batch identity;
+- duplicate-write suppression for ordinary `store` calls without a stable caller identity;
 - positive task-effect claims before a commit-bound paired evaluation passes.
 
 ## Ownership and dependency direction
@@ -175,6 +176,7 @@ The adapter implements the following version 0.2 behavior:
 | user-track `recall` | Call `CodeCairnApplication.recall` for the repository namespace |
 | agent-track `recall` | Return an empty result |
 | `store` | Durably append one persisted after-Turn batch, import its journal suffix, and make deterministic memory recallable |
+| `store_verified_outcome` | Validate one canonical verifier-backed result, append structured terminal evidence with its stable key, and make exact retry idempotent |
 | `feedback` | Deliberate no-op |
 | `stop` | Complete or surface adapter-owned staged journal work and close adapter resources |
 | media understanding | Unsupported by this adapter |
@@ -281,6 +283,16 @@ twice with the same content, the two calls are two batches because Pico does
 not yet provide a stable caller batch identity. Version 0.2 must not claim
 arbitrary duplicate-call idempotency.
 
+Verified Outcome Delivery is a separate optional adapter operation. Its key is
+`coding-task-outcome:<payload-sha256>` and also reserves the journal session.
+The journal derives one deterministic batch identity from that key. An exact
+retry re-imports the committed prefix without appending; the same identity with
+different bytes, an unexpected second batch, or use of the reserved session by
+ordinary `store` fails closed. The adapter authors success and file-change
+Evidence Facts only from a matched `pico_done_gate` call/result pair with exit
+code zero. Model summaries, provider identity, configuration, and other result
+fields remain untrusted payload.
+
 ## Pico Agent Trace
 
 The Pico importer recognizes `codecairn.pico.source.v1` and emits one
@@ -374,6 +386,7 @@ The following must pass through installed wheels:
   typed failures;
 - repeated import of the same committed journal prefix creates no duplicate
   Episodes or Coding Memories;
+- exact retry of one caller-keyed verified outcome appends no second batch;
 - a second independent `store` call is reported honestly as a second batch;
 - plugin discovery succeeds from a fresh environment with no source checkout
   on `PYTHONPATH`.

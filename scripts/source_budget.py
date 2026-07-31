@@ -23,11 +23,12 @@ STAGE_LIMITS = {
     "v01-008": {"core": 9_700, "total": 14_100},
     "v02-001": {"core": 10_625, "total": 14_900},
     "v02-002": {"core": 11_000, "total": 15_300},
+    "v02-004": {"core": 11_125, "total": 15_435},
     "release": {"core": 9_700, "total": 14_100},
 }
 
 INTERNAL_TARGETS = {"core": 9_700, "total": 14_100}
-V02_INTERNAL_TARGETS = {"v02-001": STAGE_LIMITS["v02-001"], "v02-002": STAGE_LIMITS["v02-002"]}
+V02_INTERNAL_TARGETS = {stage: STAGE_LIMITS[stage] for stage in ("v02-001", "v02-002", "v02-004")}
 
 
 @dataclass(frozen=True, slots=True)

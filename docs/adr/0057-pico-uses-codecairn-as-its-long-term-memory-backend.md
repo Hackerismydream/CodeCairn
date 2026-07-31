@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted post-v0.1 target. Implementation and live effect remain unverified.
+Accepted post-v0.1 target. Stable Verified Outcome Delivery is added by ADR
+0062; ordinary `store` semantics remain unchanged.
 
 ## Context
 

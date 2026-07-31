@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import importlib
 import json
 from collections.abc import Callable, Mapping, Sequence
@@ -13,7 +14,40 @@ from codecairn.bootstrap import create_application
 from codecairn.configuration import discover_repository, resolve_runtime_config
 from codecairn.integrations.pico.journal import PicoJournalImporter, PicoSourceJournal
 from codecairn.memory.config import RuntimeConfig
+from codecairn.memory.schema import SchemaInvalid, canonical_json
 from codecairn.service.application import CodeCairnApplication, ImportOutcome
+
+_VERIFIED_OUTCOME_PREFIX = "coding-task-outcome:"
+_VERIFIED_OUTCOME_FIELDS = {
+    "base_sha",
+    "branch",
+    "candidate_commit_sha",
+    "candidate_tree_sha",
+    "changed_files",
+    "diff_sha256",
+    "file_changes",
+    "final_summary",
+    "head_sha",
+    "issue_body",
+    "issue_body_full_sha256",
+    "issue_body_sha256",
+    "issue_url",
+    "memory_backend",
+    "memory_commit",
+    "model",
+    "observed_models",
+    "profile_sha256",
+    "provider",
+    "repository",
+    "runtime_commit",
+    "schema",
+    "skills",
+    "status",
+    "task_id",
+    "verification_environment",
+    "verifications",
+}
+_VERIFICATION_FIELDS = {"argv", "duration_ms", "exit_code", "stderr_path", "stderr_sha256", "stdout_path", "stdout_sha256"}
 
 
 class PicoAdapterError(RuntimeError):
@@ -98,6 +132,8 @@ class CodeCairnPicoBackend:
 
     async def store(self, session_id: str, messages: list[dict[str, Any]]) -> None:
         self._require_started()
+        if session_id.startswith(_VERIFIED_OUTCOME_PREFIX):
+            raise PicoAdapterError("codecairn_store_session_reserved", "use the verified-outcome delivery operation")
         events = _pico_events(messages)
         if not events or not any(event.get("kind") == "message" and event.get("role") == "user" for event in events):
             return
@@ -109,6 +145,21 @@ class CodeCairnPicoBackend:
         if not outcome.index.synced:
             raise PicoAdapterError("index_not_ready", "repair the CodeCairn index before retrying")
         await self._blocking("store", self._assert_ready)
+
+    async def store_verified_outcome(self, idempotency_key: str, outcome: Mapping[str, object]) -> None:
+        self._require_started()
+        events = _verified_outcome_events(idempotency_key, outcome)
+        config = self._config_required()
+        journal = PicoSourceJournal(config.runtime_root, repo_key=config.repo_key, session_id=idempotency_key)
+        imported = await self._blocking(
+            "verified_outcome",
+            lambda: journal.commit(
+                events, importer=cast(PicoJournalImporter[ImportOutcome], self._application_required()), idempotency_key=idempotency_key
+            ),
+        )
+        if not imported.index.synced:
+            raise PicoAdapterError("index_not_ready", "repair the CodeCairn index before retrying")
+        await self._blocking("verified_outcome", self._assert_ready)
 
     async def feedback(self, signals: dict[str, Any]) -> None:
         del signals
@@ -212,3 +263,130 @@ def _content(value: object) -> str:
                 text.append(cast(str, item["text"]))
         return "\n".join(text)
     return ""
+
+
+def _verified_outcome_events(idempotency_key: str, outcome: Mapping[str, object]) -> tuple[dict[str, object], ...]:
+    try:
+        if not isinstance(idempotency_key, str) or not idempotency_key.startswith(_VERIFIED_OUTCOME_PREFIX):
+            raise ValueError
+        digest = idempotency_key.removeprefix(_VERIFIED_OUTCOME_PREFIX)
+        if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
+            raise ValueError
+        encoded = canonical_json(dict(outcome))
+        if hashlib.sha256(encoded.encode()).hexdigest() != digest:
+            raise ValueError
+        payload = cast(dict[str, object], json.loads(encoded))
+        if not _valid_verified_outcome(payload):
+            raise ValueError
+        task_id, issue_body, final_summary = (payload[name] for name in ("task_id", "issue_body", "final_summary"))
+        file_changes = cast(list[Mapping[str, object]], payload["file_changes"])
+    except (KeyError, SchemaInvalid, TypeError, ValueError):
+        raise PicoAdapterError(
+            "codecairn_verified_outcome_invalid", "provide one canonical, sandbox-verified Coding Task outcome"
+        ) from None
+    terminal_changes = [
+        {name: change[name] for name in ("operation", "path", "destination_path") if name in change} for change in file_changes
+    ]
+    call_id = f"pico_done_gate_{digest}"
+    return (
+        {"kind": "message", "role": "user", "text": issue_body},
+        {
+            "arguments": {"idempotency_key": idempotency_key, "task_id": task_id},
+            "call_id": call_id,
+            "kind": "tool_call",
+            "tool_name": "pico_done_gate",
+        },
+        {
+            "call_id": call_id,
+            "kind": "tool_result",
+            "status": "success",
+            "terminal_observation": {"exit_code": 0, "file_changes": terminal_changes},
+            "untrusted_payload": payload,
+        },
+        {"kind": "message", "role": "assistant", "text": cast(str, final_summary)},
+    )
+
+
+def _valid_verified_outcome(payload: Mapping[str, object]) -> bool:
+    strings = ("task_id", "issue_url", "issue_body", "repository", "branch", "provider", "model", "final_summary")
+    if (
+        set(payload) != _VERIFIED_OUTCOME_FIELDS
+        or payload.get("schema") != "pico.coding-task.outcome.v1"
+        or payload.get("status") != "verified"
+        or any(not isinstance(payload.get(name), str) or not payload[name] for name in strings)
+        or not cast(str, payload["issue_url"]).startswith("https://github.com/")
+        or payload.get("memory_backend") != "codecairn"
+        or payload.get("verification_environment") not in {"sandboxed_live_model", "sandboxed_test_double"}
+    ):
+        return False
+    if any(
+        not _hex(payload.get(name), size)
+        for name, size in (
+            ("base_sha", 40),
+            ("head_sha", 40),
+            ("candidate_tree_sha", 40),
+            ("candidate_commit_sha", 40),
+            ("runtime_commit", 40),
+            ("memory_commit", 40),
+            ("issue_body_sha256", 64),
+            ("issue_body_full_sha256", 64),
+            ("diff_sha256", 64),
+            ("profile_sha256", 64),
+        )
+    ):
+        return False
+    if (
+        payload["issue_body_sha256"] != hashlib.sha256(cast(str, payload["issue_body"]).encode()).hexdigest()
+        or payload["head_sha"] != payload["candidate_commit_sha"]
+    ):
+        return False
+    observed = payload.get("observed_models")
+    skills = payload.get("skills")
+    changed = payload.get("changed_files")
+    changes = payload.get("file_changes")
+    verifications = payload.get("verifications")
+    return (
+        isinstance(observed, list)
+        and bool(observed)
+        and all(model == payload["model"] for model in observed)
+        and isinstance(skills, list)
+        and all(
+            isinstance(skill, Mapping) and set(skill) == {"id", "sha256"} and isinstance(skill["id"], str) and _hex(skill["sha256"], 64)
+            for skill in skills
+        )
+        and isinstance(changed, list)
+        and all(isinstance(path, str) and path for path in changed)
+        and isinstance(changes, list)
+        and all(
+            isinstance(change, Mapping)
+            and set(change) <= {"operation", "path", "destination_path", "kind", "size", "sha256"}
+            and {"operation", "path"} <= set(change)
+            for change in changes
+        )
+        and [change["path"] for change in changes] == changed
+        and isinstance(verifications, list)
+        and bool(verifications)
+        and all(_valid_verification(item) for item in verifications)
+    )
+
+
+def _valid_verification(value: object) -> bool:
+    if not isinstance(value, Mapping) or set(value) != _VERIFICATION_FIELDS:
+        return False
+    argv = value.get("argv")
+    return (
+        isinstance(argv, list)
+        and bool(argv)
+        and all(isinstance(argument, str) and argument for argument in argv)
+        and type(value.get("exit_code")) is int
+        and value["exit_code"] == 0
+        and type(value.get("duration_ms")) is int
+        and cast(int, value["duration_ms"]) >= 0
+        and all(isinstance(value.get(name), str) and bool(value[name]) for name in ("stdout_path", "stderr_path"))
+        and _hex(value.get("stdout_sha256"), 64)
+        and _hex(value.get("stderr_sha256"), 64)
+    )
+
+
+def _hex(value: object, size: int) -> bool:
+    return isinstance(value, str) and len(value) == size and all(character in "0123456789abcdef" for character in value)
