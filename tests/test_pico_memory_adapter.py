@@ -165,6 +165,31 @@ def test_agent_track_feedback_and_invalid_track_behavior(tmp_path: Path) -> None
     asyncio.run(scenario())
 
 
+def test_user_recall_bounds_long_pico_query_by_utf8_bytes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    backend, _, _ = _fixture(tmp_path)
+    observed: list[str] = []
+    long_query = " " * 9_000 + "任务" * 5_000
+
+    async def scenario() -> None:
+        await backend.start()
+        application = backend._application_required()
+        original = application.recall
+
+        def recording(query: str, **kwargs: Any):
+            observed.append(query)
+            return original(query, **kwargs)
+
+        monkeypatch.setattr(application, "recall", recording)
+        assert await backend.recall(long_query, user_id="user", top_k=5) == []
+        await backend.stop()
+
+    asyncio.run(scenario())
+
+    assert len(observed) == 1
+    assert len(observed[0].encode()) <= 8_192
+    assert observed[0] == long_query.strip().encode()[:8_192].decode(errors="ignore")
+
+
 def test_assistant_only_subagent_slice_is_an_explicit_no_op(tmp_path: Path) -> None:
     backend, _, runtime = _fixture(tmp_path)
 

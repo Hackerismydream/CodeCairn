@@ -109,9 +109,9 @@ class CodeCairnPicoBackend:
             return []
         if type(top_k) is not int or not 1 <= top_k <= 100:
             raise PicoAdapterError("codecairn_recall_invalid", "top_k must be between 1 and 100")
-        result = await self._blocking(
-            "recall", lambda: self._application_required().recall(query, repo_key=self._config_required().repo_key, limit=top_k)
-        )
+        query = query.strip().encode()[:8_192].decode(errors="ignore")
+        application, config = self._application_required(), self._config_required()
+        result = await self._blocking("recall", lambda: application.recall(query, repo_key=config.repo_key, limit=top_k))
         trace = result.sidecar.context_trace
         if trace is None or not trace.rendered_memory_ids:
             return []

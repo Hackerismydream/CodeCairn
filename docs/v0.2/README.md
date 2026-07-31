@@ -181,6 +181,9 @@ The adapter implements the following version 0.2 behavior:
 | `stop` | Complete or surface adapter-owned staged journal work and close adapter resources |
 | media understanding | Unsupported by this adapter |
 
+The Pico adapter bounds user-track recall queries to 8,192 UTF-8 bytes before
+calling the strict CodeCairn service interface.
+
 `top_k` maps to the CodeCairn recall `limit`. Invalid values are rejected
 rather than silently clamped. Pico session identity is capture metadata; it
 does not select a Memory Namespace.
