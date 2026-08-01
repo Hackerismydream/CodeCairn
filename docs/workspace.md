@@ -5,11 +5,12 @@ Memory OS package:
 
 ```text
 apps/
-  hub-api/       foreground loopback Adapter for Hub reads
-  hub-web/       Chinese React inspection application
+  hub-api/       foreground loopback Adapter for Hub reads and narrow governance
+  hub-web/       Chinese Myna Person Memory Hub
 contracts/
   hub-read/      executable version 1 read example
   hub-onboarding/ executable version 1 Preview/Apply example
+  hub-governance/ executable version 1 preference-promotion example
 src/codecairn/   Memory OS package and supported CLI, MCP, hook, and Pico surfaces
 tools/
   v03-acceptance/ frozen Hub scenario, adapters, human forms, reducer, verifier
@@ -34,20 +35,26 @@ The dependency direction is:
 browser
   +-> same-origin Hub read route
   |  -> loopback Hub Read Interface
-  |     -> CodeCairnApplication
+  |     +-> CodeCairnApplication
+  |     +-> Myna Person Library application
   |        -> memory and storage adapters
   +-> exact same-origin Onboarding routes
-     -> loopback Hub Onboarding Interface
-        +-> fixed Codex/Claude history adapters
-        +-> CodeCairnApplication import
-        +-> explicit Codex/Claude Hook installer
+  |  -> loopback Hub Onboarding Interface
+  |     +-> fixed Codex/Claude history adapters
+  |     +-> CodeCairnApplication import
+  |     +-> explicit Codex/Claude Hook installer
+  +-> one same-origin Governance route
+     -> server-bound preference promotion by Memory ID
+        -> immutable Person Library reference
 ```
 
 The browser does not know storage paths or provider credentials. The Hub API
 does not implement alternate memory behavior. The three Hub Read operations
 remain one external seam and test surface. Version 0.4 adds a second seam with
 only Preview and Apply; it does not turn the read Interface into a mutation
-surface or an arbitrary local proxy.
+surface or an arbitrary local proxy. Version 0.5 adds a third, deliberately
+narrow seam with one promotion route. Its closed request contains only a Memory
+ID; Person, repository, scope, and source context remain server-bound.
 
 The Onboarding Module is composed for one server-selected repository. Its
 Preview scans fixed roots without writing and returns only opaque source IDs.
@@ -56,6 +63,13 @@ Interface and Hook Adapter. Browser-supplied repository, runtime, source, and
 settings paths remain impossible. The maintained target and acceptance
 contract is [`v0.4/onboarding.md`](v0.4/onboarding.md); the checked-in example
 is [`../contracts/hub-onboarding/v1.example.json`](../contracts/hub-onboarding/v1.example.json).
+
+The Myna Person Library keeps existing repository Memory unchanged and records
+explicit global User Preference promotions as immutable references. The exact
+scope, shadowing, fail-closed, and non-Desktop boundary is
+[`v0.5/myna-person-library.md`](v0.5/myna-person-library.md); the checked
+governance example is
+[`../contracts/hub-governance/v1.example.json`](../contracts/hub-governance/v1.example.json).
 
 The version 0.3 acceptance tool is also a uv workspace member. It depends on
 the root `codecairn` package and `codecairn-hub-api`, but neither product

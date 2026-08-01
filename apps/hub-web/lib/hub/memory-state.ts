@@ -45,11 +45,13 @@ export function isUnfilteredNamespaceEmpty(
   typeFilter: string,
   statusFilter: string,
   hasPageCursor: boolean,
+  scopeFilter = "all",
 ): boolean {
   return (
     itemCount === 0 &&
     typeFilter === "all" &&
     statusFilter === "all" &&
+    scopeFilter === "all" &&
     !hasPageCursor
   );
 }

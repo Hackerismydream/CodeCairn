@@ -22,6 +22,7 @@ from codecairn.memory.models import (
     RecallResult,
     RecallSidecar,
     RecallSnippet,
+    RecallSource,
 )
 from codecairn.memory.retrieval import EmbeddingProvider, RerankingProvider, retrieval_config_sha256
 from codecairn.memory.schema import CodingMemory, MemoryType, canonical_json, coding_memory_to_dict
@@ -36,10 +37,18 @@ class RecallIndex(Protocol):
     @property
     def profile_identity(self) -> str: ...
 
-    def lexical_candidates(self, *, repo_key: str, query: str, include_superseded: bool, limit: int) -> tuple[IndexCandidate, ...]: ...
+    def lexical_candidates(
+        self, *, repo_key: str, query: str, include_superseded: bool, limit: int, memory_ids: tuple[str, ...] | None = None
+    ) -> tuple[IndexCandidate, ...]: ...
 
     def vector_candidates(
-        self, *, repo_key: str, vector: tuple[float, ...], include_superseded: bool, limit: int
+        self,
+        *,
+        repo_key: str,
+        vector: tuple[float, ...],
+        include_superseded: bool,
+        limit: int,
+        memory_ids: tuple[str, ...] | None = None,
     ) -> tuple[IndexCandidate, ...]: ...
 
 
@@ -55,6 +64,10 @@ class RecallState(Protocol):
 
 class IndexPreflight(Protocol):
     def preflight(self, *, repo_key: str, worker_id: str = "recall", max_jobs: int = 128) -> bool: ...
+
+    def preflight_memories(
+        self, *, repo_key: str, memory_ids: tuple[str, ...], worker_id: str = "recall", max_jobs: int = 128
+    ) -> bool: ...
 
 
 class RecallEngine:
@@ -96,23 +109,83 @@ class RecallEngine:
         workstream_key: str | None = None,
         token_budget: int = 8_192,
     ) -> RecallResult:
+        return self.recall_across(
+            query,
+            current_repo_key=repo_key,
+            sources=(RecallSource(repo_key),),
+            limit=limit,
+            include_superseded=include_superseded,
+            workstream_key=workstream_key,
+            token_budget=token_budget,
+        )
+
+    def recall_across(
+        self,
+        query: str,
+        *,
+        current_repo_key: str,
+        sources: tuple[RecallSource, ...],
+        limit: int = 20,
+        include_superseded: bool = False,
+        workstream_key: str | None = None,
+        token_budget: int = 8_192,
+    ) -> RecallResult:
         started = time.perf_counter()
         query = query.strip()
         if not query or len(query.encode()) > 8_192:
             raise ValueError("Recall task must contain between 1 and 8192 bytes")
-        if not repo_key.strip() or not 1 <= limit <= 100:
+        if (
+            not current_repo_key.strip()
+            or not sources
+            or sources[0].repo_key != current_repo_key
+            or len({source.repo_key for source in sources}) != len(sources)
+            or not 1 <= limit <= 100
+        ):
             raise ValueError("Recall namespace or limit is invalid")
         if self._index is None or self._embedder is None or self._preflight is None:
             raise IndexNotReady("No retrieval profile is configured")
-        if not self._preflight.preflight(repo_key=repo_key, max_jobs=self._preflight_job_cap):
-            raise IndexNotReady("The current namespace index is not ready")
         cap = min(100, max(20, limit * 4))
         vector = self._embedder.embed_query(query)
-        lexical = self._index.lexical_candidates(repo_key=repo_key, query=query, include_superseded=include_superseded, limit=cap)
-        vectors = self._index.vector_candidates(repo_key=repo_key, vector=vector, include_superseded=include_superseded, limit=cap)
+        lexical_batches: list[tuple[IndexCandidate, ...]] = []
+        vector_batches: list[tuple[IndexCandidate, ...]] = []
+        repo_by_memory_id: dict[str, str] = {}
+        for source in sources:
+            ready = (
+                self._preflight.preflight(repo_key=source.repo_key, max_jobs=self._preflight_job_cap)
+                if source.allowed_memory_ids is None
+                else self._preflight.preflight_memories(
+                    repo_key=source.repo_key, memory_ids=source.allowed_memory_ids, max_jobs=self._preflight_job_cap
+                )
+            )
+            if not ready:
+                raise IndexNotReady("The current namespace index is not ready")
+            allowed = None if source.allowed_memory_ids is None else frozenset(source.allowed_memory_ids)
+            lexical_source = self._index.lexical_candidates(
+                repo_key=source.repo_key,
+                query=query,
+                include_superseded=include_superseded,
+                limit=cap,
+                memory_ids=source.allowed_memory_ids,
+            )
+            vector_source = self._index.vector_candidates(
+                repo_key=source.repo_key,
+                vector=vector,
+                include_superseded=include_superseded,
+                limit=cap,
+                memory_ids=source.allowed_memory_ids,
+            )
+            for candidate in (*lexical_source, *vector_source):
+                if allowed is None or candidate.memory_id in allowed:
+                    previous = repo_by_memory_id.setdefault(candidate.memory_id, source.repo_key)
+                    if previous != source.repo_key:
+                        raise ValueError("Recall memory identity appears in multiple repositories")
+            lexical_batches.append(tuple(item for item in lexical_source if allowed is None or item.memory_id in allowed))
+            vector_batches.append(tuple(item for item in vector_source if allowed is None or item.memory_id in allowed))
+        lexical, vectors = tuple(lexical_batches), tuple(vector_batches)
         ranked, omissions, admission = self._rank(
             query,
-            repo_key=repo_key,
+            repo_key=current_repo_key,
+            repo_by_memory_id=repo_by_memory_id,
             lexical=lexical,
             vector=vectors,
             limit=limit,
@@ -121,14 +194,14 @@ class RecallEngine:
         )
         compiled = compile_context(query, ranked, token_limit=token_budget)
         omissions.extend(RecallOmission(memory_id=memory_id, reason="token_budget") for memory_id in compiled.omitted_ids)
-        source_cursor, index_cursor, semantic_state = self._state.recall_cursors(repo_key=repo_key)
+        source_cursor, index_cursor, semantic_state = self._state.recall_cursors(repo_key=current_repo_key)
         sidecar = RecallSidecar(
             query=query,
-            repo_key=repo_key,
+            repo_key=current_repo_key,
             limit=limit,
             latency_ms=(time.perf_counter() - started) * 1_000,
-            vector_candidate_count=len(vectors),
-            lexical_candidate_count=len(lexical),
+            vector_candidate_count=sum(map(len, vectors)),
+            lexical_candidate_count=sum(map(len, lexical)),
             ranked=ranked,
             context_trace=RecallContextTrace(
                 renderer=RENDERER_ID,
@@ -157,8 +230,9 @@ class RecallEngine:
         query: str,
         *,
         repo_key: str,
-        lexical: tuple[IndexCandidate, ...],
-        vector: tuple[IndexCandidate, ...],
+        repo_by_memory_id: dict[str, str],
+        lexical: tuple[tuple[IndexCandidate, ...], ...],
+        vector: tuple[tuple[IndexCandidate, ...], ...],
         limit: int,
         include_superseded: bool,
         workstream_key: str | None,
@@ -168,24 +242,28 @@ class RecallEngine:
         vector_scores: dict[str, float] = {}
         snippet_scores: dict[str, float] = defaultdict(float)
         snippet_candidates: dict[str, IndexCandidate] = {}
-        for source, candidates in (("lexical", lexical), ("vector", vector)):
-            for rank, candidate in enumerate(candidates, start=1):
-                if source == "vector" and candidate.relevance_score is not None:
-                    vector_scores[candidate.memory_id] = max(vector_scores.get(candidate.memory_id, -1.0), candidate.relevance_score)
-                if ":memory" not in candidate.document_id and candidate.document_id and candidate.content:
-                    snippet_scores[candidate.document_id] += 1.0 / (_RRF_K + rank)
-                    snippet_candidates[candidate.document_id] = candidate
-                if cast(CandidateSource, source) in sources[candidate.memory_id]:
-                    continue
-                sources[candidate.memory_id].add(cast(CandidateSource, source))
-                scores[candidate.memory_id] += 1.0 / (_RRF_K + rank)
+        for source, batches in (("lexical", lexical), ("vector", vector)):
+            for candidates in batches:
+                for rank, candidate in enumerate(candidates, start=1):
+                    if source == "vector" and candidate.relevance_score is not None:
+                        vector_scores[candidate.memory_id] = max(
+                            vector_scores.get(candidate.memory_id, -1.0), candidate.relevance_score
+                        )
+                    if ":memory" not in candidate.document_id and candidate.document_id and candidate.content:
+                        snippet_scores[candidate.document_id] += 1.0 / (_RRF_K + rank)
+                        snippet_candidates[candidate.document_id] = candidate
+                    if cast(CandidateSource, source) in sources[candidate.memory_id]:
+                        continue
+                    sources[candidate.memory_id].add(cast(CandidateSource, source))
+                    scores[candidate.memory_id] += 1.0 / (_RRF_K + rank)
         memories = {
             memory_id: memory
             for memory_id in scores
-            if (memory := self._state.get_memory(repo_key=repo_key, memory_id=memory_id)) is not None
+            if (memory := self._state.get_memory(repo_key=repo_by_memory_id[memory_id], memory_id=memory_id)) is not None
         }
         statuses = {
-            memory_id: cast(MemoryStatus, self._state.memory_status(repo_key=repo_key, memory_id=memory_id)) for memory_id in memories
+            memory_id: cast(MemoryStatus, self._state.memory_status(repo_key=repo_by_memory_id[memory_id], memory_id=memory_id))
+            for memory_id in memories
         }
         valid = {memory_id: memory for memory_id, memory in memories.items() if statuses[memory_id] == "active" or include_superseded}
         if self._reranker is not None:
@@ -199,7 +277,7 @@ class RecallEngine:
                 statuses[pinned_id] = "active"
                 scores[pinned_id] = max(scores.values(), default=0.0) + 1.0
                 sources[pinned_id].add("lexical")
-        relevant_ids = {candidate.memory_id for candidate in lexical}
+        relevant_ids = {candidate.memory_id for candidates in lexical for candidate in candidates}
         relevant_ids.update(memory_id for memory_id, score in vector_scores.items() if score >= self._relevance_threshold)
         if pinned_id is not None:
             relevant_ids.add(pinned_id)

@@ -16,11 +16,13 @@ truth, historical decisions, and generated evidence.
    acceptance infrastructure and the still-pending formal evidence.
 7. [`v0.4/onboarding.md`](v0.4/onboarding.md) — accepted local Onboarding
    product, Interface, support, retention, and acceptance contract.
-8. [`roadmap.md`](roadmap.md) — product sequence from v0.1 through v2.0.
-9. [`plan/README.md`](plan/README.md) — delivery state and agent-ready work.
-10. [`runtime/operations.md`](runtime/operations.md) — public behavior that
+8. [`v0.5/myna-person-library.md`](v0.5/myna-person-library.md) — implemented
+   Person Library, scope, shadowing, and narrow Hub Governance contract.
+9. [`roadmap.md`](roadmap.md) — product sequence from v0.1 through v2.0.
+10. [`plan/README.md`](plan/README.md) — delivery state and agent-ready work.
+11. [`runtime/operations.md`](runtime/operations.md) — public behavior that
    exists on current `main`.
-11. [`runtime/installation.md`](runtime/installation.md) — persistent install
+12. [`runtime/installation.md`](runtime/installation.md) — persistent install
    and one-client acceptance path.
 
 ## Authority
@@ -36,6 +38,7 @@ truth, historical decisions, and generated evidence.
 | What is the accepted Pico integration target? | [`v0.2/README.md`](v0.2/README.md) and [`adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md`](adr/0057-pico-uses-codecairn-as-its-long-term-memory-backend.md) |
 | What proves the version 0.3 Hub outcome? | [`v0.3/hub-acceptance.md`](v0.3/hub-acceptance.md) and [`adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md`](adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md) |
 | What is the accepted version 0.4 Onboarding contract? | [`v0.4/onboarding.md`](v0.4/onboarding.md) and [`adr/0063-v04-onboarding-is-a-separate-consent-bound-interface.md`](adr/0063-v04-onboarding-is-a-separate-consent-bound-interface.md) |
+| What is the Myna Person Library and Hub Governance contract? | [`v0.5/myna-person-library.md`](v0.5/myna-person-library.md) and [`adr/0064-myna-is-a-person-first-memory-library.md`](adr/0064-myna-is-a-person-first-memory-library.md) |
 | Where is the product going next? | [`roadmap.md`](roadmap.md) |
 | What should an implementation agent do next? | [`plan/README.md`](plan/README.md) and [`plan/tasks/`](plan/tasks/) |
 | Why did a design change? | [`adr/README.md`](adr/README.md) |
@@ -116,6 +119,17 @@ ADR 0063 is an accepted target. Passing implementation tests may establish an
 implementation candidate, but no checked-in artifact currently proves formal
 installed-product acceptance with real Codex, Claude Code, and Pico evidence.
 
+## Version 0.5 Myna Person Library
+
+| Document | Purpose |
+|---|---|
+| [`v0.5/myna-person-library.md`](v0.5/myna-person-library.md) | Implemented Person identity, repository/global scopes, promotion references, local shadowing, Hub contract, and product boundary |
+| [`adr/0064-myna-is-a-person-first-memory-library.md`](adr/0064-myna-is-a-person-first-memory-library.md) | Decision to add a person-first overlay without changing existing repository Memory identities |
+| [`../contracts/hub-governance/v1.example.json`](../contracts/hub-governance/v1.example.json) | Executable closed-body HTTP example for the one governance write; its declared semantic flags are not derived acceptance evidence |
+
+The candidate adds Myna Core and a minimal local Hub. It does not add Myna
+Desktop, an Agent workbench, remote sync, or a general memory editor.
+
 ## Runtime and operations
 
 | Document | Purpose |
@@ -133,7 +147,7 @@ installed-product acceptance with real Codex, Claude Code, and Pico evidence.
 |---|---|
 | [`workspace.md`](workspace.md) | Monorepo applications, contracts, package ownership, and dependency direction |
 | [`plans/portable-coding-memory-product-thesis.md`](plans/portable-coding-memory-product-thesis.md) | Working conversation record and evidence-labeled EverOS/OpenViking product research; not an accepted contract |
-| [`../apps/hub-web/README.md`](../apps/hub-web/README.md) | Live local Hub behavior, commands, and explicit read-only boundary |
+| [`../apps/hub-web/README.md`](../apps/hub-web/README.md) | Hub web workspace commands and established read-surface behavior |
 
 ## Evaluation and evidence
 
@@ -166,5 +180,6 @@ contract.
 | [`0060`](adr/0060-recall-may-abstain.md) | Recall relevance admission and explicit abstention |
 | [`0061`](adr/0061-read-only-hub-uses-a-foreground-loopback-presentation.md)–[`0062`](adr/0062-v03-hub-acceptance-requires-machine-and-blind-human-evidence.md) | Read-only Hub presentation and version 0.3 machine plus blind-human acceptance |
 | [`0063`](adr/0063-v04-onboarding-is-a-separate-consent-bound-interface.md) | Version 0.4 fixed-source, no-write Preview and consent-bound Apply |
+| [`0064`](adr/0064-myna-is-a-person-first-memory-library.md) | Version 0.5 Person Library, explicit global User Preference references, local shadowing, and narrow Hub Governance |
 
 Use [`adr/README.md`](adr/README.md) for status and supersession rules.

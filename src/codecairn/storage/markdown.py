@@ -270,7 +270,7 @@ def _write_immutable[T](
     on_stage: Callable[[str], None] | None,
     stage_prefix: str,
 ) -> T | None:
-    path.parent.mkdir(parents=True, exist_ok=True)
+    _mkdir_durable(path.parent)
     existing = _read_bytes(path, missing_ok=True)
     if existing is None:
         _atomic_create(path, content, on_stage=on_stage, stage_prefix=stage_prefix)
@@ -323,6 +323,17 @@ def _fsync_directory(path: Path) -> None:
         os.fsync(descriptor)
     finally:
         os.close(descriptor)
+
+
+def _mkdir_durable(path: Path) -> None:
+    missing: list[Path] = []
+    parent = path
+    while not parent.exists():
+        missing.append(parent)
+        parent = parent.parent
+    path.mkdir(parents=True, exist_ok=True)
+    for created in reversed(missing):
+        _fsync_directory(created.parent)
 
 
 def _stage(callback: Callable[[str], None] | None, stage: str) -> None:

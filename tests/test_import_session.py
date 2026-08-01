@@ -13,7 +13,7 @@ from codecairn.memory.capture import PreparedMemoryCommit
 from codecairn.memory.schema import IdentityConflict, LegacyRootUnsupported, TaskExperiencePayload
 from codecairn.service.runtime import MemoryRuntime
 from codecairn.storage.markdown import MarkdownMemoryStore
-from codecairn.storage.sqlite import SQLiteState
+from codecairn.storage.sqlite import SCHEMA_REVISION, SQLiteImportProgress, SQLiteState
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -315,6 +315,44 @@ def test_legacy_sqlite_root_is_rejected_before_mutation(tmp_path: Path) -> None:
     database = root / "state.sqlite3"
     with sqlite3.connect(database) as connection:
         connection.execute("CREATE TABLE gate_audit (audit_id INTEGER PRIMARY KEY)")
+    before = database.read_bytes()
+
+    with pytest.raises(LegacyRootUnsupported):
+        SQLiteState(database)
+
+    assert database.read_bytes() == before
+
+
+def test_v01_sqlite_root_migrates_in_place_without_losing_memories(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    runtime = _runtime(root)
+    runtime.import_session(FIXTURES / "codex/failed_command.jsonl", repo_key="acme/widgets", boundary_kind="manual_finalize")
+    memory_id = runtime.list_memories(repo_key="acme/widgets")[0].memory_id
+    database = root / "state.sqlite3"
+    with sqlite3.connect(database) as connection:
+        connection.execute("UPDATE codecairn_meta SET value = 'codecairn-v01-5' WHERE key = 'schema_revision'")
+
+    assert (
+        SQLiteImportProgress(path=database, repo_key="acme/widgets")(
+            source_path=tmp_path / "unseen.jsonl", raw_event_count=1, source_fingerprint="a" * 64, raw_event_sha256s=("b" * 64,)
+        )
+        == "new"
+    )
+
+    migrated = SQLiteState(database)
+
+    assert migrated.get_memory(repo_key="acme/widgets", memory_id=memory_id) is not None
+    with sqlite3.connect(database) as connection:
+        revision = connection.execute("SELECT value FROM codecairn_meta WHERE key = 'schema_revision'").fetchone()
+    assert revision == (SCHEMA_REVISION,)
+
+
+def test_unknown_versioned_sqlite_root_is_rejected_before_ddl(tmp_path: Path) -> None:
+    root = tmp_path / "runtime"
+    database = root / "state.sqlite3"
+    SQLiteState(database)
+    with sqlite3.connect(database) as connection:
+        connection.execute("UPDATE codecairn_meta SET value = 'codecairn-v99' WHERE key = 'schema_revision'")
     before = database.read_bytes()
 
     with pytest.raises(LegacyRootUnsupported):

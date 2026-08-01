@@ -8,7 +8,7 @@ import pytest
 from codecairn.bootstrap import create_runtime
 from codecairn.importers import SessionImporter
 from codecairn.memory.errors import IndexNotReady
-from codecairn.memory.models import IndexCandidate
+from codecairn.memory.models import IndexCandidate, RecallSource
 from codecairn.memory.schema import CodingMemory, RepositoryKnowledgePayload, WorkStatePayload
 from codecairn.service.cascade import MiniCascade
 from codecairn.service.recall import RecallEngine
@@ -197,6 +197,72 @@ def test_snippet_selection_has_a_per_memory_bound() -> None:
     selected = engine._rank_snippets("detail", memories=memories, candidates={}, scores={})
 
     assert sum(map(len, selected.values())) == 240
+
+
+def test_cross_repository_rrf_preserves_each_source_rank(tmp_path: Path) -> None:
+    current = _knowledge(1)
+    foreign = CodingMemory.create(
+        repo_key="acme/foreign",
+        memory_type=current.memory_type,
+        title="Foreign repository check",
+        content="Run foreign repository checks.",
+        category=current.category,
+        tags=(),
+        created_at_ms=2,
+        episode_id=None,
+        evidence=(),
+        facts=(),
+        origin="agent_asserted",
+        restored_from=None,
+        restore_predecessor_id=None,
+        source_order_key=None,
+        payload=RepositoryKnowledgePayload(subject_key="foreign-check", claim="Run foreign repository checks."),
+    )
+
+    class State:
+        def __init__(self) -> None:
+            self.memories = {(item.repo_key, item.memory_id): item for item in (current, foreign)}
+
+        def get_memory(self, *, repo_key: str, memory_id: str):
+            return self.memories.get((repo_key, memory_id))
+
+        def memory_status(self, *, repo_key: str, memory_id: str):
+            return "active" if (repo_key, memory_id) in self.memories else None
+
+        def active_workstream_heads(self, *, repo_key: str):
+            return ()
+
+        def recall_cursors(self, *, repo_key: str):
+            return (0, 0, "complete")
+
+    class Index:
+        profile_identity = "test-multi-source"
+
+        def lexical_candidates(self, *, repo_key, query, include_superseded, limit, memory_ids=None):
+            item = current if repo_key == current.repo_key else foreign
+            assert memory_ids is None or item.memory_id in memory_ids
+            return (IndexCandidate(item.memory_id, f"{item.memory_id}:memory", item.content),)
+
+        def vector_candidates(self, *, repo_key, vector, include_superseded, limit, memory_ids=None):
+            return ()
+
+    class Preflight:
+        def preflight(self, **_kwargs):
+            return True
+
+        def preflight_memories(self, **_kwargs):
+            return True
+
+    engine = RecallEngine(state=State(), index=Index(), embedder=HashingEmbedder(), preflight=Preflight())  # type: ignore[arg-type]
+    result = engine.recall_across(
+        "repository checks",
+        current_repo_key=current.repo_key,
+        sources=(RecallSource(current.repo_key), RecallSource(foreign.repo_key, (foreign.memory_id,))),
+        limit=2,
+    )
+
+    scores = {item.memory_id: item.final_score for item in result.sidecar.ranked}
+    assert scores[current.memory_id] == scores[foreign.memory_id]
 
 
 def test_searched_snippets_remain_a_priority_layer_for_negative_reranker_scores() -> None:

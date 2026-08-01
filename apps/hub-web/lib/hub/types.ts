@@ -6,6 +6,15 @@ export type MemoryType =
 
 export type MemoryStatus = "active" | "superseded";
 export type MemoryOrigin = "capture" | "agent_asserted" | "restored";
+export type MemoryScope = "global" | "repository";
+export type MemoryScopeFilter = "all" | MemoryScope;
+
+export type LibraryContext = {
+  person_id: string;
+  current_repository_key: string;
+  active_scopes: MemoryScope[];
+  promotion_count: number;
+};
 
 export type MemorySummary = {
   memory_id: string;
@@ -13,6 +22,8 @@ export type MemorySummary = {
   title: string;
   status: MemoryStatus;
   created_at_ms: number;
+  effective_scope?: MemoryScope;
+  source_repository_key?: string;
 };
 
 export type EvidenceReference = {
@@ -105,7 +116,16 @@ export type MemoriesView = {
       resource_uri: string;
     };
     history: MemoryHistory;
+    effective_scope?: MemoryScope;
+    source_repository_key?: string;
+    governance?: {
+      state: "eligible" | "promoted" | "ineligible" | "conflict";
+      eligible: boolean;
+      promotion_id: string | null;
+      error_code: string | null;
+    };
   } | null;
+  library_context?: LibraryContext;
 };
 
 export type RankedRecall = {
@@ -126,6 +146,12 @@ export type RankedRecall = {
     text: string;
     final_score: number;
   }>;
+  effective_scope?: MemoryScope;
+  source?: {
+    repository_key: string;
+    memory_id: string;
+    revision_sha256: string;
+  };
 };
 
 export type RecallView = {
@@ -177,6 +203,15 @@ export type RecallView = {
       index_cursor: number;
       semantic_state: "complete" | "pending" | "failed";
       freshness: "fresh" | "semantic_pending";
+      person_id?: string;
+      repository_key?: string;
+      requesting_client?: "hub";
+      active_scopes?: MemoryScope[];
+      shadowed?: Array<{
+        promotion_id: string;
+        subject_key: string;
+        shadowed_by_memory_ids: string[];
+      }>;
     };
   };
 };
@@ -217,6 +252,7 @@ export type SystemView = {
   };
   privacy: Record<string, string>;
   remediation: string | null;
+  library_context?: LibraryContext;
 };
 
 export type HubErrorBody = {
@@ -233,6 +269,7 @@ export type HubErrorBody = {
 export type MemoriesRequest = {
   memoryType?: MemoryType;
   status?: MemoryStatus;
+  scope?: MemoryScopeFilter;
   limit?: number;
   cursor?: string;
   selectedMemoryId?: string;

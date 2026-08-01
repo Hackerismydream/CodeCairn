@@ -2,12 +2,12 @@
 
 This document describes the current local runtime, including the `v02-001`
 Pico trace importer, the `v02-002` installed Pico Memory Backend adapter, and
-the version 0.3 read-only Hub. Pico now selects CodeCairn and has removed
-EverOS product coupling. The first joint campaign is a completed diagnostic
-with an ineligible positive claim; it is not relabeled as release evidence.
-The accepted version 0.4 Onboarding contract is described separately below;
-until its implementation and evidence land, it is not part of this current
-support matrix.
+the Myna Person Library and local Hub. Pico now selects CodeCairn and has
+removed EverOS product coupling. The first joint campaign is a completed
+diagnostic with an ineligible positive claim; it is not relabeled as release
+evidence.
+Version 0.4 Onboarding is implemented in this source candidate. Its formal
+installed-product acceptance evidence remains separate and has not landed.
 
 ## Current support matrix
 
@@ -22,12 +22,12 @@ support matrix.
 | List memory | `codecairn list` | Reads four-type durable memory in the resolved repository namespace |
 | Recall | `codecairn recall` | Drains a bounded namespace index batch, admits relevant active memory, and either compiles attributed context or explicitly abstains |
 | Diagnostics | `codecairn doctor` | Reports imports, memories, Write Intent recovery, semantic jobs, and queued index projections |
-| Namespace operations | `codecairn namespace ...` | Creates a consistent export or performs a confirmation-gated, backup-first reset |
+| Namespace operations | `codecairn namespace ...` | Creates a consistent export or performs a confirmation-gated, backup-first reset; reset fails before mutation when global scope references the target repository |
 | Index commands | `codecairn index ...` | Operates the lifecycle-aware LanceDB cascade and parity service |
 | Historical evidence | `codecairn evidence verify` | Verifies frozen evidence without loading the live runtime |
 | Distribution | `uv tool install` | Installs curated MIT-licensed wheel entrypoints into an isolated persistent tool environment |
 | Pico plugin | `memory.backend = "codecairn"` | Installed discovery exposes one repository-bound MemoryBackend; Pico selects it as the current long-term memory backend |
-| Read-only Hub | `make hub-dev` | Runs the Chinese Memories, Recall, and System views against one foreground loopback adapter bound to the current repository |
+| Myna Hub | `make hub-dev` | Runs Person-bound Memories, Recall, and System views plus one explicit preference-promotion operation against one foreground loopback adapter |
 | Hub acceptance verifier | `codecairn-v03-acceptance verify` | Recomputes one sealed local campaign without provider credentials; no formal campaign has completed |
 
 ## Capture lifecycle
@@ -100,7 +100,7 @@ score fusion adapters are test-only. `init --check-provider` and
 `doctor --live` perform an explicit live embedding check; an unchecked profile
 is only `configured`, never reported as live verified.
 
-## Read-only Hub
+## Myna Hub
 
 `make hub-dev` generates one ephemeral session token and starts the Hub web
 application plus its Python loopback adapter. The browser uses only same-origin
@@ -109,14 +109,56 @@ routes. The adapter binds the repository from the existing
 switch namespaces. The gateway rejects non-loopback and forwarded authorities
 instead of turning its private token into a DNS-rebinding proxy.
 
-The Hub exposes only three read operations: combined memory page and
-inspection, explained recall, and a sanitized `doctor(live=False)` snapshot.
-The snapshot preserves Doctor's established unchecked `configured` meaning and
-adds a separate configuration-only recall-readiness field for missing network
-credentials.
-There is no fixture fallback. Recall may advance the rebuildable index through
-its existing preflight, but the Hub has no Coding Memory or Evolution mutation
-operation. Closing the foreground command closes both processes.
+The three established Hub Read operations remain backward compatible:
+
+```text
+GET  /hub-read/v1/memories
+POST /hub-read/v1/recall
+GET  /hub-read/v1/system
+```
+
+They provide combined memory page and inspection, explained Recall, and a
+sanitized `doctor(live=False)` snapshot. When Myna is composed, additive fields
+show the server-bound Person, current repository, active `global` and
+`repository` scopes, requesting client, effective source, and any global
+preference shadowed by a same-subject local preference. Recall performs one
+candidate union and one admission/context pass across visible scopes; it does
+not concatenate independently ranked results.
+
+Myna Hub adds exactly one governance write:
+
+```text
+POST /hub-governance/v1/preferences/promote
+body: {"memory_id":"mem_<sha256>"}
+```
+
+The body is closed. Query parameters and caller-supplied Person, repository,
+scope, source, revision, or replacement fields are rejected. The selected
+source must be an active User Preference in the bound repository. Success
+appends an immutable global reference; replay returns `already_promoted`.
+Promotion neither copies nor changes the source Coding Memory. An active local
+preference with the same `subject_key` shadows it during Recall. Broken or
+inactive promotion references fail closed.
+
+The System snapshot preserves Doctor's established unchecked `configured`
+meaning and adds a separate configuration-only recall-readiness field for
+missing network credentials. There is no fixture fallback. Recall may advance
+the rebuildable index through its existing preflight. The Hub still has no
+Coding Memory create/edit/delete or Evolution mutation operation. Closing the
+foreground command closes both processes.
+
+The maintained governance contract and checked HTTP example are
+[`../v0.5/myna-person-library.md`](../v0.5/myna-person-library.md) and
+[`../../contracts/hub-governance/v1.example.json`](../../contracts/hub-governance/v1.example.json).
+This is a minimal local Hub, not Myna Desktop or an Agent workbench.
+
+Starting a writable v0.5 runtime upgrades SQLite operational state from
+`codecairn-v01-5` to `codecairn-v05-1`. Older CodeCairn binaries, including an
+older installed Pico backend, then reject that runtime root. This fail-closed
+boundary prevents an old namespace-reset implementation from deleting memory
+that v0.5 global scope still references. Do not point this candidate at the
+active Pico Dogfood root; finish Dogfood first or upgrade the exact
+Pico/CodeCairn pair together after retaining a recoverable backup.
 
 The current Hub is source-checkout-only and is not bundled in the root wheel or
 sdist.
@@ -295,12 +337,15 @@ fallback.
 - pending and conflicted recovery counts;
 - semantic and index job counts by status;
 - one status/remediation row for config, import, semantic, Markdown, SQLite,
-  index queue, LanceDB, hooks, and privacy;
+  index queue, LanceDB, hooks, Myna Person Library, and privacy;
 - provider verification state and the local/network egress posture.
 
 Pending semantic work is expected when no provider is configured and does not
 make deterministic capture unhealthy. Failed semantic or index jobs are
 visible and bounded. `--strict` makes degraded state fail automation.
+An absent Person Library is `not_configured`; once present, an invalid Person,
+promotion chain, source type/status, subject, or revision digest degrades
+Doctor and fails global-scope use closed.
 
 ## Current boundary
 
@@ -334,6 +379,9 @@ Implemented:
 - installed Pico plugin discovery, workspace-bound fail-closed startup,
   after-Turn journal/import/index readiness, compiled-context user recall,
   empty Agent-track recall, and no-op feedback.
+- stable local Myna Person identity, explicit immutable global User Preference
+  references, repository-over-global subject shadowing, multi-scope Recall, and
+  the closed `memory_id`-only Hub Governance operation.
 
 ## Pico adapter
 

@@ -31,10 +31,15 @@ async function html(path) {
 }
 
 test("renders a Chinese live-memory shell without checked-in product data", async () => {
-  const body = await html("/");
+  const response = await render("/");
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-security-policy") ?? "", /frame-ancestors 'none'/);
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
+  const body = await response.text();
 
   assert.match(body, /<html lang="zh-CN">/i);
-  assert.match(body, /<title>CodeCairn 记忆中心<\/title>/i);
+  assert.match(body, /<title>Myna Person Memory Hub<\/title>/i);
+  assert.match(body, /<strong>Myna<\/strong>/);
   assert.match(body, />记忆</);
   assert.match(body, />接入</);
   assert.match(body, />召回</);
@@ -44,7 +49,10 @@ test("renders a Chinese live-memory shell without checked-in product data", asyn
   assert.match(body, /<a[^>]+href="\/\?view=onboarding"[^>]*>接入</);
   assert.match(body, /<a[^>]+href="\/\?view=system"[^>]*>系统</);
   assert.match(body, /正在读取记忆/);
-  assert.match(body, /数据来自本地 CodeCairn 服务/);
+  assert.match(body, /数据来自本地 Myna 记忆服务/);
+  assert.match(body, /记忆范围/);
+  assert.match(body, /<option value="global">所有仓库<\/option>/);
+  assert.match(body, /<option value="repository">当前仓库<\/option>/);
   assert.doesNotMatch(body, /示例数据/);
   assert.doesNotMatch(body, /只读原型/);
   assert.doesNotMatch(body, /单元测试足以证明连续性/);
@@ -159,6 +167,34 @@ test("onboarding gateway exposes only the two consent-bound operations", async (
     ["/api/hub-onboarding/v1/apply", "GET"],
     ["/api/hub-onboarding/v1/discover", "POST"],
     ["/api/hub-read/v1/preview", "POST"],
+  ]) {
+    const rejected = await render(path, {}, method);
+    assert.equal(rejected.status, 404);
+    assert.equal((await rejected.json()).error.code, "not_found");
+  }
+});
+
+test("Myna governance gateway exposes only the narrow promotion operation", async () => {
+  const promote = await render(
+    "/api/hub-governance/v1/preferences/promote",
+    { "content-type": "application/json" },
+    "POST",
+  );
+  assert.equal(promote.status, 503);
+  assert.equal((await promote.json()).error.code, "hub_unavailable");
+
+  const query = await render(
+    "/api/hub-governance/v1/preferences/promote?person_id=forged",
+    { "content-type": "application/json" },
+    "POST",
+  );
+  assert.equal(query.status, 400);
+  assert.equal((await query.json()).error.code, "invalid_query");
+
+  for (const [path, method] of [
+    ["/api/hub-governance/v1/preferences/promote", "GET"],
+    ["/api/hub-governance/v1/preferences/replace", "POST"],
+    ["/api/hub-read/v1/promote", "POST"],
   ]) {
     const rejected = await render(path, {}, method);
     assert.equal(rejected.status, 404);

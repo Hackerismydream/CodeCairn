@@ -3,13 +3,16 @@
 This document summarizes the implemented runtime. For exact commands and
 failure behavior, [`operations.md`](operations.md) is authoritative. Version
 0.1 lifecycle documents remain the historical foundation; version 0.2 adds
-Pico and recall admission.
+Pico and recall admission; version 0.5 adds the Myna Person Library without
+changing existing repository Memory identities.
 
 ## Owned boundary
 
 CodeCairn owns local coding-memory truth, lifecycle, search projection, recall,
 and diagnostics. It does not own agent execution, hidden prompt injection,
-general document ingestion, cloud tenancy, or a memory-editing UI.
+general document ingestion, cloud tenancy, or a general memory-editing UI.
+Myna owns the local Person identity, explicit global User Preference
+references, multi-scope Recall policy, and their narrow Hub presentation.
 
 Dependencies point inward:
 
@@ -51,6 +54,9 @@ Current `main` implements the local memory lifecycle:
   maintained learner path.
 
 - installed Pico Source Journal, importer, and repository-bound MemoryBackend.
+- one stable local Myna Person per runtime root, immutable global User
+  Preference promotion references, repository-over-global subject shadowing,
+  one multi-scope Recall pass, and one closed Hub Governance write.
 
 Version 0.1 release evidence and the first Pico campaign retain their original
 commit bindings. The next product stages are maintained in
@@ -80,6 +86,7 @@ leave full processing queued, and record outcomes without blocking the client.
 | State | Authority | Recovery |
 |---|---|---|
 | Coding Memory and evidence | Markdown | validate or audited deterministic repair |
+| Myna Person and global promotion references | Markdown | validate references and fail closed |
 | Import cursor, mirrors, audits, index outbox | SQLite | transaction and reconcile |
 | Lexical/vector documents | LanceDB | delete and rebuild from Markdown |
 | Evaluation run | immutable artifact directory | missing-only resume under exact manifest |
@@ -87,6 +94,12 @@ leave full processing queued, and record outcomes without blocking the client.
 Import durability and search readiness are separate. A skipped or failed drain
 leaves memory durable and index state degraded. Recall never silently scans
 Markdown as a fallback.
+
+The Person record is `library/person.md`; promotions are immutable Markdown
+under `library/global-preferences/`. A promotion references an unchanged active
+User Preference by repository key, Memory ID, and revision digest. It is never
+a copied fifth Memory type. An active local preference with the same subject
+shadows the global reference for that repository.
 
 ## Version 0.1 release remainder
 
@@ -143,3 +156,8 @@ Public behavior is asserted through CLI, MCP, hook, or a
 service interface. Concrete adapter tests prove transaction, safety, and
 rebuild rules. Evaluation fixtures do not substitute for the installed product
 smoke required by the release plan.
+
+The version 0.5 contract and evidence boundary are maintained in
+[`../v0.5/myna-person-library.md`](../v0.5/myna-person-library.md). This runtime
+does not include a Myna Desktop process, Agent workbench, task runner, terminal,
+or remote account/sync layer.

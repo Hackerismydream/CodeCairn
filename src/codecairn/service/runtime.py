@@ -6,6 +6,7 @@ import os
 import re
 import time
 from collections.abc import Callable
+from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
 from typing import Protocol, cast
 
@@ -27,7 +28,7 @@ from codecairn.memory.evolution import (
     ProposalResolution,
     evaluate_proposal,
 )
-from codecairn.memory.models import AgentTrace, ImportCheckpoint, ImportResult, MemoryArtifact, RecallResult
+from codecairn.memory.models import AgentTrace, ImportCheckpoint, ImportResult, MemoryArtifact, RecallResult, RecallSource
 from codecairn.memory.schema import (
     ActionFacet,
     CodingMemory,
@@ -148,6 +149,18 @@ class RecallService(Protocol):
         token_budget: int = 8_192,
     ) -> RecallResult: ...
 
+    def recall_across(
+        self,
+        query: str,
+        *,
+        current_repo_key: str,
+        sources: tuple[RecallSource, ...],
+        limit: int,
+        include_superseded: bool = False,
+        workstream_key: str | None = None,
+        token_budget: int = 8_192,
+    ) -> RecallResult: ...
+
 
 class MemoryRuntime:
     """Coordinate adapters while preserving domain-owned identities."""
@@ -161,6 +174,7 @@ class MemoryRuntime:
         recall_engine: RecallService | None = None,
         semantic_extractor: SemanticExtractor | None = None,
         fault_injector: Callable[[str], None] | None = None,
+        library_lock: Callable[[], AbstractContextManager[object]] | None = None,
     ) -> None:
         self._state = state
         self._markdown = memory_store
@@ -168,6 +182,7 @@ class MemoryRuntime:
         self._recall_engine = recall_engine
         self._semantic_extractor = semantic_extractor
         self._fault_injector = fault_injector
+        self._library_lock = library_lock or nullcontext
 
     def import_session(
         self,
@@ -361,6 +376,27 @@ class MemoryRuntime:
             token_budget=token_budget,
         )
 
+    def recall_across(
+        self,
+        query: str,
+        *,
+        current_repo_key: str,
+        sources: tuple[RecallSource, ...],
+        limit: int = 20,
+        workstream_key: str | None = None,
+        token_budget: int = 8_192,
+    ) -> RecallResult:
+        if self._recall_engine is None:
+            raise RuntimeError("Recall is not configured for this runtime")
+        return self._recall_engine.recall_across(
+            query,
+            current_repo_key=current_repo_key,
+            sources=sources,
+            limit=limit,
+            workstream_key=workstream_key,
+            token_budget=token_budget,
+        )
+
     def supersede(
         self, *, repo_key: str, predecessor_id: str, successor_id: str, reason: str, proposer: EvolutionProposer
     ) -> EvolutionRecord:
@@ -496,14 +532,15 @@ class MemoryRuntime:
             except IdentityConflict:
                 self._mark_conflicted(commit.operation_id)
                 raise
-        for evolution_commit in self._state.list_prepared_evolutions():
-            try:
-                memory_artifact = None if evolution_commit.new_memory is None else self._markdown.write(evolution_commit.new_memory)
-                evolution_artifact = self._markdown.write_evolution(evolution_commit.record)
-                repaired += int(self._state.complete_evolution(evolution_commit, evolution_artifact, memory_artifact))
-            except IdentityConflict:
-                self._mark_conflicted(evolution_commit.operation_id)
-                raise
+        with self._library_lock():
+            for evolution_commit in self._state.list_prepared_evolutions():
+                try:
+                    memory_artifact = None if evolution_commit.new_memory is None else self._markdown.write(evolution_commit.new_memory)
+                    evolution_artifact = self._markdown.write_evolution(evolution_commit.record)
+                    repaired += int(self._state.complete_evolution(evolution_commit, evolution_artifact, memory_artifact))
+                except IdentityConflict:
+                    self._mark_conflicted(evolution_commit.operation_id)
+                    raise
         return repaired
 
     def _commit_semantic_batch(self, job: SemanticJob, batch: CompiledSemanticBatch) -> None:
@@ -576,6 +613,12 @@ class MemoryRuntime:
 
     def _apply_evolution(
         self, proposal: EvolutionProposal, *, evidence: tuple[EvidenceReference, ...], new_memory: CodingMemory | None = None
+    ) -> EvolutionRecord:
+        with self._library_lock():
+            return self._apply_evolution_locked(proposal, evidence=evidence, new_memory=new_memory)
+
+    def _apply_evolution_locked(
+        self, proposal: EvolutionProposal, *, evidence: tuple[EvidenceReference, ...], new_memory: CodingMemory | None
     ) -> EvolutionRecord:
         now_ms = time.time_ns() // 1_000_000
         record = EvolutionRecord.from_proposal(proposal, evidence=evidence, created_at_ms=now_ms)

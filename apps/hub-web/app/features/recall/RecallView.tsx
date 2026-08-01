@@ -7,7 +7,14 @@ import {
 } from "../../../lib/hub/client";
 import { memoryTypeLabels } from "../../../lib/hub/format";
 import { createRequestGate } from "../../../lib/hub/memory-state";
-import type { RecallView as RecallData } from "../../../lib/hub/types";
+import {
+  activeScopesLabel,
+  memoryScopeLabel,
+} from "../../../lib/hub/scope";
+import type {
+  MemoryScope,
+  RecallView as RecallData,
+} from "../../../lib/hub/types";
 import RequestError from "../../components/RequestError";
 
 const candidateSourceLabels = {
@@ -27,6 +34,56 @@ export function recallProcessingLabel(freshness: string, semanticState: string):
   return freshness === "semantic_pending" || semanticState === "pending"
     ? "本次关键词与向量检索已完成；后续记忆提炼待处理"
     : "本次检索与后续记忆提炼均已完成";
+}
+
+export function RecallLibraryContext({
+  personId,
+  requestingClient,
+  activeScopes,
+}: {
+  personId: string;
+  requestingClient: "hub" | undefined;
+  activeScopes: MemoryScope[] | undefined;
+}) {
+  return (
+    <div className="library-recall-context">
+      <span>调用方：{requestingClient ?? "未报告"}</span>
+      <span>Person：{personId.slice(0, 15)}</span>
+      <span>生效范围：{activeScopesLabel(activeScopes)}</span>
+    </div>
+  );
+}
+
+export function RecallScopeSource({
+  effectiveScope,
+  sourceRepositoryKey,
+}: {
+  effectiveScope: MemoryScope | undefined;
+  sourceRepositoryKey: string | undefined;
+}) {
+  if (effectiveScope === undefined) return null;
+  return (
+    <small>
+      {memoryScopeLabel(effectiveScope)} · 来源 {sourceRepositoryKey ?? "未报告"}
+    </small>
+  );
+}
+
+export function ShadowedPreferenceNotices({
+  shadowed,
+}: {
+  shadowed: NonNullable<
+    RecallData["result"]["sidecar"]["shadowed"]
+  >;
+}) {
+  return shadowed.map((item) => (
+    <div className="omission-row" key={item.promotion_id}>
+      <code>{item.promotion_id.slice(0, 16)}</code>
+      <strong>
+        全局偏好被当前仓库同主题偏好覆盖（{item.shadowed_by_memory_ids.length} 条）
+      </strong>
+    </div>
+  ));
 }
 
 const omissionReasonLabels: Record<string, string> = {
@@ -112,7 +169,7 @@ export default function RecallView({
     <section className="view-shell">
       <header className="page-heading">
         <h1>召回</h1>
-        <p>输入当前任务，查看 CodeCairn 为什么接纳或拒绝一条记忆。</p>
+        <p>输入当前任务，查看 Myna 为什么接纳、遮蔽或拒绝一条记忆。</p>
       </header>
 
       <form className="recall-form" onSubmit={submit}>
@@ -146,6 +203,14 @@ export default function RecallView({
             <strong>{sidecar.query}</strong>
             <small>{sidecar.latency_ms.toFixed(1)} ms</small>
           </div>
+
+          {sidecar.person_id ? (
+            <RecallLibraryContext
+              personId={sidecar.person_id}
+              requestingClient={sidecar.requesting_client}
+              activeScopes={sidecar.active_scopes}
+            />
+          ) : null}
 
           <section className="admission-panel">
             <div className="admission-summary">
@@ -224,6 +289,10 @@ export default function RecallView({
                     <span className="candidate-memory">
                       <strong>{candidate.title}</strong>
                       <small>{memoryTypeLabels[candidate.memory_type]}</small>
+                      <RecallScopeSource
+                        effectiveScope={candidate.effective_scope}
+                        sourceRepositoryKey={candidate.source?.repository_key}
+                      />
                       <code>{candidate.memory_id.slice(0, 16)}</code>
                     </span>
                     <span className="candidate-sources">
@@ -275,6 +344,7 @@ export default function RecallView({
                 <h2>未进入上下文</h2>
                 <span>{sidecar.omissions.length} 条</span>
               </header>
+              <ShadowedPreferenceNotices shadowed={sidecar.shadowed ?? []} />
               {sidecar.omissions.map((omission) => (
                 <div
                   className="omission-row"

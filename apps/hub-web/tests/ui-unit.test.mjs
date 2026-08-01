@@ -48,6 +48,33 @@ function response(payload, status = 200) {
   );
 }
 
+function promotionResponse(memoryId) {
+  return {
+    schema_version: 1,
+    library_context: {
+      person_id: `person_${"2".repeat(64)}`,
+      current_repository_key: "github.com/acme/widgets",
+      active_scopes: ["global", "repository"],
+    },
+    receipt: {
+      outcome: "created",
+      promotion: {
+        schema_version: 1,
+        promotion_id: `promotion_${"3".repeat(64)}`,
+        person_id: `person_${"2".repeat(64)}`,
+        subject_key: "response-language",
+        source: {
+          repository_key: "github.com/acme/widgets",
+          memory_id: memoryId,
+          revision_sha256: "4".repeat(64),
+        },
+        replaces_promotion_id: null,
+        created_at_ms: 1_754_041_600_000,
+      },
+    },
+  };
+}
+
 async function onboardingResponses() {
   const url = new URL(
     "../../../contracts/hub-onboarding/v1.example.json",
@@ -440,6 +467,41 @@ async function capturedMemoryResponse({
   return { memories, reference };
 }
 
+async function mynaContractResponses() {
+  const { memories, recall_admitted: recall, system } = structuredClone(
+    (await contract()).responses,
+  );
+  const personId = `person_${"2".repeat(64)}`;
+  const libraryContext = {
+    person_id: personId,
+    current_repository_key: memories.repo_key,
+    active_scopes: ["global", "repository"],
+    promotion_count: 1,
+  };
+  memories.library_context = structuredClone(libraryContext);
+  for (const item of memories.page.items) {
+    item.effective_scope = "repository";
+    item.source_repository_key = memories.repo_key;
+  }
+  memories.selected.effective_scope = "repository";
+  memories.selected.source_repository_key = memories.repo_key;
+  recall.result.sidecar.person_id = personId;
+  recall.result.sidecar.repository_key = recall.result.sidecar.repo_key;
+  recall.result.sidecar.requesting_client = "hub";
+  recall.result.sidecar.active_scopes = ["global", "repository"];
+  recall.result.sidecar.shadowed = [];
+  for (const candidate of recall.result.sidecar.ranked) {
+    candidate.effective_scope = "global";
+    candidate.source = {
+      repository_key: "github.com/acme/preferences",
+      memory_id: candidate.memory_id,
+      revision_sha256: "4".repeat(64),
+    };
+  }
+  system.library_context = structuredClone(libraryContext);
+  return { memories, recall, system };
+}
+
 test("the HTTP client accepts the checked-in version 1 responses", async () => {
   const { createHttpHubClient } = await load("/lib/hub/http-client.ts");
   const { responses } = await contract();
@@ -457,6 +519,94 @@ test("the HTTP client accepts the checked-in version 1 responses", async () => {
     responses.recall_admitted.result.sidecar.repo_key,
   );
   assert.equal((await client.system()).repo_key, responses.system.repo_key);
+});
+
+test("the HTTP client sends the explicit Person-library scope filter", async () => {
+  const { createHttpHubClient } = await load("/lib/hub/http-client.ts");
+  const { memories } = (await contract()).responses;
+  let requested;
+  const client = createHttpHubClient(async (input) => {
+    requested = new URL(String(input), "http://localhost");
+    return response(memories);
+  });
+
+  await client.memories({
+    memoryType: "user_preference",
+    status: "active",
+    scope: "global",
+    limit: 25,
+    cursor: "next-page",
+    selectedMemoryId: memories.selected.detail.memory.memory_id,
+  });
+
+  assert.equal(requested.pathname, "/api/hub-read/v1/memories");
+  assert.deepEqual(Object.fromEntries(requested.searchParams), {
+    memory_type: "user_preference",
+    status: "active",
+    scope: "global",
+    limit: "25",
+    cursor: "next-page",
+    selected_memory_id: memories.selected.detail.memory.memory_id,
+  });
+});
+
+test("the browser contract accepts complete Myna Person, scope, and source projections", async () => {
+  const { createHttpHubClient } = await load("/lib/hub/http-client.ts");
+  const fixtures = await mynaContractResponses();
+  const payloads = [fixtures.memories, fixtures.recall, fixtures.system];
+  let index = 0;
+  const client = createHttpHubClient(async () => response(payloads[index++]));
+
+  const memories = await client.memories({ scope: "all" });
+  const recall = await client.recall({ query: "Which language should I use?" });
+  const system = await client.system();
+
+  assert.equal(memories.library_context.person_id, fixtures.memories.library_context.person_id);
+  assert.equal(memories.page.items[0].effective_scope, "repository");
+  assert.equal(recall.result.sidecar.requesting_client, "hub");
+  assert.equal(recall.result.sidecar.ranked[0].effective_scope, "global");
+  assert.deepEqual(system.library_context.active_scopes, ["global", "repository"]);
+});
+
+test("the browser contract fails closed on partial or contradictory Myna projections", async () => {
+  const { createHttpHubClient } = await load("/lib/hub/http-client.ts");
+  const fixtureFactories = [
+    async () => {
+      const { memories } = await mynaContractResponses();
+      delete memories.page.items[0].source_repository_key;
+      return ["memories", memories];
+    },
+    async () => {
+      const { recall } = await mynaContractResponses();
+      recall.result.sidecar.ranked[0].source.memory_id = `mem_${"9".repeat(64)}`;
+      return ["recall", recall];
+    },
+    async () => {
+      const { recall } = await mynaContractResponses();
+      delete recall.result.sidecar.requesting_client;
+      return ["recall", recall];
+    },
+    async () => {
+      const { system } = await mynaContractResponses();
+      system.library_context.active_scopes = ["global", "global"];
+      return ["system", system];
+    },
+  ];
+
+  for (const createFixture of fixtureFactories) {
+    const [operation, payload] = await createFixture();
+    const client = createHttpHubClient(async () => response(payload));
+    const request =
+      operation === "memories"
+        ? client.memories()
+        : operation === "recall"
+          ? client.recall({ query: "test" })
+          : client.system();
+    await assert.rejects(request, (error) => {
+      assert.equal(error.code, "invalid_response");
+      return true;
+    });
+  }
 });
 
 test("the HTTP client rejects invalid command-result exit codes", async () => {
@@ -708,6 +858,10 @@ test("memory controls suppress no-op filters, in-flight paging, and stale respon
   );
   assert.equal(isUnfilteredNamespaceEmpty(0, "all", "active", false), false);
   assert.equal(isUnfilteredNamespaceEmpty(0, "all", "all", true), false);
+  assert.equal(
+    isUnfilteredNamespaceEmpty(0, "all", "all", false, "global"),
+    false,
+  );
   assert.equal(isUnfilteredNamespaceEmpty(1, "all", "all", false), false);
 
   const gate = createRequestGate();
@@ -803,6 +957,162 @@ test("memory details separate recall lifecycle from event evidence", async () =>
   assert.match(html, /证据状态：未附证据事实/);
   assert.match(html, /这是智能体声明，不代表已经附有证据事实/);
   assert.match(html, /<details class="payload-block"><summary>结构化内容<\/summary>/);
+});
+
+test("Myna memory details show effective scope, source, and explicit promotion control", async () => {
+  const { default: MemoryInspector } = await load(
+    "/app/features/memories/MemoryInspector.tsx",
+  );
+  const { memories } = (await contract()).responses;
+  const selected = structuredClone(memories.selected);
+  selected.detail.memory.memory_type = "user_preference";
+  selected.effective_scope = "repository";
+  selected.source_repository_key = selected.detail.memory.repo_key;
+  selected.governance = {
+    state: "eligible",
+    eligible: true,
+    promotion_id: null,
+    error_code: null,
+  };
+  const governanceClient = { promotePreference: async () => assert.fail() };
+
+  const eligible = renderToStaticMarkup(
+    React.createElement(MemoryInspector, { selected, governanceClient }),
+  );
+  const promoted = renderToStaticMarkup(
+    React.createElement(MemoryInspector, {
+      selected: {
+        ...selected,
+        governance: {
+          state: "promoted",
+          eligible: true,
+          promotion_id: `promotion_${"3".repeat(64)}`,
+          error_code: null,
+        },
+      },
+      governanceClient,
+    }),
+  );
+
+  assert.match(eligible, /<dt>生效范围<\/dt><dd>当前仓库<\/dd>/);
+  assert.match(eligible, /<dt>来源仓库<\/dt><dd>github.com\/Hackerismydream\/CodeCairn<\/dd>/);
+  assert.match(eligible, /偏好范围/);
+  assert.match(eligible, />仅当前仓库</);
+  assert.match(eligible, />用于所有仓库<\/button>/);
+  assert.match(promoted, />所有仓库<\/small>/);
+  assert.doesNotMatch(promoted, />用于所有仓库<\/button>/);
+});
+
+test("Myna recall presentation names the Person, client, scopes, source, and shadowing", async () => {
+  const {
+    RecallLibraryContext,
+    RecallScopeSource,
+    ShadowedPreferenceNotices,
+  } = await load(
+    "/app/features/recall/RecallView.tsx",
+  );
+  const context = renderToStaticMarkup(
+    React.createElement(RecallLibraryContext, {
+      personId: `person_${"2".repeat(64)}`,
+      requestingClient: "hub",
+      activeScopes: ["global", "repository"],
+    }),
+  );
+  const source = renderToStaticMarkup(
+    React.createElement(RecallScopeSource, {
+      effectiveScope: "global",
+      sourceRepositoryKey: "github.com/acme/preferences",
+    }),
+  );
+  const shadowed = renderToStaticMarkup(
+    React.createElement(ShadowedPreferenceNotices, {
+      shadowed: [
+        {
+          promotion_id: `promotion_${"3".repeat(64)}`,
+          subject_key: "response-language",
+          shadowed_by_memory_ids: [`mem_${"4".repeat(64)}`],
+        },
+      ],
+    }),
+  );
+
+  assert.match(context, /调用方：hub/);
+  assert.match(context, /Person：person_22222222/);
+  assert.match(context, /生效范围：所有仓库 \+ 当前仓库/);
+  assert.match(source, /所有仓库 · 来源 github.com\/acme\/preferences/);
+  assert.match(shadowed, /全局偏好被当前仓库同主题偏好覆盖（1 条）/);
+});
+
+test("governance client sends only the selected memory identity", async () => {
+  const { createHttpGovernanceClient } = await load(
+    "/lib/governance/http-client.ts",
+  );
+  const memoryId = `mem_${"1".repeat(64)}`;
+  let observed;
+  const client = createHttpGovernanceClient(async (input, init) => {
+    observed = { input: String(input), body: JSON.parse(init.body) };
+    return response(promotionResponse(memoryId));
+  });
+
+  const result = await client.promotePreference(memoryId);
+
+  assert.deepEqual(observed, {
+    input: "/api/hub-governance/v1/preferences/promote",
+    body: { memory_id: memoryId },
+  });
+  assert.equal(result.receipt.outcome, "created");
+});
+
+test("governance client rejects receipts for another Person, repository, or memory", async () => {
+  const { createHttpGovernanceClient } = await load(
+    "/lib/governance/http-client.ts",
+  );
+  const memoryId = `mem_${"1".repeat(64)}`;
+  const mutations = [
+    (value) => {
+      value.receipt.promotion.person_id = `person_${"8".repeat(64)}`;
+    },
+    (value) => {
+      value.receipt.promotion.source.repository_key = "github.com/acme/other";
+    },
+    (value) => {
+      value.receipt.promotion.source.memory_id = `mem_${"9".repeat(64)}`;
+    },
+    (value) => {
+      value.library_context.active_scopes = ["global", "global"];
+    },
+  ];
+
+  for (const mutate of mutations) {
+    const payload = promotionResponse(memoryId);
+    mutate(payload);
+    const client = createHttpGovernanceClient(async () => response(payload));
+    await assert.rejects(client.promotePreference(memoryId), (error) => {
+      assert.equal(error.code, "invalid_response");
+      return true;
+    });
+  }
+});
+
+test("promotion errors use stable local copy instead of backend claim text", async () => {
+  const [{ promotionErrorMessage }, { HubApiError }] = await Promise.all([
+    load("/app/features/memories/MemoryInspector.tsx"),
+    load("/lib/hub/client.ts"),
+  ]);
+
+  assert.equal(
+    promotionErrorMessage(
+      new HubApiError("unsafe backend detail", {
+        code: "global_preference_conflict",
+        retryable: false,
+      }),
+    ),
+    "同一主题已有用于所有仓库的偏好。",
+  );
+  assert.doesNotMatch(
+    promotionErrorMessage(new Error("secret backend detail")),
+    /secret|backend/,
+  );
 });
 
 test("memory details foreground the source agent, session, and observed command result", async () => {

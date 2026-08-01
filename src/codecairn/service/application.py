@@ -10,7 +10,16 @@ from typing import Any, Literal, Protocol
 
 from codecairn.memory.episode import BoundaryKind
 from codecairn.memory.evolution import EvolutionProposer, EvolutionRecord, MemoryHistory
-from codecairn.memory.models import CodingMemory, HookReceipt, ImportCheckpoint, ImportResult, IndexHealth, RebuildReport, RecallResult
+from codecairn.memory.models import (
+    CodingMemory,
+    HookReceipt,
+    ImportCheckpoint,
+    ImportResult,
+    IndexHealth,
+    RebuildReport,
+    RecallResult,
+    RecallSource,
+)
 from codecairn.memory.schema import (
     MemoryType,
     RepositoryKnowledgePayload,
@@ -100,6 +109,12 @@ class ApplicationOperations(Protocol):
     def reset_namespace(self, *, confirm: str | None, dry_run: bool) -> dict[str, object]: ...
 
     def read_memory_markdown(self, *, repo_key: str, memory_id: str) -> str: ...
+
+    def read_memory_truth(self, *, repo_key: str, memory_id: str) -> CodingMemory: ...
+
+    def has_supersession(self, *, repo_key: str, predecessor_id: str, successor_id: str) -> bool: ...
+
+    def has_durable_successor(self, *, repo_key: str, memory_id: str) -> bool: ...
 
     def record_hook_receipt(self, receipt: HookReceipt) -> None: ...
 
@@ -240,6 +255,15 @@ class CodeCairnApplication:
     def memory_resource(self, *, repo_key: str, memory_id: str) -> str:
         return self._operations.read_memory_markdown(repo_key=repo_key, memory_id=memory_id)
 
+    def memory_truth(self, *, repo_key: str, memory_id: str) -> CodingMemory:
+        return self._operations.read_memory_truth(repo_key=repo_key, memory_id=memory_id)
+
+    def has_supersession(self, *, repo_key: str, predecessor_id: str, successor_id: str) -> bool:
+        return self._operations.has_supersession(repo_key=repo_key, predecessor_id=predecessor_id, successor_id=successor_id)
+
+    def has_durable_successor(self, *, repo_key: str, memory_id: str) -> bool:
+        return self._operations.has_durable_successor(repo_key=repo_key, memory_id=memory_id)
+
     def record_hook_receipt(self, receipt: HookReceipt) -> None:
         self._operations.record_hook_receipt(receipt)
 
@@ -261,6 +285,25 @@ class CodeCairnApplication:
             repo_key=repo_key,
             limit=limit,
             include_superseded=include_superseded,
+            workstream_key=workstream_key,
+            token_budget=token_budget,
+        )
+
+    def recall_across(
+        self,
+        query: str,
+        *,
+        current_repo_key: str,
+        sources: tuple[RecallSource, ...],
+        limit: int = 20,
+        workstream_key: str | None = None,
+        token_budget: int = 8_192,
+    ) -> RecallResult:
+        return self._memory_runtime().recall_across(
+            query,
+            current_repo_key=current_repo_key,
+            sources=sources,
+            limit=limit,
             workstream_key=workstream_key,
             token_budget=token_budget,
         )

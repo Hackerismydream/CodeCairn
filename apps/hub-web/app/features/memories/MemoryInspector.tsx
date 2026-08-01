@@ -6,7 +6,10 @@ import {
   memoryStatusLabels,
   memoryTypeLabels,
 } from "../../../lib/hub/format";
+import { memoryScopeLabel } from "../../../lib/hub/scope";
 import type { MemoriesView } from "../../../lib/hub/types";
+import type { GovernanceClient } from "../../../lib/governance/client";
+import { HubApiError } from "../../../lib/hub/client";
 
 type InspectorTab = "content" | "source" | "evolution";
 const INSPECTOR_TABS = [["content", "内容"], ["source", "来源"], ["evolution", "演化"]] as const;
@@ -16,8 +19,37 @@ const factKindLabels: Record<string, string> = {
   tool_result: "工具结果", verification: "验证事实",
 };
 
-export default function MemoryInspector({ selected }: { selected: NonNullable<MemoriesView["selected"]> }) {
+export function promotionErrorMessage(reason: unknown): string {
+  if (!(reason instanceof HubApiError)) return "无法更新偏好范围，请重试。";
+  if (reason.code === "global_preference_conflict") {
+    return "同一主题已有用于所有仓库的偏好。";
+  }
+  if (
+    reason.code === "preference_not_eligible" ||
+    reason.code === "memory_not_found"
+  ) {
+    return "这条偏好已变化，请刷新记忆列表。";
+  }
+  if (reason.code === "hub_unavailable" || reason.code === "unauthorized") {
+    return "本地 Myna 治理模块当前不可用。";
+  }
+  return "无法更新偏好范围，请刷新后重试。";
+}
+
+export default function MemoryInspector({
+  selected,
+  governanceClient,
+}: {
+  selected: NonNullable<MemoriesView["selected"]>;
+  governanceClient: GovernanceClient;
+}) {
   const [tab, setTab] = useState<InspectorTab>("content");
+  const [promotionState, setPromotionState] = useState(
+    selected.governance?.state,
+  );
+  const [promotionReceipt, setPromotionReceipt] = useState<string | null>(null);
+  const [promotionError, setPromotionError] = useState<string | null>(null);
+  const [promoting, setPromoting] = useState(false);
   const { detail, history } = selected;
   const memory = detail.memory;
   const statuses = new Map(history.statuses);
@@ -32,11 +64,32 @@ export default function MemoryInspector({ selected }: { selected: NonNullable<Me
   const outcomeLabel = outcome === "success" ? "成功" : outcome === "failure" ? "失败" : "未知";
   const exitCodeLabel = commandResult?.attributes.exit_code === undefined ? "未捕获" : displayValue(commandResult.attributes.exit_code);
   const definitions = [
+    ["生效范围", memoryScopeLabel(selected.effective_scope)],
+    ["来源仓库", selected.source_repository_key ?? "来源仓库未报告"],
     ["来源方式", memoryOriginLabels[memory.origin]],
     ["分类", memory.category],
     ["记忆 ID", memory.memory_id],
     ["任务片段", memory.episode_id ?? "无"],
   ] as const;
+
+  async function promotePreference() {
+    if (promoting || !selected.governance?.eligible) return;
+    setPromoting(true);
+    setPromotionError(null);
+    try {
+      const response = await governanceClient.promotePreference(memory.memory_id);
+      setPromotionState("promoted");
+      setPromotionReceipt(
+        response.receipt.outcome === "created"
+          ? `已用于所有仓库 · ${response.receipt.promotion.promotion_id.slice(0, 20)}`
+          : `此前已用于所有仓库 · ${response.receipt.promotion.promotion_id.slice(0, 20)}`,
+      );
+    } catch (reason) {
+      setPromotionError(promotionErrorMessage(reason));
+    } finally {
+      setPromoting(false);
+    }
+  }
 
   return (
     <aside className="memory-inspector" aria-label="记忆详情">
@@ -61,6 +114,27 @@ export default function MemoryInspector({ selected }: { selected: NonNullable<Me
           </p>
         ) : null}
         {fileChange ? <p>首条文件变更证据：<code>{fileChange.value}</code></p> : null}
+        {memory.memory_type === "user_preference" && selected.governance ? (
+          <div className="promotion-control">
+            <div>
+              <strong>偏好范围</strong>
+              <small>
+                {promotionState === "promoted"
+                  ? "所有仓库"
+                  : selected.governance.error_code === "global_preference_conflict"
+                    ? "同一主题已有全局偏好"
+                    : "仅当前仓库"}
+              </small>
+            </div>
+            {selected.governance.eligible && promotionState !== "promoted" ? (
+              <button type="button" disabled={promoting} onClick={() => void promotePreference()}>
+                {promoting ? "正在保存" : "用于所有仓库"}
+              </button>
+            ) : null}
+            {promotionReceipt ? <p className="promotion-receipt">{promotionReceipt}</p> : null}
+            {promotionError ? <p className="promotion-error">{promotionError}</p> : null}
+          </div>
+        ) : null}
       </header>
 
       <div className="inspector-tabs" role="tablist">
@@ -149,7 +223,7 @@ export default function MemoryInspector({ selected }: { selected: NonNullable<Me
           ) : (
             <div className="empty-state compact">
               <strong>未附证据事实</strong>
-              <p>CodeCairn 不会为智能体声明的内容伪造事件证据。</p>
+              <p>Myna 不会为智能体声明的内容伪造事件证据。</p>
             </div>
           )}
         </section>

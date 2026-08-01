@@ -8,6 +8,9 @@ import {
   useState,
 } from "react";
 import { createHttpHubClient } from "../../lib/hub/http-client";
+import { createHttpGovernanceClient } from "../../lib/governance/http-client";
+import { memoryScopeLabel } from "../../lib/hub/scope";
+import type { LibraryContext } from "../../lib/hub/types";
 import { createHttpOnboardingClient } from "../../lib/onboarding/http-client";
 import {
   HubApiError,
@@ -41,11 +44,14 @@ const connectionLabels: Record<ConnectionState, string> = {
 
 export default function HubShell({ initialView }: { initialView: HubView }) {
   const client = useMemo(() => createHttpHubClient(), []);
+  const governanceClient = useMemo(() => createHttpGovernanceClient(), []);
   const onboardingClient = useMemo(() => createHttpOnboardingClient(), []);
   const [view, setView] = useState<HubView>(initialView);
   const [namespace, setNamespace] = useState("正在读取本地命名空间");
   const [connectionState, setConnectionState] =
     useState<ConnectionState>("checking");
+  const [libraryContext, setLibraryContext] =
+    useState<LibraryContext | null>(null);
 
   const observe = useCallback((repoKey: string) => {
     setNamespace(repoKey);
@@ -65,11 +71,14 @@ export default function HubShell({ initialView }: { initialView: HubView }) {
   }, []);
 
   useEffect(() => {
-    if (view !== "recall" || connectionState !== "checking") return;
+    if (connectionState !== "checking") return;
     const controller = new AbortController();
     client
       .system(controller.signal)
-      .then((result) => observe(result.repo_key))
+      .then((result) => {
+        observe(result.repo_key);
+        setLibraryContext(result.library_context ?? null);
+      })
       .catch((reason: unknown) => {
         if (controller.signal.aborted) return;
         if (isHubConnectionFailure(reason)) {
@@ -83,7 +92,7 @@ export default function HubShell({ initialView }: { initialView: HubView }) {
         }
       });
     return () => controller.abort();
-  }, [client, connectionState, observe, unavailable, view]);
+  }, [client, connectionState, observe, unavailable]);
 
   function navigate(
     event: MouseEvent<HTMLAnchorElement>,
@@ -116,8 +125,8 @@ export default function HubShell({ initialView }: { initialView: HubView }) {
             <i />
           </span>
           <span>
-            <strong>CodeCairn</strong>
-            <small>记忆中心</small>
+            <strong>Myna</strong>
+            <small>Person Memory Hub</small>
           </span>
         </div>
         <nav aria-label="主导航">
@@ -145,8 +154,19 @@ export default function HubShell({ initialView }: { initialView: HubView }) {
       <section className="hub-stage">
         <header className="system-bar">
           <div>
-            <small>{view === "demo" ? "当前页面" : "当前记忆命名空间"}</small>
-            <strong>{view === "demo" ? "隔离示例空间" : namespace}</strong>
+            <small>{view === "demo" ? "当前页面" : "当前 Person / 仓库"}</small>
+            <strong>
+              {view === "demo"
+                ? "隔离示例空间"
+                : `${libraryContext?.person_id.slice(0, 15) ?? "本机 Person"} · ${namespace}`}
+            </strong>
+            {view !== "demo" && libraryContext ? (
+              <span className="scope-chips" aria-label="生效记忆范围">
+                {libraryContext.active_scopes.map((scope) => (
+                  <i key={scope}>{memoryScopeLabel(scope)}</i>
+                ))}
+              </span>
+            ) : null}
           </div>
           {view === "demo" ? (
             <span className="connection">示例演示</span>
@@ -168,6 +188,7 @@ export default function HubShell({ initialView }: { initialView: HubView }) {
           {view === "memories" ? (
             <MemoriesView
               client={client}
+              governanceClient={governanceClient}
               onConnected={observe}
               onUnavailable={unavailable}
             />

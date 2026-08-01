@@ -153,6 +153,13 @@ including the reviewed consent-integrity landing allowance, without rewriting
 historical stage budgets. Formal acceptance remains separate from an
 implementation candidate.
 
+ADR 0064 begins the version 0.5 Person-first slice under the Myna product name.
+It adds one random local Person, repository and global scopes, immutable
+preference promotion by reference, repository-specific shadowing, and one
+separate Hub governance write while preserving every existing Coding Memory
+identity. It also adds the independent 20,700-core / 29,900-total
+`v05-person-first` source ceiling without changing version 0.4.
+
 Current shipped behavior is maintained in
 [`../runtime/operations.md`](../runtime/operations.md); the product sequence is
 maintained in [`../roadmap.md`](../roadmap.md).

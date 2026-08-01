@@ -175,6 +175,19 @@ class RecallDocument:
 
 
 @dataclass(frozen=True, slots=True)
+class RecallSource:
+    repo_key: str
+    allowed_memory_ids: tuple[str, ...] | None = None
+
+    def __post_init__(self) -> None:
+        if not self.repo_key or (
+            self.allowed_memory_ids is not None
+            and (not self.allowed_memory_ids or self.allowed_memory_ids != tuple(sorted(set(self.allowed_memory_ids))))
+        ):
+            raise ValueError("Recall source is invalid")
+
+
+@dataclass(frozen=True, slots=True)
 class IndexCandidate:
     memory_id: str
     document_id: str = ""

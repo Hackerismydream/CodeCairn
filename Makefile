@@ -1,7 +1,7 @@
 .PHONY: acceptance-v03-check artifact-check artifact-repro check docs-check eval-coding-ab eval-locomo-200 eval-locomo-full eval-retrieval eval-scale eval-smoke evidence-verify format hub-api-check hub-check hub-contract-check hub-dev hub-lifecycle-check hub-start hub-ui-check imports installed-smoke lint source-budget test typecheck
 
 EVAL_OUTPUT_ROOT ?= benchmark_results
-SOURCE_BUDGET_STAGE ?= v04-onboarding
+SOURCE_BUDGET_STAGE ?= v05-person-first
 
 format:
 	uv run ruff check --fix .
@@ -67,7 +67,7 @@ hub-contract-check:
 
 hub-api-check:
 	uv run mypy --config-file apps/hub-api/pyproject.toml apps/hub-api/src
-	uv run pytest -q apps/hub-api/tests/test_hub_api.py
+	uv run pytest -q apps/hub-api/tests
 
 hub-ui-check:
 	npm run hub:lint

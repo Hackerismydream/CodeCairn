@@ -242,7 +242,7 @@ def test_mcp_missing_provider_is_typed(tmp_path: Path) -> None:
             assert remembered["memory_id"]
             recalled = await client.call_tool("recall", {"task": "provider test"})
             assert recalled.isError
-            assert '"code":"index_not_ready"' in recalled.content[0].text
+            assert '"code":"provider_not_configured"' in recalled.content[0].text
 
     anyio.run(exercise)
 
