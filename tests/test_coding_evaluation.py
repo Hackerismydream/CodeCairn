@@ -25,6 +25,14 @@ from codecairn.evaluation.coding import (
 BENCHMARK_ROOT = Path(__file__).parent.parent / "benchmarks" / "coding"
 
 
+def test_codex_agent_rejects_non_flash_deepseek_model() -> None:
+    for model in ("deepseek-chat", "vendor/deepseek-chat", "deepseek-ai/DeepSeek-V3"):
+        with pytest.raises(ValueError, match="DeepSeek V4 Flash"):
+            CodexExecAgent(model=model)
+
+    assert CodexExecAgent(model="deepseek-v4-flash").model == "deepseek-v4-flash"
+
+
 @dataclass
 class RecordingAgent:
     fail_repeats: set[int] = field(default_factory=set)

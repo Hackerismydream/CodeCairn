@@ -9,7 +9,10 @@ apps/
   hub-web/       Chinese React inspection application
 contracts/
   hub-read/      executable version 1 read example
+  hub-onboarding/ executable version 1 Preview/Apply example
 src/codecairn/   Memory OS package and supported CLI, MCP, hook, and Pico surfaces
+tools/
+  v03-acceptance/ frozen Hub scenario, adapters, human forms, reducer, verifier
 tests/           Memory OS and cross-workspace behavior tests
 ```
 
@@ -29,15 +32,42 @@ The dependency direction is:
 
 ```text
 browser
-  -> same-origin Hub route
-     -> loopback Hub Read Interface
-        -> CodeCairnApplication
-           -> memory and storage adapters
+  +-> same-origin Hub read route
+  |  -> loopback Hub Read Interface
+  |     -> CodeCairnApplication
+  |        -> memory and storage adapters
+  +-> exact same-origin Onboarding routes
+     -> loopback Hub Onboarding Interface
+        +-> fixed Codex/Claude history adapters
+        +-> CodeCairnApplication import
+        +-> explicit Codex/Claude Hook installer
 ```
 
 The browser does not know storage paths or provider credentials. The Hub API
-does not implement alternate memory behavior. The three view operations are
-the external seam and the test surface.
+does not implement alternate memory behavior. The three Hub Read operations
+remain one external seam and test surface. Version 0.4 adds a second seam with
+only Preview and Apply; it does not turn the read Interface into a mutation
+surface or an arbitrary local proxy.
+
+The Onboarding Module is composed for one server-selected repository. Its
+Preview scans fixed roots without writing and returns only opaque source IDs.
+Apply accepts only the bound Consent Token, then uses the existing application
+Interface and Hook Adapter. Browser-supplied repository, runtime, source, and
+settings paths remain impossible. The maintained target and acceptance
+contract is [`v0.4/onboarding.md`](v0.4/onboarding.md); the checked-in example
+is [`../contracts/hub-onboarding/v1.example.json`](../contracts/hub-onboarding/v1.example.json).
+
+The version 0.3 acceptance tool is also a uv workspace member. It depends on
+the root `codecairn` package and `codecairn-hub-api`, but neither product
+package depends on it. CodeCairn owns the campaign. Its Pico subprocess adapter
+invokes the installed Agent Runtime; its public CLI and Hub adapters observe
+product contracts; its Chinese participant form and separate reviewer form
+produce immutable local evidence. It has no LLM judge and does not add a
+product runtime.
+
+`acceptance_results/` is local generated output, not a workspace package or
+checked-in truth. Only a deliberately selected, sealed, digest-bound bundle
+could become release evidence.
 
 ## Commands
 
@@ -46,9 +76,12 @@ uv sync --locked --all-packages --all-groups
 npm ci
 make hub-dev
 make hub-check
+make acceptance-v03-check
 make check
 ```
 
 `make hub-dev` uses the current repository binding and runs both applications
 in the foreground. `make hub-start` first builds and tests the production web
 bundle, then runs the same pair with the production web server.
+`make acceptance-v03-check` type-checks the private acceptance package and runs
+its offline tests; it does not call a provider or create a human-study result.

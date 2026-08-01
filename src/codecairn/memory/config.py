@@ -19,7 +19,16 @@ FASTEMBED_REVISION = "52398278842ec682c6f32300af41344b1c0b0bb2"
 RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"
 RERANKER_REVISION = "a09144355adeed5f58c8ed011d209bf8ee5a1fec"
 RETRIEVAL_PROJECTION = "codecairn-memory-line-snippets-v1"
+DEEPSEEK_V4_FLASH_MODEL = "deepseek-v4-flash"
+DEEPSEEK_ENDPOINT = "https://api.deepseek.com"
 _RELEVANCE_THRESHOLDS: dict[RetrievalProfile, float] = {"dashscope": 0.45, "fastembed": 0.62}
+
+
+def require_supported_deepseek_model(*, profile: str | None, model: str | None, endpoint: str | None) -> None:
+    """Fail closed when an active configuration selects any other DeepSeek model."""
+    involves_deepseek = any("deepseek" in (value or "").casefold() for value in (profile, model, endpoint))
+    if involves_deepseek and model != DEEPSEEK_V4_FLASH_MODEL:
+        raise ConfigurationError(f"DeepSeek integrations require DeepSeek V4 Flash ({DEEPSEEK_V4_FLASH_MODEL})")
 
 
 @dataclass(frozen=True, slots=True)
@@ -91,6 +100,7 @@ class SemanticConfig:
             raise ConfigurationError("Disabled semantic capture cannot name a model or endpoint")
         if self.profile != "none" and (not self.model or not self.endpoint):
             raise ConfigurationError("Enabled semantic capture requires a model and endpoint")
+        require_supported_deepseek_model(profile=self.profile, model=self.model, endpoint=self.endpoint)
 
     @property
     def network(self) -> bool:

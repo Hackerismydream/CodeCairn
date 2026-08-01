@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "contract": "codecairn.v03-acceptance.protocol.v1",
+  "protocol_id": "hub-comprehension-v1",
+  "locale": "zh-CN",
+  "scenario": {
+    "id": "pico-restart-and-supersession-v1",
+    "task_a_prompt": "把示例项目的默认重试次数从 2 改成 4，并运行测试确认。原因是 CI 偶发网络抖动；不要把这个原因写进代码或文档。",
+    "task_b_prompt": "上次为什么把默认重试次数改成 4？当时怎样验证的？",
+    "recall_query": "默认重试次数为什么发生变化，当时怎样验证？",
+    "recall_evidence_marker": "CI 偶发网络抖动",
+    "required_provider_mode": "configured",
+    "supersession_source": "scenario_seed"
+  },
+  "questions": [
+    {
+      "id": "remembered",
+      "prompt": "Agent 记住了什么？请用自己的话说明任务目标和结果。",
+      "pass_criterion": "回答同时包含默认重试次数从 2 改为 4，以及测试通过这一结果；不能只抄标题或 Memory ID。"
+    },
+    {
+      "id": "provenance",
+      "prompt": "这条记忆来自哪里？请指出来源 Agent、会话和一条支持它的证据。",
+      "pass_criterion": "回答识别出 Pico 来源，并能从 Hub 中找到对应会话或 Evidence Reference；不能把 Agent 总结本身当作证据。"
+    },
+    {
+      "id": "recall_reason",
+      "prompt": "为什么这条记忆会被召回？请结合当前问题和召回解释回答。",
+      "pass_criterion": "回答说明当前问题与重试次数决策相关，并指出该记忆被 Recall Admission 接纳，而不是因为系统总会返回一条记忆。"
+    },
+    {
+      "id": "lifecycle",
+      "prompt": "旧记忆现在还会参与默认召回吗？哪条新记忆取代了它？",
+      "pass_criterion": "回答区分 superseded 与删除或时间过期，指出旧记忆默认不参与召回、后继 active 记忆和替代关系。"
+    }
+  ],
+  "rubric": {
+    "id": "v03-comprehension-rubric-v1",
+    "review_mode": "human_blind",
+    "allowed_reason_codes": [
+      "accurate",
+      "inaccurate",
+      "unsupported"
+    ]
+  },
+  "promotion": {
+    "planned_participants": 5,
+    "minimum_valid_participants": 5,
+    "minimum_participant_passes": 4,
+    "minimum_passes_per_question": 4,
+    "moderator_content_hints_max": 0
+  }
+}

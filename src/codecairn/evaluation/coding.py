@@ -20,6 +20,7 @@ from typing import Literal, Protocol, cast
 
 from codecairn.evaluation.artifacts import canonical_json, file_sha256, read_json, write_json_exclusive
 from codecairn.evaluation.historical_reader import report_coding as _report_coding
+from codecairn.memory.config import require_supported_deepseek_model
 
 CodingArm = Literal["memory-on", "memory-off"]
 RunOutcome = Literal["passed", "failed", "infrastructure_failed"]
@@ -139,6 +140,9 @@ class CodexExecAgent:
     executable: str = "codex"
     model: str | None = None
     timeout_seconds: int = 900
+
+    def __post_init__(self) -> None:
+        require_supported_deepseek_model(profile=None, model=self.model, endpoint=None)
 
     @property
     def public_config(self) -> dict[str, object]:

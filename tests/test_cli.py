@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from click import unstyle
 from typer.testing import CliRunner
 
 from codecairn.bootstrap import app, create_application, create_runtime
@@ -117,10 +118,13 @@ def test_cli_help_exposes_only_user_facing_operations() -> None:
     process_help = runner.invoke(app, ["process", "--help"])
 
     assert root_help.exit_code == hook_help.exit_code == process_help.exit_code == 0
-    assert "--install-completion" not in root_help.output
-    assert "--show-completion" not in root_help.output
-    assert "evidence " not in root_help.output
-    assert "run " not in hook_help.output
-    assert "install " in hook_help.output
-    assert "--worker-id" not in process_help.output
-    assert "--retry-failed" not in process_help.output
+    root_output = unstyle(root_help.output)
+    hook_output = unstyle(hook_help.output)
+    process_output = unstyle(process_help.output)
+    assert "--install-completion" not in root_output
+    assert "--show-completion" not in root_output
+    assert "evidence " not in root_output
+    assert "run " not in hook_output
+    assert "install " in hook_output
+    assert "--worker-id" not in process_output
+    assert "--retry-failed" not in process_output

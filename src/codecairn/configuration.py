@@ -15,7 +15,14 @@ from pathlib import Path
 from typing import cast
 from urllib.parse import urlparse
 
-from codecairn.memory.config import RetrievalConfig, RetrievalProfile, RuntimeConfig, SemanticConfig
+from codecairn.memory.config import (
+    DEEPSEEK_ENDPOINT,
+    DEEPSEEK_V4_FLASH_MODEL,
+    RetrievalConfig,
+    RetrievalProfile,
+    RuntimeConfig,
+    SemanticConfig,
+)
 from codecairn.memory.errors import ConfigurationError
 
 _ROOT_KEYS = {"schema_version", "runtime_root", "repo_key", "retrieval", "semantic"}
@@ -207,11 +214,12 @@ def _semantic(value: object, *, environment: Mapping[str, str], explicit_profile
     assert isinstance(profile, str)
     if profile == "none":
         return SemanticConfig()
-    return SemanticConfig(
-        profile=profile,
-        model=environment.get("CODECAIRN_SEMANTIC_MODEL", cast(str | None, data.get("model"))),
-        endpoint=environment.get("CODECAIRN_SEMANTIC_ENDPOINT", cast(str | None, data.get("endpoint"))),
-    )
+    model = environment.get("CODECAIRN_SEMANTIC_MODEL", cast(str | None, data.get("model")))
+    endpoint = environment.get("CODECAIRN_SEMANTIC_ENDPOINT", cast(str | None, data.get("endpoint")))
+    if profile == "deepseek":
+        model = model or DEEPSEEK_V4_FLASH_MODEL
+        endpoint = endpoint or DEEPSEEK_ENDPOINT
+    return SemanticConfig(profile=profile, model=model, endpoint=endpoint)
 
 
 def _render_binding(config: RuntimeConfig, *, portable_default: bool) -> str:

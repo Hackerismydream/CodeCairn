@@ -103,7 +103,7 @@ limits:
 - ADR 0056 separates LoCoMo pressure latency from the product retrieval
   latency gate and records the v0.1 optimization stop band.
 
-### Post-v0.1 Pico integration and recall admission
+### Post-v0.1 Pico integration, recall admission, Hub acceptance, and onboarding
 
 ADR 0057 accepts CodeCairn as Pico's direct long-term Memory Backend. It adds a
 CodeCairn-owned Pico Source Journal, provider `pico` importer, and installed
@@ -126,7 +126,32 @@ page.
 
 ADR 0061 adds a foreground loopback presentation for the concrete read-only Hub
 use case. It does not reverse ADR 0052: generic HTTP compatibility, network
-parity, remote access, and write operations remain excluded.
+parity, remote access, and write operations remain excluded. Its amendment
+adds an exclusive, private, token-free ready receipt for automated foreground
+callers without turning the launcher into a daemon.
+
+ADR 0062 makes version 0.3 promotion depend on two joined gates: exact-candidate
+machine evidence across installed Pico, public CodeCairn reads, and all three
+Hub views; then digest-bound answers from five eligible first-time target
+learners scored by separate human blind review. A source-checkout pilot can
+pass the technical machine gate but cannot promote a release. Formal acceptance
+still requires an installed Hub artifact and raw collector, a Pico process run
+against the declared configured LLM, the human study, and a sealed
+offline-verifiable bundle.
+
+ADR 0063 changes the next product outcome to version 0.4 local onboarding. It
+adds a separate two-operation Hub Onboarding Interface rather than mutating the
+Hub Read Interface. Preview scans fixed Codex and Claude Code roots, exposes
+only exact-repository opaque source IDs, performs no write or model call, and
+binds selected imports, optional Hooks, retention, egress, settings digests,
+and expiry into one Consent Token. Apply accepts only that token, rejects a
+stale plan before its first write, then reports idempotent per-item and partial
+outcomes. Pico remains continuous-only, Guided Demo remains isolated, and any
+version 0.4 path selecting DeepSeek must pin `deepseek-v4-flash` exactly.
+The ADR also adds the 18,500-core / 27,700-total `v04-onboarding` source ceiling,
+including the reviewed consent-integrity landing allowance, without rewriting
+historical stage budgets. Formal acceptance remains separate from an
+implementation candidate.
 
 Current shipped behavior is maintained in
 [`../runtime/operations.md`](../runtime/operations.md); the product sequence is

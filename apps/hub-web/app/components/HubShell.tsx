@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { createHttpHubClient } from "../../lib/hub/http-client";
+import { createHttpOnboardingClient } from "../../lib/onboarding/http-client";
 import {
   HubApiError,
   isHubConnectionFailure,
@@ -18,6 +19,8 @@ import {
   type HubView,
 } from "../../lib/hub/navigation";
 import MemoriesView from "../features/memories/MemoriesView";
+import GuidedDemoView from "../features/demo/GuidedDemoView";
+import OnboardingView from "../features/onboarding/OnboardingView";
 import RecallView from "../features/recall/RecallView";
 import SystemView from "../features/system/SystemView";
 
@@ -38,6 +41,7 @@ const connectionLabels: Record<ConnectionState, string> = {
 
 export default function HubShell({ initialView }: { initialView: HubView }) {
   const client = useMemo(() => createHttpHubClient(), []);
+  const onboardingClient = useMemo(() => createHttpOnboardingClient(), []);
   const [view, setView] = useState<HubView>(initialView);
   const [namespace, setNamespace] = useState("正在读取本地命名空间");
   const [connectionState, setConnectionState] =
@@ -120,6 +124,7 @@ export default function HubShell({ initialView }: { initialView: HubView }) {
           {(
             [
               ["memories", "记忆"],
+              ["onboarding", "接入"],
               ["recall", "召回"],
               ["system", "系统"],
             ] as const
@@ -140,25 +145,35 @@ export default function HubShell({ initialView }: { initialView: HubView }) {
       <section className="hub-stage">
         <header className="system-bar">
           <div>
-            <small>当前记忆命名空间</small>
-            <strong>{namespace}</strong>
+            <small>{view === "demo" ? "当前页面" : "当前记忆命名空间"}</small>
+            <strong>{view === "demo" ? "隔离示例空间" : namespace}</strong>
           </div>
-          <span
-            className={
-              connectionState === "connected"
-                ? "connection connection-ok"
-                : connectionState === "checking"
-                  ? "connection"
-                  : "connection connection-failed"
-            }
-          >
-            {connectionLabels[connectionState]}
-          </span>
+          {view === "demo" ? (
+            <span className="connection">示例演示</span>
+          ) : (
+            <span
+              className={
+                connectionState === "connected"
+                  ? "connection connection-ok"
+                  : connectionState === "checking"
+                    ? "connection"
+                    : "connection connection-failed"
+              }
+            >
+              {connectionLabels[connectionState]}
+            </span>
+          )}
         </header>
         <div className="workspace">
           {view === "memories" ? (
             <MemoriesView
               client={client}
+              onConnected={observe}
+              onUnavailable={unavailable}
+            />
+          ) : view === "onboarding" ? (
+            <OnboardingView
+              client={onboardingClient}
               onConnected={observe}
               onUnavailable={unavailable}
             />
@@ -168,12 +183,14 @@ export default function HubShell({ initialView }: { initialView: HubView }) {
               onConnected={observe}
               onUnavailable={unavailable}
             />
-          ) : (
+          ) : view === "system" ? (
             <SystemView
               client={client}
               onConnected={observe}
               onUnavailable={unavailable}
             />
+          ) : (
+            <GuidedDemoView />
           )}
         </div>
       </section>

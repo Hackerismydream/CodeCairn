@@ -12,6 +12,10 @@ class SourceRewritten(TraceImportError):
     code = "source_rewritten"
 
 
+class ImportProgressUnavailable(RuntimeError):
+    """A no-write import-ledger snapshot could not be read consistently."""
+
+
 class IndexNotReady(RuntimeError):
     code = "index_not_ready"
     remediation = "Run `codecairn index sync` or `codecairn index rebuild`."

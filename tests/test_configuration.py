@@ -13,6 +13,7 @@ from codecairn.configuration import (
     normalize_remote,
     resolve_runtime_config,
 )
+from codecairn.memory.config import SemanticConfig
 
 
 def _repository(path: Path, *, remote: str | None = None) -> Path:
@@ -102,3 +103,20 @@ def test_linked_worktree_uses_common_binding(tmp_path: Path) -> None:
 
     assert initialized.binding_path == repository / ".git" / "codecairn.toml"
     assert resolve_runtime_config(start=repository, environment={}).repo_key == ("acme/widgets")
+
+
+def test_deepseek_semantic_configuration_is_pinned_to_v4_flash(tmp_path: Path) -> None:
+    accepted = SemanticConfig(profile="deepseek", model="deepseek-v4-flash", endpoint="https://api.deepseek.com")
+
+    assert accepted.model == "deepseek-v4-flash"
+    for profile, model, endpoint in (
+        ("deepseek", "deepseek-chat", "https://api.deepseek.com"),
+        ("openai-compatible", "vendor/deepseek-chat", "https://provider.example/v1"),
+        ("openai-compatible", "deepseek-ai/DeepSeek-V3", "https://provider.example/v1"),
+    ):
+        with pytest.raises(ConfigurationError, match="DeepSeek V4 Flash"):
+            SemanticConfig(profile=profile, model=model, endpoint=endpoint)
+
+    repository = _repository(tmp_path / "deepseek-repo")
+    initialized = initialize_repository(start=repository, semantic_profile="deepseek", environment={})
+    assert initialized.semantic == accepted

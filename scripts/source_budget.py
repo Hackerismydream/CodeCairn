@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministically enforce CodeCairn's physical Python source budget."""
+"""Deterministically enforce CodeCairn's maintained physical source budget."""
 
 from __future__ import annotations
 
@@ -23,11 +23,18 @@ STAGE_LIMITS = {
     "v01-008": {"core": 9_700, "total": 14_100},
     "v02-001": {"core": 10_625, "total": 14_900},
     "v02-002": {"core": 11_000, "total": 15_300},
+    "v03-acceptance": {"core": 16_200, "total": 25_000},
+    "v04-onboarding": {"core": 18_500, "total": 27_700},
     "release": {"core": 9_700, "total": 14_100},
 }
 
 INTERNAL_TARGETS = {"core": 9_700, "total": 14_100}
-V02_INTERNAL_TARGETS = {"v02-001": STAGE_LIMITS["v02-001"], "v02-002": STAGE_LIMITS["v02-002"]}
+POST_V01_INTERNAL_TARGETS = {
+    "v02-001": STAGE_LIMITS["v02-001"],
+    "v02-002": STAGE_LIMITS["v02-002"],
+    "v03-acceptance": STAGE_LIMITS["v03-acceptance"],
+    "v04-onboarding": STAGE_LIMITS["v04-onboarding"],
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +44,7 @@ class SourceBudgetReport:
     dirty: bool | None
     stage: str
     root: str
+    included_roots: tuple[str, ...]
     included_paths: tuple[str, ...]
     core_paths: tuple[str, ...]
     evaluation_paths: tuple[str, ...]
@@ -51,7 +59,7 @@ class SourceBudgetReport:
 
 
 def build_report(root: Path, *, stage: str) -> SourceBudgetReport:
-    """Count newline-delimited physical Python lines under ``src/codecairn``."""
+    """Count newline-delimited physical source lines in the selected maintained scope."""
     repository_root = root.resolve()
     source_root = repository_root / "src" / "codecairn"
     if not source_root.is_dir():
@@ -60,15 +68,47 @@ def build_report(root: Path, *, stage: str) -> SourceBudgetReport:
     if limits is None:
         raise ValueError(f"Unknown source-budget stage: {stage}")
 
-    paths = tuple(sorted(path for path in source_root.rglob("*.py") if path.is_file()))
+    included_roots: tuple[Path, ...] = (source_root,)
+    evaluation_roots: tuple[Path, ...] = (source_root / "evaluation",)
+    included_suffixes = {".py"}
+    if stage in {"v03-acceptance", "v04-onboarding"}:
+        hub_api_root = repository_root / "apps" / "hub-api" / "src" / "codecairn_hub_api"
+        hub_web_roots = (
+            repository_root / "apps" / "hub-web" / "app",
+            repository_root / "apps" / "hub-web" / "lib",
+            repository_root / "apps" / "hub-web" / "worker",
+            repository_root / "apps" / "hub-web" / "next.config.ts",
+            repository_root / "apps" / "hub-web" / "vite.config.ts",
+        )
+        acceptance_root = repository_root / "tools" / "v03-acceptance" / "src" / "codecairn_v03_acceptance"
+        hub_launcher = repository_root / "scripts" / "run_hub.py"
+        if (
+            not hub_api_root.is_dir()
+            or any(not root.exists() for root in hub_web_roots)
+            or not acceptance_root.is_dir()
+            or not hub_launcher.is_file()
+        ):
+            raise ValueError("Version 0.3 maintained source roots are incomplete")
+        included_roots = (source_root, hub_api_root, *hub_web_roots, acceptance_root, hub_launcher)
+        evaluation_roots = (source_root / "evaluation", acceptance_root)
+        included_suffixes = {".py", ".ts", ".tsx", ".css"}
+    paths = tuple(
+        sorted(
+            {
+                path
+                for included_root in included_roots
+                for path in ((included_root,) if included_root.is_file() else tuple(included_root.rglob("*")))
+                if path.is_file() and path.suffix in included_suffixes
+            }
+        )
+    )
     if not paths:
         raise ValueError(f"No Python source files found under: {source_root}")
     if any(path.is_symlink() for path in paths):
         raise ValueError("Source-budget inputs must not contain symbolic links")
 
-    evaluation_root = source_root / "evaluation"
-    evaluation_paths = tuple(path for path in paths if path.is_relative_to(evaluation_root))
-    core_paths = tuple(path for path in paths if not path.is_relative_to(evaluation_root))
+    evaluation_paths = tuple(path for path in paths if any(path.is_relative_to(root) for root in evaluation_roots))
+    core_paths = tuple(path for path in paths if path not in evaluation_paths)
     core = sum(_physical_lines(path) for path in core_paths)
     evaluation = sum(_physical_lines(path) for path in evaluation_paths)
     total = core + evaluation
@@ -89,6 +129,7 @@ def build_report(root: Path, *, stage: str) -> SourceBudgetReport:
         dirty=dirty,
         stage=stage,
         root=source_root.relative_to(repository_root).as_posix(),
+        included_roots=tuple(relative(path) for path in included_roots),
         included_paths=tuple(relative(path) for path in paths),
         core_paths=tuple(relative(path) for path in core_paths),
         evaluation_paths=tuple(relative(path) for path in evaluation_paths),
@@ -96,7 +137,7 @@ def build_report(root: Path, *, stage: str) -> SourceBudgetReport:
         evaluation=evaluation,
         total=total,
         limits=dict(limits),
-        internal_targets=dict(V02_INTERNAL_TARGETS.get(stage, INTERNAL_TARGETS)),
+        internal_targets=dict(POST_V01_INTERNAL_TARGETS.get(stage, INTERNAL_TARGETS)),
         accepted_baseline=dict(ACCEPTED_BASELINE),
         passed=not violations,
         violations=violations,
@@ -116,6 +157,7 @@ def render_text(report: SourceBudgetReport) -> str:
             f"evaluation={report.accepted_baseline['evaluation']} "
             f"total={report.accepted_baseline['total']}"
         ),
+        f"included-roots={','.join(report.included_roots)}",
         "included-paths:",
         *(f"  {path}" for path in report.included_paths),
         f"result={'pass' if report.passed else 'fail'}",

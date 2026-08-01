@@ -5,6 +5,23 @@ completed by `v0.1.0-rc1`. Current Pico behavior is in
 [`v0.2/README.md`](v0.2/README.md); future product scope is in
 [`roadmap.md`](roadmap.md).
 
+## Post-version 0.1 product program
+
+This historical PRD is not rewritten to make later work look shipped. The
+accepted post-version 0.1 sequence is maintained in
+[`roadmap.md`](roadmap.md): version 0.3 lets people understand memory; version
+0.4 lets them carry exact-repository Codex and Claude Code history into the
+local Memory OS; version 0.5 adds human governance; version 0.6 adds resident
+local availability; and version 0.7 adds Case and Skill growth. Versions 1.0
+and 2.0 retain stable-local and remote-collaboration scope.
+
+The version 0.4 product requirements and acceptance gates are
+[`v0.4/onboarding.md`](v0.4/onboarding.md) and ADR 0063. They define a separate
+two-operation Preview/Apply Interface, no-write discovery, consent binding,
+exact repository matching, per-client support, retention disclosure, and the
+distinction between an implementation candidate and formal installed-product
+evidence. They do not retroactively change the version 0.1 release claim.
+
 ## Product statement
 
 CodeCairn is an auditable local long-term memory runtime for coding agents.

@@ -17,7 +17,7 @@ import httpx
 
 from codecairn.bootstrap import create_runtime
 from codecairn.evaluation.artifacts import canonical_sha256, file_sha256, read_json, write_json_exclusive
-from codecairn.memory.config import RetrievalConfig
+from codecairn.memory.config import RetrievalConfig, require_supported_deepseek_model
 from codecairn.memory.schema import CodingMemory, RepositoryKnowledgePayload
 
 ANSWER_INSTRUCTION = (
@@ -74,6 +74,7 @@ class TextProvider:
         url = httpx.URL(self.endpoint)
         if not self.model or not api_key or url.scheme != "https" or not url.host or url.userinfo:
             raise ValueError(f"{self.role} provider requires model, key, and credential-free HTTPS endpoint")
+        require_supported_deepseek_model(profile=None, model=self.model, endpoint=self.endpoint)
         self._client = httpx.Client(base_url=f"{self.endpoint}/", headers={"Authorization": f"Bearer {api_key}"}, timeout=120)
 
     @property

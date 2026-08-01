@@ -22,24 +22,19 @@ const admissionReasonLabels: Record<string, string> = {
   below_threshold: "相关性低于门槛",
 };
 
-const freshnessLabels: Record<string, string> = {
-  fresh: "最新",
-  semantic_pending: "等待语义处理",
-};
-
-const semanticStateLabels: Record<string, string> = {
-  complete: "完整",
-  pending: "等待处理",
-  failed: "处理失败",
-  disabled: "已关闭",
-};
+export function recallProcessingLabel(freshness: string, semanticState: string): string {
+  if (semanticState === "failed") return "本次召回来自已同步索引；后续记忆提炼失败";
+  return freshness === "semantic_pending" || semanticState === "pending"
+    ? "本次关键词与向量检索已完成；后续记忆提炼待处理"
+    : "本次检索与后续记忆提炼均已完成";
+}
 
 const omissionReasonLabels: Record<string, string> = {
-  historical_filter: "历史记忆已过滤",
-  relevance: "相关性不足",
-  type_cap: "类型数量达到上限",
-  limit: "召回数量达到上限",
-  token_budget: "超出上下文预算",
+  historical_filter: "旧版本默认不召回",
+  relevance: "与当前任务相关性不足",
+  type_cap: "同类记忆已达到上限",
+  limit: "已达到本次召回数量上限",
+  token_budget: "上下文容量不足",
 };
 
 export default function RecallView({
@@ -159,7 +154,7 @@ export default function RecallView({
                   admission?.outcome ?? "abstained"
                 }`}
               >
-                {admission?.outcome === "admitted" ? "已接纳" : "已拒答"}
+                {admission?.outcome === "admitted" ? "已接纳" : "未接纳记忆"}
               </span>
               <div>
                 <h2>
@@ -170,34 +165,21 @@ export default function RecallView({
                 <p>
                   {admissionReasonLabels[
                     admission?.reason ?? "no_admission_trace"
-                  ] ?? "没有接纳记录"}{" "}
-                  ·{" "}
-                  {admission?.policy ?? "无接纳策略"}
+                  ] ?? "没有接纳记录"}
+                  。最高向量相似度 {admission?.max_vector_score?.toFixed(3) ?? "无"}（接纳阈值{" "}
+                  {admission ? admission.vector_threshold.toFixed(2) : "无"}）。
                 </p>
               </div>
             </div>
-            <dl className="admission-trace">
-              <div>
-                <dt>检索配置</dt>
-                <dd>{sidecar.retrieval_profile}</dd>
-              </div>
-              <div>
-                <dt>向量阈值</dt>
-                <dd>{admission?.vector_threshold ?? "无"}</dd>
-              </div>
-              <div>
-                <dt>最高向量分</dt>
-                <dd>{admission?.max_vector_score ?? "无"}</dd>
-              </div>
-              <div>
-                <dt>源游标</dt>
-                <dd>{sidecar.source_cursor}</dd>
-              </div>
-              <div>
-                <dt>索引游标</dt>
-                <dd>{sidecar.index_cursor}</dd>
-              </div>
-            </dl>
+            <details className="admission-technical">
+              <summary>检索技术详情</summary>
+              <dl className="admission-trace">
+                <div><dt>检索配置</dt><dd>{sidecar.retrieval_profile}</dd></div>
+                <div><dt>接纳策略</dt><dd>{admission?.policy ?? "无"}</dd></div>
+                <div><dt>源游标</dt><dd>{sidecar.source_cursor}</dd></div>
+                <div><dt>索引游标</dt><dd>{sidecar.index_cursor}</dd></div>
+              </dl>
+            </details>
           </section>
 
           <dl className="recall-metrics">
@@ -226,13 +208,14 @@ export default function RecallView({
               <h2>排序结果</h2>
               <span>{sidecar.ranked.length} 条</span>
             </header>
+            <p className="contract-caption">排序分只用于本次结果排序，不与向量相似度或接纳阈值直接比较。</p>
             {sidecar.ranked.length ? (
               <>
                 <div className="candidate-head" aria-hidden="true">
                   <span>顺位</span>
                   <span>记忆</span>
-                  <span>来源</span>
-                  <span>分数</span>
+                  <span>命中方式</span>
+                  <span>排序分</span>
                   <span>摘要</span>
                 </div>
                 {sidecar.ranked.map((candidate) => (
@@ -282,26 +265,14 @@ export default function RecallView({
               <pre>{data.result.markdown}</pre>
               <dl>
                 <div>
-                  <dt>新鲜度</dt>
-                  <dd>
-                    {sidecar.semantic_state === "failed"
-                      ? "语义处理失败"
-                      : (freshnessLabels[sidecar.freshness] ??
-                        sidecar.freshness)}
-                  </dd>
-                </div>
-                <div>
-                  <dt>语义状态</dt>
-                  <dd>
-                    {semanticStateLabels[sidecar.semantic_state] ??
-                      sidecar.semantic_state}
-                  </dd>
+                  <dt>处理状态</dt>
+                  <dd>{recallProcessingLabel(sidecar.freshness, sidecar.semantic_state)}</dd>
                 </div>
               </dl>
             </section>
             <section className="omission-panel">
               <header>
-                <h2>省略记录</h2>
+                <h2>未进入上下文</h2>
                 <span>{sidecar.omissions.length} 条</span>
               </header>
               {sidecar.omissions.map((omission) => (

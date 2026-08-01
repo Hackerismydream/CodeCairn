@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import secrets
 import uuid
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
+from contextlib import asynccontextmanager
+from dataclasses import asdict
 from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
@@ -12,12 +14,15 @@ from starlette.responses import JSONResponse
 
 from codecairn.memory.errors import ConfigurationError, IndexNotReady, ProviderConfigurationError
 from codecairn.memory.schema import MemoryType
+from codecairn.service.onboarding import OnboardingError, OnboardingModule, PreviewRequest
 from codecairn_hub_api.queries import HubApplication, HubReadModule, RecallReadiness
 
 
-class RecallRequest(BaseModel):
+class StrictRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+
+class RecallRequest(StrictRequest):
     query: str = Field(min_length=1, max_length=32_768)
     limit: int = Field(default=20, ge=1, le=100)
     include_superseded: bool = False
@@ -25,12 +30,39 @@ class RecallRequest(BaseModel):
     token_budget: int = Field(default=8_192, ge=256, le=65_536)
 
 
-def create_hub_app(*, application: HubApplication, repo_key: str, session_token: str, recall_readiness: RecallReadiness) -> FastAPI:
+class OnboardingPreviewRequest(StrictRequest):
+    selected_source_ids: list[Annotated[str, Field(pattern=r"^src_[0-9a-f]{64}$")]] | None = Field(default=None, max_length=256)
+    install_capture_for: list[Literal["codex", "claude"]] = Field(default_factory=list, max_length=2)
+
+
+class OnboardingApplyRequest(StrictRequest):
+    consent_token: str = Field(min_length=32, max_length=512)
+
+
+def create_hub_app(
+    *,
+    application: HubApplication,
+    repo_key: str,
+    session_token: str,
+    recall_readiness: RecallReadiness,
+    onboarding: OnboardingModule | None = None,
+) -> FastAPI:
     """Create the loopback-only HTTP adapter for one Memory Namespace."""
     if len(session_token) < 32:
         raise ValueError("Hub session token must contain at least 32 characters")
     reads = HubReadModule(application=application, repo_key=repo_key, recall_readiness=recall_readiness)
-    app = FastAPI(title="CodeCairn Hub Read Interface", version="1", docs_url=None, redoc_url=None, openapi_url=None)
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        if onboarding is not None:
+            onboarding.open()
+        try:
+            yield
+        finally:
+            if onboarding is not None:
+                onboarding.close()
+
+    app = FastAPI(title="CodeCairn Hub Read Interface", version="1", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
 
     @app.middleware("http")
     async def response_policy(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
@@ -119,6 +151,14 @@ def create_hub_app(*, application: HubApplication, repo_key: str, session_token:
             remediation=error.remediation,
         )
 
+    @app.exception_handler(OnboardingError)
+    async def hub_onboarding_error(request: Request, error: OnboardingError) -> JSONResponse:
+        status = 409 if error.code in {"consent_expired", "progress_unavailable", "snapshot_stale"} else 400
+        remediation = "Run onboarding preview again." if error.retryable else None
+        return error_response(
+            request, status_code=status, code=error.code, message=str(error), retryable=error.retryable, remediation=remediation
+        )
+
     @app.exception_handler(ValueError)
     async def hub_value_error(request: Request, error: ValueError) -> JSONResponse:
         code = "cursor_invalid" if str(error) == "cursor_invalid" else "invalid_request"
@@ -135,6 +175,12 @@ def create_hub_app(*, application: HubApplication, repo_key: str, session_token:
     def authorize(supplied: Annotated[str | None, Header(alias="x-codecairn-hub-token")] = None) -> None:
         if supplied is None or not secrets.compare_digest(supplied, session_token):
             raise HTTPException(status_code=401, detail={"code": "unauthorized", "message": "Hub session token is invalid."})
+
+    def reject_onboarding_query(request: Request) -> None:
+        if request.url.query:
+            raise HTTPException(
+                status_code=400, detail={"code": "invalid_query", "message": "Onboarding requests do not accept query parameters."}
+            )
 
     @app.get("/hub-read/v1/memories", dependencies=[Depends(authorize)])
     def memories(
@@ -159,5 +205,18 @@ def create_hub_app(*, application: HubApplication, repo_key: str, session_token:
     @app.get("/hub-read/v1/system", dependencies=[Depends(authorize)])
     def system() -> dict[str, object]:
         return reads.system()
+
+    if onboarding is not None:
+
+        @app.post("/hub-onboarding/v1/preview", dependencies=[Depends(authorize), Depends(reject_onboarding_query)])
+        def onboarding_preview(request: OnboardingPreviewRequest) -> dict[str, object]:
+            selected = tuple(request.selected_source_ids) if request.selected_source_ids is not None else None
+            return asdict(
+                onboarding.preview(PreviewRequest(selected_source_ids=selected, install_capture_for=tuple(request.install_capture_for)))
+            )
+
+        @app.post("/hub-onboarding/v1/apply", dependencies=[Depends(authorize), Depends(reject_onboarding_query)])
+        def onboarding_apply(request: OnboardingApplyRequest) -> dict[str, object]:
+            return asdict(onboarding.apply(request.consent_token))
 
     return app

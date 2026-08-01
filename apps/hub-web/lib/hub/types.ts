@@ -175,7 +175,7 @@ export type RecallView = {
       }>;
       source_cursor: number;
       index_cursor: number;
-      semantic_state: string;
+      semantic_state: "complete" | "pending" | "failed";
       freshness: "fresh" | "semantic_pending";
     };
   };

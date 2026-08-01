@@ -5,6 +5,9 @@ Pico trace importer, the `v02-002` installed Pico Memory Backend adapter, and
 the version 0.3 read-only Hub. Pico now selects CodeCairn and has removed
 EverOS product coupling. The first joint campaign is a completed diagnostic
 with an ineligible positive claim; it is not relabeled as release evidence.
+The accepted version 0.4 Onboarding contract is described separately below;
+until its implementation and evidence land, it is not part of this current
+support matrix.
 
 ## Current support matrix
 
@@ -25,6 +28,7 @@ with an ineligible positive claim; it is not relabeled as release evidence.
 | Distribution | `uv tool install` | Installs curated MIT-licensed wheel entrypoints into an isolated persistent tool environment |
 | Pico plugin | `memory.backend = "codecairn"` | Installed discovery exposes one repository-bound MemoryBackend; Pico selects it as the current long-term memory backend |
 | Read-only Hub | `make hub-dev` | Runs the Chinese Memories, Recall, and System views against one foreground loopback adapter bound to the current repository |
+| Hub acceptance verifier | `codecairn-v03-acceptance verify` | Recomputes one sealed local campaign without provider credentials; no formal campaign has completed |
 
 ## Capture lifecycle
 
@@ -116,6 +120,89 @@ operation. Closing the foreground command closes both processes.
 
 The current Hub is source-checkout-only and is not bundled in the root wheel or
 sdist.
+
+Automated local callers may run the launcher directly with
+`--ready-file PATH`. The launcher rejects an existing path and writes the
+exclusive mode-`0600` receipt only after both child services are responsive:
+
+```bash
+uv run python scripts/run_hub.py \
+  --repository /path/to/bound/repository \
+  --ready-file /absolute/private/path/hub-ready.json
+```
+
+The receipt exposes the loopback origin, selected ports, launcher PID, and
+child process-group identities but not the random session token. It is a
+readiness and cleanup receipt for the same foreground Host. It does not keep
+the Hub running after the launcher exits.
+
+## Version 0.4 target: local onboarding
+
+ADR 0063 authorizes a separate Hub Onboarding Interface without changing any
+of the three Hub Read operations:
+
+```text
+POST /hub-onboarding/v1/preview
+POST /hub-onboarding/v1/apply
+```
+
+Preview discovers only bounded regular files under compiled Codex and Claude
+Code history roots. It accepts no browser-supplied path and makes only sources
+whose provider-native project identity exactly matches the bound Git common
+directory selectable. It can plan selected opaque source IDs and optional
+Codex or Claude Hook installation, then return a short-lived consent token.
+Preview does not initialize or mutate CodeCairn, edit settings, write receipts,
+call a model, or use the network.
+
+Apply accepts only that consent token. It validates all source, repository,
+settings, client, Adapter, retention, egress, and expiry bindings before the
+first write. After the stale preflight, each source imports through the existing
+application Interface and each explicitly selected Hook produces its own
+result. Already-imported work is a no-op; a later failure is an itemized partial
+result rather than rollback or false success. Durable import success and index
+readiness are separate.
+
+The target support matrix is deliberately asymmetric:
+
+| Client | History through Onboarding | Continuous capture through Onboarding |
+|---|---|---|
+| Codex | Fixed-root, exact-repository, owned JSONL Preview and Apply | Optional explicit `Stop` Hook plan |
+| Claude Code | Fixed-root, exact-repository, owned JSONL Preview and Apply | Optional explicit `SessionEnd` Hook plan |
+| Pico | Unsupported; no pre-integration Pico Session backfill | Explain or observe the installed CodeCairn Memory Backend; do not modify Pico-owned configuration |
+
+The exact retention disclosure, request/response example, failure contract, and
+implementation-versus-formal-acceptance gates are in
+[`../v0.4/onboarding.md`](../v0.4/onboarding.md). A Guided Demo remains isolated
+from the real Namespace and cannot satisfy this target. The Module uses no LLM;
+any version 0.4 path selecting DeepSeek must use exactly
+`deepseek-v4-flash` or fail closed.
+
+## Version 0.3 Hub acceptance infrastructure
+
+The `codecairn-v03-acceptance` workspace command freezes an exact CodeCairn and
+Pico candidate, derives strict machine observations, collects digest-bound
+Chinese participant answers and separate human reviews, seals the artifact,
+and recomputes its verdict offline:
+
+```bash
+uv run --package codecairn-v03-acceptance \
+  codecairn-v03-acceptance --help
+```
+
+CodeCairn owns this campaign; Pico is an invoked Runtime adapter. The frozen
+scenario changes a retry value from 2 to 4, verifies the task externally, and
+requires a distinct Pico process to consume the captured memory. Public
+`codecairn list` and `codecairn recall` output establish capture and recall;
+the Hub adapter reads Memories, Recall, and System; a scenario-seeded
+Supersession makes lifecycle visible.
+
+This is acceptance infrastructure, not a completed acceptance result. A
+source-checkout pilot cannot become release-eligible, and the formal path still
+requires an installed Hub distribution and raw collector, a real Pico process
+run against the declared configured LLM, five eligible first-time target
+learners, separate human blind review, and a sealed offline-verified bundle.
+The exact protocol and commands are in
+[`../v0.3/hub-acceptance.md`](../v0.3/hub-acceptance.md).
 
 ## MCP
 

@@ -11,7 +11,7 @@ from typing import Protocol, cast
 
 from codecairn.memory.capture import CaptureCheckpoint, ExpectedMemoryFile, PreparedMemoryCommit
 from codecairn.memory.episode import BoundaryKind, ClosedEpisode, close_trace_episodes, is_episode_signal
-from codecairn.memory.errors import TraceParseError
+from codecairn.memory.errors import SourceRewritten, TraceParseError
 from codecairn.memory.evidence import collect_evidence_facts
 from codecairn.memory.evolution import (
     EvolutionArtifact,
@@ -170,14 +170,30 @@ class MemoryRuntime:
         self._fault_injector = fault_injector
 
     def import_session(
-        self, source_path: Path, *, repo_key: str, source_root: Path | None = None, boundary_kind: BoundaryKind | None = None
+        self,
+        source_path: Path,
+        *,
+        repo_key: str,
+        source_root: Path | None = None,
+        boundary_kind: BoundaryKind | None = None,
+        expected_source_sha256: str | None = None,
+        before_write: Callable[[], object] | None = None,
     ) -> ImportResult:
         if not repo_key.strip():
             raise ValueError("repo_key must not be empty")
-        repaired = self._recover_prepared_operations()
         observed_path = str(Path(os.path.abspath(source_path)))
         checkpoint = self._state.get_checkpoint(repo_key=repo_key, source_path=observed_path)
         trace = self._importer.read(source_path, source_root=source_root, checkpoint=checkpoint)
+        if expected_source_sha256 is not None and trace.source_sha256 != expected_source_sha256:
+            raise SourceRewritten("Trace source changed after the consent preview")
+        if before_write is not None:
+            before_write()
+        repaired = self._recover_prepared_operations()
+        recovered_checkpoint = self._state.get_checkpoint(repo_key=repo_key, source_path=observed_path)
+        if recovered_checkpoint != checkpoint:
+            trace = self._importer.read(source_path, source_root=source_root, checkpoint=recovered_checkpoint)
+            if expected_source_sha256 is not None and trace.source_sha256 != expected_source_sha256:
+                raise SourceRewritten("Trace source changed after the consent preview")
         if trace.source_repo_key is not None and trace.source_repo_key != repo_key:
             raise TraceParseError("Trace source repository identity does not match the import namespace")
         existing_episodes = self._state.list_episodes(repo_key=repo_key, provider=trace.provider, session_id=trace.session_id)
@@ -233,6 +249,8 @@ class MemoryRuntime:
             checkpoint=capture_checkpoint,
             created_at_ms=time.time_ns() // 1_000_000,
         )
+        if before_write is not None:
+            before_write()
         status = self._state.prepare_memory_commit(capture)
         if status == "closure_lost":
             return ImportResult(

@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-async function render(path = "/", headers = {}) {
+async function render(path = "/", headers = {}, method = "GET") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${path}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
     new Request(`http://localhost${path}`, {
+      method,
       headers: { accept: "text/html", host: "localhost", ...headers },
     }),
     {
@@ -35,10 +36,12 @@ test("renders a Chinese live-memory shell without checked-in product data", asyn
   assert.match(body, /<html lang="zh-CN">/i);
   assert.match(body, /<title>CodeCairn 记忆中心<\/title>/i);
   assert.match(body, />记忆</);
+  assert.match(body, />接入</);
   assert.match(body, />召回</);
   assert.match(body, />系统</);
   assert.match(body, /<a[^>]+aria-current="page"[^>]+href="\/"[^>]*>记忆</);
   assert.match(body, /<a[^>]+href="\/\?view=recall"[^>]*>召回</);
+  assert.match(body, /<a[^>]+href="\/\?view=onboarding"[^>]*>接入</);
   assert.match(body, /<a[^>]+href="\/\?view=system"[^>]*>系统</);
   assert.match(body, /正在读取记忆/);
   assert.match(body, /数据来自本地 CodeCairn 服务/);
@@ -46,6 +49,31 @@ test("renders a Chinese live-memory shell without checked-in product data", asyn
   assert.doesNotMatch(body, /只读原型/);
   assert.doesNotMatch(body, /单元测试足以证明连续性/);
   assert.doesNotMatch(body, /property="og:image"/);
+});
+
+test("renders a repository-bound onboarding journey", async () => {
+  const body = await html("/?view=onboarding");
+
+  assert.match(
+    body,
+    /<a[^>]+aria-current="page"[^>]+href="\/\?view=onboarding"[^>]*>接入</,
+  );
+  assert.match(body, /接入当前仓库的记忆/);
+  assert.match(body, /正在发现本机历史/);
+  assert.doesNotMatch(body, /选择文件|选择目录|输入路径/);
+});
+
+test("renders an isolated static demo as example data only", async () => {
+  const body = await html("/?view=demo");
+
+  assert.match(body, /示例演示/);
+  assert.match(body, /不读取、不写入当前记忆命名空间/);
+  assert.match(body, /来源记录/);
+  assert.match(body, /编码记忆/);
+  assert.match(body, /演化关系/);
+  assert.match(body, /召回解释/);
+  assert.match(body, /默认重试次数从 2 次改为 4 次/);
+  assert.doesNotMatch(body, /正在读取系统状态|正在发现本机历史/);
 });
 
 test("never renders the private loopback token or adapter address", async () => {
@@ -109,6 +137,35 @@ test("same-origin gateway exposes no speculative mutation route", async () => {
   assert.equal(payload.error.code, "not_found");
 });
 
+test("onboarding gateway exposes only the two consent-bound operations", async () => {
+  const preview = await render(
+    "/api/hub-onboarding/v1/preview",
+    { "content-type": "application/json" },
+    "POST",
+  );
+  assert.equal(preview.status, 503);
+  assert.equal((await preview.json()).error.code, "hub_unavailable");
+
+  const query = await render(
+    "/api/hub-onboarding/v1/preview?consent_token=must-not-be-forwarded",
+    { "content-type": "application/json" },
+    "POST",
+  );
+  assert.equal(query.status, 400);
+  assert.equal((await query.json()).error.code, "invalid_query");
+
+  for (const [path, method] of [
+    ["/api/hub-onboarding/v1/preview", "GET"],
+    ["/api/hub-onboarding/v1/apply", "GET"],
+    ["/api/hub-onboarding/v1/discover", "POST"],
+    ["/api/hub-read/v1/preview", "POST"],
+  ]) {
+    const rejected = await render(path, {}, method);
+    assert.equal(rejected.status, 404);
+    assert.equal((await rejected.json()).error.code, "not_found");
+  }
+});
+
 test("same-origin gateway rejects DNS-rebinding and cross-origin requests", async () => {
   for (const headers of [
     { host: "attacker.example:3000" },
@@ -126,7 +183,7 @@ test("same-origin gateway rejects DNS-rebinding and cross-origin requests", asyn
     },
     {
       host: "127.0.0.1:3000",
-      "x-forwarded-host": "127.0.0.1:3000",
+      "x-forwarded-host": "127.0.0.1:4000",
     },
   ]) {
     const response = await render("/api/hub-read/v1/system", headers);
@@ -135,4 +192,16 @@ test("same-origin gateway rejects DNS-rebinding and cross-origin requests", asyn
     const payload = await response.json();
     assert.equal(payload.error.code, "untrusted_browser_origin");
   }
+});
+
+test("same-origin gateway accepts a matching forwarded loopback authority", async () => {
+  const response = await render("/api/hub-read/v1/system", {
+    host: "127.0.0.1:3000",
+    origin: "http://127.0.0.1:3000",
+    "sec-fetch-site": "same-origin",
+    "x-forwarded-host": "127.0.0.1:3000",
+  });
+
+  assert.equal(response.status, 503);
+  assert.equal((await response.json()).error.code, "hub_unavailable");
 });

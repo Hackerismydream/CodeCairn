@@ -172,8 +172,12 @@ Pico.
 ## Next product stages
 
 The maintained product sequence lives in [`../roadmap.md`](../roadmap.md):
-v0.3 read-only Hub and deliberate readability pass, v0.4 human governance,
-v0.5 local daemon, v0.6 Case/Skill growth, v1.0 stable local Memory OS, and
-v2.0 remote collaboration. Source slimming is intentionally attached to the
-v0.3 concept/UI pass instead of hiding current product behavior to satisfy an
-arbitrary line target.
+v0.3 read-only Hub and deliberate readability pass, v0.4 local onboarding to
+carry owned Codex and Claude Code history, v0.5 human governance, v0.6 local
+daemon, v0.7 Case/Skill growth, v1.0 stable local Memory OS, and v2.0 remote
+collaboration. Source slimming is intentionally attached to the v0.3
+concept/UI pass instead of hiding current product behavior to satisfy an
+arbitrary line target. The accepted v0.4 contract is
+[`../v0.4/onboarding.md`](../v0.4/onboarding.md); implementation evidence is not
+formal installed-product acceptance. Its ordered engineering slices and checks
+are frozen in [`../v0.4/implementation-plan.md`](../v0.4/implementation-plan.md).
