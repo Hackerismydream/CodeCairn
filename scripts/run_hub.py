@@ -99,7 +99,7 @@ def wait_for(url: str, *, headers: dict[str, str] | None = None, timeout: float 
         try:
             request = urllib.request.Request(url, headers=headers or {})
             with urllib.request.urlopen(request, timeout=1) as response:
-                if response.status < 500:
+                if response.status == 200:
                     return
         except OSError:
             time.sleep(0.1)
@@ -176,7 +176,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             start_new_session=True,
         )
         processes.append(web)
-        wait_for(f"http://127.0.0.1:{web_port}")
+        wait_for(f"http://127.0.0.1:{web_port}/api/hub-read/v1/system")
         if arguments.ready_file is not None:
             write_ready_receipt(
                 arguments.ready_file, api_port=api_port, web_port=web_port, child_process_groups={"api": api.pid, "web": web.pid}

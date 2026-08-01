@@ -148,6 +148,64 @@ def test_production_launcher_closes_both_loopback_services_on_sigterm(tmp_path: 
                 launcher.wait()
 
 
+def test_development_launcher_serves_the_same_origin_hub_interface(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    runtime_root = tmp_path / "runtime"
+    repository.mkdir()
+    subprocess.run(["git", "init", "--quiet", str(repository)], check=True)
+    initialize_repository(
+        start=repository,
+        root=runtime_root,
+        repo_key="local/hub-development-lifecycle",
+        retrieval_profile="dashscope",
+        semantic_profile="none",
+        environment={},
+    )
+    api_port = available_port(0)
+    web_port = available_port(0)
+    ready_file = tmp_path / "hub-ready.json"
+    environment = {key: value for key, value in os.environ.items() if key not in {"CODECAIRN_EMBEDDING_API_KEY", "DASHSCOPE_API_KEY"}}
+    launcher = subprocess.Popen(
+        [
+            sys.executable,
+            "scripts/run_hub.py",
+            "--repository",
+            str(repository),
+            "--api-port",
+            str(api_port),
+            "--web-port",
+            str(web_port),
+            "--ready-file",
+            str(ready_file),
+        ],
+        cwd=REPOSITORY_ROOT,
+        env=environment,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+    )
+    try:
+        _wait_for_ready_file(ready_file, launcher)
+        with urllib.request.urlopen(f"http://127.0.0.1:{web_port}/api/hub-read/v1/system", timeout=5) as response:
+            payload = json.load(response)
+            assert response.status == 200
+            assert payload["repo_key"] == "local/hub-development-lifecycle"
+
+        launcher.send_signal(signal.SIGTERM)
+
+        assert launcher.wait(timeout=10) == 128 + signal.SIGTERM
+        _assert_port_closed(api_port)
+        _assert_port_closed(web_port)
+    finally:
+        if launcher.poll() is None:
+            launcher.send_signal(signal.SIGTERM)
+            try:
+                launcher.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                os.killpg(launcher.pid, signal.SIGKILL)
+                launcher.wait()
+
+
 def _wait_for_port(port: int, launcher: subprocess.Popen[bytes], *, timeout: float = 30) -> None:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
@@ -159,6 +217,17 @@ def _wait_for_port(port: int, launcher: subprocess.Popen[bytes], *, timeout: flo
         except OSError:
             time.sleep(0.05)
     raise AssertionError(f"Hub did not listen on 127.0.0.1:{port}")
+
+
+def _wait_for_ready_file(path: Path, launcher: subprocess.Popen[bytes], *, timeout: float = 30) -> None:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if launcher.poll() is not None:
+            raise AssertionError(f"Hub launcher exited early with {launcher.returncode}")
+        if path.is_file():
+            return
+        time.sleep(0.05)
+    raise AssertionError(f"Hub launcher did not publish {path}")
 
 
 def _assert_port_closed(port: int) -> None:

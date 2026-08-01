@@ -87,7 +87,14 @@ function loopbackUrl(value: string | null, authorityOnly = true): URL | null {
 
 function hasTrustedBrowserSeam(request: NextRequest): boolean {
   const host = loopbackUrl(request.headers.get("host"));
-  if (!host || request.headers.has("x-forwarded-host")) return false;
+  if (!host) return false;
+  const forwardedHostValue = request.headers.get("x-forwarded-host");
+  if (forwardedHostValue) {
+    const forwardedHost = loopbackUrl(forwardedHostValue);
+    if (!forwardedHost || forwardedHost.host.toLowerCase() !== host.host.toLowerCase()) {
+      return false;
+    }
+  }
   const origin = request.headers.get("origin");
   if (origin) {
     const parsed = loopbackUrl(origin, false);

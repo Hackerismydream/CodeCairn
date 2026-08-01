@@ -183,7 +183,7 @@ test("same-origin gateway rejects DNS-rebinding and cross-origin requests", asyn
     },
     {
       host: "127.0.0.1:3000",
-      "x-forwarded-host": "127.0.0.1:3000",
+      "x-forwarded-host": "127.0.0.1:4000",
     },
   ]) {
     const response = await render("/api/hub-read/v1/system", headers);
@@ -192,4 +192,16 @@ test("same-origin gateway rejects DNS-rebinding and cross-origin requests", asyn
     const payload = await response.json();
     assert.equal(payload.error.code, "untrusted_browser_origin");
   }
+});
+
+test("same-origin gateway accepts a matching forwarded loopback authority", async () => {
+  const response = await render("/api/hub-read/v1/system", {
+    host: "127.0.0.1:3000",
+    origin: "http://127.0.0.1:3000",
+    "sec-fetch-site": "same-origin",
+    "x-forwarded-host": "127.0.0.1:3000",
+  });
+
+  assert.equal(response.status, 503);
+  assert.equal((await response.json()).error.code, "hub_unavailable");
 });

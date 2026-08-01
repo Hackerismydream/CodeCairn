@@ -88,6 +88,34 @@ def test_ready_receipt_is_exclusive_private_and_contains_only_public_launcher_st
     assert json.loads(target.read_text(encoding="utf-8"))["web_port"] == 40102
 
 
+def test_wait_for_requires_an_exact_http_200(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeResponse:
+        def __init__(self, status_code: int) -> None:
+            self.status = status_code
+
+        def __enter__(self) -> FakeResponse:
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+    statuses = iter((403, 503, 200))
+    observed: list[int] = []
+
+    def fake_urlopen(_request: object, *, timeout: float) -> FakeResponse:
+        assert timeout == 1
+        status_code = next(statuses)
+        observed.append(status_code)
+        return FakeResponse(status_code)
+
+    monkeypatch.setattr(run_hub.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(run_hub.time, "sleep", lambda _seconds: None)
+
+    run_hub.wait_for("http://127.0.0.1:40102/health", timeout=1)
+
+    assert observed == [403, 503, 200]
+
+
 def test_launcher_publishes_ready_receipt_only_after_both_services_are_ready(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     class FakeProcess:
         def __init__(self, pid: int) -> None:
@@ -129,7 +157,10 @@ def test_launcher_publishes_ready_receipt_only_after_both_services_are_ready(mon
 
     assert result == 17
     assert commands[0][:4] == [sys.executable, "-I", "-m", "codecairn_hub_api.cli"]
-    assert readiness_checks == [f"http://127.0.0.1:{api_port}/hub-read/v1/system", f"http://127.0.0.1:{web_port}"]
+    assert readiness_checks == [
+        f"http://127.0.0.1:{api_port}/hub-read/v1/system",
+        f"http://127.0.0.1:{web_port}/api/hub-read/v1/system",
+    ]
     assert json.loads(target.read_text(encoding="utf-8"))["child_process_groups"] == {"api": 61001, "web": 61002}
 
 

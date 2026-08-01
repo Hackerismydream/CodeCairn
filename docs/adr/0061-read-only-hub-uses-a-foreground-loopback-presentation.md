@@ -36,9 +36,11 @@ runtime root, repository path, provider credential, or arbitrary namespace.
 The adapter listens only on `127.0.0.1`, requires a random per-process token,
 does not enable CORS, and returns `Cache-Control: no-store`. The browser calls a
 same-origin web route; the token is never embedded in page data. That route
-accepts only loopback `Host` values and same-origin browser requests, and
-rejects forwarded authorities so DNS rebinding cannot turn it into a
-token-bearing proxy.
+accepts only loopback `Host` values and same-origin browser requests. A
+forwarded authority inserted by the local web host is accepted only when it is
+the same validated loopback authority; non-loopback, multiple, and mismatched
+forwarded authorities are rejected so DNS rebinding cannot turn the route into
+a token-bearing proxy.
 
 The Python adapter is an application under `apps/hub-api`. The React client is
 an application under `apps/hub-web`. Both depend inward on the existing
