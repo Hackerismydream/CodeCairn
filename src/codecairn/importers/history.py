@@ -13,7 +13,7 @@ from codecairn.configuration import discover_repository
 from codecairn.importers.jsonl import MAX_SESSION_BYTES, SourceByteLimitExceeded, open_directory_no_symlinks, read_import_scan
 from codecairn.importers.session import SessionImporter
 from codecairn.memory.errors import ConfigurationError, TraceImportError, TraceParseError
-from codecairn.service.onboarding import DiscoveredSource, HistoryInspection
+from codecairn.service.onboarding import DiscoveredSource, HistoryInspection, ImportProgress
 
 _MAX_CANDIDATES = 256
 _MAX_DIRECTORIES = 1_024
@@ -33,7 +33,7 @@ class LocalAgentHistory:
         self._home = home.resolve()
         self._secret = identity_secret
 
-    def inspect(self, *, repository_common_dir: Path) -> HistoryInspection:
+    def inspect(self, *, repository_common_dir: Path, import_progress: ImportProgress | None = None) -> HistoryInspection:
         admitted: list[DiscoveredSource] = []
         unresolved: dict[Literal["codex", "claude"], int] = {"codex": 0, "claude": 0}
         invalid: dict[Literal["codex", "claude"], int] = {"codex": 0, "claude": 0}
@@ -88,6 +88,19 @@ class LocalAgentHistory:
                     invalid[client] += 1
                     continue
                 source_id = _source_id(self._secret, client, source)
+                import_state = (
+                    import_progress(
+                        source_path=source,
+                        raw_event_count=trace.raw_event_count,
+                        source_fingerprint=trace.source_sha256,
+                        raw_event_sha256s=tuple(digest for _record, digest in scan.records),
+                    )
+                    if import_progress is not None
+                    else "new"
+                )
+                if import_state == "invalid":
+                    invalid[client] += 1
+                    continue
                 admitted.append(
                     DiscoveredSource(
                         source_id=source_id,
@@ -99,6 +112,7 @@ class LocalAgentHistory:
                         raw_event_count=trace.raw_event_count,
                         estimated_bytes=scan.source_byte_count,
                         latest_activity_ms=metadata.st_mtime_ns // 1_000_000,
+                        import_state=import_state,
                     )
                 )
         sources = tuple(sorted(admitted, key=lambda item: (item.client, item.source_id)))

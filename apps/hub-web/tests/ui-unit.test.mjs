@@ -348,6 +348,30 @@ test("a partial onboarding report offers a real rescan action and separates inde
   assert.match(recoverable, /记忆已保存，检索索引未就绪/);
 });
 
+test("onboarding discloses local and network embedding egress precisely", async () => {
+  const { EgressDisclosure } = await load(
+    "/app/features/onboarding/OnboardingView.tsx",
+  );
+  const renderDisclosure = (sourceContentEgress) =>
+    renderToStaticMarkup(
+      React.createElement(EgressDisclosure, { sourceContentEgress }),
+    );
+
+  const local = renderDisclosure("none");
+  assert.match(local, /本地模式/);
+  assert.match(local, /记忆标题、正文、证据事实文本/);
+  assert.match(local, /完整的原始会话/);
+  assert.match(local, /不会.*发送给嵌入提供方/);
+  assert.doesNotMatch(local, /以明文发送/);
+
+  const network = renderDisclosure("memory_text_to_embedding");
+  assert.match(network, /由证据派生的记忆标题、正文和证据事实文本/);
+  assert.match(network, /以明文发送给已配置的嵌入提供方/);
+  assert.match(network, /生成检索向量/);
+  assert.match(network, /完整的原始会话不会发送/);
+  assert.doesNotMatch(network, /仅编码后的记忆文本/);
+});
+
 test("onboarding errors render stable Chinese copy without backend English", async () => {
   const [{ presentableError }, { HubApiError }, { default: RequestError }] =
     await Promise.all([
@@ -363,10 +387,19 @@ test("onboarding errors render stable Chinese copy without backend English", asy
     }),
   );
   const html = renderToStaticMarkup(React.createElement(RequestError, { error: safe }));
+  const busy = presentableError(
+    new HubApiError("Import progress changed", {
+      code: "progress_unavailable",
+      retryable: true,
+    }),
+  );
+  const busyHtml = renderToStaticMarkup(React.createElement(RequestError, { error: busy }));
 
   assert.match(html, /接入预览已变化/);
   assert.match(html, /请重新扫描/);
   assert.doesNotMatch(html, /selected source|Run onboarding/);
+  assert.match(busyHtml, /导入进度正在变化/);
+  assert.match(busyHtml, /稍后重新扫描/);
 });
 
 async function capturedMemoryResponse({

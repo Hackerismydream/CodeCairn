@@ -56,8 +56,11 @@ bounded regular-file reads, rejects symbolic-link traversal, and never searches
 the whole home directory. A source is selectable only when provider-native
 project metadata resolves exactly to the Git common directory bound to the
 foreground Host, and every repository-bearing path recorded in one session
-must resolve to that same directory. An unresolved or foreign-repository source is reported but
-cannot be force-mapped in the browser.
+must resolve to that same directory. The Host retains the opened common-directory
+object identity for the Interface lifetime: normal HEAD movement and linked
+worktrees sharing that object remain valid, while replacement at the same path
+is stale. An unresolved or foreign-repository source is reported but cannot be
+force-mapped in the browser.
 
 Every discovered source receives an opaque source ID. The ID is a selection
 handle, not a path or authority claim. Absolute source paths, client settings,
@@ -80,11 +83,17 @@ Preview still performs no write, and the person must review retention and
 planned writes and explicitly confirm Apply. `install_capture_for` has no
 analogous default; omitted or empty means no Hook installation.
 
+A source whose committed prefix was rewritten or truncated is invalid and
+cannot be selected. A concurrent Import Ledger write is different: Preview
+returns the retryable `progress_unavailable` error instead of misreporting the
+source as malformed or reading a stale SQLite snapshot.
+
 A Preview request may instead select a subset of returned opaque source IDs.
 CodeCairn returns a short-lived Consent Token only when at least one historical
 source or Hook plan is selected. That token binds at least:
 
-- the target repository and Memory Namespace identity;
+- the target repository and Memory Namespace identity, including the opened
+  Git common-directory object identity;
 - the preview and Adapter contract revisions;
 - every selected opaque source ID and immutable source digest;
 - the exact planned write classes;
@@ -101,7 +110,9 @@ Before its first write, Apply rediscovers the selected sources and revalidates
 the repository mapping, source digest, client version, Hook target, settings
 digest, Adapter revision, retention revision, and token expiry. Any mismatch
 rejects the whole plan as stale and requires a new preview. No planned item is
-written before this stale preflight completes.
+written before this stale preflight completes. Repository object identity is
+also checked at the application and Hook-settings write boundaries so
+replacement cannot be hidden inside an Adapter.
 
 After that preflight, each source import is an independent durable operation
 through `CodeCairnApplication.import_session`, the Import Ledger, and the Write
@@ -158,10 +169,12 @@ must fail closed unless the exact model identifier is
 remain historical evidence and are not rewritten.
 
 Add a `v04-onboarding` source-budget stage over the same maintained roots as
-`v03-acceptance`. Its ceilings are 18,300 physical product-core lines and
-27,500 total maintained source lines. This is an additive implementation
-ceiling for version 0.4; it does not rewrite the historical version 0.3 gate or
-the frozen version 0.1 and version 0.2 budgets.
+`v03-acceptance`. Its ceilings are 18,500 physical product-core lines and
+27,700 total maintained source lines. The final 200-line increase is reserved
+for consent-integrity and cross-platform landing fixes found during review.
+This is an additive implementation ceiling for version 0.4; it does not
+rewrite the historical version 0.3 gate or the frozen version 0.1 and version
+0.2 budgets.
 
 ## Consequences
 

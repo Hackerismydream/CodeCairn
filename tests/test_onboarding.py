@@ -12,6 +12,7 @@ import pytest
 
 import codecairn.entrypoints.hooks as hook_module
 import codecairn.importers.history as history_module
+import codecairn.storage.sqlite as sqlite_module
 from codecairn.bootstrap import create_application
 from codecairn.entrypoints.hooks import LocalHookCaptureAdapter
 from codecairn.importers.history import LocalAgentHistory
@@ -147,8 +148,6 @@ def test_preview_reads_existing_import_progress_without_mutating_runtime_files(t
     application.import_session(source, repo_key=REPO_KEY, source_root=home / ".codex/sessions", index=False)
     (runtime / "index.lance").mkdir()
     (runtime / "index.lance/sentinel").write_bytes(b"index-state")
-    (runtime / "state.sqlite3-wal").write_bytes(b"closed-wal-sentinel")
-    (runtime / "state.sqlite3-shm").write_bytes(b"closed-shm-sentinel")
 
     def snapshot() -> dict[str, tuple[bytes, int]]:
         return {
@@ -172,6 +171,258 @@ def test_preview_reads_existing_import_progress_without_mutating_runtime_files(t
     assert snapshot() == before
 
 
+@pytest.mark.parametrize("suffix", ("-journal", "-wal", "-shm"))
+def test_preview_rejects_sqlite_sidecars_without_mutating_them(tmp_path: Path, suffix: str) -> None:
+    repository = tmp_path / "repository"
+    common_dir = _repository(repository)
+    home = tmp_path / "home"
+    source = home / ".codex/sessions/2026/08/01/session.jsonl"
+    _codex_session(source, cwd=repository)
+    runtime = tmp_path / "runtime"
+    application = create_application(runtime, repo_key=REPO_KEY)
+    application.import_session(source, repo_key=REPO_KEY, source_root=home / ".codex/sessions", index=False)
+    sidecar = Path(f"{runtime / 'state.sqlite3'}{suffix}")
+    sidecar.write_bytes(b"untrusted-sidecar")
+    before = (sidecar.read_bytes(), sidecar.stat().st_mtime_ns)
+    module = OnboardingModule(
+        application=create_application(runtime, repo_key=REPO_KEY),
+        repo_key=REPO_KEY,
+        repository_common_dir=common_dir,
+        history=LocalAgentHistory(home=home, identity_secret=b"opaque-source-secret"),
+        import_progress=SQLiteImportProgress(path=runtime / "state.sqlite3", repo_key=REPO_KEY),
+    )
+
+    with pytest.raises(OnboardingError) as raised:
+        module.preview(PreviewRequest())
+
+    assert raised.value.code == "progress_unavailable"
+    assert (sidecar.read_bytes(), sidecar.stat().st_mtime_ns) == before
+
+
+def test_preview_rejects_import_progress_that_changes_during_its_read(tmp_path: Path, monkeypatch) -> None:
+    repository = tmp_path / "repository"
+    common_dir = _repository(repository)
+    home = tmp_path / "home"
+    source = home / ".codex/sessions/2026/08/01/session.jsonl"
+    _codex_session(source, cwd=repository)
+    runtime = tmp_path / "runtime"
+    application = create_application(runtime, repo_key=REPO_KEY)
+    application.import_session(source, repo_key=REPO_KEY, source_root=home / ".codex/sessions", index=False)
+    generation = sqlite_module._sqlite_generation
+    calls = 0
+
+    def changing_generation(path: Path):
+        nonlocal calls
+        calls += 1
+        observed = generation(path)
+        if calls == 2:
+            main = observed[0]
+            assert main is not None
+            return ((main[0], main[1], main[2], main[3] + 1), *observed[1:])
+        return observed
+
+    monkeypatch.setattr(sqlite_module, "_sqlite_generation", changing_generation)
+    module = OnboardingModule(
+        application=create_application(runtime, repo_key=REPO_KEY),
+        repo_key=REPO_KEY,
+        repository_common_dir=common_dir,
+        history=LocalAgentHistory(home=home, identity_secret=b"opaque-source-secret"),
+        import_progress=SQLiteImportProgress(path=runtime / "state.sqlite3", repo_key=REPO_KEY),
+    )
+
+    with pytest.raises(OnboardingError) as raised:
+        module.preview(PreviewRequest())
+
+    assert raised.value.code == "progress_unavailable"
+    assert raised.value.retryable is True
+
+
+def test_preview_rejects_wal_state_instead_of_reading_a_stale_main_database(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    common_dir = _repository(repository)
+    home = tmp_path / "home"
+    source = home / ".codex/sessions/2026/08/01/session.jsonl"
+    _codex_session(source, cwd=repository)
+    runtime = tmp_path / "runtime"
+    application = create_application(runtime, repo_key=REPO_KEY)
+    application.import_session(source, repo_key=REPO_KEY, source_root=home / ".codex/sessions", index=False)
+    with sqlite3.connect(runtime / "state.sqlite3") as connection:
+        assert connection.execute("PRAGMA journal_mode = WAL").fetchone() == ("wal",)
+    module = OnboardingModule(
+        application=create_application(runtime, repo_key=REPO_KEY),
+        repo_key=REPO_KEY,
+        repository_common_dir=common_dir,
+        history=LocalAgentHistory(home=home, identity_secret=b"opaque-source-secret"),
+        import_progress=SQLiteImportProgress(path=runtime / "state.sqlite3", repo_key=REPO_KEY),
+    )
+
+    with pytest.raises(OnboardingError) as raised:
+        module.preview(PreviewRequest())
+
+    assert raised.value.code == "progress_unavailable"
+    assert raised.value.retryable is True
+
+
+def test_preview_rejects_a_same_length_rewrite_behind_the_import_cursor(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    common_dir = _repository(repository)
+    home = tmp_path / "home"
+    source = home / ".codex/sessions/2026/08/01/session.jsonl"
+    _codex_session(source, cwd=repository)
+    runtime = tmp_path / "runtime"
+    application = create_application(runtime, repo_key=REPO_KEY)
+    application.import_session(source, repo_key=REPO_KEY, source_root=home / ".codex/sessions", index=False)
+    records = tuple(json.loads(line) for line in source.read_text().splitlines())
+    rewritten = ({**records[0], "rewritten": True}, *records[1:])
+    source.write_text("".join(f"{json.dumps(record)}\n" for record in rewritten))
+    module = OnboardingModule(
+        application=create_application(runtime, repo_key=REPO_KEY),
+        repo_key=REPO_KEY,
+        repository_common_dir=common_dir,
+        history=LocalAgentHistory(home=home, identity_secret=b"opaque-source-secret"),
+        import_progress=SQLiteImportProgress(path=runtime / "state.sqlite3", repo_key=REPO_KEY),
+    )
+
+    preview = module.preview(PreviewRequest())
+
+    codex = next(item for item in preview.sources if item.client == "codex")
+    assert codex.candidates == ()
+    assert codex.invalid_count == 1
+    assert preview.consent_token is None
+
+
+def test_preview_rejects_a_same_length_rewrite_after_the_resume_cursor(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    common_dir = _repository(repository)
+    home = tmp_path / "home"
+    source = home / ".codex/sessions/2026/08/01/session.jsonl"
+    _codex_session(source, cwd=repository)
+    runtime = tmp_path / "runtime"
+    application = create_application(runtime, repo_key=REPO_KEY)
+    application.import_session(source, repo_key=REPO_KEY, source_root=home / ".codex/sessions", index=False)
+    records = [json.loads(line) for line in source.read_text().splitlines()]
+    records[-1]["payload"]["content"][0]["text"] = "Rewritten assistant output."
+    source.write_text("".join(f"{json.dumps(record)}\n" for record in records))
+    module = OnboardingModule(
+        application=create_application(runtime, repo_key=REPO_KEY),
+        repo_key=REPO_KEY,
+        repository_common_dir=common_dir,
+        history=LocalAgentHistory(home=home, identity_secret=b"opaque-source-secret"),
+        import_progress=SQLiteImportProgress(path=runtime / "state.sqlite3", repo_key=REPO_KEY),
+    )
+
+    preview = module.preview(PreviewRequest())
+
+    codex = next(item for item in preview.sources if item.client == "codex")
+    assert codex.candidates == ()
+    assert codex.invalid_count == 1
+    assert preview.consent_token is None
+
+
+def test_preview_rejects_a_truncated_imported_source(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    common_dir = _repository(repository)
+    home = tmp_path / "home"
+    source = home / ".codex/sessions/2026/08/01/session.jsonl"
+    _codex_session(source, cwd=repository)
+    runtime = tmp_path / "runtime"
+    application = create_application(runtime, repo_key=REPO_KEY)
+    application.import_session(source, repo_key=REPO_KEY, source_root=home / ".codex/sessions", index=False)
+    source.write_text("\n".join(source.read_text().splitlines()[:-1]) + "\n")
+    module = OnboardingModule(
+        application=create_application(runtime, repo_key=REPO_KEY),
+        repo_key=REPO_KEY,
+        repository_common_dir=common_dir,
+        history=LocalAgentHistory(home=home, identity_secret=b"opaque-source-secret"),
+        import_progress=SQLiteImportProgress(path=runtime / "state.sqlite3", repo_key=REPO_KEY),
+    )
+
+    preview = module.preview(PreviewRequest())
+
+    codex = next(item for item in preview.sources if item.client == "codex")
+    assert codex.candidates == ()
+    assert codex.invalid_count == 1
+    assert preview.consent_token is None
+
+
+def test_preview_rejects_a_committed_prefix_rewrite_even_when_events_were_appended(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    common_dir = _repository(repository)
+    home = tmp_path / "home"
+    source = home / ".codex/sessions/2026/08/01/session.jsonl"
+    _codex_session(source, cwd=repository)
+    runtime = tmp_path / "runtime"
+    application = create_application(runtime, repo_key=REPO_KEY)
+    application.import_session(source, repo_key=REPO_KEY, source_root=home / ".codex/sessions", index=False)
+    records = [json.loads(line) for line in source.read_text().splitlines()]
+    records[0]["rewritten"] = True
+    records.append({"type": "turn_context", "payload": {"cwd": str(repository)}})
+    source.write_text("".join(f"{json.dumps(record)}\n" for record in records))
+    module = OnboardingModule(
+        application=create_application(runtime, repo_key=REPO_KEY),
+        repo_key=REPO_KEY,
+        repository_common_dir=common_dir,
+        history=LocalAgentHistory(home=home, identity_secret=b"opaque-source-secret"),
+        import_progress=SQLiteImportProgress(path=runtime / "state.sqlite3", repo_key=REPO_KEY),
+    )
+
+    preview = module.preview(PreviewRequest())
+
+    codex = next(item for item in preview.sources if item.client == "codex")
+    assert codex.candidates == ()
+    assert codex.invalid_count == 1
+    assert preview.consent_token is None
+
+
+def test_clean_append_is_incremental_and_becomes_already_imported_after_apply(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    common_dir = _repository(repository)
+    home = tmp_path / "home"
+    source = home / ".codex/sessions/2026/08/01/session.jsonl"
+    _codex_session(source, cwd=repository)
+    runtime = tmp_path / "runtime"
+    application = create_application(runtime, repo_key=REPO_KEY)
+    application.import_session(source, repo_key=REPO_KEY, source_root=home / ".codex/sessions", index=False)
+    with source.open("a") as output:
+        output.write(
+            json.dumps(
+                {
+                    "type": "response_item",
+                    "payload": {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "Run lint."}]},
+                }
+            )
+            + "\n"
+        )
+        output.write(
+            json.dumps(
+                {
+                    "type": "response_item",
+                    "payload": {"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": "Lint passes."}]},
+                }
+            )
+            + "\n"
+        )
+    module = OnboardingModule(
+        application=create_application(runtime, repo_key=REPO_KEY),
+        repo_key=REPO_KEY,
+        repository_common_dir=common_dir,
+        history=LocalAgentHistory(home=home, identity_secret=b"opaque-source-secret"),
+        import_progress=SQLiteImportProgress(path=runtime / "state.sqlite3", repo_key=REPO_KEY),
+    )
+
+    preview = module.preview(PreviewRequest())
+    candidate = next(item for item in preview.sources if item.client == "codex").candidates[0]
+    assert candidate.import_state == "incremental"
+    assert candidate.selected is True
+    assert preview.consent_token is not None
+
+    report = module.apply(preview.consent_token)
+    after = module.preview(PreviewRequest())
+
+    assert report.imports[0].outcome == "imported"
+    assert next(item for item in after.sources if item.client == "codex").candidates[0].import_state == "already_imported"
+
+
 @pytest.mark.parametrize("schema_state", ("legacy_imports", "missing_revision", "mismatched_revision"))
 def test_import_progress_rejects_untrusted_schema_without_mutating_any_runtime_file(tmp_path: Path, schema_state: str) -> None:
     runtime = tmp_path / "runtime"
@@ -187,8 +438,6 @@ def test_import_progress_rejects_untrusted_schema_without_mutating_any_runtime_f
     (runtime / "memories/sentinel.md").write_bytes(b"durable-memory")
     (runtime / "index.lance").mkdir()
     (runtime / "index.lance/sentinel").write_bytes(b"index-state")
-    (runtime / "state.sqlite3-wal").write_bytes(b"wal-state")
-    (runtime / "state.sqlite3-shm").write_bytes(b"shm-state")
 
     def snapshot() -> dict[str, tuple[bytes, int]]:
         return {
@@ -201,7 +450,9 @@ def test_import_progress_rejects_untrusted_schema_without_mutating_any_runtime_f
     progress = SQLiteImportProgress(path=database, repo_key=REPO_KEY)
 
     with pytest.raises(LegacyRootUnsupported):
-        progress(source_path=tmp_path / "source.jsonl", raw_event_count=3)
+        progress(
+            source_path=tmp_path / "source.jsonl", raw_event_count=3, source_fingerprint="a" * 64, raw_event_sha256s=("b" * 64,) * 3
+        )
 
     assert snapshot() == before
 
@@ -226,7 +477,9 @@ def test_import_progress_rejects_non_regular_or_shared_database_without_writes(t
     before = (metadata.st_mode, metadata.st_nlink, metadata.st_size, metadata.st_mtime_ns)
 
     with pytest.raises(LegacyRootUnsupported):
-        SQLiteImportProgress(path=database, repo_key=REPO_KEY)(source_path=tmp_path / "source.jsonl", raw_event_count=3)
+        SQLiteImportProgress(path=database, repo_key=REPO_KEY)(
+            source_path=tmp_path / "source.jsonl", raw_event_count=3, source_fingerprint="a" * 64, raw_event_sha256s=("b" * 64,) * 3
+        )
 
     metadata = database.lstat()
     assert (metadata.st_mode, metadata.st_nlink, metadata.st_size, metadata.st_mtime_ns) == before

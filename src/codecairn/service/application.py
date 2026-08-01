@@ -121,13 +121,17 @@ class CodeCairnApplication:
         index: bool = True,
         boundary_kind: BoundaryKind | None = None,
         expected_source_sha256: str | None = None,
+        before_write: Callable[[], object] | None = None,
     ) -> ImportOutcome:
+        if before_write is not None:
+            before_write()
         result = self._memory_runtime().import_session(
             source_path,
             repo_key=repo_key,
             source_root=source_root,
             boundary_kind=boundary_kind,
             expected_source_sha256=expected_source_sha256,
+            before_write=before_write,
         )
         return ImportOutcome(result=result, index=self._drain_index(requested=index))
 

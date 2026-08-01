@@ -524,10 +524,10 @@ runner. Hub code counts as core and the acceptance runner as evaluation. ADR
 without changing the frozen version 0.1 or version 0.2 stages.
 
 The additive `v04-onboarding` stage counts the same maintained roots and raises
-the ceilings to 18,300 core and 27,500 total physical source lines for the
-Onboarding implementation. These are additive implementation ceilings. They do
-not rewrite the historical `v03-acceptance` gate or any frozen version 0.1 and
-version 0.2 budget.
+the ceilings to 18,500 core and 27,700 total physical source lines for the
+Onboarding implementation and its reviewed consent-integrity landing fixes.
+These are additive implementation ceilings. They do not rewrite the historical
+`v03-acceptance` gate or any frozen version 0.1 and version 0.2 budget.
 
 ## Current-to-target delta
 

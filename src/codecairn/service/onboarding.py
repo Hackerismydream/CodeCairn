@@ -4,20 +4,24 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import secrets
+import stat
 import threading
 import time
 from collections.abc import Callable
+from contextlib import suppress
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Literal, Protocol
 
 from codecairn.memory.episode import BoundaryKind
-from codecairn.memory.errors import TraceImportError
+from codecairn.memory.errors import ImportProgressUnavailable, TraceImportError
 from codecairn.service.application import ImportOutcome
 
 Client = Literal["codex", "claude", "pico"]
 CaptureClient = Literal["codex", "claude"]
+ImportProgressState = Literal["new", "incremental", "already_imported", "invalid"]
 _CLIENTS: tuple[Client, ...] = ("codex", "claude", "pico")
 ONBOARDING_CONTRACT_REVISION = "codecairn.hub-onboarding.v1"
 RETENTION_REVISION = "codecairn.onboarding.retention.v1"
@@ -139,7 +143,7 @@ class HistoryInspection:
 
 
 class HistorySource(Protocol):
-    def inspect(self, *, repository_common_dir: Path) -> HistoryInspection: ...
+    def inspect(self, *, repository_common_dir: Path, import_progress: ImportProgress | None = None) -> HistoryInspection: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -159,7 +163,7 @@ class ContinuousCapture(Protocol):
 
     def inspect(self) -> CapturePlan: ...
 
-    def apply(self, plan: CapturePlan) -> bool: ...
+    def apply(self, plan: CapturePlan, *, before_write: Callable[[], object] | None = None) -> bool: ...
 
 
 class OnboardingApplication(Protocol):
@@ -172,11 +176,14 @@ class OnboardingApplication(Protocol):
         index: bool = True,
         boundary_kind: BoundaryKind | None = None,
         expected_source_sha256: str | None = None,
+        before_write: Callable[[], object] | None = None,
     ) -> ImportOutcome: ...
 
 
 class ImportProgress(Protocol):
-    def __call__(self, *, source_path: Path, raw_event_count: int) -> Literal["new", "incremental", "already_imported"]: ...
+    def __call__(
+        self, *, source_path: Path, raw_event_count: int, source_fingerprint: str, raw_event_sha256s: tuple[str, ...]
+    ) -> ImportProgressState: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -189,6 +196,7 @@ class _ConsentSnapshot:
     retention_revision: str
     source_content_egress: Literal["none", "memory_text_to_embedding"]
     history_adapter_revision: str
+    repository_binding_digest: str
 
 
 class OnboardingModule:
@@ -210,6 +218,9 @@ class OnboardingModule:
         self._application = application
         self._repo_key = repo_key
         self._repository_common_dir = repository_common_dir.resolve()
+        self._repository_descriptor, self._repository_binding_digest = _open_repository_binding(
+            self._repository_common_dir, repo_key=repo_key
+        )
         self._history = history
         self._captures = {capture.client: capture for capture in captures}
         self._import_progress = import_progress
@@ -227,7 +238,8 @@ class OnboardingModule:
 
     def _preview(self, request: PreviewRequest) -> OnboardingPreview:
         self._prune_consents()
-        inspection = self._with_import_states(self._history.inspect(repository_common_dir=self._repository_common_dir))
+        repository_binding_digest = self._require_repository_binding()
+        inspection = self._with_import_states(self._inspect_history())
         by_id = {source.source_id: source for source in inspection.sources}
         selected_ids = (
             {source.source_id for source in inspection.sources if source.import_state != "already_imported"}
@@ -255,6 +267,7 @@ class OnboardingModule:
             expires,
             history_adapter_revision=inspection.adapter_revision,
             source_content_egress=self._source_content_egress,
+            repository_binding_digest=repository_binding_digest,
         )
         token = secrets.token_urlsafe(32) if selected or capture_clients else None
         if token is not None:
@@ -267,6 +280,7 @@ class OnboardingModule:
                 RETENTION_REVISION,
                 self._source_content_egress,
                 inspection.adapter_revision,
+                repository_binding_digest,
             )
         groups = tuple(
             self._client_preview(
@@ -306,12 +320,14 @@ class OnboardingModule:
             raise OnboardingError("consent_invalid", "The onboarding consent token is invalid.")
         if int(self._now_ms()) > snapshot.expires_at_ms:
             raise OnboardingError("consent_expired", "The onboarding preview expired; scan again.", retryable=True)
-        current = self._with_import_states(self._history.inspect(repository_common_dir=self._repository_common_dir))
+        repository_binding_digest = self._require_repository_binding()
+        current = self._with_import_states(self._inspect_history())
         if (
             snapshot.contract_revision != ONBOARDING_CONTRACT_REVISION
             or snapshot.retention_revision != RETENTION_REVISION
             or snapshot.source_content_egress != self._source_content_egress
             or snapshot.history_adapter_revision != current.adapter_revision
+            or snapshot.repository_binding_digest != repository_binding_digest
         ):
             raise OnboardingError("snapshot_stale", "The onboarding contract changed after preview.", retryable=True)
         current_by_id = {source.source_id: source for source in current.sources}
@@ -325,7 +341,6 @@ class OnboardingModule:
         current_capture = self._capture_plans()
         if any(current_capture.get(plan.client) != plan for plan in snapshot.capture_plans):
             raise OnboardingError("snapshot_stale", "A selected hook configuration changed after preview.", retryable=True)
-
         imports: list[ImportActionReport] = []
         index_states: list[Literal["ready", "pending", "failed", "not_requested"]] = []
         for source in snapshot.sources:
@@ -336,6 +351,7 @@ class OnboardingModule:
                     source_root=source.source_root,
                     boundary_kind="manual_finalize",
                     expected_source_sha256=source.fingerprint,
+                    before_write=lambda: self._require_repository_binding(expected_digest=snapshot.repository_binding_digest),
                 )
                 result = outcome.result
                 imports.append(
@@ -350,16 +366,26 @@ class OnboardingModule:
                 )
                 self._imported_fingerprints[source.source_id] = source.fingerprint
                 index_states.append(_index_state(outcome))
+            except OnboardingError as error:
+                if not imports:
+                    raise
+                imports.append(ImportActionReport(source.source_id, source.client, "failed", 0, 0, error.code))
             except Exception as error:
                 imports.append(ImportActionReport(source.source_id, source.client, "failed", 0, 0, _import_error_code(error)))
 
         capture_items: list[CaptureActionReport] = []
         for plan in snapshot.capture_plans:
             try:
-                changed = self._captures[plan.client].apply(plan)
+                changed = self._captures[plan.client].apply(
+                    plan, before_write=lambda: self._require_repository_binding(expected_digest=snapshot.repository_binding_digest)
+                )
                 capture_items.append(
                     CaptureActionReport(plan.client, "installed" if changed else "already_installed", plan.event, None)
                 )
+            except OnboardingError as error:
+                if not imports and not capture_items:
+                    raise
+                capture_items.append(CaptureActionReport(plan.client, "failed", plan.event, error.code))
             except Exception as error:
                 capture_items.append(CaptureActionReport(plan.client, "failed", plan.event, _capture_error_code(error)))
         capture = tuple(capture_items)
@@ -396,11 +422,9 @@ class OnboardingModule:
         return report
 
     def _with_import_states(self, inspection: HistoryInspection) -> HistoryInspection:
-        def state(source: DiscoveredSource) -> Literal["new", "incremental", "already_imported"]:
-            if self._import_progress is not None:
-                durable = self._import_progress(source_path=source.path, raw_event_count=source.raw_event_count)
-                if durable != "new":
-                    return durable
+        def state(source: DiscoveredSource) -> ImportProgressState:
+            if source.import_state != "new":
+                return source.import_state
             return (
                 "already_imported"
                 if self._imported_fingerprints.get(source.source_id) == source.fingerprint
@@ -409,7 +433,23 @@ class OnboardingModule:
                 else "new"
             )
 
-        return replace(inspection, sources=tuple(replace(source, import_state=state(source)) for source in inspection.sources))
+        sources: list[DiscoveredSource] = []
+        invalid = dict(inspection.invalid)
+        for source in inspection.sources:
+            import_state = state(source)
+            if import_state == "invalid":
+                invalid[source.client] = invalid.get(source.client, 0) + 1
+                continue
+            sources.append(replace(source, import_state=import_state))
+        return replace(inspection, sources=tuple(sources), invalid=invalid)
+
+    def _inspect_history(self) -> HistoryInspection:
+        try:
+            return self._history.inspect(repository_common_dir=self._repository_common_dir, import_progress=self._import_progress)
+        except ImportProgressUnavailable as error:
+            raise OnboardingError(
+                "progress_unavailable", "Import progress changed during preview; scan again.", retryable=True
+            ) from error
 
     def _client_preview(
         self,
@@ -478,6 +518,51 @@ class OnboardingModule:
             self._consents.pop(oldest, None)
             self._reports.pop(oldest, None)
 
+    def _require_repository_binding(self, *, expected_digest: str | None = None) -> str:
+        descriptor = self._repository_descriptor
+        try:
+            retained = os.fstat(descriptor)
+            current_descriptor = os.open(self._repository_common_dir, _repository_directory_flags())
+            try:
+                current = os.fstat(current_descriptor)
+            finally:
+                os.close(current_descriptor)
+        except OSError as error:
+            raise OnboardingError("snapshot_stale", "The repository changed after preview.", retryable=True) from error
+        if (
+            not stat.S_ISDIR(retained.st_mode)
+            or not stat.S_ISDIR(current.st_mode)
+            or (retained.st_dev, retained.st_ino) != (current.st_dev, current.st_ino)
+        ):
+            raise OnboardingError("snapshot_stale", "The repository changed after preview.", retryable=True)
+        observed = _repository_binding_digest(
+            self._repository_common_dir, repo_key=self._repo_key, device=retained.st_dev, inode=retained.st_ino
+        )
+        if observed != self._repository_binding_digest or (expected_digest is not None and observed != expected_digest):
+            raise OnboardingError("snapshot_stale", "The repository changed after preview.", retryable=True)
+        return observed
+
+    def close(self) -> None:
+        with self._operation_lock:
+            descriptor = self._repository_descriptor
+            if descriptor >= 0:
+                self._repository_descriptor = -1
+                with suppress(OSError):
+                    os.close(descriptor)
+
+    def open(self) -> None:
+        with self._operation_lock:
+            if self._repository_descriptor < 0:
+                self._repository_descriptor, self._repository_binding_digest = _open_repository_binding(
+                    self._repository_common_dir, repo_key=self._repo_key
+                )
+                self._consents.clear()
+                self._reports.clear()
+
+    def __del__(self) -> None:
+        with suppress(Exception):
+            self.close()
+
 
 class OnboardingError(RuntimeError):
     def __init__(self, code: str, message: str, *, retryable: bool = False) -> None:
@@ -494,6 +579,7 @@ def _snapshot_id(
     *,
     history_adapter_revision: str,
     source_content_egress: str,
+    repository_binding_digest: str,
 ) -> str:
     value = {
         "contract_revision": ONBOARDING_CONTRACT_REVISION,
@@ -504,11 +590,35 @@ def _snapshot_id(
         "expires_at_ms": expires_at_ms,
         "history_adapter_revision": history_adapter_revision,
         "repo_key": repo_key,
+        "repository_binding_digest": repository_binding_digest,
         "retention_revision": RETENTION_REVISION,
         "source_content_egress": source_content_egress,
         "sources": [(item.source_id, item.fingerprint, item.import_state) for item in sources],
     }
     return "onb_" + hashlib.sha256(json.dumps(value, separators=(",", ":"), sort_keys=True).encode()).hexdigest()
+
+
+def _repository_directory_flags() -> int:
+    return os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+
+
+def _open_repository_binding(path: Path, *, repo_key: str) -> tuple[int, str]:
+    try:
+        descriptor = os.open(path, _repository_directory_flags())
+    except OSError as error:
+        raise OnboardingError("repository_unavailable", "The Git repository cannot be bound safely.") from error
+    metadata = os.fstat(descriptor)
+    if not stat.S_ISDIR(metadata.st_mode):
+        os.close(descriptor)
+        raise OnboardingError("repository_unavailable", "The Git common directory is not a directory.")
+    return descriptor, _repository_binding_digest(path, repo_key=repo_key, device=metadata.st_dev, inode=metadata.st_ino)
+
+
+def _repository_binding_digest(path: Path, *, repo_key: str, device: int, inode: int) -> str:
+    encoded = json.dumps(
+        {"common_dir": str(path), "device": device, "inode": inode, "repo_key": repo_key}, separators=(",", ":"), sort_keys=True
+    ).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _token_digest(token: str) -> str:

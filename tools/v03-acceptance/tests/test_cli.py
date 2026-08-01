@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
+from click import unstyle
 from codecairn_v03_acceptance import cli
 from codecairn_v03_acceptance.campaign import VerificationReport
 from codecairn_v03_acceptance.cli import app
@@ -57,7 +58,7 @@ def test_source_pilot_requires_explicit_live_authority_before_creating_a_campaig
     result = CliRunner().invoke(app, ["source-pilot", *_source_pilot_arguments(tmp_path)])
 
     assert result.exit_code == 2
-    assert "requires explicit --live-authorized" in result.output
+    assert "requires explicit --live-authorized" in unstyle(result.output)
     assert not (tmp_path / "runs").exists()
 
 

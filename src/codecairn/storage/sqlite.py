@@ -19,6 +19,7 @@ from codecairn.memory.capture import (
     memory_commit_from_payload,
     memory_commit_payload,
 )
+from codecairn.memory.errors import ImportProgressUnavailable
 from codecairn.memory.evolution import (
     EvolutionArtifact,
     EvolutionProposal,
@@ -62,6 +63,7 @@ from codecairn.memory.semantic import (
     semantic_commit_from_payload,
     semantic_commit_payload,
 )
+from codecairn.memory.trace import EMPTY_RAW_PREFIX_SHA256, extend_raw_prefix_sha256
 
 _SCHEMA_REVISION = "codecairn-v01-5"
 
@@ -73,7 +75,9 @@ class SQLiteImportProgress:
         self._path = path
         self._repo_key = repo_key
 
-    def __call__(self, *, source_path: Path, raw_event_count: int) -> Literal["new", "incremental", "already_imported"]:
+    def __call__(
+        self, *, source_path: Path, raw_event_count: int, source_fingerprint: str, raw_event_sha256s: tuple[str, ...]
+    ) -> Literal["new", "incremental", "already_imported", "invalid"]:
         try:
             metadata = self._path.lstat()
         except FileNotFoundError:
@@ -82,21 +86,70 @@ class SQLiteImportProgress:
             raise LegacyRootUnsupported("Unsupported SQLite state; use a fresh root and re-import") from error
         if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
             raise LegacyRootUnsupported("Unsupported SQLite state; use a fresh root and re-import")
+        generation = _sqlite_generation(self._path)
+        if any(sidecar is not None for sidecar in generation[1:]):
+            raise ImportProgressUnavailable("SQLite import progress has an active sidecar")
+        with self._path.open("rb") as database:
+            header = database.read(20)
+        if len(header) >= 20 and header[18:20] == b"\x02\x02":
+            raise ImportProgressUnavailable("WAL SQLite state is unavailable to a no-write onboarding preview")
         try:
-            with closing(sqlite3.connect(f"{self._path.absolute().as_uri()}?mode=ro&immutable=1", uri=True)) as connection:
+            with closing(sqlite3.connect(f"{self._path.absolute().as_uri()}?mode=ro", uri=True)) as connection:
                 connection.execute("PRAGMA query_only = ON")
                 schema = connection.execute("SELECT value FROM codecairn_meta WHERE key = 'schema_revision'").fetchone()
                 if schema is None or schema[0] != _SCHEMA_REVISION:
                     raise LegacyRootUnsupported("Unsupported SQLite schema; use a fresh root and re-import")
                 row = connection.execute(
-                    "SELECT committed_raw_event_index FROM imports WHERE repo_key = ? AND source_path = ?",
+                    """
+                    SELECT source_sha256, raw_event_count, committed_raw_event_index,
+                           resume_raw_event_index, resume_prefix_sha256
+                    FROM imports
+                    WHERE repo_key = ? AND source_path = ?
+                    """,
                     (self._repo_key, str(Path(os.path.abspath(source_path)))),
                 ).fetchone()
         except sqlite3.DatabaseError as error:
+            if generation != _sqlite_generation(self._path):
+                raise ImportProgressUnavailable("SQLite import progress changed during its read") from error
             raise LegacyRootUnsupported("Unsupported SQLite schema; use a fresh root and re-import") from error
+        if generation != _sqlite_generation(self._path):
+            raise ImportProgressUnavailable("SQLite import progress changed during its read")
         if row is None:
             return "new"
-        return "already_imported" if int(row[0]) >= raw_event_count - 1 else "incremental"
+        stored_fingerprint, stored_count, committed_index, resume_index, resume_prefix = row
+        if (
+            not isinstance(stored_fingerprint, str)
+            or not isinstance(stored_count, int)
+            or not isinstance(committed_index, int)
+            or not isinstance(resume_index, int)
+            or not isinstance(resume_prefix, str)
+            or committed_index != stored_count - 1
+            or not 0 <= resume_index <= stored_count
+        ):
+            raise LegacyRootUnsupported("Unsupported SQLite schema; use a fresh root and re-import")
+        if source_fingerprint == stored_fingerprint and raw_event_count == stored_count:
+            return "already_imported"
+        if raw_event_count <= stored_count or len(raw_event_sha256s) != raw_event_count:
+            return "invalid"
+        prefix = EMPTY_RAW_PREFIX_SHA256
+        try:
+            for raw_event_sha256 in raw_event_sha256s[:resume_index]:
+                prefix = extend_raw_prefix_sha256(prefix, raw_event_sha256)
+        except ValueError:
+            return "invalid"
+        return "incremental" if prefix == resume_prefix else "invalid"
+
+
+def _sqlite_generation(path: Path) -> tuple[tuple[int, int, int, int] | None, ...]:
+    generation: list[tuple[int, int, int, int] | None] = []
+    for candidate in (path, Path(f"{path}-journal"), Path(f"{path}-wal"), Path(f"{path}-shm")):
+        try:
+            metadata = candidate.lstat()
+        except FileNotFoundError:
+            generation.append(None)
+        else:
+            generation.append((metadata.st_dev, metadata.st_ino, metadata.st_size, metadata.st_mtime_ns))
+    return tuple(generation)
 
 
 class SQLiteState:

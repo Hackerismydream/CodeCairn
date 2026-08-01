@@ -55,8 +55,10 @@ core-owned schema rather than a dynamic plugin description.
 - Preserve the three-operation Hub Read Interface and the established
   loopback, token, same-origin, forwarded-authority, no-CORS, and no-store
   policies.
-- Enforce the additive `v04-onboarding` ceilings of 18,300 product-core and
-  27,500 total maintained physical source lines without rewriting prior gates.
+- Enforce the additive `v04-onboarding` ceilings of 18,500 product-core and
+  27,700 total maintained physical source lines without rewriting prior gates.
+  The final 200-line allowance is reserved for reviewed consent-integrity and
+  cross-platform landing fixes; it does not add product scope.
 
 ### Preview and source Adapters
 

@@ -293,18 +293,10 @@ raise SystemExit(128 + signal.SIGTERM)
     )
     home = tmp_path / "home"
     home.mkdir()
-    probe_environment = {**os.environ, "HOME": str(home)}
-    user_site = Path(
-        subprocess.run(
-            [venv / "bin" / "python", "-c", "import site; print(site.getusersitepackages())"],
-            check=True,
-            capture_output=True,
-            text=True,
-            env=probe_environment,
-        ).stdout.strip()
-    )
-    user_site.mkdir(parents=True)
-    (user_site / "sitecustomize.py").write_text("import os\nos.environ['HUB_SITE_CANARY'] = 'loaded'\n", encoding="utf-8")
+    hostile_pythonpath = tmp_path / "hostile-pythonpath"
+    hostile_pythonpath.mkdir()
+    (hostile_pythonpath / "sitecustomize.py").write_text("import os\nos.environ['HUB_SITE_CANARY'] = 'loaded'\n", encoding="utf-8")
+    probe_environment = {**os.environ, "HOME": str(home), "PYTHONPATH": str(hostile_pythonpath)}
     assert (
         subprocess.run(
             [venv / "bin" / "python", "-c", "import os; print(os.environ.get('HUB_SITE_CANARY', 'missing'))"],
@@ -321,7 +313,7 @@ raise SystemExit(128 + signal.SIGTERM)
         checkout=checkout,
         repository=repository,
         python_executable=(venv / "bin" / "python").absolute(),
-        environment={"HOME": str(home), "PATH": os.environ["PATH"]},
+        environment={"HOME": str(home), "PATH": os.environ["PATH"], "PYTHONPATH": str(hostile_pythonpath)},
         timeout_seconds=5,
     ) as session:
         launcher_pid = session.launcher_pid

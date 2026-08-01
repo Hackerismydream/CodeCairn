@@ -5,6 +5,7 @@ import subprocess
 from dataclasses import fields
 from pathlib import Path
 
+import pytest
 from codecairn_hub_api.app import OnboardingApplyRequest, OnboardingPreviewRequest, create_hub_app
 from codecairn_hub_api.cli import build_live_hub
 from codecairn_hub_api.queries import RecallReadiness
@@ -16,10 +17,12 @@ from codecairn.importers.history import LocalAgentHistory
 from codecairn.service.onboarding import (
     CaptureActionReport,
     ImportActionReport,
+    OnboardingError,
     OnboardingModule,
     OnboardingPreview,
     OnboardingReport,
     OnboardingTotals,
+    PreviewRequest,
     RetentionPreview,
     SourceCandidatePreview,
     SourceClientPreview,
@@ -88,6 +91,30 @@ def test_onboarding_transport_previews_and_applies_without_changing_hub_read_rou
     assert applied.json()["totals"]["created_memories"] == 1
     assert memories.status_code == 200
     assert memories.json()["page"]["items"][0]["memory_type"] == "task_experience"
+
+
+def test_hub_lifespan_closes_the_onboarding_repository_binding(tmp_path: Path) -> None:
+    common_dir = tmp_path / "repository/.git"
+    common_dir.mkdir(parents=True)
+    application = create_application(tmp_path / "runtime", repo_key=REPO_KEY)
+    onboarding = OnboardingModule(
+        application=application,
+        repo_key=REPO_KEY,
+        repository_common_dir=common_dir,
+        history=LocalAgentHistory(home=tmp_path / "home", identity_secret=b"opaque-source-secret"),
+    )
+    app = create_hub_app(application=application, repo_key=REPO_KEY, session_token=TOKEN, recall_readiness=READY, onboarding=onboarding)
+
+    with TestClient(app) as client:
+        assert client.get("/hub-read/v1/system", headers={"x-codecairn-hub-token": TOKEN}).status_code == 200
+
+    with pytest.raises(OnboardingError) as raised:
+        onboarding.preview(PreviewRequest())
+    assert raised.value.code == "snapshot_stale"
+
+    with TestClient(app) as restarted:
+        response = restarted.post("/hub-onboarding/v1/preview", headers={"x-codecairn-hub-token": TOKEN}, json={})
+    assert response.status_code == 200
 
 
 def test_onboarding_transport_rejects_paths_and_maps_stale_consent_to_a_typed_error(tmp_path: Path) -> None:

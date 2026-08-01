@@ -47,12 +47,26 @@ const retentionColumns = [
   ["不会保留", ["提供方凭证", "完整的原始会话副本"]],
 ] as const;
 
+export function EgressDisclosure({
+  sourceContentEgress,
+}: {
+  sourceContentEgress: OnboardingPreview["retention"]["source_content_egress"];
+}) {
+  return (
+    <p className="egress-note">
+      {sourceContentEgress === "none"
+        ? "本地模式不会把记忆标题、正文、证据事实文本或完整的原始会话发送给嵌入提供方。"
+        : "为生成检索向量，由证据派生的记忆标题、正文和证据事实文本会以明文发送给已配置的嵌入提供方；完整的原始会话不会发送。"}
+    </p>
+  );
+}
+
 function actionError(code: string | null): string {
   return code ? `${actionErrorLabels[code] ?? "执行失败"}（支持编号 ${code}）` : "";
 }
 
 export function presentableError(reason: unknown): HubApiError {
-  const safeCodes = ["snapshot_stale", "consent_expired", "consent_invalid", "invalid_selection", "hub_unavailable", "unauthorized", "invalid_response"];
+  const safeCodes = ["snapshot_stale", "progress_unavailable", "consent_expired", "consent_invalid", "invalid_selection", "hub_unavailable", "unauthorized", "invalid_response"];
   if (reason instanceof HubApiError) {
     return new HubApiError("接入失败", {
       code: safeCodes.includes(reason.code) ? reason.code : "onboarding_failed",
@@ -445,11 +459,9 @@ export default function OnboardingView({
                 </div>
               ))}
             </div>
-            <p className="egress-note">
-              {preview.retention.source_content_egress === "none"
-                ? "原始来源内容不会离开本机。"
-                : "仅编码后的记忆文本会发送给已配置的嵌入提供方；原始来源内容不会发送。"}
-            </p>
+            <EgressDisclosure
+              sourceContentEgress={preview.retention.source_content_egress}
+            />
           </section>
 
           <section className="onboarding-section">

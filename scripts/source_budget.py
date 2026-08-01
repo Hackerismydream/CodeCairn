@@ -24,7 +24,7 @@ STAGE_LIMITS = {
     "v02-001": {"core": 10_625, "total": 14_900},
     "v02-002": {"core": 11_000, "total": 15_300},
     "v03-acceptance": {"core": 16_200, "total": 25_000},
-    "v04-onboarding": {"core": 18_300, "total": 27_500},
+    "v04-onboarding": {"core": 18_500, "total": 27_700},
     "release": {"core": 9_700, "total": 14_100},
 }
 

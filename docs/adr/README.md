@@ -148,9 +148,10 @@ and expiry into one Consent Token. Apply accepts only that token, rejects a
 stale plan before its first write, then reports idempotent per-item and partial
 outcomes. Pico remains continuous-only, Guided Demo remains isolated, and any
 version 0.4 path selecting DeepSeek must pin `deepseek-v4-flash` exactly.
-The ADR also adds the 18,300-core / 27,500-total `v04-onboarding` source ceiling
-without rewriting historical stage budgets. Formal acceptance remains
-separate from an implementation candidate.
+The ADR also adds the 18,500-core / 27,700-total `v04-onboarding` source ceiling,
+including the reviewed consent-integrity landing allowance, without rewriting
+historical stage budgets. Formal acceptance remains separate from an
+implementation candidate.
 
 Current shipped behavior is maintained in
 [`../runtime/operations.md`](../runtime/operations.md); the product sequence is

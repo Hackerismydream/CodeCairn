@@ -92,6 +92,13 @@ digest must show that it did not initialize or mutate CodeCairn, create an
 Import Checkpoint, write a Hook Receipt, edit client settings, call a model, or
 make a network request.
 
+The foreground Host binds an opened Git common-directory object, not only its
+path. Normal HEAD movement and linked worktrees sharing that object remain
+valid; replacing `.git` at the same path makes the plan stale. Rewritten or
+truncated committed source prefixes are invalid and unselectable. If the
+Import Ledger changes during its no-write read, Preview returns retryable
+`progress_unavailable` instead of labeling valid history malformed.
+
 ### Apply request
 
 Apply accepts only the token:
@@ -107,7 +114,8 @@ It first repeats every bound check. An expired token returns the typed
 Adapter, retention, or egress change returns the typed `snapshot_stale` HTTP
 error. Both are retryable `409` responses produced before any planned write;
 they do not masquerade as an Apply report. The browser cannot alter the
-approved source or Hook selection during Apply.
+approved source or Hook selection during Apply. Repository identity is checked
+again at the application and Hook-settings write boundaries.
 
 After the all-plan stale preflight passes, sources commit independently through
 the existing Memory OS application Interface. The report distinguishes:

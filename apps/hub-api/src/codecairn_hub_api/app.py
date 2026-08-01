@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import secrets
 import uuid
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
+from contextlib import asynccontextmanager
 from dataclasses import asdict
 from typing import Annotated, Literal
 
@@ -50,7 +51,18 @@ def create_hub_app(
     if len(session_token) < 32:
         raise ValueError("Hub session token must contain at least 32 characters")
     reads = HubReadModule(application=application, repo_key=repo_key, recall_readiness=recall_readiness)
-    app = FastAPI(title="CodeCairn Hub Read Interface", version="1", docs_url=None, redoc_url=None, openapi_url=None)
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        if onboarding is not None:
+            onboarding.open()
+        try:
+            yield
+        finally:
+            if onboarding is not None:
+                onboarding.close()
+
+    app = FastAPI(title="CodeCairn Hub Read Interface", version="1", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
 
     @app.middleware("http")
     async def response_policy(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
@@ -141,7 +153,7 @@ def create_hub_app(
 
     @app.exception_handler(OnboardingError)
     async def hub_onboarding_error(request: Request, error: OnboardingError) -> JSONResponse:
-        status = 409 if error.code in {"consent_expired", "snapshot_stale"} else 400
+        status = 409 if error.code in {"consent_expired", "progress_unavailable", "snapshot_stale"} else 400
         remediation = "Run onboarding preview again." if error.retryable else None
         return error_response(
             request, status_code=status, code=error.code, message=str(error), retryable=error.retryable, remediation=remediation

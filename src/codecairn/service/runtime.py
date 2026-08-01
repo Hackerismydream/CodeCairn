@@ -177,6 +177,7 @@ class MemoryRuntime:
         source_root: Path | None = None,
         boundary_kind: BoundaryKind | None = None,
         expected_source_sha256: str | None = None,
+        before_write: Callable[[], object] | None = None,
     ) -> ImportResult:
         if not repo_key.strip():
             raise ValueError("repo_key must not be empty")
@@ -185,6 +186,8 @@ class MemoryRuntime:
         trace = self._importer.read(source_path, source_root=source_root, checkpoint=checkpoint)
         if expected_source_sha256 is not None and trace.source_sha256 != expected_source_sha256:
             raise SourceRewritten("Trace source changed after the consent preview")
+        if before_write is not None:
+            before_write()
         repaired = self._recover_prepared_operations()
         recovered_checkpoint = self._state.get_checkpoint(repo_key=repo_key, source_path=observed_path)
         if recovered_checkpoint != checkpoint:
@@ -246,6 +249,8 @@ class MemoryRuntime:
             checkpoint=capture_checkpoint,
             created_at_ms=time.time_ns() // 1_000_000,
         )
+        if before_write is not None:
+            before_write()
         status = self._state.prepare_memory_commit(capture)
         if status == "closure_lost":
             return ImportResult(

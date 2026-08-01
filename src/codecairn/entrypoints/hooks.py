@@ -12,6 +12,7 @@ import shlex
 import stat
 import subprocess
 import sys
+from collections.abc import Callable
 from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
@@ -61,7 +62,7 @@ class LocalHookCaptureAdapter:
             adapter_revision="codecairn.local-hook-capture.v1",
         )
 
-    def apply(self, plan: CapturePlan) -> bool:
+    def apply(self, plan: CapturePlan, *, before_write: Callable[[], object] | None = None) -> bool:
         parent_identity = _parent_identity(self._target.parent)
         if plan.client != self.client or self.inspect() != plan:
             raise ValueError("hook_preview_stale")
@@ -72,6 +73,7 @@ class LocalHookCaptureAdapter:
             dry_run=False,
             expected_state_sha256=plan.expected_state_sha256,
             expected_parent_identity=parent_identity,
+            before_write=before_write,
         )
         return bool(result["changed"])
 
@@ -144,6 +146,7 @@ def install_hook(
     dry_run: bool,
     expected_state_sha256: str | None = None,
     expected_parent_identity: str | None = None,
+    before_write: Callable[[], object] | None = None,
 ) -> dict[str, object]:
     version = detect_client_version(client)
     directory_fd, parent_identity = _open_parent(target.parent)
@@ -177,6 +180,8 @@ def install_hook(
             "uninstall": f"Remove the handler whose command is: {command}",
         }
         if not dry_run and changed:
+            if before_write is not None:
+                before_write()
             _guarded_replace(target.name, encoded.encode(), mode, current_state_sha256, directory_fd=directory_fd)
             if _parent_identity(target.parent) != parent_identity:
                 raise ValueError("hook_preview_stale")
