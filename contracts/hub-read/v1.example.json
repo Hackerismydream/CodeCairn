@@ -321,7 +321,7 @@
       },
       "remediation": null,
       "repo_key": "github.com/Hackerismydream/CodeCairn",
-      "runtime_schema": "codecairn-v01-5",
+      "runtime_schema": "codecairn-v05-1",
       "schema_version": 1,
       "semantic_jobs": {
         "completed": 0,
@@ -350,6 +350,10 @@
         "markdown": {
           "remediation": "restore the latest namespace export",
           "status": "ok"
+        },
+        "person_library": {
+          "remediation": "restore Myna Person Library and referenced memories from backup",
+          "status": "not_configured"
         },
         "privacy": {
           "remediation": "codecairn doctor",

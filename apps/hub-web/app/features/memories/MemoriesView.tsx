@@ -20,11 +20,14 @@ import {
   memoryPaginationDisabled,
   retryFromFirstPage,
 } from "../../../lib/hub/memory-state";
+import { memoryScopeLabel } from "../../../lib/hub/scope";
 import type {
   MemoriesView as MemoriesData,
+  MemoryScopeFilter,
   MemoryStatus,
   MemoryType,
 } from "../../../lib/hub/types";
+import type { GovernanceClient } from "../../../lib/governance/client";
 import RequestError from "../../components/RequestError";
 import MemoryInspector from "./MemoryInspector";
 
@@ -33,15 +36,18 @@ type StatusFilter = "all" | MemoryStatus;
 
 export default function MemoriesView({
   client,
+  governanceClient,
   onConnected,
   onUnavailable,
 }: {
   client: HubClient;
+  governanceClient: GovernanceClient;
   onConnected: (repoKey: string) => void;
   onUnavailable: () => void;
 }) {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [scopeFilter, setScopeFilter] = useState<MemoryScopeFilter>("all");
   const [cursor, setCursor] = useState<string | undefined>();
   const [cursorHistory, setCursorHistory] = useState<Array<string | undefined>>(
     [],
@@ -63,6 +69,7 @@ export default function MemoriesView({
         {
           memoryType: typeFilter === "all" ? undefined : typeFilter,
           status: statusFilter === "all" ? undefined : statusFilter,
+          scope: scopeFilter,
           limit: 50,
           cursor,
         },
@@ -98,6 +105,7 @@ export default function MemoriesView({
     onConnected,
     onUnavailable,
     reload,
+    scopeFilter,
     statusFilter,
     typeFilter,
   ]);
@@ -123,6 +131,7 @@ export default function MemoriesView({
           {
             memoryType: typeFilter === "all" ? undefined : typeFilter,
             status: statusFilter === "all" ? undefined : statusFilter,
+            scope: scopeFilter,
             limit: 50,
             cursor,
             selectedMemoryId: memoryId,
@@ -147,7 +156,15 @@ export default function MemoriesView({
         }
       }
     },
-    [client, cursor, onConnected, onUnavailable, statusFilter, typeFilter],
+    [
+      client,
+      cursor,
+      onConnected,
+      onUnavailable,
+      scopeFilter,
+      statusFilter,
+      typeFilter,
+    ],
   );
 
   function beginListTransition(): boolean {
@@ -194,6 +211,7 @@ export default function MemoriesView({
     typeFilter,
     statusFilter,
     cursor !== undefined || cursorHistory.length > 0,
+    scopeFilter,
   );
   const selectionWasRemoved =
     error instanceof HubApiError && error.code === "memory_not_found";
@@ -208,7 +226,7 @@ export default function MemoriesView({
     <section className="view-shell">
       <header className="page-heading">
         <h1>记忆</h1>
-        <p>查看当前记忆命名空间中真实持久化的编码记忆。</p>
+        <p>查看当前 Person 在所有仓库与当前仓库中生效的真实记忆。</p>
       </header>
       {error && !data ? (
         <RequestError error={error} {...recoveryProps} />
@@ -255,6 +273,21 @@ export default function MemoriesView({
                 ))}
               </div>
               <label>
+                记忆范围
+                <select
+                  value={scopeFilter}
+                  disabled={loading || selecting}
+                  onChange={(event) => {
+                    if (!resetPage()) return;
+                    setScopeFilter(event.target.value as MemoryScopeFilter);
+                  }}
+                >
+                  <option value="all">全部范围</option>
+                  <option value="global">所有仓库</option>
+                  <option value="repository">当前仓库</option>
+                </select>
+              </label>
+              <label>
                 召回状态
                 <select
                   value={statusFilter}
@@ -273,6 +306,7 @@ export default function MemoriesView({
             <div className="memory-table-head" aria-hidden="true">
               <span>记忆</span>
               <span>类型</span>
+              <span>范围 / 来源</span>
               <span>创建时间</span>
               <span>召回状态</span>
             </div>
@@ -280,7 +314,7 @@ export default function MemoriesView({
               {loading && !data ? (
                 <div className="empty-state">
                   <strong>正在读取记忆</strong>
-                  <p>数据来自本地 CodeCairn 服务。</p>
+                  <p>数据来自本地 Myna 记忆服务。</p>
                 </div>
               ) : data?.page.items.length ? (
                 data.page.items.map((memory) => (
@@ -300,6 +334,12 @@ export default function MemoriesView({
                     </span>
                     <span className="memory-row-type">
                       {memoryTypeLabels[memory.memory_type]}
+                    </span>
+                    <span className="memory-row-scope">
+                      <strong>{memoryScopeLabel(memory.effective_scope)}</strong>
+                      <small>
+                        {memory.source_repository_key ?? "来源仓库未报告"}
+                      </small>
                     </span>
                     <time dateTime={dateTimeValue(memory.created_at_ms)}>
                       {formatTime(memory.created_at_ms)}
@@ -378,6 +418,7 @@ export default function MemoriesView({
             <MemoryInspector
               key={data.selected.detail.memory.memory_id}
               selected={data.selected}
+              governanceClient={governanceClient}
             />
           ) : (
             <aside className="memory-inspector">

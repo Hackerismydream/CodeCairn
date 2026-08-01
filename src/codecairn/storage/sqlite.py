@@ -65,7 +65,8 @@ from codecairn.memory.semantic import (
 )
 from codecairn.memory.trace import EMPTY_RAW_PREFIX_SHA256, extend_raw_prefix_sha256
 
-_SCHEMA_REVISION = "codecairn-v01-5"
+SCHEMA_REVISION = "codecairn-v05-1"
+_READABLE_SCHEMA_REVISIONS = frozenset({"codecairn-v01-5", SCHEMA_REVISION})
 
 
 class SQLiteImportProgress:
@@ -97,7 +98,7 @@ class SQLiteImportProgress:
             with closing(sqlite3.connect(f"{self._path.absolute().as_uri()}?mode=ro", uri=True)) as connection:
                 connection.execute("PRAGMA query_only = ON")
                 schema = connection.execute("SELECT value FROM codecairn_meta WHERE key = 'schema_revision'").fetchone()
-                if schema is None or schema[0] != _SCHEMA_REVISION:
+                if schema is None or schema[0] not in _READABLE_SCHEMA_REVISIONS:
                     raise LegacyRootUnsupported("Unsupported SQLite schema; use a fresh root and re-import")
                 row = connection.execute(
                     """
@@ -817,14 +818,20 @@ class SQLiteState:
         counts.update({str(row["status"]): int(row["count"]) for row in rows})
         return IndexHealth(**counts)
 
-    def claim_index_jobs(self, *, repo_key: str, worker_id: str, max_jobs: int, now_ms: int, lease_ms: int) -> tuple[IndexJob, ...]:
+    def claim_index_jobs(
+        self, *, repo_key: str, worker_id: str, max_jobs: int, now_ms: int, lease_ms: int, memory_ids: tuple[str, ...] | None = None
+    ) -> tuple[IndexJob, ...]:
+        if memory_ids == ():
+            return ()
+        memory_filter = "" if memory_ids is None else f"AND memory_id IN ({','.join('?' for _item in memory_ids)})"
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
             rows = connection.execute(
-                """
+                f"""
                 SELECT job_id
                 FROM index_jobs
                 WHERE repo_key = ? AND attempt_count < 3
+                  {memory_filter}
                   AND (
                     status IN ('pending', 'failed', 'stale')
                     OR (
@@ -836,7 +843,7 @@ class SQLiteState:
                 ORDER BY created_at_ms, job_id
                 LIMIT ?
                 """,
-                (repo_key, now_ms, max_jobs),
+                (repo_key, *(memory_ids or ()), now_ms, max_jobs),
             ).fetchall()
             jobs: list[IndexJob] = []
             for row in rows:
@@ -1005,6 +1012,10 @@ class SQLiteState:
             }
             if existing and "codecairn_meta" not in existing:
                 raise LegacyRootUnsupported("Pre-v0.1 SQLite state is unsupported; use a fresh root and re-import")
+            if "codecairn_meta" in existing:
+                revision = connection.execute("SELECT value FROM codecairn_meta WHERE key = 'schema_revision'").fetchone()
+                if revision is None or revision["value"] not in _READABLE_SCHEMA_REVISIONS:
+                    raise LegacyRootUnsupported("Unsupported SQLite schema; use a fresh root and re-import")
             connection.executescript(
                 """
                 CREATE TABLE IF NOT EXISTS codecairn_meta (
@@ -1196,14 +1207,14 @@ class SQLiteState:
                 """
             )
             row = connection.execute("SELECT value FROM codecairn_meta WHERE key = 'schema_revision'").fetchone()
-            if row is not None and row["value"] != _SCHEMA_REVISION:
+            if row is not None and row["value"] not in _READABLE_SCHEMA_REVISIONS:
                 raise LegacyRootUnsupported("Unsupported SQLite schema; use a fresh root and re-import")
             connection.execute(
                 (
                     "INSERT INTO codecairn_meta (key, value) VALUES ('schema_revision', ?) ON CONFLICT(key) "
                     "DO UPDATE SET value = excluded.value"
                 ),
-                (_SCHEMA_REVISION,),
+                (SCHEMA_REVISION,),
             )
 
     @contextmanager

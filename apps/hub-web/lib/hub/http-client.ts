@@ -42,6 +42,7 @@ export function createHttpHubClient(fetcher: Fetcher = fetch): HubClient {
       const params = new URLSearchParams();
       if (request.memoryType) params.set("memory_type", request.memoryType);
       if (request.status) params.set("status", request.status);
+      if (request.scope) params.set("scope", request.scope);
       if (request.limit) params.set("limit", String(request.limit));
       if (request.cursor) params.set("cursor", request.cursor);
       if (request.selectedMemoryId) {

@@ -79,7 +79,8 @@ _Avoid_: Repository Convention as a top-level memory type
 **User Preference**:
 A reusable working or output preference derived from user-authored source
 content. Version 0.1 presents this repository-scoped type as **Repository
-Working Preference**; global personal preference is deferred.
+Working Preference**. Myna may explicitly promote an active repository
+preference into Person-global scope without copying the Coding Memory.
 
 **Workstream**:
 One independently progressing unit of work inside a Memory Namespace, identified
@@ -237,6 +238,37 @@ partial result into success.
 The real-source journey from Preview through explicit consent and Apply into
 the existing Memories and Recall views. A Guided Demo is isolated and cannot
 substitute for Live Onboarding or formal version 0.4 acceptance.
+
+## Myna Person Library
+
+**Myna**:
+The person-first local memory runtime built on the CodeCairn compatibility
+package. Myna owns memory; Pico owns agent execution.
+_Avoid_: Agent harness, task workbench
+
+**Person**:
+The one local owner of a runtime root, identified by a stable random opaque
+`person_id`. It is not derived from a client, repository, provider account,
+email address, or operating-system username.
+
+**Memory Scope**:
+The effective applicability of a memory. Phase one uses `repository` for an
+existing Coding Memory and `global` only for an explicitly promoted User
+Preference.
+
+**Source Context**:
+The immutable repository and memory identity from which a scoped library item
+originates. Scope changes applicability, not provenance or memory identity.
+
+**Global Preference Promotion**:
+An immutable Person-owned reference that makes one active repository User
+Preference available in every repository. Repeating the same promotion is
+idempotent; promotion never copies or rewrites the source memory.
+
+**Preference Shadowing**:
+The rule that an active current-repository User Preference suppresses a global
+preference with the same subject during recall. The suppressed promotion stays
+durable and the recall sidecar records the local memory IDs that shadowed it.
 
 ## Version 0.2 Pico integration
 

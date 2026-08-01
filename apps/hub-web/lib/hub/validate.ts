@@ -1,8 +1,10 @@
 import { HubApiError } from "./client";
 import type {
   HubErrorBody,
+  LibraryContext,
   MemoriesView,
   MemoryOrigin,
+  MemoryScope,
   MemoryStatus,
   MemoryType,
   RecallView,
@@ -29,6 +31,28 @@ const MEMORY_ORIGINS = new Set<MemoryOrigin>([
   "agent_asserted",
   "restored",
 ]);
+const MEMORY_SCOPES = new Set<MemoryScope>(["global", "repository"]);
+
+function validateLibraryContext(
+  value: unknown,
+  requestId: string | null,
+): LibraryContext {
+  const context = object(value, requestId);
+  const personId = string(context.person_id, requestId);
+  if (!/^person_[0-9a-f]{64}$/.test(personId)) incompatible(requestId);
+  string(context.current_repository_key, requestId);
+  const scopes = array(context.active_scopes, requestId);
+  if (!scopes.length || new Set(scopes).size !== scopes.length) {
+    incompatible(requestId);
+  }
+  for (const scope of scopes) {
+    literal(scope, MEMORY_SCOPES, requestId);
+  }
+  if (!Number.isInteger(nonnegativeNumber(context.promotion_count, requestId))) {
+    incompatible(requestId);
+  }
+  return value as LibraryContext;
+}
 
 function incompatible(requestId: string | null): never {
   throw new HubApiError("Hub returned an incompatible version 1 response.", {
@@ -165,6 +189,7 @@ function validateMemory(value: unknown, requestId: string | null): void {
 function validateMemorySummary(
   value: unknown,
   requestId: string | null,
+  scopedProjection: boolean,
 ): void {
   const memory = object(value, requestId);
   string(memory.memory_id, requestId);
@@ -172,11 +197,20 @@ function validateMemorySummary(
   string(memory.title, requestId);
   literal(memory.status, MEMORY_STATUSES, requestId);
   nonnegativeNumber(memory.created_at_ms, requestId);
+  if (
+    scopedProjection ||
+    memory.effective_scope !== undefined ||
+    memory.source_repository_key !== undefined
+  ) {
+    literal(memory.effective_scope, MEMORY_SCOPES, requestId);
+    string(memory.source_repository_key, requestId);
+  }
 }
 
 function validateSelectedMemory(
   value: unknown,
   requestId: string | null,
+  scopedProjection: boolean,
 ): void {
   const selected = object(value, requestId);
   const detail = object(selected.detail, requestId);
@@ -202,6 +236,40 @@ function validateSelectedMemory(
     string(evolution.reason, requestId);
     nonnegativeNumber(evolution.created_at_ms, requestId);
   }
+  if (
+    scopedProjection ||
+    selected.effective_scope !== undefined ||
+    selected.source_repository_key !== undefined
+  ) {
+    literal(selected.effective_scope, MEMORY_SCOPES, requestId);
+    if (
+      string(selected.source_repository_key, requestId) !==
+      string(object(detail.memory, requestId).repo_key, requestId)
+    ) {
+      incompatible(requestId);
+    }
+  }
+  if (selected.governance !== undefined) {
+    const governance = object(selected.governance, requestId);
+    literal(
+      governance.state,
+      new Set(["eligible", "promoted", "ineligible", "conflict"]),
+      requestId,
+    );
+    boolean(governance.eligible, requestId);
+    const promotionId = nullableString(governance.promotion_id, requestId);
+    const errorCode = nullableString(governance.error_code, requestId);
+    const state = governance.state;
+    const eligible = governance.eligible;
+    if (
+      (state === "eligible" && (!eligible || promotionId !== null || errorCode !== null)) ||
+      (state === "promoted" && (!eligible || promotionId === null || errorCode !== null)) ||
+      (state === "ineligible" && (eligible || promotionId !== null || errorCode === null)) ||
+      (state === "conflict" && (eligible || promotionId === null || errorCode !== "global_preference_conflict"))
+    ) {
+      incompatible(requestId);
+    }
+  }
 }
 
 export function validateMemoriesView(
@@ -210,21 +278,28 @@ export function validateMemoriesView(
 ): MemoriesView {
   const root = object(value, requestId);
   versionOne(root, requestId);
+  const scopedProjection = root.library_context !== undefined;
   const repoKey = string(root.repo_key, requestId);
   const page = object(root.page, requestId);
   versionOne(page, requestId);
   if (string(page.repo_key, requestId) !== repoKey) incompatible(requestId);
   for (const item of array(page.items, requestId)) {
-    validateMemorySummary(item, requestId);
+    validateMemorySummary(item, requestId, scopedProjection);
   }
   nullableString(page.next_cursor, requestId);
-  if (root.selected !== null) validateSelectedMemory(root.selected, requestId);
+  if (root.selected !== null) {
+    validateSelectedMemory(root.selected, requestId, scopedProjection);
+  }
+  if (root.library_context !== undefined) {
+    validateLibraryContext(root.library_context, requestId);
+  }
   return value as MemoriesView;
 }
 
 function validateRankedRecall(
   value: unknown,
   requestId: string | null,
+  scopedProjection: boolean,
 ): void {
   const candidate = object(value, requestId);
   nonnegativeNumber(candidate.rank, requestId);
@@ -242,6 +317,21 @@ function validateRankedRecall(
     string(snippet.document_id, requestId);
     string(snippet.text, requestId);
     number(snippet.final_score, requestId);
+  }
+  if (
+    scopedProjection ||
+    candidate.effective_scope !== undefined ||
+    candidate.source !== undefined
+  ) {
+    literal(candidate.effective_scope, MEMORY_SCOPES, requestId);
+    const source = object(candidate.source, requestId);
+    string(source.repository_key, requestId);
+    if (string(source.memory_id, requestId) !== candidate.memory_id) {
+      incompatible(requestId);
+    }
+    if (!/^[0-9a-f]{64}$/.test(string(source.revision_sha256, requestId))) {
+      incompatible(requestId);
+    }
   }
 }
 
@@ -265,13 +355,42 @@ export function validateRecallView(
   const semanticState = literal(sidecar.semantic_state, SEMANTIC_STATES, requestId);
   const freshness = literal(sidecar.freshness, FRESHNESS, requestId);
   if ((semanticState === "complete") !== (freshness === "fresh")) incompatible(requestId);
+  const hasLibrarySidecar = [
+    sidecar.person_id,
+    sidecar.repository_key,
+    sidecar.requesting_client,
+    sidecar.active_scopes,
+    sidecar.shadowed,
+  ].some((field) => field !== undefined);
   for (const candidate of array(sidecar.ranked, requestId)) {
-    validateRankedRecall(candidate, requestId);
+    validateRankedRecall(candidate, requestId, hasLibrarySidecar);
   }
   for (const omissionValue of array(sidecar.omissions, requestId)) {
     const omission = object(omissionValue, requestId);
     string(omission.memory_id, requestId);
     literal(omission.reason, OMISSION_REASONS, requestId);
+  }
+  if (hasLibrarySidecar) {
+    if (!/^person_[0-9a-f]{64}$/.test(string(sidecar.person_id, requestId))) {
+      incompatible(requestId);
+    }
+    string(sidecar.repository_key, requestId);
+    if (sidecar.requesting_client !== "hub") incompatible(requestId);
+    const scopes = array(sidecar.active_scopes, requestId);
+    if (!scopes.length || new Set(scopes).size !== scopes.length) {
+      incompatible(requestId);
+    }
+    for (const scope of scopes) {
+      literal(scope, MEMORY_SCOPES, requestId);
+    }
+    for (const value of array(sidecar.shadowed, requestId)) {
+      const shadowed = object(value, requestId);
+      string(shadowed.promotion_id, requestId);
+      string(shadowed.subject_key, requestId);
+      for (const memoryId of array(shadowed.shadowed_by_memory_ids, requestId)) {
+        string(memoryId, requestId);
+      }
+    }
   }
   if (sidecar.admission_trace !== null) {
     const admission = object(sidecar.admission_trace, requestId);
@@ -358,5 +477,8 @@ export function validateSystemView(
     string(value, requestId);
   }
   nullableString(root.remediation, requestId);
+  if (root.library_context !== undefined) {
+    validateLibraryContext(root.library_context, requestId);
+  }
   return value as SystemView;
 }

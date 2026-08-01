@@ -6,7 +6,8 @@ Integration Module and recall relevance admission. Version 0.3 adds a
 foreground read-only Hub presentation plus acceptance infrastructure. The Hub
 has not yet completed its configured-LLM and blind-human campaign. ADR 0063
 defines the version 0.4 local Onboarding Module and its separate consent-bound
-Interface; implementation and formal installed-product evidence remain distinct.
+Interface. ADR 0064 adds Myna's Person Library above unchanged repository
+namespaces; implementation and formal installed-product evidence remain distinct.
 
 ## Product boundary
 
@@ -22,6 +23,12 @@ a general document importer or filesystem browser. Its Hub is a local product
 surface, not a remote API or daemon. Pico remains a general agent harness and
 consumes CodeCairn through the installed integration specified in
 [`v0.2/README.md`](v0.2/README.md).
+
+Myna is the person-first product runtime layered over this compatibility
+package. One runtime root owns one random local Person. Repository memories
+keep their existing identities; global scope is an immutable reference to an
+eligible User Preference, not a copied memory. Pico continues to own agent
+execution and the future monorepo move does not alter durable data.
 
 ## System context
 
@@ -60,6 +67,10 @@ Browser -> exact same-origin onboarding routes -> Hub Onboarding Interface
                                                   +-> fixed history adapters
                                                   +-> import use case
                                                   +-> explicit Hook installer
+
+Browser -> existing Hub reads + one governance route -> Person Library
+                                                       +-> repository scope
+                                                       +-> global preference references
 
 v0.3 acceptance runner
   +-> installed Pico subprocess adapter
@@ -119,8 +130,8 @@ The import-linter contracts remain:
 | `entrypoints` | CLI, MCP, and hook presentation | Alternative domain behavior |
 | `bootstrap` | Config loading and concrete composition | Durable rules |
 | `evaluation` | Thin suite adapters, immutable runs, reducers, verifier | Product-only duplicate runtime |
-| `apps/hub-api` | Three local view reads, separate two-operation Onboarding transport, token check, error envelope, Doctor projection, and foreground injection of a read-only import-progress Adapter | Direct storage access from transport handlers, remote API, or alternative Memory behavior |
-| `apps/hub-web` | Chinese Memories, Recall, System, and local Onboarding journey | Durable policy, fixture fallback, arbitrary local paths, or provider configuration |
+| `apps/hub-api` | Three local view reads, separate two-operation Onboarding transport, one preference-promotion governance write, token check, error envelope, Doctor projection, and foreground Adapter injection | Direct storage access from transport handlers, remote API, owner/scope selection, or alternative Memory behavior |
+| `apps/hub-web` | Myna Hub views for Person-bound Memories, Recall, System, local Onboarding, and explicit preference promotion | Agent workbench, durable policy, fixture fallback, arbitrary local paths, or provider configuration |
 | `tools/v03-acceptance` | Frozen scenario, Runtime/read adapters, questionnaires, strict reducer, sealing, offline verification | Product memory policy, LLM judging, release claims without formal evidence |
 
 The complete repository workspace map is [`workspace.md`](workspace.md). ADR
@@ -129,6 +140,30 @@ compatibility surface removed by ADR 0052. ADR 0062 defines why the Hub's
 technical seam and its product acceptance are separate. ADR 0063 keeps
 Onboarding behind another narrow Interface rather than adding mutation to the
 Hub Read Interface.
+
+## Myna Person Library
+
+```text
+server-bound runtime root
+  -> one random local Person
+  -> current repository scope
+  +-> immutable global preference promotions
+        -> Source Context (source repository + original memory ID)
+
+recall_for(task, requesting_client)
+  -> derive Person, current repository, and active scopes
+  -> validate every promoted source is an active User Preference
+  -> repository preference shadows same-subject global preference
+  -> recall relevant candidates in both effective scopes
+  -> compile one context plus scoped and shadowing sidecar
+```
+
+`MemoryLibraryApplication` composes the existing application rather than
+changing its public compatibility behavior. Callers supply a task and a closed
+requesting-client identity; they cannot supply owner, repository, source
+repository, or scopes. Person and Promotion Markdown are durable truth.
+SQLite may mirror them and LanceDB remains rebuildable. Namespace reset fails
+while a Promotion references that namespace.
 
 ## Pico Integration Module
 
@@ -528,6 +563,12 @@ the ceilings to 18,500 core and 27,700 total physical source lines for the
 Onboarding implementation and its reviewed consent-integrity landing fixes.
 These are additive implementation ceilings. They do not rewrite the historical
 `v03-acceptance` gate or any frozen version 0.1 and version 0.2 budget.
+
+The additive `v05-person-first` stage keeps the same roots and sets independent
+ceilings of 20,700 core and 29,900 total physical source lines. The revision
+funds fail-closed truth validation and crash-safe coordination without raising
+the total product budget. It preserves the complete frozen `v04-onboarding`
+limits and reports Myna growth separately.
 
 ## Current-to-target delta
 

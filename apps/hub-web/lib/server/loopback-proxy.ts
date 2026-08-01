@@ -123,7 +123,7 @@ export async function proxyLoopbackRequest(
     return errorResponse(404, "not_found", config.unknownMessage);
   }
   if (rule.allowQuery === false && request.nextUrl.search) {
-    return errorResponse(400, "invalid_query", "接入请求不接受查询参数。");
+    return errorResponse(400, "invalid_query", "该操作不接受查询参数。");
   }
   if (declaredTooLarge(request.headers, MAX_REQUEST_BYTES)) {
     return errorResponse(413, "request_too_large", "Hub 请求超过大小限制。");

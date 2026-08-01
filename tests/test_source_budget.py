@@ -55,7 +55,7 @@ def test_source_budget_counts_newline_delimited_physical_lines(tmp_path: Path) -
     assert report.total == 1
 
 
-@pytest.mark.parametrize("stage", ("v03-acceptance", "v04-onboarding"))
+@pytest.mark.parametrize("stage", ("v03-acceptance", "v04-onboarding", "v05-person-first"))
 def test_product_budget_counts_hub_launcher_api_and_acceptance_tool(tmp_path: Path, stage: str) -> None:
     module = _load_script()
     _write_source(tmp_path, "memory.py", b"core\n")

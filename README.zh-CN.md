@@ -37,6 +37,10 @@ Claude Code 会话可以按当前任务召回这些内容，并沿着引用回�
 CodeCairn 独立管理记忆。Coding Agent 继续负责规划、工具调用和代码修改。即使更换客户端，
 记忆仍然保留在本地，可以直接查看、迁移和追溯。
 
+**Myna** 是构建在 CodeCairn 兼容包之上的 Person-first 记忆产品。0.5 候选版本增加一个稳定的
+本地 Person、显式的全局工作偏好引用、当前仓库覆盖全局默认值的规则，以及一个最小本地治理
+Hub；已有 Memory ID 与资源 URI 保持不变。这个阶段不包含 Desktop 进程或 Agent 工作台。
+
 ## 为什么使用 CodeCairn
 
 | 你需要什么 | CodeCairn 如何解决 |
@@ -261,20 +265,23 @@ CI 还会检查代码规模预算、架构依赖规则、类型、Artifact 内�
 
 CodeCairn 0.1 是完整的 Coding-first Memory OS 基础；0.2 增加 Pico 集成与可审计的召回
 拒答。后续顺序是：0.3 只读 Memory Hub 与架构减重、0.4 把用户拥有的 Codex/Claude Code
-历史带入本地 Memory OS、0.5 人类记忆治理、0.6 本地 Daemon、0.7 Case/Skill 演进，以及
-1.0 稳定的本地 Memory OS。远程协作放在本地语义和存储契约稳定之后。详见
+历史带入本地 Memory OS、0.5 Myna Person Library 与显式偏好治理、0.6 本地 Daemon、
+0.7 Case/Skill 演进，以及 1.0 稳定的本地 Memory OS。远程协作放在本地语义和存储契约
+稳定之后。详见
 [`完整路线图`](docs/roadmap.md)。
 
-仓库中的[`本地只读 Hub`](apps/hub-web/README.md)已经通过前台 Loopback Adapter
-接入真实 `CodeCairnApplication`。运行 `make hub-dev` 可查看当前仓库的记忆、真实召回解释
-和 Doctor 快照。[`0.3 版本验收基础设施`](docs/v0.3/hub-acceptance.md)已经冻结重试策略场景，
+仓库中的[`本地 Myna Hub`](apps/hub-web/README.md)已经通过前台 Loopback Adapter 接入真实
+`CodeCairnApplication`、Myna Person Library、需要明确同意的 Onboarding，以及唯一一条
+`memory_id`-only 偏好提升操作。运行 `make hub-dev` 可查看当前仓库记忆、明确提升的全局工作
+偏好、真实召回解释和 Doctor 快照。普通检查路由仍然只读，它不是通用记忆编辑器。
+[`0.3 版本验收基础设施`](docs/v0.3/hub-acceptance.md)已经冻结重试策略场景，
 通过 CodeCairn 公共命令与 Hub Read 检查 Pico 跨新进程续接，把中文参与者回答绑定到候选版本
 与页面快照，并要求独立的人类盲审和可离线验证的封存证据包；它不使用 LLM Judge。
 
 这还不是已经完成的 0.3 版本验收。源码模式 Pilot 不能获得发布资格；正式验收仍缺少可安装的
 Hub 发布产物与原始证据 Collector、通过真实 Pico 进程调用已声明配置的 LLM、5 名符合条件
 的首次目标学习者、独立人类盲审，以及最终封存并离线复验的证据包。当前 Hub 也尚未打包进
-根目录的发布产物，并且仍不是 Daemon、远程 API 或记忆治理界面。
+根目录的发布产物，并且仍不是 Desktop、Daemon、远程 API 或 Agent 工作台。
 
 已经接受的[`0.4 版本 Onboarding 契约`](docs/v0.4/onboarding.md)不会修改 Hub Read
 Interface，而是增加独立的本地 Preview/Apply Interface。它固定 Codex 与 Claude Code
@@ -283,6 +290,11 @@ Interface，而是增加独立的本地 Preview/Apply Interface。它固定 Code
 Guided Demo 与真实用户空间隔离；0.4 任何使用 DeepSeek 的路径都只能使用精确的
 `deepseek-v4-flash`。实现与测试通过只能称为候选版本；目前没有已提交证据证明 0.4 已完成
 正式的安装产物验收。
+
+0.5 Myna 候选版本的边界见
+[`Person Library 契约`](docs/v0.5/myna-person-library.md)。确定性测试与受检 HTTP 示例只能
+证明实现候选成立，不能证明已经产生 Pico 任务效果、完成正式用户验收，也不能证明未来
+Desktop 产品已经存在。
 
 ## 许可证
 

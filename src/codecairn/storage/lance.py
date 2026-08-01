@@ -72,7 +72,9 @@ class LanceMemoryIndex:
                 table.add(pa.Table.from_pylist(rows, schema=self._schema))
                 self._ensure_fts(table)
 
-    def lexical_candidates(self, *, repo_key: str, query: str, include_superseded: bool, limit: int) -> tuple[IndexCandidate, ...]:
+    def lexical_candidates(
+        self, *, repo_key: str, query: str, include_superseded: bool, limit: int, memory_ids: tuple[str, ...] | None = None
+    ) -> tuple[IndexCandidate, ...]:
         with self._lock:
             table = self._table(create=False)
             if table is None or table.count_rows() == 0:
@@ -81,14 +83,20 @@ class LanceMemoryIndex:
             rows = cast(
                 list[dict[str, object]],
                 table.search(query, query_type="fts", fts_columns="content")
-                .where(_filter(repo_key, include_superseded), prefilter=True)
+                .where(_filter(repo_key, include_superseded, memory_ids), prefilter=True)
                 .limit(limit)
                 .to_list(),
             )
         return tuple(_candidate(row) for row in rows)
 
     def vector_candidates(
-        self, *, repo_key: str, vector: tuple[float, ...], include_superseded: bool, limit: int
+        self,
+        *,
+        repo_key: str,
+        vector: tuple[float, ...],
+        include_superseded: bool,
+        limit: int,
+        memory_ids: tuple[str, ...] | None = None,
     ) -> tuple[IndexCandidate, ...]:
         with self._lock:
             table = self._table(create=False)
@@ -98,7 +106,7 @@ class LanceMemoryIndex:
                 list[dict[str, object]],
                 table.search(list(vector), query_type="vector")
                 .metric("cosine")
-                .where(_filter(repo_key, include_superseded), prefilter=True)
+                .where(_filter(repo_key, include_superseded, memory_ids), prefilter=True)
                 .limit(limit)
                 .to_list(),
             )
@@ -156,9 +164,11 @@ class LanceMemoryIndex:
             table.create_index("content", config=FTS())
 
 
-def _filter(repo_key: str, include_superseded: bool) -> str:
+def _filter(repo_key: str, include_superseded: bool, memory_ids: tuple[str, ...] | None = None) -> str:
     base = f"repo_key = {_literal(repo_key)}"
-    return base if include_superseded else f"{base} AND status = 'active'"
+    status = "" if include_superseded else " AND status = 'active'"
+    memories = "" if memory_ids is None else " AND memory_id IN (" + ", ".join(map(_literal, memory_ids)) + ")"
+    return base + status + memories
 
 
 def _literal(value: str) -> str:

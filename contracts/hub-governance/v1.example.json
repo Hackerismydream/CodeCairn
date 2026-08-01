@@ -1,0 +1,104 @@
+{
+  "contract": "codecairn/hub-governance-v1",
+  "evidence_boundary": {
+    "browser_connected_to_runtime": false,
+    "code_path": "real User Preference write plus Hub Governance HTTP adapter over local Markdown and SQLite",
+    "formal_v0_5_acceptance": false,
+    "retrieval_adapter": "deterministic offline test adapter, not a production provider"
+  },
+  "requests": {
+    "promote": {
+      "memory_id": "mem_616609cba353b612734deb17b3c6a281b47f33203ff8e6ce7b437d761add89c6"
+    },
+    "rejected_owner_injection": {
+      "memory_id": "mem_616609cba353b612734deb17b3c6a281b47f33203ff8e6ce7b437d761add89c6",
+      "person_id": "person_0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "responses": {
+    "created": {
+      "library_context": {
+        "active_scopes": [
+          "global",
+          "repository"
+        ],
+        "current_repository_key": "github.com/example/preferences",
+        "person_id": "person_1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "receipt": {
+        "outcome": "created",
+        "promotion": {
+          "created_at_ms": 1700000005000,
+          "person_id": "person_1111111111111111111111111111111111111111111111111111111111111111",
+          "promotion_id": "promotion_6855066b28ca160585f032b48581890b0ae31e806f6d15e21611539979cd3ab6",
+          "replaces_promotion_id": null,
+          "schema_version": 1,
+          "source": {
+            "memory_id": "mem_616609cba353b612734deb17b3c6a281b47f33203ff8e6ce7b437d761add89c6",
+            "repository_key": "github.com/example/preferences",
+            "revision_sha256": "1f7d30fd7d636721008d2a79e1bd6bee5e5fd80574f2dce72f9ee4374de8b21c"
+          },
+          "subject_key": "response-language"
+        }
+      },
+      "schema_version": 1
+    },
+    "idempotent_replay": {
+      "library_context": {
+        "active_scopes": [
+          "global",
+          "repository"
+        ],
+        "current_repository_key": "github.com/example/preferences",
+        "person_id": "person_1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "receipt": {
+        "outcome": "already_promoted",
+        "promotion": {
+          "created_at_ms": 1700000005000,
+          "person_id": "person_1111111111111111111111111111111111111111111111111111111111111111",
+          "promotion_id": "promotion_6855066b28ca160585f032b48581890b0ae31e806f6d15e21611539979cd3ab6",
+          "replaces_promotion_id": null,
+          "schema_version": 1,
+          "source": {
+            "memory_id": "mem_616609cba353b612734deb17b3c6a281b47f33203ff8e6ce7b437d761add89c6",
+            "repository_key": "github.com/example/preferences",
+            "revision_sha256": "1f7d30fd7d636721008d2a79e1bd6bee5e5fd80574f2dce72f9ee4374de8b21c"
+          },
+          "subject_key": "response-language"
+        }
+      },
+      "schema_version": 1
+    },
+    "rejected_owner_injection": {
+      "error": {
+        "code": "invalid_request",
+        "message": "The Hub request does not match the version 1 interface.",
+        "remediation": null,
+        "request_id": "hubreq_00000000000000000000000000000000",
+        "retryable": false
+      },
+      "schema_version": 1
+    }
+  },
+  "schema_version": 1,
+  "semantics": {
+    "copy_memory": false,
+    "promotion_is_reference": true,
+    "source_memory_identity_changes": false
+  },
+  "surface": {
+    "authentication": "server-issued Hub session token",
+    "method": "POST",
+    "path": "/hub-governance/v1/preferences/promote",
+    "query_parameters": false,
+    "request_fields": [
+      "memory_id"
+    ],
+    "server_bound_fields": [
+      "person_id",
+      "current_repository_key",
+      "active_scopes"
+    ]
+  }
+}

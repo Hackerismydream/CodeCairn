@@ -40,6 +40,12 @@ CodeCairn owns memory independently from the coding agent. Your agent still
 owns planning, tool use, and code changes. The memory remains local,
 inspectable, portable, and available when you switch clients.
 
+**Myna** is the person-first product runtime built on this CodeCairn
+compatibility package. Its version 0.5 candidate adds one stable local Person,
+explicit global User Preference references, repository-over-global shadowing,
+and a minimal local governance Hub without changing existing Memory IDs or
+resource URIs. It does not add a Desktop process or Agent workbench.
+
 ## Why CodeCairn
 
 | What you need | What CodeCairn does |
@@ -278,7 +284,7 @@ artifact contents, and evidence integrity.
 Contribution and security boundaries are documented in
 [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
 
-Run the local read-only Memory Hub against the current repository binding:
+Run the local Myna Person Memory Hub against the current repository binding:
 
 ```bash
 make hub-dev
@@ -295,15 +301,17 @@ adds the Pico integration and auditable recall abstention.
 ## Roadmap
 
 The product sequence is: v0.3 read-only Memory Hub and readability pass, v0.4
-local onboarding to carry owned Codex and Claude Code history, v0.5 human
-memory governance, v0.6 local daemon, v0.7 Case and Skill evolution, and v1.0
-stable local Memory OS. Remote collaboration follows only after the local
-semantic and storage contract is stable. See the
+local onboarding to carry owned Codex and Claude Code history, v0.5 Myna's
+Person Library and explicit preference governance, v0.6 local daemon, v0.7
+Case and Skill evolution, and v1.0 stable local Memory OS. Remote collaboration
+follows only after the local semantic and storage contract is stable. See the
 [`maintained roadmap`](docs/roadmap.md).
 
-The checked-in [`Hub application`](apps/hub-web/README.md) now connects its
-three views to a foreground local adapter and real `CodeCairnApplication`
-reads. The
+The checked-in [`Myna Hub application`](apps/hub-web/README.md) connects its
+four views to a foreground local adapter, real `CodeCairnApplication` reads,
+the Myna Person Library, consent-bound Onboarding, and one explicit
+preference-promotion operation. Ordinary inspection remains read-only; this is
+not a general memory editor. The
 [`version 0.3 acceptance infrastructure`](docs/v0.3/hub-acceptance.md) now
 freezes a retry-policy scenario, checks fresh-process Pico continuity through
 public CodeCairn and Hub reads, binds Chinese participant answers to the exact
@@ -326,6 +334,12 @@ continuous-only support, isolated Guided Demo, and exact
 `deepseek-v4-flash` use wherever a version 0.4 path selects DeepSeek. A passing
 implementation is only a candidate; no checked-in artifact currently proves
 formal installed-product version 0.4 acceptance.
+
+The version 0.5 Myna candidate is specified in the
+[`Person Library contract`](docs/v0.5/myna-person-library.md). Its deterministic
+tests and checked HTTP examples establish an implementation candidate, not an
+installed Pico task-effect result, formal user acceptance, or a future Desktop
+product.
 
 ## License
 

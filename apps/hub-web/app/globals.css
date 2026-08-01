@@ -222,6 +222,21 @@ pre {
   white-space: nowrap;
 }
 
+.scope-chips {
+  display: flex;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.scope-chips i {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 10px;
+  font-style: normal;
+}
+
 .connection::before {
   display: inline-block;
   width: 7px;
@@ -285,6 +300,7 @@ pre {
 
 .memory-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -346,7 +362,7 @@ pre {
 .memory-table-head,
 .memory-row {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) 130px 140px 104px;
+  grid-template-columns: minmax(190px, 1fr) 110px minmax(150px, 0.7fr) 130px 104px;
   align-items: center;
   gap: 12px;
 }
@@ -405,9 +421,29 @@ pre {
 
 .memory-row-title code,
 .memory-row time,
-.memory-row-type {
+.memory-row-type,
+.memory-row-scope {
   color: var(--secondary);
   font-size: 11px;
+}
+
+.memory-row-scope {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.memory-row-scope strong,
+.memory-row-scope small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memory-row-scope strong {
+  color: var(--label);
+  font-size: 11px;
+  font-weight: 630;
 }
 
 .memory-status {
@@ -501,6 +537,43 @@ pre {
   margin: 7px 0 0;
   color: var(--secondary);
   font-size: 11px;
+}
+
+.promotion-control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid var(--separator);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.promotion-control div,
+.promotion-control small {
+  display: block;
+}
+
+.promotion-control button {
+  align-self: center;
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.promotion-control .promotion-receipt,
+.promotion-control .promotion-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 11px;
+}
+
+.promotion-control .promotion-receipt {
+  color: var(--success);
+}
+
+.promotion-control .promotion-error {
+  color: var(--danger);
 }
 
 .inspector-tabs {
@@ -854,6 +927,21 @@ pre {
   overflow-wrap: anywhere;
   font-size: 11px;
   font-weight: 630;
+}
+
+.library-recall-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -10px 0 var(--page-gap);
+}
+
+.library-recall-context span {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
 }
 
 .admission-panel {
@@ -1466,10 +1554,10 @@ pre {
 
   .memory-table-head,
   .memory-row {
-    grid-template-columns: minmax(180px, 1fr) 110px 104px;
+    grid-template-columns: minmax(180px, 1fr) 100px minmax(140px, 0.7fr) 104px;
   }
 
-  .memory-table-head span:nth-child(3),
+  .memory-table-head span:nth-child(4),
   .memory-row time {
     display: none;
   }
@@ -1632,7 +1720,7 @@ pre {
   .memory-row {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 4px 12px;
-    min-height: 76px;
+    min-height: 96px;
   }
 
   .memory-row-title {
@@ -1643,6 +1731,11 @@ pre {
   .memory-row-type {
     grid-column: 1;
     grid-row: 2;
+  }
+
+  .memory-row-scope {
+    grid-column: 1 / -1;
+    grid-row: 3;
   }
 
   .memory-row time {

@@ -1,17 +1,21 @@
-# CodeCairn Memory Hub
+# Myna Person Memory Hub
 
-This application is the Chinese inspection and consent-bound onboarding
-surface for one local CodeCairn Memory Namespace. It renders real service
-results and does not import example data at runtime.
+This application is Myna's Chinese Person-memory inspection, onboarding, and
+narrow governance surface. Myna is the person-first product runtime; the
+existing CodeCairn package remains its repository-memory compatibility layer.
+The Hub renders real service results and does not import example data at
+runtime.
 
 The Hub has four primary views:
 
-- **Memories** filters and pages durable Coding Memory, then inspects exact
-  content, Evidence Facts, and immutable evolution history.
+- **Memories** filters and pages durable Coding Memory, inspects exact content,
+  Evidence Facts, and immutable evolution history, and can explicitly promote
+  one eligible User Preference for use in every repository.
 - **Onboarding** discovers only history owned by the current repository,
   previews retention and planned writes, and applies an opaque consent token.
-- **Recall** sends a real task to CodeCairn and renders admission or abstention,
-  ranked candidates, omissions, and the compiled Recall Context.
+- **Recall** sends a real task to Myna and renders admission or abstention,
+  effective scope, source repository, shadowing, ranked candidates, omissions,
+  and the compiled Recall Context.
 - **System** renders a sanitized point-in-time `doctor(live=False)` result and
   a separate configuration-only recall-readiness status.
 
@@ -51,28 +55,39 @@ POST /hub-read/v1/recall
 GET  /hub-read/v1/system
 POST /hub-onboarding/v1/preview
 POST /hub-onboarding/v1/apply
+POST /hub-governance/v1/preferences/promote
 ```
 
 The Python transport handlers live in `apps/hub-api` and call the existing
-Memory OS and Onboarding Interfaces rather than storage directly. Foreground
-composition injects a read-only SQLite import-progress Adapter; Markdown and
-LanceDB remain behind the application Interface. Executable contract examples are
-[`../../contracts/hub-read/v1.example.json`](../../contracts/hub-read/v1.example.json)
+Memory OS, Myna Person Library, and Onboarding Interfaces rather than storage
+directly. Foreground composition injects a read-only SQLite import-progress
+Adapter; Markdown and LanceDB remain behind the application Interface.
+Checked contract examples are
+[`../../contracts/hub-read/v1.example.json`](../../contracts/hub-read/v1.example.json),
+[`../../contracts/hub-onboarding/v1.example.json`](../../contracts/hub-onboarding/v1.example.json),
 and
-[`../../contracts/hub-onboarding/v1.example.json`](../../contracts/hub-onboarding/v1.example.json).
+[`../../contracts/hub-governance/v1.example.json`](../../contracts/hub-governance/v1.example.json).
+The governance example executes the closed HTTP request, idempotent replay, and
+owner-injection rejection. Its `semantics` object is a declarative contract;
+service tests, not those constant fields, exercise reference preservation and
+repository shadowing.
 
 ## Product boundary
 
 The Hub is local and foreground. All ordinary inspection routes remain
-read-only. The only write seam is Onboarding Apply after repository-scoped
-discovery, an exact write preview, and explicit consent; no browser route
-accepts a filesystem path. It has no fixture fallback, daemon, remote access,
-account, team space, event stream, or general memory mutation.
+read-only. It has two bounded write seams: Onboarding Apply after
+repository-scoped discovery, an exact write preview, and explicit consent; and
+one `memory_id`-only preference-promotion operation whose Person, repository,
+scope, and Source Context are server-bound. No browser route accepts a
+filesystem path. The Hub has no fixture fallback, daemon, remote access,
+account, team space, event stream, arbitrary memory editing, or Evolution
+mutation.
 
-The v0.4 Hub remains source-checkout-only. The released CodeCairn wheel
+The current Myna Hub remains source-checkout-only. The released CodeCairn wheel
 does not yet bundle the Python Hub application or the private web workspace, so
 the repository, `uv`, Node.js, and npm are required. Packaging the Hub is a
-separate release gate; this implementation does not claim a packaged release.
+separate release gate; this implementation does not claim a packaged release,
+Myna Desktop, or an Agent workbench.
 
 Run all Hub gates from the root:
 

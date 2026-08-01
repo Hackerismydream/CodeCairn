@@ -3,9 +3,9 @@ import HubShell from "./components/HubShell";
 import { parseHubView } from "../lib/hub/navigation";
 
 export const metadata: Metadata = {
-  title: "CodeCairn 记忆中心",
+  title: "Myna Person Memory Hub",
   description:
-    "CodeCairn 本地 Memory OS 的记忆查看与接入中心。",
+    "Myna 本地 Person Memory 的查看、接入与偏好治理中心。",
 };
 
 export default async function Home({

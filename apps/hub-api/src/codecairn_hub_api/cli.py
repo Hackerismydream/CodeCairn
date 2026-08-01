@@ -15,10 +15,12 @@ from codecairn.configuration import discover_repository, resolve_runtime_config
 from codecairn.entrypoints.hooks import LocalHookCaptureAdapter
 from codecairn.importers.history import LocalAgentHistory
 from codecairn.memory.evolution import MemoryHistory
-from codecairn.memory.models import RecallResult
-from codecairn.memory.schema import MemoryType
+from codecairn.memory.models import RecallResult, RecallSource
+from codecairn.memory.schema import CodingMemory, MemoryType
 from codecairn.service.application import CodeCairnApplication, MemoryDetail, MemoryPage
+from codecairn.service.myna import MemoryLibraryApplication
 from codecairn.service.onboarding import OnboardingModule
+from codecairn.storage.library_markdown import MarkdownLibraryStore
 from codecairn.storage.sqlite import SQLiteImportProgress
 from codecairn_hub_api.app import create_hub_app
 from codecairn_hub_api.queries import RecallReadiness
@@ -45,8 +47,23 @@ class LiveHubApplication:
     def get_memory(self, *, repo_key: str, memory_id: str) -> MemoryDetail:
         return self._reads.get_memory(repo_key=repo_key, memory_id=memory_id)
 
+    def list_memories(self, *, repo_key: str) -> tuple[CodingMemory, ...]:
+        return self._reads.list_memories(repo_key=repo_key)
+
     def memory_history(self, *, repo_key: str, memory_id: str) -> MemoryHistory:
         return self._reads.memory_history(repo_key=repo_key, memory_id=memory_id)
+
+    def memory_resource(self, *, repo_key: str, memory_id: str) -> str:
+        return self._reads.memory_resource(repo_key=repo_key, memory_id=memory_id)
+
+    def memory_truth(self, *, repo_key: str, memory_id: str) -> CodingMemory:
+        return self._reads.memory_truth(repo_key=repo_key, memory_id=memory_id)
+
+    def has_supersession(self, *, repo_key: str, predecessor_id: str, successor_id: str) -> bool:
+        return self._reads.has_supersession(repo_key=repo_key, predecessor_id=predecessor_id, successor_id=successor_id)
+
+    def has_durable_successor(self, *, repo_key: str, memory_id: str) -> bool:
+        return self._reads.has_durable_successor(repo_key=repo_key, memory_id=memory_id)
 
     def recall(
         self,
@@ -63,6 +80,25 @@ class LiveHubApplication:
             repo_key=repo_key,
             limit=limit,
             include_superseded=include_superseded,
+            workstream_key=workstream_key,
+            token_budget=token_budget,
+        )
+
+    def recall_across(
+        self,
+        query: str,
+        *,
+        current_repo_key: str,
+        sources: tuple[RecallSource, ...],
+        limit: int = 20,
+        workstream_key: str | None = None,
+        token_budget: int = 8_192,
+    ) -> RecallResult:
+        return self._configured.recall_across(
+            query,
+            current_repo_key=current_repo_key,
+            sources=sources,
+            limit=limit,
             workstream_key=workstream_key,
             token_budget=token_budget,
         )
@@ -104,17 +140,20 @@ def build_live_hub(repository: Path, *, session_token: str, client_home: Path | 
         import_progress=SQLiteImportProgress(path=config.runtime_root / "state.sqlite3", repo_key=config.repo_key),
         source_content_egress="memory_text_to_embedding" if config.retrieval.network else "none",
     )
+    live = LiveHubApplication(reads=reads, configured=configured)
+    library = MemoryLibraryApplication(memory=live, truth=MarkdownLibraryStore(config.runtime_root), repository_key=config.repo_key)
     return create_hub_app(
-        application=LiveHubApplication(reads=reads, configured=configured),
+        application=live,
         repo_key=config.repo_key,
         session_token=session_token,
         recall_readiness=recall_readiness,
         onboarding=onboarding,
+        library=library,
     )
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the foreground CodeCairn Hub loopback adapter.")
+    parser = argparse.ArgumentParser(description="Run the foreground Myna Hub loopback adapter.")
     parser.add_argument("--repository", type=Path, default=Path.cwd())
     parser.add_argument("--port", type=int, default=8765)
     arguments = parser.parse_args()

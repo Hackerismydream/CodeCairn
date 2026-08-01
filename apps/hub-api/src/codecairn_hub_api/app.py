@@ -14,8 +14,10 @@ from starlette.responses import JSONResponse
 
 from codecairn.memory.errors import ConfigurationError, IndexNotReady, ProviderConfigurationError
 from codecairn.memory.schema import MemoryType
+from codecairn.service.myna import MynaError
 from codecairn.service.onboarding import OnboardingError, OnboardingModule, PreviewRequest
-from codecairn_hub_api.queries import HubApplication, HubReadModule, RecallReadiness
+from codecairn_hub_api.governance import HubGovernanceModule
+from codecairn_hub_api.queries import HubApplication, HubLibraryApplication, HubReadModule, RecallReadiness
 
 
 class StrictRequest(BaseModel):
@@ -39,6 +41,10 @@ class OnboardingApplyRequest(StrictRequest):
     consent_token: str = Field(min_length=32, max_length=512)
 
 
+class PromotePreferenceRequest(StrictRequest):
+    memory_id: Annotated[str, Field(pattern=r"^mem_[0-9a-f]{64}$")]
+
+
 def create_hub_app(
     *,
     application: HubApplication,
@@ -46,11 +52,13 @@ def create_hub_app(
     session_token: str,
     recall_readiness: RecallReadiness,
     onboarding: OnboardingModule | None = None,
+    library: HubLibraryApplication | None = None,
 ) -> FastAPI:
     """Create the loopback-only HTTP adapter for one Memory Namespace."""
     if len(session_token) < 32:
         raise ValueError("Hub session token must contain at least 32 characters")
-    reads = HubReadModule(application=application, repo_key=repo_key, recall_readiness=recall_readiness)
+    reads = HubReadModule(application=application, repo_key=repo_key, recall_readiness=recall_readiness, library=library)
+    governance = None if library is None else HubGovernanceModule(library)
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
@@ -62,7 +70,7 @@ def create_hub_app(
             if onboarding is not None:
                 onboarding.close()
 
-    app = FastAPI(title="CodeCairn Hub Read Interface", version="1", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
+    app = FastAPI(title="Myna Hub Interface", version="1", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
 
     @app.middleware("http")
     async def response_policy(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
@@ -159,6 +167,17 @@ def create_hub_app(
             request, status_code=status, code=error.code, message=str(error), retryable=error.retryable, remediation=remediation
         )
 
+    @app.exception_handler(MynaError)
+    async def hub_myna_error(request: Request, error: MynaError) -> JSONResponse:
+        status = 404 if error.code == "memory_not_found" else 409 if error.code.startswith("global_") else 422
+        return error_response(
+            request,
+            status_code=status,
+            code=error.code,
+            message="Myna could not apply the requested preference governance operation.",
+            retryable=False,
+        )
+
     @app.exception_handler(ValueError)
     async def hub_value_error(request: Request, error: ValueError) -> JSONResponse:
         code = "cursor_invalid" if str(error) == "cursor_invalid" else "invalid_request"
@@ -176,21 +195,24 @@ def create_hub_app(
         if supplied is None or not secrets.compare_digest(supplied, session_token):
             raise HTTPException(status_code=401, detail={"code": "unauthorized", "message": "Hub session token is invalid."})
 
-    def reject_onboarding_query(request: Request) -> None:
+    def reject_write_query(request: Request) -> None:
         if request.url.query:
             raise HTTPException(
-                status_code=400, detail={"code": "invalid_query", "message": "Onboarding requests do not accept query parameters."}
+                status_code=400, detail={"code": "invalid_query", "message": "Hub write requests do not accept query parameters."}
             )
 
     @app.get("/hub-read/v1/memories", dependencies=[Depends(authorize)])
     def memories(
         memory_type: MemoryType | None = None,
         status: Literal["active", "superseded"] | None = None,
+        scope: Literal["all", "global", "repository"] = "all",
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
         cursor: str | None = None,
         selected_memory_id: str | None = None,
     ) -> dict[str, object]:
-        return reads.memories(memory_type=memory_type, status=status, limit=limit, cursor=cursor, selected_memory_id=selected_memory_id)
+        return reads.memories(
+            memory_type=memory_type, status=status, scope=scope, limit=limit, cursor=cursor, selected_memory_id=selected_memory_id
+        )
 
     @app.post("/hub-read/v1/recall", dependencies=[Depends(authorize)])
     def recall(request: RecallRequest) -> dict[str, object]:
@@ -208,15 +230,21 @@ def create_hub_app(
 
     if onboarding is not None:
 
-        @app.post("/hub-onboarding/v1/preview", dependencies=[Depends(authorize), Depends(reject_onboarding_query)])
+        @app.post("/hub-onboarding/v1/preview", dependencies=[Depends(authorize), Depends(reject_write_query)])
         def onboarding_preview(request: OnboardingPreviewRequest) -> dict[str, object]:
             selected = tuple(request.selected_source_ids) if request.selected_source_ids is not None else None
             return asdict(
                 onboarding.preview(PreviewRequest(selected_source_ids=selected, install_capture_for=tuple(request.install_capture_for)))
             )
 
-        @app.post("/hub-onboarding/v1/apply", dependencies=[Depends(authorize), Depends(reject_onboarding_query)])
+        @app.post("/hub-onboarding/v1/apply", dependencies=[Depends(authorize), Depends(reject_write_query)])
         def onboarding_apply(request: OnboardingApplyRequest) -> dict[str, object]:
             return asdict(onboarding.apply(request.consent_token))
+
+    if governance is not None:
+
+        @app.post("/hub-governance/v1/preferences/promote", dependencies=[Depends(authorize), Depends(reject_write_query)])
+        def promote_preference(request: PromotePreferenceRequest) -> dict[str, object]:
+            return governance.promote_preference(request.memory_id)
 
     return app

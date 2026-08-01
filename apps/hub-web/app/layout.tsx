@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CodeCairn 记忆中心",
+  title: "Myna Person Memory Hub",
   description:
-    "CodeCairn 本地 Memory OS 的只读记忆中心。",
+    "Myna 本地 Person Memory 的查看、接入与偏好治理中心。",
 };
 
 export default function RootLayout({
