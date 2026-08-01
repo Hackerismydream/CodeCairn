@@ -12,6 +12,7 @@ import tempfile
 import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
@@ -25,6 +26,8 @@ from typer.testing import CliRunner
 from codecairn.bootstrap import create_application, create_myna_application
 from codecairn.entrypoints.cli import build_app
 from codecairn.evaluation.gates import EvaluationEmbedder, EvaluationReranker
+from codecairn.importers.jsonl import JsonlScan
+from codecairn.importers.jsonl import read_jsonl as _read_jsonl
 from codecairn.memory.context import RENDERER_ID
 from codecairn.memory.evolution import MemoryHistory
 from codecairn.memory.library import promotion_from_dict
@@ -73,6 +76,11 @@ def _fixed_time(milliseconds: int) -> Iterator[None]:
         patch("codecairn_hub_api.queries.time.time_ns", return_value=nanoseconds),
     ):
         yield
+
+
+def _canonical_governance_scan(*args: Any, **kwargs: Any) -> JsonlScan:
+    """Remove checkout location from the identity-bearing contract fixture."""
+    return replace(_read_jsonl(*args, **kwargs), source_path=Path("/codecairn-contract/governance.jsonl"))
 
 
 def _invoke(runner: CliRunner, cli: Any, arguments: list[str]) -> object:
@@ -170,12 +178,13 @@ def build_governance_snapshot() -> dict[str, object]:
     with tempfile.TemporaryDirectory(prefix="codecairn-hub-governance-contract-") as temporary:
         runtime_root = Path(temporary) / "runtime"
         application = create_application(runtime_root, repo_key=GOVERNANCE_REPO_KEY, retrieval_adapters=CONTRACT_RETRIEVAL)
-        application.import_session(
-            REPOSITORY_ROOT / "tests" / "fixtures" / "codex" / "failed_command.jsonl",
-            repo_key=GOVERNANCE_REPO_KEY,
-            index=False,
-            boundary_kind="manual_finalize",
-        )
+        with patch("codecairn.importers.jsonl.read_jsonl", side_effect=_canonical_governance_scan):
+            application.import_session(
+                REPOSITORY_ROOT / "tests" / "fixtures" / "codex" / "failed_command.jsonl",
+                repo_key=GOVERNANCE_REPO_KEY,
+                index=False,
+                boundary_kind="manual_finalize",
+            )
         experience = next(
             memory for memory in application.list_memories(repo_key=GOVERNANCE_REPO_KEY) if memory.memory_type == "task_experience"
         )
@@ -229,6 +238,7 @@ def build_governance_snapshot() -> dict[str, object]:
             "code_path": "real User Preference write plus Hub Governance HTTP adapter over local Markdown and SQLite",
             "retrieval_adapter": "deterministic offline test adapter, not a production provider",
             "formal_v0_5_acceptance": False,
+            "source_locator": "canonical contract path for cross-platform identity stability",
         },
         "surface": {
             "method": "POST",
@@ -369,6 +379,7 @@ def validate_governance_snapshot(snapshot: dict[str, object]) -> None:
         "code_path": "real User Preference write plus Hub Governance HTTP adapter over local Markdown and SQLite",
         "formal_v0_5_acceptance": False,
         "retrieval_adapter": "deterministic offline test adapter, not a production provider",
+        "source_locator": "canonical contract path for cross-platform identity stability",
     }:
         raise AssertionError("Hub Governance evidence boundary is invalid")
 

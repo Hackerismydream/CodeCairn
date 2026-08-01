@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
+import pytest
+
+from scripts import verify_hub_contract as hub_contract
 from scripts.verify_hub_contract import (
     FIXTURE_PATH,
     GOVERNANCE_FIXTURE_PATH,
@@ -29,3 +33,17 @@ def test_hub_governance_example_matches_closed_person_bound_contract() -> None:
     assert example["responses"]["created"]["receipt"]["outcome"] == "created"
     assert example["responses"]["idempotent_replay"]["receipt"]["outcome"] == "already_promoted"
     assert example["responses"]["rejected_owner_injection"]["error"]["code"] == "invalid_request"
+
+
+def test_hub_governance_example_is_checkout_path_independent(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    source = Path(__file__).parent / "fixtures" / "codex" / "failed_command.jsonl"
+    snapshots = []
+    for name in ("first-checkout", "second-checkout"):
+        checkout = tmp_path / name
+        fixture = checkout / "tests" / "fixtures" / "codex" / "failed_command.jsonl"
+        fixture.parent.mkdir(parents=True)
+        fixture.write_bytes(source.read_bytes())
+        monkeypatch.setattr(hub_contract, "REPOSITORY_ROOT", checkout)
+        snapshots.append(hub_contract.build_governance_snapshot())
+
+    assert snapshots[0] == snapshots[1]

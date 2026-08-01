@@ -4,14 +4,15 @@
     "browser_connected_to_runtime": false,
     "code_path": "real User Preference write plus Hub Governance HTTP adapter over local Markdown and SQLite",
     "formal_v0_5_acceptance": false,
-    "retrieval_adapter": "deterministic offline test adapter, not a production provider"
+    "retrieval_adapter": "deterministic offline test adapter, not a production provider",
+    "source_locator": "canonical contract path for cross-platform identity stability"
   },
   "requests": {
     "promote": {
-      "memory_id": "mem_616609cba353b612734deb17b3c6a281b47f33203ff8e6ce7b437d761add89c6"
+      "memory_id": "mem_bbaff62b18d439a2c6da0246280e444d138b6cc40d1d0a2e06556c9091e40b5c"
     },
     "rejected_owner_injection": {
-      "memory_id": "mem_616609cba353b612734deb17b3c6a281b47f33203ff8e6ce7b437d761add89c6",
+      "memory_id": "mem_bbaff62b18d439a2c6da0246280e444d138b6cc40d1d0a2e06556c9091e40b5c",
       "person_id": "person_0000000000000000000000000000000000000000000000000000000000000000"
     }
   },
@@ -30,13 +31,13 @@
         "promotion": {
           "created_at_ms": 1700000005000,
           "person_id": "person_1111111111111111111111111111111111111111111111111111111111111111",
-          "promotion_id": "promotion_6855066b28ca160585f032b48581890b0ae31e806f6d15e21611539979cd3ab6",
+          "promotion_id": "promotion_a51a08958c6a3e4f61010883a0105597b5438ac4af86c46b8c0459c9831170d4",
           "replaces_promotion_id": null,
           "schema_version": 1,
           "source": {
-            "memory_id": "mem_616609cba353b612734deb17b3c6a281b47f33203ff8e6ce7b437d761add89c6",
+            "memory_id": "mem_bbaff62b18d439a2c6da0246280e444d138b6cc40d1d0a2e06556c9091e40b5c",
             "repository_key": "github.com/example/preferences",
-            "revision_sha256": "1f7d30fd7d636721008d2a79e1bd6bee5e5fd80574f2dce72f9ee4374de8b21c"
+            "revision_sha256": "7de9fb4540ee1d3479226906f2019d7dea4e3126d4d3af8cdeede3e1908080a4"
           },
           "subject_key": "response-language"
         }
@@ -57,13 +58,13 @@
         "promotion": {
           "created_at_ms": 1700000005000,
           "person_id": "person_1111111111111111111111111111111111111111111111111111111111111111",
-          "promotion_id": "promotion_6855066b28ca160585f032b48581890b0ae31e806f6d15e21611539979cd3ab6",
+          "promotion_id": "promotion_a51a08958c6a3e4f61010883a0105597b5438ac4af86c46b8c0459c9831170d4",
           "replaces_promotion_id": null,
           "schema_version": 1,
           "source": {
-            "memory_id": "mem_616609cba353b612734deb17b3c6a281b47f33203ff8e6ce7b437d761add89c6",
+            "memory_id": "mem_bbaff62b18d439a2c6da0246280e444d138b6cc40d1d0a2e06556c9091e40b5c",
             "repository_key": "github.com/example/preferences",
-            "revision_sha256": "1f7d30fd7d636721008d2a79e1bd6bee5e5fd80574f2dce72f9ee4374de8b21c"
+            "revision_sha256": "7de9fb4540ee1d3479226906f2019d7dea4e3126d4d3af8cdeede3e1908080a4"
           },
           "subject_key": "response-language"
         }
